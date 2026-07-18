@@ -58,6 +58,7 @@ koine/
                                    Pinakes / Argos / Insimul
   decisions/
     ADR-0001-control-plane-topology.md  ✅ direct-dial + thin commons; the `agora` repo
+    ADR-0002-reconcile-with-existing-bridges.md  ⚠ Koine supersedes the LinguaScrape sync plans (Proposed)
   specs/
     identity.md                    ✅ Koine Identity & Namespace Protocol (KINP) — ratified
     grounding-pack.md              ✅ Koine Grounding-Pack Protocol (KGP) — ratified
