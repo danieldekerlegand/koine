@@ -239,6 +239,15 @@ Assets are large; envelopes/EDLs are small. KMI is a **reference-by-id** protoco
    `media:perceptual_match`, and recording it (like KGP `embedding_model`) so scores are
    comparable.
 
+## Pressure test
+
+Exercised by [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md).
+**Blocking deltas before ratification:** **F** (transform typing must span planes — media
+profile ∪ knowledge type ∪ entity ref, §6) and **H** (`source_world` REQUIRED only for
+*ingested* assets that depict a world; generated assets → `null`; attribution is **per-asset**,
+so composite analysis attributes claims to constituent clips, §2/§5). Should-fix: **I** (NLE
+projections carry an asset-id ↔ path media map, §4). Stays **candidate** until F & H land.
+
 ## Changelog
 
 - **0.1.0** (2026-07-17) — Initial candidate draft. Closes the fourth (media) plane; absorbs

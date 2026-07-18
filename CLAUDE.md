@@ -32,5 +32,8 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
 - `registry/` — shared vocabularies; `relations.tsv` (core, **binary** relations only) +
   `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:). A relation's
   signature is immutable once published (changing it changes every dependent claim id).
-- **All four planes now specified** — identity + knowledge ratified, control + media candidate.
-  Next: pressure-test KCB & KMI, then ratify.
+- **All four planes specified.** identity + knowledge RATIFIED; control (KCB) + media (KMI)
+  CANDIDATE. Pressure test `scenarios/e2e-media-transform.md` found **blocking deltas F/G/H**
+  (F: transform typing must span planes; G: add asset-`fetch` verb + grant; H: `source_world`
+  conditional-on-ingest + per-asset) — fold before ratifying KCB/KMI. Also I/J/K (NLE media map;
+  world in media typing; grant budgets) and L (dangling-ref tolerance).

@@ -66,7 +66,8 @@ koine/
     relations/cinematography.tsv   ✅ example domain extension (cine:)
     relations/media.tsv            ✅ media-lineage relations (media:)
   scenarios/
-    e2e-worlds-to-fabric.md        ✅ end-to-end pressure test of the identity model
+    e2e-worlds-to-fabric.md        ✅ pressure test of the identity model (KINP)
+    e2e-media-transform.md         ✅ pressure test of the control + media planes (KCB+KMI)
 ```
 
 ## Status

@@ -141,6 +141,15 @@ live in Cuneiform infra; KCB fixes only the *shape* of grants and signing so the
 3. **Backpressure & cost** — subscriptions to high-volume worlds; ties to Argos's cost gates
    and Cuneiform's costadvisor.
 
+## Pressure test
+
+Exercised by [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md).
+**Blocking deltas before ratification:** **F** (transform typing + registry path-matching must
+span all planes, §2/§3 — else any-to-any can't route knowledge-touching transforms) and **G**
+(add a `fetch(asset_id)` verb + `fetch:asset` grant, §4/§5 — cross-project CAS read). Should-fix:
+**J** (world on media produce/consume typing, §2/§3), **K** (spend ceiling on grants, §5/§7),
+**L** (tolerate dangling asset refs, §4). Stays **candidate** until F & G land.
+
 ## Changelog
 
 - **0.1.0** (2026-07-17) — Initial candidate draft.
