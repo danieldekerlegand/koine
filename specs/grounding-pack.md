@@ -1,8 +1,8 @@
 # Koine Grounding-Pack Protocol (KGP)
 
-**Spec version:** 0.2.0
+**Spec version:** 0.3.0
 **Status:** Ratified
-**Last updated:** 2026-07-17
+**Last updated:** 2026-07-18
 **Applies to:** Pinakes (producer/authority), Argos & Insimul (producer + consumer),
 Cuneiform & Formant (consumer)
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
@@ -33,7 +33,7 @@ KGP defines:
   Neo4j / Datalog / ProbLog (§4),
 - **dialect & portability tiers** governing what a consumer may safely ingest (§5),
 - **directionality**: snapshot vs. delta/subscription (§6),
-- **confidence & provenance filtering** (§7),
+- **confidence, provenance & license filtering** (§7),
 - the per-project **producer/consumer mapping** (§8).
 
 KGP does **not** define media/asset transfer (that is `media-interchange.md`), reasoning
@@ -59,7 +59,7 @@ one or more **worlds** (KINP §5). Logical shape:
   "assertions":[ /* KINP assertion envelopes (§7.1 of KINP) */ ],
   "links":     [ /* equivalence + lifecycle relations: same_as/based_on/part_of/…/retracts */ ],
   "provenance":[ /* W3C-PROV-shaped activities/agents referenced by assertions */ ],
-  "manifest":  { "counts": {…}, "created": "2026-07-17T…", "signing": {…} }
+  "manifest":  { "counts": {…}, "created": "2026-07-18T…", "signing": {…}, "license_policy": {…} }
 }
 ```
 
@@ -69,6 +69,8 @@ one or more **worlds** (KINP §5). Logical shape:
   `part_of`, `instance_of`, `retracts`, `supersedes`).
 - **`entities`** are the referenced entity records (id + type + attributes + external
   anchors). Attributes are *assertions*, not inline scalars, so nothing escapes provenance.
+- **License** rides on records: every entity/assertion record carries an SPDX `license`, and
+  the manifest carries a `license_policy` (the admission allowlist). See §7.1.
 
 ### 2.1 Pack identity
 
@@ -189,6 +191,14 @@ Rule: **a producer must ship the lowest tier that carries the needed content; a 
 reject a pack whose tier exceeds what it can safely evaluate.** Pinakes → Argos defaults to
 `grounding-only`; Insimul internal transfer may use `full-prolog`.
 
+**Dialect tiers ≠ trust tiers.** These portability tiers were adopted from Insimul's Appendix-A
+registry (which is why the names predate this spec). They are **orthogonal** to the *provenance
+trust tiers* several projects already ship — Pinakes `curated`/`auto-admitted`/`quarantine`, the
+bridges' `synthetic`/`personal`. A **trust tier** says *how much to believe a source*; a
+**dialect tier** says *what logic a consumer may safely evaluate*. Keep them separate: `dialect`
+(§2) is the portability axis; provenance trust is carried per §7 and drives the merge-review
+queue (KINP §11 decision 2). (Both words appear in the projects' code — do not conflate them.)
+
 ---
 
 ## 6. Directionality
@@ -207,18 +217,31 @@ merged state — guaranteed because claim ids are content-addressed and links ar
 
 ---
 
-## 7. Confidence & provenance as first-class filters
+## 7. Confidence, provenance & license as first-class filters
 
 Because provenance and confidence ride on every assertion (KINP §7.1) and are *excluded from
 claim identity* (§3.1), a consumer can slice a pack without changing what any claim *is*:
 
 ```
-accept assertions where prov.agent ∈ trusted ∧ confidence ≥ 0.9 ∧ world = consensus-reality
+accept records where prov.agent ∈ trusted ∧ confidence ≥ 0.9 ∧ world = consensus-reality
+            ∧ license.class ∈ {public-domain, permissive, attribution}
 ```
 
 Merges preserve **all** provenance for a shared `claim` id (multiple `prov` records per
 claim), so "who told us this, and how sure were they" is always answerable — the basis for the
 hybrid review queue (KINP §11, decision 2) and for Pinakes's convergence-QA gate.
+
+### 7.1 License-class policy (adopted from the existing bridges)
+
+Every entity/assertion record carries an SPDX `license`; the pack manifest carries a
+`license_policy` — a class-based admission allowlist. Licenses classify into `public-domain` /
+`permissive` / `attribution` / `share-alike` / `non-commercial` / `proprietary`; a consumer
+admits **per record** and **rejects with a report** anything outside its allowlist (default:
+`public-domain` + `permissive` + `attribution`). This is a first-class filter alongside
+confidence and provenance, not an afterthought — it was already built and proven in Pinakes
+(`LicensePolicy`) and Insimul (`classifyLicense`), and is lifted into the contract per
+[ADR-0002](../decisions/ADR-0002-reconcile-with-existing-bridges.md) (reverse flow). License is
+carried on records (not in the claim hash), so it never affects claim identity.
 
 ---
 
@@ -255,6 +278,10 @@ Ratified 2026-07-17.
 
 ## Changelog
 
+- **0.3.0** (2026-07-18) — Added the SPDX **license-class policy** as a first-class filter
+  (§2 records + manifest `license_policy`, §7.1), lifted from the existing Pinakes/Insimul
+  bridges per ADR-0002 (reverse flow). Clarified that dialect (portability) tiers are distinct
+  from provenance **trust tiers** (§5). Non-breaking, additive.
 - **0.2.0** (2026-07-17) — **Ratified.** Closed §9 (relation-registry governance → shared
   core + namespaced extensions; embedding portability → `embedding_model`; signing shape) and
   seeded `registry/relations.tsv`.
