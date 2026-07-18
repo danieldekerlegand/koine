@@ -1,6 +1,6 @@
 # ADR-0002 — Reconcile Koine with the existing LinguaScrape bridge program
 
-**Status:** Proposed (awaiting ratification)
+**Status:** Accepted (ratified 2026-07-18)
 **Deciders:** ecosystem owner
 **Date:** 2026-07-18
 **Refines:** the grounding tranche in [`../tasks/chief/`](../tasks/chief/) and the KINP/KGP specs.
@@ -114,10 +114,18 @@ GroundingPack producer/consumer + license gate + golden conformance corpus.
 - **Risk:** terminology drift (trust vs dialect tiers; LinguaScrape vs Pinakes) if the rename
   isn't done consistently.
 
-## Open questions for ratification
+## Ratified decisions (2026-07-18)
 
-1. **Fold vs. supersede vs. keep-both** — this ADR recommends **fold** (decision above). Confirm.
-2. **Who owns the shared relation registry** — `koine/registry/` (contract) with the build in a
-   retargeted `insimul-bridge` US-001, vs. a standalone `shared-relation-registry` tasklist.
-3. **Rename cadence** — do LinguaScrape→Pinakes and csid→CURIE happen now (big touch) or
-   lazily as each bridge tasklist is retargeted.
+1. **Fold** (as recommended) — supersede the sync-plan contracts, preserve the built work,
+   retarget the planned bridge tasklists, trim the grounding tranche.
+2. **Standalone `shared-relation-registry` tasklist** — a dedicated tasklist (target `agora`,
+   data in `koine/registry`), not folded into a retargeted `insimul-bridge` US-001.
+3. **Rename now, as a gate** — LinguaScrape→Pinakes and csid→CURIE are the **mandatory first
+   story (RENAME GATE)** of each retargeted tasklist (`pinakes-koine-align` US-PKA1,
+   `argos-koine-deltas` US-AKD1, `identity-adoption` US-IA1), so the rename happens upfront when
+   execution begins rather than piecemeal. Staged now; executed when the tasklists run (projects
+   remain untouched until then).
+
+The trimmed/retargeted tasklist set is staged in [`../tasks/chief/`](../tasks/chief/): retired
+`grounding-pinakes`/`grounding-argos`; added `shared-relation-registry`, `pinakes-koine-align`,
+`argos-koine-deltas`; reconciled `identity-adoption`.
