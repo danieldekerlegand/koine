@@ -1,7 +1,7 @@
 # Koine Identity & Namespace Protocol (KINP)
 
-**Spec version:** 0.1.0 (candidate)
-**Status:** Draft for review — not yet ratified
+**Spec version:** 0.2.0
+**Status:** Ratified
 **Last updated:** 2026-07-17
 **Applies to:** Insimul, Pinakes, Cuneiform, Argos, Formant
 
@@ -44,7 +44,7 @@ KINP defines:
 - the **assertion** and **asset** envelopes, with provenance and bitemporal time (§7),
 - the **resolver API** (§8),
 - the per-project **adoption map** (§10),
-- **open decisions** the ecosystem owner must ratify (§11).
+- the **ratified decisions** on the three design forks (§11).
 
 KINP does **not** define storage engines, wire encodings for bulk transfer (that is
 grounding-pack / media-interchange), or reasoning semantics.
@@ -76,7 +76,7 @@ https://id.<root>/<kind>/<namespace>/<local-id>
 ```
 
 - `<root>` — the ecosystem's identity domain. **Placeholder:** `id.koine.example`
-  (production root TBD; see §11).
+  (production root TBD).
 - `<kind>` — one of: `ent` | `claim` | `asset` | `world` | `agent` | `src`.
 - `<namespace>` — the minting authority (§3.4).
 - `<local-id>` — opaque within the namespace; `[a-z0-9][a-z0-9._-]*` (lowercase,
@@ -169,6 +169,11 @@ Relations in the equivalence layer:
 | `part_of` | mereological containment | Partial (context-dependent) |
 | `instance_of` | type membership | No |
 
+**Lifecycle relations** (reserved; not equivalence links, but they use the same envelope,
+§7.1): `retracts` — withdraws a prior claim; `supersedes` — replaces a prior claim with a
+newer one. Because claims are immutable and content-addressed (§2), correction is *additive*:
+assert a `retracts`/`supersedes` with a later transaction time (§7.1) rather than deleting.
+
 ### 4.3 The firewall: `same_as` vs `based_on`
 
 The single distinction that keeps fiction from corrupting real-world knowledge.
@@ -215,8 +220,21 @@ Fuzzy matching a descriptor (name, type, attributes, embedding) to candidate ent
 **probabilistic**, never assumed correct. KINP adopts the **OpenRefine / Wikidata
 Reconciliation API** shape for the `reconcile` operation (§8): a published standard that
 Pinakes's Wikidata backbone can answer directly, giving Argos and Insimul fuzzy matching
-against a standard interface for free. Reconciliation *proposes* `same_as` links; whether
-they are auto-applied or reviewed is an open decision (§11, fork 2).
+against a standard interface for free. Reconciliation *proposes* links; per the ratified
+merge policy (§11, decision 2) they are auto-applied above a confidence threshold and
+otherwise queued for review.
+
+**Choosing `same_as` vs `based_on` (normative — delta C).** When the resolver links a
+candidate, it MUST pick the relation by world and ontological status:
+
+- **different worlds, and the candidate's world does *not* inherit-as-identity** → emit
+  `based_on` (lineage only; no fact transfer). This is what stops knowledge extracted from a
+  fictional world from contaminating the real entity it was modeled on.
+- **same world, or an identity-inheriting world** → emit `same_as`.
+- **ambiguous / below threshold** → emit nothing; queue for review (§11, decision 2).
+
+A candidate reached only via an existing `based_on` chain (e.g. fiction → real figure) is
+never promoted to `same_as` by transitivity.
 
 ---
 
@@ -243,8 +261,8 @@ consensus-reality                         (fab:world:pinakes/consensus-reality �
 - A fictional world MAY inherit consensus reality (so "Paris is in France" holds in-fiction
   unless the fiction overrides it) — inheritance policy is per-world metadata.
 
-**Prolog representation:** an explicit context argument `@world(W)` (recommended over
-modules — see §11, fork 3) so worlds round-trip cleanly to TSV and the grounding-pack.
+**Prolog representation:** an explicit context argument `@world(W)` (ratified over modules,
+§11 decision 3) so worlds round-trip cleanly to TSV and the grounding-pack.
 Assertions without an explicit world default to the producer's declared world.
 
 ---
@@ -263,15 +281,23 @@ emits `same_as` links — eventually-consistent, never blocking. This preserves:
 - Insimul-native's embedded (no-network) execution,
 - Pinakes bulk imports.
 
-**Canonical authority:** Pinakes is authoritative for *real-world* canonical entities
-(it anchors to Wikidata). Other projects mint locals and defer canonicalization to the
-resolver. (Whether Pinakes is the *single* authority or the model is fully federated is
-§11, fork 1.)
+**Canonical authority:** Pinakes is the single canonical authority for *real-world* entities
+(it anchors to Wikidata) — ratified, §11 decision 1. Other projects mint locals and defer
+canonicalization to the resolver.
 
-Hash normalization rules (claim canonicalization: argument order, IRI vs CURIE
-normalization, whitespace, number formats) are defined in `grounding-pack.md`; KINP
-requires only that they be deterministic and shared, so identical claims from different
-producers mint identical `claim` ids.
+**Claim normalization is normative and load-bearing — not optional (delta B).**
+Content-addressed claim dedup across producers *only* works if every project canonicalizes a
+claim to the exact same byte string before hashing. Producers MUST apply the shared
+normalization — canonical argument order, CURIE↔IRI normalization, world stamping, and
+literal/number/whitespace formatting — defined in
+[`grounding-pack.md`](grounding-pack.md) §Normalization. A claim hashed under any other rule
+is non-conformant.
+
+Note that *pre*-reconciliation, two producers describing the same fact still mint different
+`claim` ids because their entity references differ (provisional locals, §4). The claims
+converge only after the resolver links those entities and the claims are re-expressed against
+the canonical entity. Normalization guarantees convergence is *possible*; reconciliation makes
+it *happen*.
 
 ---
 
@@ -315,6 +341,9 @@ is the seed; KINP promotes it to the ecosystem envelope and splits the two times
   "id":       "formant:asset:blake3-a1b2…",   // hash of bytes
   "media_type": "audio/wav",
   "bytes":     480000,
+  "source_world": "insimul:world:alderforest", // REQUIRED at ingest — the world the bytes
+                                                //   depict; claims extracted from this asset
+                                                //   default to this world (delta A)
   "attaches_to": ["pinakes:ent:tr-808"],       // entities this asset depicts/realizes
   "produced_by": "formant:run/…",
   "prov": { /* as above */ }
@@ -322,8 +351,17 @@ is the seed; KINP promotes it to the ecosystem envelope and splits the two times
 ```
 
 Assets **attach to entities by identifier** — media is not a node type in the knowledge
-graph; it hangs off entities in the fabric. Full asset/EDL interchange is
-`media-interchange.md`; KINP fixes only the `asset` identifier and the `attaches_to` link.
+graph; it hangs off entities in the fabric. `source_world` is **required at ingest** (delta
+A): it is how the firewall (§4.3) engages on ingested media — knowledge extracted from an
+asset lands in the asset's `source_world`, never silently in consensus reality.
+
+**Out of scope (delta E):** `asset` ids are byte-exact hashes and do *not* capture perceptual
+identity — a re-encode of the same audio/video mints a different `asset` id. Near-duplicate /
+perceptual matching, and the asset-level `derived_from` relation that records re-encode
+lineage, belong to `media-interchange.md`. Shared *meaning* across re-encodes is carried at
+the entity level via `attaches_to`. Full asset/EDL interchange is likewise
+`media-interchange.md`; KINP fixes only the `asset` identifier, `source_world`, and
+`attaches_to`.
 
 ---
 
@@ -393,26 +431,35 @@ namespace and adding the equivalence layer.
 
 ---
 
-## 11. Open decisions (owner must ratify)
+## 11. Ratified decisions
 
-Everything above assumes the recommended answer; these forks are the ecosystem owner's.
+The three design forks were ratified on 2026-07-17. The choices below are now normative;
+rejected alternatives are recorded for provenance.
 
-1. **Resolver authority.** *Recommended:* Pinakes is the single canonical authority for
-   real-world entities. *Alternative:* fully federated, no privileged node.
-   *Trade-off:* canonical quality/dedup vs. autonomy/offline purity.
-2. **Merge aggressiveness.** *Recommended:* auto-apply `same_as` above a confidence
-   threshold **and** route high-impact merges to a review queue (reuse Pinakes's
-   convergence-QA gate). *Alternative:* always-auto, or always-review.
-   *Trade-off:* fabric coherence vs. contamination risk.
-3. **World model in Prolog.** *Recommended:* explicit `@world(W)` context argument.
-   *Alternative:* Prolog modules per world. *Trade-off:* TSV/grounding-pack
-   round-tripping (favors the argument) vs. reasoning ergonomics (favors modules).
+1. **Resolver authority → Pinakes is the single canonical authority** for real-world
+   entities (anchored to Wikidata). *Rejected:* fully federated with no privileged node.
+   *Rationale:* canonical quality and dedup outweigh federation purity, and offline-first is
+   preserved regardless because minting is local and reconciliation is eventually-consistent
+   (§6). Authority is a **role**, not a hard dependency — federation stays a future option.
+2. **Merge aggressiveness → hybrid.** Auto-apply `same_as`/`based_on` above a confidence
+   threshold; route high-impact or below-threshold links to a **review queue**, reusing
+   Pinakes's convergence-QA gate. *Rejected:* always-auto (contamination risk) and
+   always-review (does not scale). The threshold is configurable per world.
+3. **World model in Prolog → explicit `@world(W)` context argument.** *Rejected:* one module
+   per world. *Rationale:* the context argument round-trips cleanly to TSV and the
+   grounding-pack; modules would trap world scoping inside the Prolog runtime and complicate
+   export. Ergonomic sugar over the argument MAY be provided.
 
-See [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) for an
-end-to-end pressure test that exercises these decisions against concrete data.
+See [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) for the
+end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 revision.
 
 ---
 
 ## Changelog
 
+- **0.2.0** (2026-07-17) — **Ratified.** Folded pressure-test deltas A–E: asset
+  `source_world` (A, §7.2); claim normalization promoted to normative (B, §6); resolver
+  `same_as`-vs-`based_on` rule (C, §4.5); reserved `retracts`/`supersedes` lifecycle relations
+  (D, §4.2); perceptual/near-dup asset matching scoped out (E, §7.2). Ratified the three design
+  forks (§11): Pinakes-as-authority, hybrid merge policy, `@world(W)` argument.
 - **0.1.0** (2026-07-17) — Initial candidate draft.

@@ -31,7 +31,7 @@ Three planes carry everything that crosses the ecosystem:
 | Plane | Carries | Owner / transport | Contract |
 |---|---|---|---|
 | **Control** | agent orgs, infra, tools, capabilities | Cuneiform + **MCP / A2A** | `specs/capability-bus.md` *(planned)* |
-| **Data — knowledge** | facts / predicates / graph | Pinakes (canonical store) | `specs/grounding-pack.md` *(planned)* |
+| **Data — knowledge** | facts / predicates / graph | Pinakes (canonical store) | [`specs/grounding-pack.md`](specs/grounding-pack.md) ✅ *(candidate)* |
 | **Data — media** | assets, EDLs, metadata | Argos-originated interchange | `specs/media-interchange.md` *(planned)* |
 
 Underpinning **all three** is the one thing that makes "intersection" — joining data

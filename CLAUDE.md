@@ -20,7 +20,9 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
   (KINP) and referenced — never redefined — by other specs.
 
 ## Current state
-- `specs/identity.md` — KINP 0.1.0, **candidate**. Open forks in §11; deltas A–C from the
-  pressure test (`scenarios/e2e-worlds-to-fabric.md`) must land before ratification.
-- Planned: `specs/grounding-pack.md`, `specs/media-interchange.md`, `specs/capability-bus.md`,
-  `ECOSYSTEM.md`.
+- `specs/identity.md` — KINP 0.2.0, **ratified**. Deltas A–E folded; three §11 forks decided
+  (Pinakes-as-authority, hybrid merge policy, `@world(W)` argument).
+- `specs/grounding-pack.md` — KGP 0.1.0, **candidate**. Knowledge data plane; §3 Normalization
+  is normative and satisfies KINP delta B. Open questions in §9.
+- Planned: `specs/media-interchange.md`, `specs/capability-bus.md`, `ECOSYSTEM.md`, and a
+  `registry/relations.tsv` shared relation vocabulary (referenced by KGP §3.2).
