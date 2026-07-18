@@ -151,7 +151,7 @@ first):
 | [`specs/grounding-pack.md`](specs/grounding-pack.md) (KGP) | knowledge data plane | **Ratified** 0.3.0 |
 | [`specs/capability-bus.md`](specs/capability-bus.md) (KCB) | control plane | **Ratified** 0.2.0 |
 | [`specs/media-interchange.md`](specs/media-interchange.md) (KMI) | media data plane | **Ratified** 0.2.0 |
-| [`specs/conformance-scenario.md`](specs/conformance-scenario.md) (KCS) | test/verification format | Candidate 0.1.0 |
+| [`specs/conformance-scenario.md`](specs/conformance-scenario.md) (KCS) | test/verification format | **Ratified** 0.2.0 |
 | [`registry/`](registry/) | shared vocabularies | Relation registry seeded |
 
 See [`README.md`](README.md) for the repo's purpose and [`CLAUDE.md`](CLAUDE.md) for working

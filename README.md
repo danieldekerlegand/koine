@@ -64,7 +64,7 @@ koine/
     grounding-pack.md              ✅ Koine Grounding-Pack Protocol (KGP) — ratified
     capability-bus.md              ✅ Koine Capability-Bus Protocol (KCB) — ratified
     media-interchange.md           ✅ Koine Media-Interchange Protocol (KMI) — ratified
-    conformance-scenario.md        ✅ Koine Conformance-Scenario format (KCS) — candidate
+    conformance-scenario.md        ✅ Koine Conformance-Scenario format (KCS) — ratified
   registry/
     relations.tsv                  ✅ core relation vocabulary (binary relations)
     relations/cinematography.tsv   ✅ example domain extension (cine:)
@@ -72,12 +72,13 @@ koine/
   scenarios/
     e2e-worlds-to-fabric.md        ✅ pressure test of the identity model (KINP)
     e2e-media-transform.md         ✅ pressure test of the control + media planes (KCB+KMI)
+    kcs-format-stress.md           ✅ pressure test of the KCS scenario format
   tasks/chief/                     ✅ staged cross-project adoption tasklists (relocate to run)
 ```
 
 ## Status
 
-**All four planes ratified.** Identity (KINP), knowledge (KGP), control (KCB), and media (KMI)
-are all ratified, each validated by an end-to-end pressure test (`scenarios/`). The contract
-layer is complete. See [`ECOSYSTEM.md`](ECOSYSTEM.md) for the full topology. Specs are versioned
-independently (see each doc's header).
+**All five specs ratified.** Identity (KINP), knowledge (KGP), control (KCB), media (KMI), and
+the conformance-scenario format (KCS) are all ratified, each validated by a pressure test
+(`scenarios/`). The contract layer is complete. See [`ECOSYSTEM.md`](ECOSYSTEM.md) for the full
+topology. Specs are versioned independently (see each doc's header).
