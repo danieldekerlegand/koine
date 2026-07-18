@@ -32,7 +32,7 @@ Three planes carry everything that crosses the ecosystem:
 |---|---|---|---|
 | **Control** | agent orgs, infra, tools, capabilities | Cuneiform + **MCP / A2A** | [`specs/capability-bus.md`](specs/capability-bus.md) ✅ *(candidate)* |
 | **Data — knowledge** | facts / predicates / graph | Pinakes (canonical store) | [`specs/grounding-pack.md`](specs/grounding-pack.md) ✅ *(ratified)* |
-| **Data — media** | assets, EDLs, metadata | Argos-originated interchange | `specs/media-interchange.md` *(planned)* |
+| **Data — media** | assets, EDLs, metadata | Argos-originated interchange | [`specs/media-interchange.md`](specs/media-interchange.md) ✅ *(candidate)* |
 
 Underpinning **all three** is the one thing that makes "intersection" — joining data
 across projects — possible at all:
@@ -60,17 +60,18 @@ koine/
     identity.md                    ✅ Koine Identity & Namespace Protocol (KINP) — ratified
     grounding-pack.md              ✅ Koine Grounding-Pack Protocol (KGP) — ratified
     capability-bus.md              ✅ Koine Capability-Bus Protocol (KCB) — candidate
-    media-interchange.md           (planned) asset + EDL interchange
+    media-interchange.md           ✅ Koine Media-Interchange Protocol (KMI) — candidate
   registry/
-    relations.tsv                  ✅ core relation vocabulary
-    relations/cinematography.tsv   ✅ example domain extension
+    relations.tsv                  ✅ core relation vocabulary (binary relations)
+    relations/cinematography.tsv   ✅ example domain extension (cine:)
+    relations/media.tsv            ✅ media-lineage relations (media:)
   scenarios/
     e2e-worlds-to-fabric.md        ✅ end-to-end pressure test of the identity model
 ```
 
 ## Status
 
-Three of four planes specified: **identity (KINP)** and **knowledge (KGP)** ratified; the
-**control plane (KCB)** is a candidate; the **media plane** is the remaining gap. See
-[`ECOSYSTEM.md`](ECOSYSTEM.md) for the full topology. Specs are versioned independently (see
-each doc's header).
+**All four planes specified.** Identity (KINP) and knowledge (KGP) are **ratified**; the
+control plane (KCB) and media plane (KMI) are **candidates** pending review + pressure tests.
+See [`ECOSYSTEM.md`](ECOSYSTEM.md) for the full topology. Specs are versioned independently
+(see each doc's header).

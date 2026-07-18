@@ -26,7 +26,11 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
 - `specs/grounding-pack.md` — KGP 0.2.0, **ratified**. Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed.
 - `specs/capability-bus.md` — KCB 0.1.0, **candidate**. Control plane over MCP/A2A.
-- `registry/` — shared vocabularies; `relations.tsv` (core) + `relations/cinematography.tsv`
-  (example extension). A relation's signature is immutable once published (changing it changes
-  every dependent claim id).
-- Planned: `specs/media-interchange.md` (the one remaining plane).
+- `specs/media-interchange.md` — KMI 0.1.0, **candidate**. Media data plane; asset envelope +
+  probe, asset-lineage graph (KINP delta E), canonical JSON EDL + NLE projections, analysis→KGP
+  bridge, transform typing for any-to-any paths.
+- `registry/` — shared vocabularies; `relations.tsv` (core, **binary** relations only) +
+  `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:). A relation's
+  signature is immutable once published (changing it changes every dependent claim id).
+- **All four planes now specified** — identity + knowledge ratified, control + media candidate.
+  Next: pressure-test KCB & KMI, then ratify.

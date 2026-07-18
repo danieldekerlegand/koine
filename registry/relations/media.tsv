@@ -1,0 +1,5 @@
+relation	arity	arg_roles	symmetric	tier	domain	inverse	description
+media:derived_from	2	derived|source	false	grounding-only	media		B is a transcode/re-encode/render of A; B is its own asset (KMI §3)
+media:variant_of	2	variant|source	false	grounding-only	media		B is a rendition of A at a different resolution/format/bitrate
+media:excerpt_of	2	excerpt|source	false	grounding-only	media		B is a time/space sub-range of A (clip/crop/thumbnail); cut range on B's asset envelope
+media:perceptual_match	2	a|b	true	grounding-only	media		Perceptual same-content signal (probabilistic); NEVER identity (KINP delta E)
