@@ -68,6 +68,7 @@ koine/
   scenarios/
     e2e-worlds-to-fabric.md        ✅ pressure test of the identity model (KINP)
     e2e-media-transform.md         ✅ pressure test of the control + media planes (KCB+KMI)
+  tasks/chief/                     ✅ staged cross-project adoption tasklists (relocate to run)
 ```
 
 ## Status
