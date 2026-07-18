@@ -63,6 +63,7 @@ koine/
     grounding-pack.md              ✅ Koine Grounding-Pack Protocol (KGP) — ratified
     capability-bus.md              ✅ Koine Capability-Bus Protocol (KCB) — ratified
     media-interchange.md           ✅ Koine Media-Interchange Protocol (KMI) — ratified
+    conformance-scenario.md        ✅ Koine Conformance-Scenario format (KCS) — candidate
   registry/
     relations.tsv                  ✅ core relation vocabulary (binary relations)
     relations/cinematography.tsv   ✅ example domain extension (cine:)
