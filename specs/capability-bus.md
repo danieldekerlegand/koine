@@ -101,6 +101,12 @@ source of truth — a provider's manifest is authoritative; the registry just ma
   form of any-to-any (delta F), resolved by matching contracts rather than a central
   transform-gateway. Path search **prefers zero-`cost` routes** and returns the path's
   projected cost so the caller can gate spend before invoking (delta K).
+- **Route-by-lookup, not proxy ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)).**
+  The registry returns *addresses*; peers then connect **directly** over MCP/A2A — no
+  inter-service traffic flows through it. An optional **aggregator facade** MAY present a unified
+  tool namespace to clients (forwarding without transforming) for convenience, but is never the
+  mandatory path. The registry + resolver reference implementation lives in the `agora` runtime
+  commons.
 
 ---
 

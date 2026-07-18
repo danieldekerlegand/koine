@@ -118,6 +118,9 @@ hybrid merge policy (auto-threshold + review queue); Prolog `@world(W)` argument
   (Rust/Go/Python/TS/C) and OSS boundaries differ per project; a monorepo fights both.
   Insimul's submodule + GitHub Packages model is the template to generalize.
 - **Koine** (this repo) is the contracts-only commons — no runtime code.
+- **`agora`** is the *runtime*-commons sibling to Koine ([ADR-0001](decisions/ADR-0001-control-plane-topology.md)):
+  the shared implementations — provider-router, discovery registry + resolver, protocol client
+  libs/schemas, and the conformance console. Koine specifies; agora implements.
 - **OSS commons vs. product line:** Layers 0–2 (Chief harness, Pinakes grounding, Insimul-native
   Prolog core) = open-source commons; Layer 3 (Cuneiform) = partly-OSS substrate; Layer 5
   products = some commercial, distributed **as Cuneiform orgs**.

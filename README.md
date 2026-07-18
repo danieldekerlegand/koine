@@ -56,6 +56,8 @@ koine/
   README.md                        this file — the fabric thesis + index
   ECOSYSTEM.md                     ✅ full topology; supersedes the partial docs in
                                    Pinakes / Argos / Insimul
+  decisions/
+    ADR-0001-control-plane-topology.md  ✅ direct-dial + thin commons; the `agora` repo
   specs/
     identity.md                    ✅ Koine Identity & Namespace Protocol (KINP) — ratified
     grounding-pack.md              ✅ Koine Grounding-Pack Protocol (KGP) — ratified
