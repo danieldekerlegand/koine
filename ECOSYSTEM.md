@@ -40,9 +40,9 @@ ESB / distributed-monolith trap).
 
 | Plane | Carries | Owner / transport | Contract |
 |---|---|---|---|
-| **Control** | agent orgs, infra, tools, capabilities | Cuneiform + MCP/A2A | [`specs/capability-bus.md`](specs/capability-bus.md) (KCB, candidate) |
-| **Data — knowledge** | facts / predicates / graph | Pinakes (canonical store) | [`specs/grounding-pack.md`](specs/grounding-pack.md) (KGP, candidate) |
-| **Data — media** | assets, EDLs, metadata | Argos-originated interchange | [`specs/media-interchange.md`](specs/media-interchange.md) (KMI, candidate) |
+| **Control** | agent orgs, infra, tools, capabilities | Cuneiform + MCP/A2A | [`specs/capability-bus.md`](specs/capability-bus.md) (KCB, ratified) |
+| **Data — knowledge** | facts / predicates / graph | Pinakes (canonical store) | [`specs/grounding-pack.md`](specs/grounding-pack.md) (KGP, ratified) |
+| **Data — media** | assets, EDLs, metadata | Argos-originated interchange | [`specs/media-interchange.md`](specs/media-interchange.md) (KMI, ratified) |
 
 Underpinning all three is the keystone that makes cross-project *intersection* possible at
 all: [`specs/identity.md`](specs/identity.md) (**KINP, ratified**). Get identity right and the
@@ -145,9 +145,9 @@ first):
 | Spec | Plane / role | Status |
 |---|---|---|
 | [`specs/identity.md`](specs/identity.md) (KINP) | identity keystone | **Ratified** 0.2.x |
-| [`specs/grounding-pack.md`](specs/grounding-pack.md) (KGP) | knowledge data plane | Candidate 0.x |
-| [`specs/capability-bus.md`](specs/capability-bus.md) (KCB) | control plane | Candidate 0.1.0 |
-| [`specs/media-interchange.md`](specs/media-interchange.md) (KMI) | media data plane | Candidate 0.1.0 |
+| [`specs/grounding-pack.md`](specs/grounding-pack.md) (KGP) | knowledge data plane | **Ratified** 0.2.0 |
+| [`specs/capability-bus.md`](specs/capability-bus.md) (KCB) | control plane | **Ratified** 0.2.0 |
+| [`specs/media-interchange.md`](specs/media-interchange.md) (KMI) | media data plane | **Ratified** 0.2.0 |
 | [`registry/`](registry/) | shared vocabularies | Relation registry seeded |
 
 See [`README.md`](README.md) for the repo's purpose and [`CLAUDE.md`](CLAUDE.md) for working

@@ -30,9 +30,9 @@ Three planes carry everything that crosses the ecosystem:
 
 | Plane | Carries | Owner / transport | Contract |
 |---|---|---|---|
-| **Control** | agent orgs, infra, tools, capabilities | Cuneiform + **MCP / A2A** | [`specs/capability-bus.md`](specs/capability-bus.md) ✅ *(candidate)* |
+| **Control** | agent orgs, infra, tools, capabilities | Cuneiform + **MCP / A2A** | [`specs/capability-bus.md`](specs/capability-bus.md) ✅ *(ratified)* |
 | **Data — knowledge** | facts / predicates / graph | Pinakes (canonical store) | [`specs/grounding-pack.md`](specs/grounding-pack.md) ✅ *(ratified)* |
-| **Data — media** | assets, EDLs, metadata | Argos-originated interchange | [`specs/media-interchange.md`](specs/media-interchange.md) ✅ *(candidate)* |
+| **Data — media** | assets, EDLs, metadata | Argos-originated interchange | [`specs/media-interchange.md`](specs/media-interchange.md) ✅ *(ratified)* |
 
 Underpinning **all three** is the one thing that makes "intersection" — joining data
 across projects — possible at all:
@@ -59,8 +59,8 @@ koine/
   specs/
     identity.md                    ✅ Koine Identity & Namespace Protocol (KINP) — ratified
     grounding-pack.md              ✅ Koine Grounding-Pack Protocol (KGP) — ratified
-    capability-bus.md              ✅ Koine Capability-Bus Protocol (KCB) — candidate
-    media-interchange.md           ✅ Koine Media-Interchange Protocol (KMI) — candidate
+    capability-bus.md              ✅ Koine Capability-Bus Protocol (KCB) — ratified
+    media-interchange.md           ✅ Koine Media-Interchange Protocol (KMI) — ratified
   registry/
     relations.tsv                  ✅ core relation vocabulary (binary relations)
     relations/cinematography.tsv   ✅ example domain extension (cine:)
@@ -72,7 +72,7 @@ koine/
 
 ## Status
 
-**All four planes specified.** Identity (KINP) and knowledge (KGP) are **ratified**; the
-control plane (KCB) and media plane (KMI) are **candidates** pending review + pressure tests.
-See [`ECOSYSTEM.md`](ECOSYSTEM.md) for the full topology. Specs are versioned independently
-(see each doc's header).
+**All four planes ratified.** Identity (KINP), knowledge (KGP), control (KCB), and media (KMI)
+are all ratified, each validated by an end-to-end pressure test (`scenarios/`). The contract
+layer is complete. See [`ECOSYSTEM.md`](ECOSYSTEM.md) for the full topology. Specs are versioned
+independently (see each doc's header).

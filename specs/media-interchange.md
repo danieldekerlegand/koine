@@ -1,7 +1,7 @@
 # Koine Media-Interchange Protocol (KMI)
 
-**Spec version:** 0.1.0 (candidate)
-**Status:** Draft for review — not yet ratified
+**Spec version:** 0.2.0
+**Status:** Ratified
 **Last updated:** 2026-07-17
 **Applies to:** Argos (producer/authority for media + EDL), Formant (audio producer),
 Insimul (game-video producer), Pinakes & Cuneiform (consumers)
@@ -31,7 +31,7 @@ KMI defines:
   `perceptual_match` (§3),
 - the **EDL / timeline** composition model + NLE projections (§4),
 - the **analysis → knowledge bridge** into KGP (§5),
-- **transform typing** — media profiles so KCB can compute any-to-any paths (§6),
+- **transform typing** — the media-plane port profile; cross-plane typing lives in KCB §2.1 (§6),
 - **byte transport** via a content-addressed store (§7),
 - the per-project **mapping** (§8).
 
@@ -50,7 +50,7 @@ those bytes and is **excluded from the id** (a re-encode is a different asset �
   "id":         "argos:asset:blake3-a1b2…",   // KINP: hash of bytes
   "media_type": "video/mp4",
   "bytes":      104857600,
-  "source_world": "insimul:world:alderforest", // KINP §7.2 — REQUIRED at ingest
+  "source_world": "insimul:world:alderforest", // REQUIRED for INGESTED world-depicting assets; null if generated (delta H)
   "attaches_to":  ["insimul:world:alderforest:ent:npc-renaud"], // KINP entities depicted
   "produced_by":  "argos:run/1a2b",
   "probe": {                                   // technical metadata (ffprobe-shaped)
@@ -69,6 +69,14 @@ those bytes and is **excluded from the id** (a re-encode is a different asset �
   Its shape is descriptive, not identity-bearing.
 - An asset MAY be a *structured document* (an EDL, §4) rather than raw media; then
   `media_type` is `application/vnd.koine.edl+json` and `probe` is omitted.
+- **`source_world` (delta H).** Required only for **ingested** assets that *depict* a world —
+  it scopes any knowledge *extracted from* them (§5) and is what engages the firewall (KINP
+  §4.3). **Generated/synthesized** assets (a TTS narration, a composed score, a render) depict
+  no world → `source_world: null`. The field is **per-asset**, so a composite never imposes one
+  world on its ingested constituents (§5).
+- **`excerpt` (optional).** For an asset that is a rendered sub-range of another, records
+  `{ "source": <asset id>, "start_ms", "end_ms" }` — the cut range that the binary
+  `media:excerpt_of` link (§3) deliberately omits.
 
 ---
 
@@ -148,8 +156,10 @@ deduplicated like any other asset, and an EDL can `media:derived_from` a prior E
 | **Remotion `.tsx`** | programmatic React video | `skill_export_remotion` |
 | **ffmpeg script** | headless render | `skill_export_ffmpeg` |
 
-A consumer never treats a projection as authoritative — round-trip fidelity is only guaranteed
-through the canonical JSON EDL.
+NLE projections reference media by **file path**, not KINP id, so each projection ships an
+**asset-id ↔ resolved-path media map** (delta I) that lets the NLE relink; without it, every
+clip goes "media offline." A consumer never treats a projection as authoritative — round-trip
+fidelity is only guaranteed through the canonical JSON EDL.
 
 ---
 
@@ -172,31 +182,40 @@ Consequences that fall out of the earlier planes for free:
 - Because assertions are content-addressed and normalized (KGP §3), analysis of two
   re-encodes of the same footage (linked by `media:perceptual_match`) converges on the same
   claims once their entity refs reconcile.
-
-This closes the loop the ecosystem is built around: **media in → knowledge out**, and (via KGP
-producers) **knowledge in → media out**.
+- Attribution is **per-asset (delta H)**: analysis of a *composite* (a render, a preview)
+  attributes each claim to the **constituent clip's** `source_world` — traced via
+  `media:excerpt_of` / `media:derived_from` — not to the composite's own. A generated render has
+  `source_world: null`, so scoping the whole render to one world would wrongly drop its clips'
+  claims out of every fictional world; per-constituent attribution keeps the firewall correct
+  across editing.
 
 ---
 
 ## 6. Transform typing (any-to-any as a computed path)
 
-Argos's "any-to-any" (PDF→movie, movie→PDF) is realized here as **typed transforms**, not a
-gateway. A transform is a **KCB capability** whose input/output are **media profiles**:
+Argos's "any-to-any" (PDF→movie, movie→PDF) is realized as **typed transforms**, not a gateway.
+A transform is a **KCB capability** whose inputs/outputs are **ports** (KCB §2.1), which span
+all planes. KMI owns only the **media profile** — the `media`-plane port type: a `media_type`
+plus optional constraints (resolution ceiling, codec, duration) and `world_pattern`. Knowledge-
+and entity-plane port types are owned by KGP / KINP.
 
 ```jsonc
-{ "capability": "narrate", "input":  { "profile": "text/plain" },
-                           "output": { "profile": "audio/wav", "constraints": { "tts": true } } }
+{ "capability": "narrate",
+  "inputs":  [ { "plane": "knowledge", "shape": "script" } ],          // NOT media-only (delta F)
+  "outputs": [ { "plane": "media", "media_types": ["audio/wav"], "constraints": { "tts": true } } ] }
 ```
 
-- A **profile** is a `media_type` plus optional constraints (resolution ceiling, codec,
-  duration). KMI owns the profile vocabulary; KCB owns discovery/invocation.
-- Because every transform declares `produces`/`consumes` profiles (KCB §2), the **discovery
-  registry computes a *path*** from an input profile to a desired output profile across
-  multiple providers (KCB §3) — e.g. `pdf → text → treatment → shot-list → images → video`.
-  That path *is* the any-to-any pipeline; no component needs global knowledge of the others.
-- Transform runtime concerns (Argos's paid→mlx→local→placeholder "sacred ladder",
-  zero-spend completion, cost gates) are **producer behavior**, not part of the contract — KMI
-  fixes only the profile typing so paths are computable and total.
+- Because ports span planes (KCB §2.1), a transform may consume **knowledge** and produce
+  **media** — e.g. `mood(knowledge) → score(audio)`, or `analysis: media → knowledge` (§5).
+  Media-profile-only typing (this spec's 0.1.0 draft) could not express those; **delta F** fixed
+  it in KCB, and KMI now defers cross-plane typing there.
+- The **discovery registry computes a path** from a start port to a goal port across providers
+  *and planes* (KCB §3) — e.g. `pdf → text → treatment → shot-list → images → video`. That path
+  *is* the any-to-any pipeline; no component needs global knowledge of the others.
+- Transform runtime concerns (Argos's paid→mlx→local→placeholder "sacred ladder", zero-spend
+  completion) are **producer behavior**; a capability's declared `cost` (KCB §2.1) lets path
+  search prefer cheap/zero-spend routes and gate spend (delta K). KMI fixes only the media
+  profile vocabulary so paths are computable and total.
 
 ---
 
@@ -210,8 +229,10 @@ Assets are large; envelopes/EDLs are small. KMI is a **reference-by-id** protoco
   fetched out-of-band. Because the id *is* the hash, integrity is self-verifying and any node
   can cache. (Argos already stores run artifacts under `data/assets/`; the CAS generalizes
   that across projects.)
-- Transport of both references and byte-fetch authorization rides the capability bus (KCB);
-  KMI defines the payloads, not the pipe.
+- Byte retrieval is the KCB **`fetch`** verb — a CAS GET by `asset` id (KCB §4) — authorized by
+  a `fetch:asset` grant (KCB §5, **delta G**). Reference and byte-fetch both ride the capability
+  bus; KMI defines the payloads, not the pipe. Because a reference can arrive before its bytes
+  propagate, consumers `fetch` lazily and tolerate dangling refs (KCB delta L).
 
 ---
 
@@ -242,13 +263,17 @@ Assets are large; envelopes/EDLs are small. KMI is a **reference-by-id** protoco
 ## Pressure test
 
 Exercised by [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md).
-**Blocking deltas before ratification:** **F** (transform typing must span planes — media
-profile ∪ knowledge type ∪ entity ref, §6) and **H** (`source_world` REQUIRED only for
-*ingested* assets that depict a world; generated assets → `null`; attribution is **per-asset**,
-so composite analysis attributes claims to constituent clips, §2/§5). Should-fix: **I** (NLE
-projections carry an asset-id ↔ path media map, §4). Stays **candidate** until F & H land.
+All blocking deltas were folded in 0.2.0: **F** (transforms typed by cross-plane KCB ports; KMI
+owns only the media profile, §6), **H** (`source_world` conditional on ingest, `null` for
+generated, per-asset attribution across composites, §2/§5), and **I** (asset-id ↔ path media map
+on NLE projections, §4); plus the KCB-side **G** (`fetch` verb + grant, §7) and **L**
+(dangling-reference tolerance, §7). Ratified.
 
 ## Changelog
 
+- **0.2.0** (2026-07-17) — **Ratified.** Folded pressure-test deltas F (cross-plane transform
+  typing via KCB ports), H (`source_world` conditional/per-asset + composite attribution),
+  I (NLE media map); wired byte retrieval to the KCB `fetch` verb/grant (G) with lazy
+  dangling-ref handling (L).
 - **0.1.0** (2026-07-17) — Initial candidate draft. Closes the fourth (media) plane; absorbs
   KINP delta E (asset-lineage graph, perceptual matching scoped as similarity-not-identity).

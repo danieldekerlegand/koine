@@ -148,3 +148,9 @@ KMI) and the ratified ones have two **structural** holes:
 Cleanup: L. None require redesign — F extends the typing/path-matching rule across planes, G
 adds one verb + grant, H relaxes a "required" to "conditional." KCB and KMI should stay
 **candidate** until F/G/H land.
+
+> **Resolution (2026-07-17):** all deltas F–L were folded into **KCB 0.2.0** (F cross-plane
+> ports, G `fetch` verb + grant, J `world_pattern`, K capability `cost` + grant spend ceilings,
+> L dangling-ref tolerance) and **KMI 0.2.0** (F transforms typed by KCB ports, H `source_world`
+> conditional/per-asset, I NLE media map). Both specs are now **ratified**. This document stands
+> as the historical record of what the pressure test found.

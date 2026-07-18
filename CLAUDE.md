@@ -25,15 +25,15 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
   (Pinakes-as-authority, hybrid merge policy, `@world(W)` argument); `embedding_model` added.
 - `specs/grounding-pack.md` — KGP 0.2.0, **ratified**. Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed.
-- `specs/capability-bus.md` — KCB 0.1.0, **candidate**. Control plane over MCP/A2A.
-- `specs/media-interchange.md` — KMI 0.1.0, **candidate**. Media data plane; asset envelope +
-  probe, asset-lineage graph (KINP delta E), canonical JSON EDL + NLE projections, analysis→KGP
-  bridge, transform typing for any-to-any paths.
+- `specs/capability-bus.md` — KCB 0.2.0, **ratified**. Control plane over MCP/A2A; cross-plane
+  ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
+  spend ceilings, dangling-ref tolerance.
+- `specs/media-interchange.md` — KMI 0.2.0, **ratified**. Media data plane; asset envelope +
+  probe, asset-lineage graph (KINP delta E), canonical JSON EDL + NLE projections (with media
+  map), analysis→KGP bridge, transforms typed by KCB ports; `source_world` conditional-on-ingest
+  and per-asset.
 - `registry/` — shared vocabularies; `relations.tsv` (core, **binary** relations only) +
   `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:). A relation's
   signature is immutable once published (changing it changes every dependent claim id).
-- **All four planes specified.** identity + knowledge RATIFIED; control (KCB) + media (KMI)
-  CANDIDATE. Pressure test `scenarios/e2e-media-transform.md` found **blocking deltas F/G/H**
-  (F: transform typing must span planes; G: add asset-`fetch` verb + grant; H: `source_world`
-  conditional-on-ingest + per-asset) — fold before ratifying KCB/KMI. Also I/J/K (NLE media map;
-  world in media typing; grant budgets) and L (dangling-ref tolerance).
+- **All four planes RATIFIED**, each validated by a pressure test (`scenarios/`). Contract layer
+  complete. Deltas F–L from `scenarios/e2e-media-transform.md` folded into KCB 0.2.0 + KMI 0.2.0.

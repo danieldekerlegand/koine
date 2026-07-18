@@ -1,7 +1,7 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.1.0 (candidate)
-**Status:** Draft for review — not yet ratified
+**Spec version:** 0.2.0
+**Status:** Ratified
 **Last updated:** 2026-07-17
 **Applies to:** all five projects (Cuneiform hosts; every project both offers and consumes)
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for identifiers;
@@ -22,7 +22,7 @@ carries.
 KCB defines:
 - the **capability manifest** every project publishes (§2),
 - the **discovery registry** and how it is populated (§3),
-- the **verbs**: discover / describe / invoke / subscribe (§4),
+- the **verbs**: discover / describe / invoke / subscribe / **fetch** (§4),
 - **trust & authorization** — capability grants, signing, per-world scoping (§5),
 - the per-project **mapping** onto existing MCP/A2A surfaces (§6).
 
@@ -38,21 +38,24 @@ is and what it offers, in KINP terms:
 
 ```jsonc
 {
-  "kcb_version": "0.1.0",
+  "kcb_version": "0.2.0",
   "identity":   "cuneiform:agent:composer",     // KINP agent/entity id
   "endpoints":  {
     "mcp":  "https://…/mcp",                     // MCP server (tools)
     "a2a":  "https://…/.well-known/agent-card.json"
   },
-  "produces":   [                                // interchange types emitted
-    { "plane": "media",     "media_types": ["audio/wav"] },
-    { "plane": "knowledge", "worlds": ["*"], "dialect": "grounding-only" }
+  "produces":   [                                // ports emitted (§2.1)
+    { "plane": "media", "media_types": ["audio/wav"], "world_pattern": "*" }
   ],
-  "consumes":   [                                // interchange types accepted
-    { "plane": "knowledge", "dialect": "grounding-only" }
+  "consumes":   [                                // ports accepted
+    { "plane": "knowledge", "dialect": "grounding-only" },
+    { "plane": "entity",    "types": ["mood", "scene"] }
   ],
-  "capabilities": [                              // named, invocable units
-    { "name": "compose", "input_schema": {…}, "output": { "plane": "media", "media_types": ["audio/midi"] } }
+  "capabilities": [                              // named, invocable units; i/o are ports
+    { "name": "compose",
+      "inputs":  [ { "plane": "knowledge", "shape": "mood-descriptor" } ],  // knowledge IN
+      "outputs": [ { "plane": "media", "media_types": ["audio/midi"] } ],   // media OUT  (delta F)
+      "cost":    { "tier": "paid", "est_units": 1200 } }                    // for path cost (delta K)
   ],
   "auth":       { "scheme": "capability-token", "grants_required": ["invoke:compose"] },
   "signing":    { "key_id": "…", "alg": "ed25519" }   // shared shape with KGP manifest.signing
@@ -61,9 +64,23 @@ is and what it offers, in KINP terms:
 
 - `identity` uses the KINP namespace, so **a capability provider is itself a fabric entity** —
   an agent can be referenced, grounded, and reasoned about like any other node.
-- `produces`/`consumes` are typed against the **planes** (knowledge = KGP packs, media =
-  assets/EDLs). This is what lets the registry answer "who can turn X into Y" by matching one
-  provider's `produces` to another's `consumes`.
+
+### 2.1 Ports span all planes (delta F)
+
+A **port** is a typed connection point used by `produces`, `consumes`, and every capability's
+`inputs`/`outputs`. Its `plane` selects the type vocabulary:
+
+| Port plane | Typed by | Example |
+|---|---|---|
+| `knowledge` | KGP `dialect` + optional `worlds`, plus a `shape` naming the payload | a mood descriptor; a GroundingPack |
+| `media` | KMI `media_types` + optional `world_pattern` (delta J) | `audio/wav` from world `alderforest` |
+| `entity` | KINP entity `types` | a `mood` / `scene` / `plugin` entity ref |
+
+Because ports are plane-typed, a capability may **consume knowledge and produce media** — the
+"compose a score from a mood" leg the pressure test exposed (F). Path-finding (§3) therefore
+matches ports **across planes**, not media-to-media only. `world_pattern` on a media port lets
+the registry answer "media *from world X*" (J); without it, world-scoped media discovery is
+impossible. `cost` on a capability lets path search prefer cheaper routes and gate spend (K).
 
 ---
 
@@ -76,11 +93,14 @@ source of truth — a provider's manifest is authoritative; the registry just ma
 
 - **Population:** projects register their manifest (push) or the registry crawls known A2A
   agent-cards / MCP servers (pull).
-- **Query:** `find(produces|consumes|capability|plane|world)` → matching manifests, ranked.
-- **Composition:** because `produces`/`consumes` are typed, the registry can compute a *path*
-  from an input type to a desired output type across multiple providers — the concrete,
-  bounded form of the "any-to-any" routing question, resolved by matching contracts rather
-  than a central transform-gateway.
+- **Query:** `find(port | plane | world | capability)` → matching manifests, ranked. Media
+  ports match by `media_type` **and** `world_pattern` (delta J).
+- **Composition:** because ports are plane-typed (§2.1), the registry computes a *path* from a
+  start port to a goal port **across planes and providers** — e.g. `text → narration:audio`,
+  `mood(knowledge) → score:audio`, `assets → edl → CMX3600` — the bounded, contract-matched
+  form of any-to-any (delta F), resolved by matching contracts rather than a central
+  transform-gateway. Path search **prefers zero-`cost` routes** and returns the path's
+  projected cost so the caller can gate spend before invoking (delta K).
 
 ---
 
@@ -92,20 +112,26 @@ source of truth — a provider's manifest is authoritative; the registry just ma
 | **describe** | MCP `list_tools` / A2A agent-card | fetch a provider's full manifest + schemas |
 | **invoke** | MCP tool call / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference |
 | **subscribe** | A2A streaming / MCP notifications | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur |
+| **fetch** | CAS GET by `asset` id | retrieve asset bytes by their KINP id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant (§5). |
 
 `subscribe` is the control-plane half of KGP §6 subscriptions: KGP defines the delta payload,
 KCB defines how a consumer registers and how the stream is delivered. Ordering-independence
 (KGP §6) means the bus needs no exactly-once guarantee — content-addressed claim ids make
-redelivery idempotent.
+redelivery idempotent. Because a stream may deliver a **reference** (an EDL, a claim) before the
+referenced asset's bytes have propagated, consumers MUST tolerate dangling asset references and
+`fetch` them lazily on demand; producers MUST NOT assume bytes are pre-propagated (delta L).
 
 ---
 
 ## 5. Trust & authorization
 
-- **Capability grants.** Invocation requires a capability token naming the granted verbs
-  (`invoke:compose`, `subscribe:world/consensus-reality`). Grants are issued by the hosting
-  org's governance (Cuneiform workforce governance) and are **per-capability and per-world**,
-  so a consumer can be trusted for one world/plane and not another.
+- **Capability grants.** Invocation requires a capability token naming the granted verb + scope
+  — `invoke:compose`, `subscribe:world/consensus-reality`, `fetch:asset` (delta G). Grants are
+  issued by the hosting org's governance (Cuneiform workforce governance) and are
+  **per-capability, per-world, and carry a spend ceiling** (`budget_units`, delta K), so a
+  cross-project chain (Argos → Formant → paid model) cannot exceed the caller's authorized
+  spend. Path-finding (§3) prefers zero-cost routes and surfaces the projected cost before an
+  `invoke`.
 - **Signing.** Manifests and KGP packs share one signing shape (`{key_id, alg}`); inter-project
   packs and invocations SHOULD be signed so provenance (KINP §7 `prov.agent`) is
   cryptographically attributable, not merely asserted.
@@ -138,18 +164,21 @@ live in Cuneiform infra; KCB fixes only the *shape* of grants and signing so the
    federation as a future option.)
 2. **Capability versioning & deprecation** — how a provider evolves a capability's schema
    without breaking subscribers (semver on capability names? content-addressed schemas?).
-3. **Backpressure & cost** — subscriptions to high-volume worlds; ties to Argos's cost gates
-   and Cuneiform's costadvisor.
+3. **Subscription backpressure** — flow-control for high-volume-world subscriptions (per-invoke
+   *cost* is now handled by capability `cost` + grant spend ceilings, §2.1/§5); firehose
+   flow-control remains an infra concern (Cuneiform costadvisor).
 
 ## Pressure test
 
 Exercised by [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md).
-**Blocking deltas before ratification:** **F** (transform typing + registry path-matching must
-span all planes, §2/§3 — else any-to-any can't route knowledge-touching transforms) and **G**
-(add a `fetch(asset_id)` verb + `fetch:asset` grant, §4/§5 — cross-project CAS read). Should-fix:
-**J** (world on media produce/consume typing, §2/§3), **K** (spend ceiling on grants, §5/§7),
-**L** (tolerate dangling asset refs, §4). Stays **candidate** until F & G land.
+All blocking deltas were folded in 0.2.0: **F** (ports span all planes, §2.1/§3), **G**
+(`fetch` verb §4 + `fetch:asset` grant §5), **J** (`world_pattern` on media ports, §2.1/§3),
+**K** (capability `cost` + grant spend ceiling + cost-aware path search, §2.1/§3/§5), **L**
+(dangling-reference tolerance, §4). Ratified.
 
 ## Changelog
 
+- **0.2.0** (2026-07-17) — **Ratified.** Folded pressure-test deltas: F (cross-plane ports),
+  G (`fetch` verb + `fetch:asset` grant), J (`world_pattern` on media ports), K (spend ceilings
+  and cost-aware path search), L (dangling-reference tolerance).
 - **0.1.0** (2026-07-17) — Initial candidate draft.
