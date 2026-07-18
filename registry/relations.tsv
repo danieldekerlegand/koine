@@ -1,0 +1,11 @@
+relation	arity	arg_roles	symmetric	tier	domain	inverse	description
+same_as	2	a|b	true	grounding-only	core		Identical referents; licenses fact transfer across the two ids (KINP §4.3)
+based_on	2	derived|source	false	grounding-only	core		Lineage only; does NOT license fact transfer (the fiction→real firewall, KINP §4.3)
+exact_match	2	a|b	true	grounding-only	core		Identity anchor to an external authority id (e.g. →wikidata:Q517)
+part_of	2	part|whole	false	horn-safe	core	has_part	Mereological containment
+instance_of	2	instance|class	false	horn-safe	core	has_instance	Type membership
+co_occurs	2	a|b	true	grounding-only	core		Untyped co-occurrence of two entities
+derived_from	2	derived|source	false	grounding-only	core		General derivation lineage (also used asset-level in media-interchange)
+retracts	2	retraction|target	false	grounding-only	core		Lifecycle: withdraws a prior claim (KINP §4.2; additive, never deletes)
+supersedes	2	newer|older	false	grounding-only	core		Lifecycle: replaces a prior claim with a newer one (KINP §4.2)
+has_attribute	3	entity|key|value	false	grounding-only	core		Reified attribute so scalars carry provenance (KGP §2)

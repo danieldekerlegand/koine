@@ -30,8 +30,8 @@ Three planes carry everything that crosses the ecosystem:
 
 | Plane | Carries | Owner / transport | Contract |
 |---|---|---|---|
-| **Control** | agent orgs, infra, tools, capabilities | Cuneiform + **MCP / A2A** | `specs/capability-bus.md` *(planned)* |
-| **Data — knowledge** | facts / predicates / graph | Pinakes (canonical store) | [`specs/grounding-pack.md`](specs/grounding-pack.md) ✅ *(candidate)* |
+| **Control** | agent orgs, infra, tools, capabilities | Cuneiform + **MCP / A2A** | [`specs/capability-bus.md`](specs/capability-bus.md) ✅ *(candidate)* |
+| **Data — knowledge** | facts / predicates / graph | Pinakes (canonical store) | [`specs/grounding-pack.md`](specs/grounding-pack.md) ✅ *(ratified)* |
 | **Data — media** | assets, EDLs, metadata | Argos-originated interchange | `specs/media-interchange.md` *(planned)* |
 
 Underpinning **all three** is the one thing that makes "intersection" — joining data
@@ -51,21 +51,26 @@ transform-gateway (the ESB / distributed-monolith trap).
 
 ## Repository layout
 
-```
+```text
 koine/
   README.md                        this file — the fabric thesis + index
-  ECOSYSTEM.md                     (planned) full topology, replacing the partial
-                                   topology docs in Pinakes and Argos
+  ECOSYSTEM.md                     ✅ full topology; supersedes the partial docs in
+                                   Pinakes / Argos / Insimul
   specs/
-    identity.md                    ✅ Koine Identity & Namespace Protocol (KINP)
-    grounding-pack.md              (planned) knowledge interchange envelope
+    identity.md                    ✅ Koine Identity & Namespace Protocol (KINP) — ratified
+    grounding-pack.md              ✅ Koine Grounding-Pack Protocol (KGP) — ratified
+    capability-bus.md              ✅ Koine Capability-Bus Protocol (KCB) — candidate
     media-interchange.md           (planned) asset + EDL interchange
-    capability-bus.md              (planned) MCP/A2A capability registry + manifest
+  registry/
+    relations.tsv                  ✅ core relation vocabulary
+    relations/cinematography.tsv   ✅ example domain extension
   scenarios/
     e2e-worlds-to-fabric.md        ✅ end-to-end pressure test of the identity model
 ```
 
 ## Status
 
-Early. `specs/identity.md` is the first ratified-candidate protocol; everything else is
-planned. Specs are versioned independently (see each doc's header).
+Three of four planes specified: **identity (KINP)** and **knowledge (KGP)** ratified; the
+**control plane (KCB)** is a candidate; the **media plane** is the remaining gap. See
+[`ECOSYSTEM.md`](ECOSYSTEM.md) for the full topology. Specs are versioned independently (see
+each doc's header).

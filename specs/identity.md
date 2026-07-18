@@ -1,6 +1,6 @@
 # Koine Identity & Namespace Protocol (KINP)
 
-**Spec version:** 0.2.0
+**Spec version:** 0.2.1
 **Status:** Ratified
 **Last updated:** 2026-07-17
 **Applies to:** Insimul, Pinakes, Cuneiform, Argos, Formant
@@ -318,6 +318,7 @@ is the seed; KINP promotes it to the ecosystem envelope and splits the two times
   "object":    "insimul:world:alderforest:ent:dragon-3",
   "confidence": 0.62,
   "embedding":  [/* optional vector */],
+  "embedding_model": "…",                          // REQUIRED when embedding present; re-embed on mismatch
   "valid_time": { "start": "…", "end": null },   // when true IN ITS WORLD
   "prov": {                                        // W3C PROV shape
     "agent":    "cuneiform:agent:continuity-critic",
@@ -331,6 +332,10 @@ is the seed; KINP promotes it to the ecosystem envelope and splits the two times
 - **Valid time** — when the claim is true within its world.
 - **Transaction time** (`prov.asserted`) — when it entered the fabric.
   Together these answer both "what was true in 1799?" and "what did we believe last month?"
+- **Embedding** is model-specific: `embedding_model` records which model produced it. A
+  consumer whose model differs MUST re-embed rather than compare vectors across models. Both
+  `embedding` and `embedding_model` are excluded from the claim hash (KGP §3.1), so they never
+  affect claim identity (resolves KGP §9 decision 2).
 - Equivalence links (`same_as`, `based_on`, …) are ordinary assertions using these
   reserved relations, so they inherit confidence/provenance/time.
 
@@ -457,6 +462,8 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
 
 ## Changelog
 
+- **0.2.1** (2026-07-17) — Added `embedding_model` to the assertion envelope (§7.1),
+  resolving KGP §9 embedding-portability decision. Excluded from claim identity; non-breaking.
 - **0.2.0** (2026-07-17) — **Ratified.** Folded pressure-test deltas A–E: asset
   `source_world` (A, §7.2); claim normalization promoted to normative (B, §6); resolver
   `same_as`-vs-`based_on` rule (C, §4.5); reserved `retracts`/`supersedes` lifecycle relations

@@ -1,7 +1,7 @@
 # Koine Grounding-Pack Protocol (KGP)
 
-**Spec version:** 0.1.0 (candidate)
-**Status:** Draft for review — not yet ratified
+**Spec version:** 0.2.0
+**Status:** Ratified
 **Last updated:** 2026-07-17
 **Applies to:** Pinakes (producer/authority), Argos & Insimul (producer + consumer),
 Cuneiform & Formant (consumer)
@@ -234,17 +234,28 @@ hybrid review queue (KINP §11, decision 2) and for Pinakes's convergence-QA gat
 
 ---
 
-## 9. Open questions
+## 9. Resolved decisions
 
-1. **Relation-registry governance** — one global registry vs. per-domain namespaced
-   registries (linguistics, cinematography, DSP…) with a shared core. Leaning: shared core +
-   namespaced extensions.
-2. **Embedding portability** — embeddings are model-specific; a pack should record the
-   embedding model id, and consumers must re-embed if theirs differs. Needs a field in the
-   assertion envelope (feeds back to KINP §7.1).
-3. **Signing/trust** — `manifest.signing` shape and whether inter-project packs must be
-   signed (ties to capability-bus auth).
+Ratified 2026-07-17.
+
+1. **Relation-registry governance → shared core + namespaced domain extensions.**
+   `registry/relations.tsv` holds the unqualified **core** vocabulary every project loads;
+   `registry/relations/<domain>.tsv` holds **domain-qualified** extensions (`cine:shows`,
+   `ling:cognate_of`, `dsp:modulates`). A relation's signature is **immutable once published** —
+   changing it would silently change every dependent `claim` id (§3), so a change means a new
+   name. See [`../registry/`](../registry/).
+2. **Embedding portability → record the model; re-embed on mismatch.** The assertion envelope
+   carries `embedding_model` (added in KINP 0.2.1, §7.1). A consumer whose model differs MUST
+   re-embed rather than compare vectors across models. Both `embedding` and `embedding_model`
+   are excluded from the `claim` hash (§3.1), so this never affects claim identity.
+3. **Signing/trust → shared signing shape; inter-project packs SHOULD be signed.**
+   `manifest.signing = {key_id, alg}` is shared with the capability-bus manifest
+   ([`capability-bus.md`](capability-bus.md) §5), making `prov.agent` cryptographically
+   attributable. Token issuance/rotation lives in Cuneiform infra, not here.
 
 ## Changelog
 
+- **0.2.0** (2026-07-17) — **Ratified.** Closed §9 (relation-registry governance → shared
+  core + namespaced extensions; embedding portability → `embedding_model`; signing shape) and
+  seeded `registry/relations.tsv`.
 - **0.1.0** (2026-07-17) — Initial candidate draft. Satisfies KINP delta B (normative §3).

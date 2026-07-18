@@ -1,0 +1,6 @@
+relation	arity	arg_roles	symmetric	tier	domain	inverse	description
+cine:shows	2	shot|subject	false	grounding-only	cine		A shot depicts a subject entity
+cine:scene_of	2	shot|scene	false	grounding-only	cine	has_shot	A shot belongs to a scene
+cine:says	2	speaker|utterance	false	grounding-only	cine		A speaker delivers an utterance (dialogue/narration)
+cine:reads	2	frame|text	false	grounding-only	cine		Text (OCR/on-screen) read from a frame
+cine:commands	2	commander|force	false	grounding-only	cine		Narrative: an entity commands a force (pressure-test example)

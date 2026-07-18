@@ -20,9 +20,13 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
   (KINP) and referenced — never redefined — by other specs.
 
 ## Current state
-- `specs/identity.md` — KINP 0.2.0, **ratified**. Deltas A–E folded; three §11 forks decided
-  (Pinakes-as-authority, hybrid merge policy, `@world(W)` argument).
-- `specs/grounding-pack.md` — KGP 0.1.0, **candidate**. Knowledge data plane; §3 Normalization
-  is normative and satisfies KINP delta B. Open questions in §9.
-- Planned: `specs/media-interchange.md`, `specs/capability-bus.md`, `ECOSYSTEM.md`, and a
-  `registry/relations.tsv` shared relation vocabulary (referenced by KGP §3.2).
+- `ECOSYSTEM.md` — umbrella topology (supersedes the partial docs in Pinakes/Argos/Insimul).
+- `specs/identity.md` — KINP 0.2.1, **ratified**. Deltas A–E folded; three forks decided
+  (Pinakes-as-authority, hybrid merge policy, `@world(W)` argument); `embedding_model` added.
+- `specs/grounding-pack.md` — KGP 0.2.0, **ratified**. Knowledge data plane; normative §3
+  normalization (KINP delta B); §9 decisions closed.
+- `specs/capability-bus.md` — KCB 0.1.0, **candidate**. Control plane over MCP/A2A.
+- `registry/` — shared vocabularies; `relations.tsv` (core) + `relations/cinematography.tsv`
+  (example extension). A relation's signature is immutable once published (changing it changes
+  every dependent claim id).
+- Planned: `specs/media-interchange.md` (the one remaining plane).
