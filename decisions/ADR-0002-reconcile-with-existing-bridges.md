@@ -42,12 +42,54 @@ intent under other naming) · **NET-NEW** (Koine adds this; nobody built it).
 | **resolve / reconcile authority** | Wikidata OpenRefine **BUILT** | consumes snapshot | csid mapping | KINP §8 | **≈ SATISFIED (pinakes)**; only the KCB-manifest wrapper is net-new |
 | **same_as / based_on firewall** | approx via trust-tier + reconcile-collapse | single `refers_to` + `derived_from` | import "conflict, never overwrite" | KINP §4.3 | **NET-NEW everywhere** (nobody has the first-class lineage-vs-identity firewall) |
 | **world/context model + inheritance** | absent (single real-world corpus) | absent | canon/save storage firewall + `worldId` arg | KINP §5 | **NET-NEW**; Insimul must reconcile with its save-file firewall |
-| **GroundingPack export/import** | PLANNED (US-002) | consumer + reverse export **BUILT** | consumer + producer **BUILT** | KGP §2 | **mostly BUILT**; align envelopes to KGP (add world-scoping + normalization) |
-| **shared relation/predicate registry + dialect flags** | internal `lexicon-mapping` only | Appendix-A v0 doc | Appendix-A v0 doc | KGP §5 + `registry/` | **NET-NEW shared artifact — the biggest dedup win** |
+| **GroundingPack export/import** | **BUILT** ¹ (merged `17f0713`) | consumer + reverse export **BUILT** | consumer + producer **BUILT** | KGP §2 | **BUILT everywhere**; remaining = align envelopes to KGP (world-scoping + normalization) |
+| **shared relation/predicate registry + dialect flags** | **BUILT** ¹ (`shared/predicate-mapping.json`, merged `17f0713`) | Appendix-A v0 doc | Appendix-A v0 doc | KGP §5 + `registry/` | **mostly BUILT** — carries `portabilityClasses`, `idSpaces`, multi-project shape; remaining = insimul vocab, lift into koine, agora validator |
+
+¹ Corrected 2026-07-18 — see [Amendment](#amendment-2026-07-18--the-argos-bridge-branch-was-built-not-planned).
 | **dialect tiers** grounding-only/horn-safe/full-prolog | doc | doc | doc — **names already match KGP** (KGP adopted them from here) | KGP §5 | aligned; needs to become **code in the registry** |
 | **Neo4j / Datalog / ProbLog / GraphRAG / ML** | all **BUILT** | grounding-only (no engine) | tau/Trealla + conformance corpus **BUILT** | KGP projections | **SATISFIED — do not touch** |
 | **trust tiers** (provenance) curated/synthetic/personal | **BUILT** | personal tier | synthetic tier | — | net-new-to-Koine, but Koine doesn't need it (see collision below) |
 | **SPDX license-class policy** | in plans | **BUILT** (`LicensePolicy`) | **BUILT** (`classifyLicense`) | — | **reverse flow: KGP should ADOPT this** |
+
+## Amendment (2026-07-18) — the argos-bridge branch was BUILT, not planned
+
+**What we got wrong.** The original surveys read each tasklist's `passes` flags and each repo's
+`main`; they never checked **unmerged branches**. pinakes had `ralph/argos-bridge` (now
+`chief/21-argos-bridge`) carrying **5 commits implementing US-001..US-005** — so the two cells
+above marked PLANNED/ABSENT were actually *built but unmerged*.
+
+**Resolved:** the branch was reviewed and **merged to pinakes `main` as `17f0713`** (84 files,
++5,789); the tasklist is retired to `tasks/chief/completed/21-argos-bridge.json` with
+`mergedToMain=17f0713`. Now on pinakes main:
+
+- **`shared/predicate-mapping.{json,ts}`** — a machine-validated cross-project registry with
+  `registryVersion`, **`portabilityClasses`**, **`idSpaces`**, `temporalFieldMap`, and a
+  multi-`projects` shape already anticipating Insimul. This is substantially the artifact
+  `shared-relation-registry` was scoped to build.
+- **`scripts/export-entity-grounding.ts`** — the entity-grounding snapshot exporter, emitting
+  `{contractVersion, source, licenseClasses, domains, entities[{csid, entityType, aliases,
+  reconciliation, prov…}]}` — i.e. the LinguaScrape/csid envelope, **not** the KGP envelope.
+- Argos acquisition adapter + `asset` node type + `personal` trust tier, file-web reasoning
+  (Datalog/Neo4j/GraphRAG), edit-ops SLM datasets.
+
+**Consequent re-scoping** (applied to the staged tasklists):
+
+- **`20-shared-relation-registry`** (agora): no longer "build from three Appendix-A drafts" →
+  **lift the merged registry into `koine/registry` as the ecosystem contract, add the Insimul
+  vocabulary, reconcile its portability classes with KGP §5, and build the agora
+  validator/loader.**
+- **`10-pinakes-koine-align` US-PKA3**: no longer "build a grounding-pack exporter" →
+  **retarget the merged exporter to emit the KGP envelope** (content-addressed `pack_id`,
+  world-scoping, claim-normalization, `licenseClasses` → KGP §7.1 `license_policy`).
+
+**New reverse-flow finding.** The merged registry's `portabilityClasses` include a **fourth
+class, `local-only`**, which KGP §5's dialect tiers (grounding-only / horn-safe / full-prolog)
+do not have — it marks relations that must never cross a project boundary. That is a real gap
+in KGP and a candidate amendment, alongside the SPDX license policy already adopted in KGP
+0.3.0. *(Not yet applied to KGP — open.)*
+
+**Process lesson.** "Built vs planned" must be judged against **unmerged branches**, not just
+`main` + `passes` flags. Any future reconciliation survey should enumerate branches first.
 
 ## Terminology collisions to fix
 
