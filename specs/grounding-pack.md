@@ -1,6 +1,6 @@
 # Koine Grounding-Pack Protocol (KGP)
 
-**Spec version:** 0.3.0
+**Spec version:** 0.4.0
 **Status:** Ratified
 **Last updated:** 2026-07-18
 **Applies to:** Pinakes (producer/authority), Argos & Insimul (producer + consumer),
@@ -33,7 +33,7 @@ KGP defines:
   Neo4j / Datalog / ProbLog (§4),
 - **dialect & portability tiers** governing what a consumer may safely ingest (§5),
 - **directionality**: snapshot vs. delta/subscription (§6),
-- **confidence, provenance & license filtering** (§7),
+- **confidence, provenance, license & egress filtering** (§7),
 - the per-project **producer/consumer mapping** (§8).
 
 KGP does **not** define media/asset transfer (that is `media-interchange.md`), reasoning
@@ -191,6 +191,15 @@ Rule: **a producer must ship the lowest tier that carries the needed content; a 
 reject a pack whose tier exceeds what it can safely evaluate.** Pinakes → Argos defaults to
 `grounding-only`; Insimul internal transfer may use `full-prolog`.
 
+**`local-only` is NOT a dialect tier.** pinakes's merged registry
+(`shared/predicate-mapping.json`) groups a fourth class, `local-only`, under its
+`portabilityClasses` key — but its meaning is *"never leaves the personal tier; hard-gated out
+of open-data releases, packaged corpora, and any non-personal export or training set."* That is
+an **egress/privacy** constraint, not a statement about what logic a consumer can evaluate.
+Keeping it in the dialect enum would conflate two orthogonal axes. KGP models it separately as
+an **egress class** — see §7.2. A relation therefore carries *both* a dialect tier (§5) and an
+egress class (§7.2).
+
 **Dialect tiers ≠ trust tiers.** These portability tiers were adopted from Insimul's Appendix-A
 registry (which is why the names predate this spec). They are **orthogonal** to the *provenance
 trust tiers* several projects already ship — Pinakes `curated`/`auto-admitted`/`quarantine`, the
@@ -245,6 +254,35 @@ carried on records (not in the claim hash), so it never affects claim identity.
 
 ---
 
+### 7.2 Egress control — `local-only` (NORMATIVE)
+
+Some knowledge must **never cross a project boundary at all**, independent of licence,
+confidence, or dialect. KGP models this as an **egress class** carried on relations (via the
+shared registry) and on records:
+
+| Egress class | Meaning |
+|---|---|
+| `exportable` (default) | May cross a project boundary, subject to the licence policy (§7.1) and dialect tier (§5). |
+| **`local-only`** | **Never leaves its originating tier.** Hard-gated out of cross-project packs, open-data releases, packaged corpora, and any export or **training set**. |
+
+Rules:
+
+- A **producer MUST NOT** emit a `local-only` relation or record into any pack that crosses a
+  project boundary — the filter is applied at pack construction, not left to the consumer.
+- A **consumer MUST reject** a pack that contains `local-only` content (it indicates a producer
+  bug or a tampered pack), and report it rather than silently dropping.
+- Egress class is **orthogonal** to the dialect tier (§5), the licence class (§7.1), and the
+  provenance trust tier — a record carries all of them independently. `local-only` typically
+  co-occurs with the `personal` trust tier, but the trust tier is descriptive while the egress
+  class is *enforcing*.
+- Because it is enforced at pack construction, egress class does **not** enter the claim hash
+  (§3.1); it never affects claim identity.
+
+Adopted from pinakes's merged `shared/predicate-mapping.json`, which introduced this as the
+privacy invariant of the Argos bridge (ADR-0002 reverse flow). Note that registry groups it
+under `portabilityClasses` alongside the dialect tiers; KGP deliberately separates the two axes
+(§5) — see `20-shared-relation-registry` US-SRR2 for the reconciliation.
+
 ## 8. Producer / consumer mapping
 
 | Project | Role | Emits / accepts |
@@ -278,6 +316,11 @@ Ratified 2026-07-17.
 
 ## Changelog
 
+- **0.4.0** (2026-07-18) — Added the **egress class** `local-only` (§7.2, normative): knowledge
+  that must never cross a project boundary — producers filter at pack construction, consumers
+  reject. Adopted from pinakes's merged predicate-mapping registry (ADR-0002 reverse flow), but
+  modelled as an axis **separate from** the dialect tiers (§5) rather than a fourth tier, since
+  it constrains *egress*, not *evaluable logic*. Non-breaking, additive.
 - **0.3.0** (2026-07-18) — Added the SPDX **license-class policy** as a first-class filter
   (§2 records + manifest `license_policy`, §7.1), lifted from the existing Pinakes/Insimul
   bridges per ADR-0002 (reverse flow). Clarified that dialect (portability) tiers are distinct

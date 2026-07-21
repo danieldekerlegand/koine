@@ -82,11 +82,16 @@ above marked PLANNED/ABSENT were actually *built but unmerged*.
   **retarget the merged exporter to emit the KGP envelope** (content-addressed `pack_id`,
   world-scoping, claim-normalization, `licenseClasses` → KGP §7.1 `license_policy`).
 
-**New reverse-flow finding.** The merged registry's `portabilityClasses` include a **fourth
-class, `local-only`**, which KGP §5's dialect tiers (grounding-only / horn-safe / full-prolog)
-do not have — it marks relations that must never cross a project boundary. That is a real gap
-in KGP and a candidate amendment, alongside the SPDX license policy already adopted in KGP
-0.3.0. *(Not yet applied to KGP — open.)*
+**New reverse-flow finding — RESOLVED in KGP 0.4.0.** The merged registry's `portabilityClasses`
+carry a fourth class, `local-only`: *"never leaves the personal tier; hard-gated out of
+open-data releases, packaged corpora, and any non-personal export or training set."* Reading its
+actual definition changed the answer: it is **not** a dialect tier. The other three describe
+*what logic a consumer may evaluate*; `local-only` constrains **egress**. Folding it into the
+dialect enum would have conflated two orthogonal axes — precisely the collision this ADR warns
+about. KGP 0.4.0 therefore adopts it as a separate **egress class** (§7.2, normative: producers
+filter at pack construction, consumers reject), alongside the SPDX licence policy adopted in
+0.3.0. The registry's own grouping of both axes under one `portabilityClasses` key is
+reconciled by `20-shared-relation-registry` US-SRR2.
 
 **Process lesson.** "Built vs planned" must be judged against **unmerged branches**, not just
 `main` + `passes` flags. Any future reconciliation survey should enumerate branches first.
