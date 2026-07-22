@@ -16,7 +16,10 @@ order, arity, symmetry, and dialect tier — the facts that make claim normaliza
 - `relations.tsv` — the **core** vocabulary. Unqualified relation names. Every project loads it.
 - `relations/<domain>.tsv` — **domain extensions**. Relation names are qualified with a domain
   prefix (`cine:shows`, `ling:cognate_of`, `dsp:modulates`). A project loads only the domains
-  it speaks. Example: [`relations/cinematography.tsv`](relations/cinematography.tsv).
+  it speaks: [`relations/cinematography.tsv`](relations/cinematography.tsv) (`cine:`),
+  [`relations/media.tsv`](relations/media.tsv) (`media:`),
+  [`relations/social.tsv`](relations/social.tsv) (`soc:` — person-level kinship, employment and
+  residence, added for the Insimul bridge).
 
 New relations are added by PR. A relation's signature is **immutable once published** —
 changing arity/arg-order/symmetry would silently change every dependent `claim` id (KGP §3),
@@ -48,13 +51,28 @@ How each bridged project's own predicates cross into the canonical node/edge voc
 (Pinakes hosts the canonical schema). Lifted **verbatim** out of pinakes
 `shared/predicate-mapping.json` (merged as `17f0713`) — it was already a machine-validated
 cross-project registry carrying portability classes, `idSpaces`, `temporalFieldMap` and a
-multi-`projects` shape; ADR-0002's amendment ruled it be *lifted*, not rebuilt. It covers
-`argos` today; the `insimul` slot is filled by `20-shared-relation-registry` US-SRR3.
+multi-`projects` shape; ADR-0002's amendment ruled it be *lifted*, not rebuilt.
+
+It covers both bridged projects. `argos` is exactly as merged; `insimul` was added additively at
+registryVersion **0.4.0** (`20-shared-relation-registry` US-SRR3) from INSIMUL_SYNC_PLAN.md
+Appendix A plus the shipped `predicate-schema.ts` catalog — each entry naming the `sourceRow` it
+came from, since Appendix A rows that bundle a node with its edges split into one entry per
+`canonicalKind`. pinakes is deliberately *not* a `projects` entry: it is the canonical side of
+every mapping, so its coverage is the relation vocabulary and the canonical node/edge schema
+themselves. Where the draft and the shipped code disagreed (`settlement` vs the canonical
+`place`, `spouse_of/2` vs the emitted `married_to/2`), the entry follows the code and the
+divergence is recorded in the project's own `collisions` block rather than quietly reconciled.
+
+Insimul's additions closed four vocabulary gaps by **adding relations to the TSVs** — the `soc:`
+domain (`parent_of`, `spouse_of`, `employed_by`, `resides_in`) and three core relations
+(`located_in`, `descended_from`, `caused_by`). Person-level social facts are a domain because
+only some projects speak them; descent and causality are core because they already span
+languages, cultures and events.
 
 **One vocabulary.** The mapping file does not coin relation names. A mapping whose
 `canonicalKind` is `edge` or `derived-rule` crosses as a KGP claim and names the registry
 relation(s) it normalizes to in `koineRelations`; every other kind (`node`, `node-property`,
-`provenance`, `temporal`, `rule`) is not a relation and leaves `koineRelations` empty. A
+`provenance`, `temporal`, `rule`, `none`) is not a relation and leaves `koineRelations` empty. A
 bridged predicate with no registry relation is closed by **adding the relation to the TSV**,
 never by naming it only in the mapping — that is what keeps this from becoming a second source
 of truth. (The lift added exactly one: `media:mentions`, the reference-not-depiction
@@ -84,6 +102,12 @@ the consumer; a consumer MUST reject-and-report a pack that still contains it, r
 silently dropping the records — silence would hide the producer bug or tamper that put them
 there. agora ships that enforcement (`@agora/schemas`); egress never enters the claim hash, so
 neither direction can change what a claim *is*.
+
+An entry may exist **only** to be filtered: `canonicalKind: "none"` with `direction: "none"` means
+the predicate crosses in neither direction and maps to nothing canonical, and is catalogued so
+§7.2 has an explicit rule for it — Insimul's `player_cefr_level/2` and chat turns are a real
+person's data, not world facts, so they are `local-only` even though everything else a generated
+world emits is exportable.
 
 ### Canonical home (decided here)
 

@@ -33,7 +33,9 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
   map), analysis→KGP bridge, transforms typed by KCB ports; `source_world` conditional-on-ingest
   and per-asset.
 - `registry/` — shared vocabularies; `relations.tsv` (core, **binary** relations only) +
-  `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:). A relation's
+  `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
+  `relations/social.tsv` (soc:), plus `predicate-mapping.json` (registryVersion 0.4.0) — the
+  bridge layer mapping argos's and insimul's own predicates onto that vocabulary. A relation's
   signature is immutable once published (changing it changes every dependent claim id).
 - **All four planes RATIFIED**, each validated by a pressure test (`scenarios/`). Contract layer
   complete. Deltas F–L from `scenarios/e2e-media-transform.md` folded into KCB 0.2.0 + KMI 0.2.0.

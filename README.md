@@ -69,6 +69,8 @@ koine/
     relations.tsv                  ✅ core relation vocabulary (binary relations)
     relations/cinematography.tsv   ✅ example domain extension (cine:)
     relations/media.tsv            ✅ media-lineage relations (media:)
+    relations/social.tsv           ✅ person-level social relations (soc:)
+    predicate-mapping.json         ✅ bridge mappings — argos + insimul ⇄ the canonical vocabulary
   scenarios/
     e2e-worlds-to-fabric.md        ✅ pressure test of the identity model (KINP)
     e2e-media-transform.md         ✅ pressure test of the control + media planes (KCB+KMI)

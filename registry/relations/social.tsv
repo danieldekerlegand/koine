@@ -1,0 +1,5 @@
+relation	arity	arg_roles	symmetric	tier	domain	inverse	description
+soc:parent_of	2	parent|child	false	horn-safe	soc	soc:child_of	Biological or adoptive parentage; the transitive ancestor chain is descended_from
+soc:spouse_of	2	a|b	true	horn-safe	soc		Marriage or partnership between two persons (symmetric — operands sorted before hashing)
+soc:employed_by	2	employee|employer	false	horn-safe	soc	soc:employs	A person is employed by a business or organisation
+soc:resides_in	2	resident|residence	false	horn-safe	soc	soc:houses	A person dwells at a residence (occupancy, not mere position — cf. located_in)
