@@ -1,7 +1,7 @@
 {
-  "registryVersion": "0.2.0",
+  "registryVersion": "0.3.0",
   "title": "Relation registry — bridge mappings (canonical vocabulary ⇄ bridged-project relations)",
-  "description": "The machine-validated bridge layer of the koine relation registry: how each bridged project's own predicates cross into the canonical node/edge vocabulary Pinakes hosts. Lifted from pinakes `shared/predicate-mapping.json` (merged as `17f0713`) into koine as the ecosystem contract — every merged entry preserved as-is, the lift purely additive — koine holds the vocabulary DATA, agora holds the tooling that validates and loads it (ADR-0001; ADR-0002 amendment). It does NOT coin relation names: the relation vocabulary is `relations.tsv` + `relations/<domain>.tsv` in this directory, and every mapping that crosses as a claim names the registry relation it normalizes to (`koineRelations`) — ONE vocabulary, no second source of truth. Encodes ARGOS_SYNC_PLAN.md Appendix A: the Argos relations, the `sha256:`/`cs:` id-space rules, the `local-only` class that keeps personal-tier facts from ever leaving the machine (an EGRESS class per KGP §7.2, not a dialect tier — reconciled by US-SRR2), and the `t_start`/`t_end` ⇄ `time_start`/`time_end` temporal-field map. Each relation entry names a canonical node/edge type (validated for totality against the producer's canonical schema) or a non-type mapping (derived rule / provenance columns / temporal fields); a `pending` flag marks declared-but-not-yet-added canonical schema additions, so the flag doubles as a live checklist. The `projects` block covers argos today and reserves the slot for insimul (added by US-SRR3).",
+  "description": "The machine-validated bridge layer of the koine relation registry: how each bridged project's own predicates cross into the canonical node/edge vocabulary Pinakes hosts. Lifted from pinakes `shared/predicate-mapping.json` (merged as `17f0713`) into koine as the ecosystem contract — every merged entry preserved as-is, the lift purely additive — koine holds the vocabulary DATA, agora holds the tooling that validates and loads it (ADR-0001; ADR-0002 amendment). It does NOT coin relation names: the relation vocabulary is `relations.tsv` + `relations/<domain>.tsv` in this directory, and every mapping that crosses as a claim names the registry relation it normalizes to (`koineRelations`) — ONE vocabulary, no second source of truth. Encodes ARGOS_SYNC_PLAN.md Appendix A: the Argos relations, the `sha256:`/`cs:` id-space rules, the `local-only` class that keeps personal-tier facts from ever leaving the machine (an EGRESS class per KGP §7.2, not a dialect tier — the two axes were split apart at registryVersion 0.3.0, see `axes`), and the `t_start`/`t_end` ⇄ `time_start`/`time_end` temporal-field map. Each relation entry names a canonical node/edge type (validated for totality against the producer's canonical schema) or a non-type mapping (derived rule / provenance columns / temporal fields); a `pending` flag marks declared-but-not-yet-added canonical schema additions, so the flag doubles as a live checklist. The `projects` block covers argos today and reserves the slot for insimul (added by US-SRR3).",
   "canonicalHome": {
     "repo": "koine",
     "path": "registry/predicate-mapping.json",
@@ -39,11 +39,55 @@
     "mappingEntries": "A mapping entry's `id` and `external` are likewise stable within a project: retarget by adding an entry and superseding, not by rewriting a published one.",
     "enforcedBy": "agora — the registry validator diffs signatures across `registryVersion`s (US-SRR4)"
   },
-  "portabilityClasses": {
-    "horn-safe": "Crosses the boundary into pinakes's constrained-Horn Datalog layer (+ arithmetic after Phase 1).",
-    "grounding-only": "Reference data consumed at ground time; no runtime predicate crosses.",
-    "full-prolog": "Full ISO Prolog only (cuts / negation / probabilistic likelihood) — does not cross to Datalog.",
-    "local-only": "Never leaves the personal tier. Hard-gated out of open-data releases, packaged corpora, and any non-personal export or training set (the privacy invariant this bridge introduces)."
+  "axes": {
+    "rule": "THREE orthogonal axes ride on knowledge, and none implies another: `dialect` (what logic a consumer may evaluate), `egress` (whether it may leave at all) and provenance `trust` (how much to believe the source). A relation entry carries `dialect` and `egress` independently; trust is not a registry field.",
+    "supersedes": "`portabilityClasses` (registryVersion ≤ 0.2.0) bundled the first two into one enum, which read `local-only` as a fourth dialect tier. KGP 0.4.0 ruled it an EGRESS class instead, so 0.3.0 splits the key: the three dialect tiers moved to `dialectTiers`, `local-only` to `egressClasses`, and each relation's `portability: [...]` array became a `dialect` + `egress` pair (`horn-safe`+`local-only` → `dialect: horn-safe`, `egress: local-only`; an entry that named no dialect keeps `dialect: null`).",
+    "collision": "ADR-0002 'Terminology collisions' — the projects use the word 'tier' for all three. Do not conflate them."
+  },
+  "dialectTiers": {
+    "axis": "dialect — what logic a consumer may safely EVALUATE",
+    "spec": "KGP §5",
+    "default": "grounding-only",
+    "nests": [
+      "grounding-only",
+      "horn-safe",
+      "full-prolog"
+    ],
+    "rule": "A producer ships the lowest tier that carries the needed content; a consumer rejects a pack whose tier exceeds what it can safely evaluate. The tiers nest in the order above, so a `grounding-only` relation is safe in a `horn-safe` pack.",
+    "classes": {
+      "grounding-only": "Reference data consumed at ground time; no runtime predicate crosses.",
+      "horn-safe": "Crosses the boundary into pinakes's constrained-Horn Datalog layer (+ arithmetic after Phase 1).",
+      "full-prolog": "Full ISO Prolog only (cuts / negation / probabilistic likelihood) — does not cross to Datalog."
+    }
+  },
+  "egressClasses": {
+    "axis": "egress — whether knowledge may LEAVE its originating tier at all",
+    "spec": "KGP §7.2",
+    "default": "exportable",
+    "rule": "Enforced in BOTH directions. A producer MUST NOT emit a `local-only` relation or record into a pack that crosses a project boundary — the filter runs at pack construction and is never left to the consumer. A consumer MUST reject a pack that carries one and report it (it means a producer bug or a tampered pack) rather than silently dropping the offending records.",
+    "hashing": "Because it is enforced at pack construction, egress class does not enter the claim hash (KGP §3.1) and never affects claim identity.",
+    "enforcedBy": "agora — `@agora/schemas` egress tooling (`20-shared-relation-registry` US-SRR2)",
+    "classes": {
+      "exportable": "May cross a project boundary, subject to the licence policy (KGP §7.1) and the dialect tier (§5).",
+      "local-only": "Never leaves the personal tier. Hard-gated out of open-data releases, packaged corpora, and any non-personal export or training set (the privacy invariant this bridge introduces)."
+    }
+  },
+  "trustTiers": {
+    "axis": "trust — how much to BELIEVE a source. Descriptive, never enforcing",
+    "spec": "KGP §7 / KINP §11 decision 2",
+    "carriedBy": "provenance records on the pack, NOT relation entries here — listed only to keep the third axis distinct",
+    "classes": {
+      "pinakes": [
+        "curated",
+        "auto-admitted",
+        "quarantine"
+      ],
+      "bridges": [
+        "synthetic",
+        "personal"
+      ]
+    },
+    "note": "`personal` typically co-occurs with egress `local-only`, but that is correlation: trust describes where a fact came from, egress decides whether it may move."
   },
   "idSpaces": [
     {
@@ -98,9 +142,8 @@
           "canonicalKind": "node-property",
           "canonicalType": "asset",
           "direction": "AR->LS",
-          "portability": [
-            "local-only"
-          ],
+          "dialect": null,
+          "egress": "local-only",
           "koineRelations": [],
           "pending": false,
           "notes": "container / duration / codec / width / height sub-facts → asset node properties, not edges."
@@ -111,10 +154,8 @@
           "canonicalKind": "edge",
           "canonicalType": "depicts",
           "direction": "AR->LS",
-          "portability": [
-            "horn-safe",
-            "local-only"
-          ],
+          "dialect": "horn-safe",
+          "egress": "local-only",
           "koineRelations": [
             "cine:shows"
           ],
@@ -127,9 +168,8 @@
           "canonicalKind": "node-property",
           "canonicalType": "asset",
           "direction": "AR->LS",
-          "portability": [
-            "local-only"
-          ],
+          "dialect": null,
+          "egress": "local-only",
           "koineRelations": [],
           "pending": false,
           "notes": "ASR segments → asset transcript property + temporal facts; t_start/t_end ⇄ time_start/time_end (see temporalFieldMap)."
@@ -140,9 +180,8 @@
           "canonicalKind": "node-property",
           "canonicalType": "asset",
           "direction": "AR->LS",
-          "portability": [
-            "local-only"
-          ],
+          "dialect": null,
+          "egress": "local-only",
           "koineRelations": [],
           "pending": false,
           "notes": "Article / text ingest → asset text property."
@@ -152,9 +191,8 @@
           "external": "scene(asset, t_start, t_end)",
           "canonicalKind": "temporal",
           "direction": "AR->LS",
-          "portability": [
-            "local-only"
-          ],
+          "dialect": null,
+          "egress": "local-only",
           "koineRelations": [],
           "pending": false,
           "notes": "Temporal segmentation facts; endpoints map through temporalFieldMap."
@@ -164,9 +202,8 @@
           "external": "co_occurs(a, b, t)",
           "canonicalKind": "derived-rule",
           "direction": "AR->LS",
-          "portability": [
-            "horn-safe"
-          ],
+          "dialect": "horn-safe",
+          "egress": "exportable",
           "koineRelations": [
             "co_occurs"
           ],
@@ -179,9 +216,8 @@
           "canonicalKind": "edge",
           "canonicalType": "derived-from",
           "direction": "AR->LS",
-          "portability": [
-            "horn-safe"
-          ],
+          "dialect": "horn-safe",
+          "egress": "exportable",
           "koineRelations": [
             "derived_from"
           ],
@@ -197,9 +233,8 @@
             "mentions"
           ],
           "direction": "both",
-          "portability": [
-            "horn-safe"
-          ],
+          "dialect": "horn-safe",
+          "egress": "exportable",
           "koineRelations": [
             "cine:shows",
             "media:mentions"
@@ -212,9 +247,8 @@
           "external": "cinematography facts/violations",
           "canonicalKind": "rule",
           "direction": "AR->LS",
-          "portability": [
-            "horn-safe"
-          ],
+          "dialect": "horn-safe",
+          "egress": "exportable",
           "koineRelations": [],
           "pending": false,
           "notes": "US-CS6 constraint facts → rules-registry entries + violation facts. Third instance of the provenanced-rules pattern (pinakes Phase 4b, Insimul validators)."
@@ -230,9 +264,8 @@
             "deity"
           ],
           "direction": "LS->AR",
-          "portability": [
-            "grounding-only"
-          ],
+          "dialect": "grounding-only",
+          "egress": "exportable",
           "koineRelations": [],
           "pending": false,
           "notes": "Canonical nodes (culture / place / language / deity / …) exported as the shared GroundingPack format (same schema as the Insimul bridge)."
@@ -242,7 +275,8 @@
           "external": "fact provenance {source, source_url, retrieved_at, confidence, license}",
           "canonicalKind": "provenance",
           "direction": "both",
-          "portability": [],
+          "dialect": null,
+          "egress": "exportable",
           "koineRelations": [],
           "pending": false,
           "notes": "The US-PL1 alignment — identical field names. `license` is an SPDX id; facts derived from licensed reference data keep the license through the bridge."
