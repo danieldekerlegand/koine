@@ -1,0 +1,253 @@
+{
+  "registryVersion": "0.2.0",
+  "title": "Relation registry — bridge mappings (canonical vocabulary ⇄ bridged-project relations)",
+  "description": "The machine-validated bridge layer of the koine relation registry: how each bridged project's own predicates cross into the canonical node/edge vocabulary Pinakes hosts. Lifted from pinakes `shared/predicate-mapping.json` (merged as `17f0713`) into koine as the ecosystem contract — every merged entry preserved as-is, the lift purely additive — koine holds the vocabulary DATA, agora holds the tooling that validates and loads it (ADR-0001; ADR-0002 amendment). It does NOT coin relation names: the relation vocabulary is `relations.tsv` + `relations/<domain>.tsv` in this directory, and every mapping that crosses as a claim names the registry relation it normalizes to (`koineRelations`) — ONE vocabulary, no second source of truth. Encodes ARGOS_SYNC_PLAN.md Appendix A: the Argos relations, the `sha256:`/`cs:` id-space rules, the `local-only` class that keeps personal-tier facts from ever leaving the machine (an EGRESS class per KGP §7.2, not a dialect tier — reconciled by US-SRR2), and the `t_start`/`t_end` ⇄ `time_start`/`time_end` temporal-field map. Each relation entry names a canonical node/edge type (validated for totality against the producer's canonical schema) or a non-type mapping (derived rule / provenance columns / temporal fields); a `pending` flag marks declared-but-not-yet-added canonical schema additions, so the flag doubles as a live checklist. The `projects` block covers argos today and reserves the slot for insimul (added by US-SRR3).",
+  "canonicalHome": {
+    "repo": "koine",
+    "path": "registry/predicate-mapping.json",
+    "decidedBy": [
+      "decisions/ADR-0001-control-plane-topology.md",
+      "decisions/ADR-0002-reconcile-with-existing-bridges.md"
+    ],
+    "tooling": "agora — schema, validator and loader library (`20-shared-relation-registry` US-SRR4); koine ships no code",
+    "rule": "This file is the only authoritative copy. A consumer loads it from here (over the wire, via the agora loader) or keeps a declared mirror; it never edits a local copy."
+  },
+  "mirrors": [
+    {
+      "project": "pinakes",
+      "path": "shared/predicate-mapping.json",
+      "mode": "generated-mirror",
+      "note": "The pre-lift original. It stays byte-derived from this file — regenerated, never hand-edited — so the registry cannot fork; `shared/predicate-mapping.ts` keeps typing it and the pinakes drift gate compares the mirror against this canonical copy. Wiring that regeneration is pinakes tasklist `10-pinakes-koine-align` (this tranche does not touch the projects, per ADR-0002 'Consequences')."
+    }
+  ],
+  "relationRegistry": {
+    "core": "relations.tsv",
+    "domains": [
+      "relations/cinematography.tsv",
+      "relations/media.tsv"
+    ],
+    "rule": "The relation vocabulary lives in those TSVs and nowhere else. A mapping whose `canonicalKind` is `edge` or `derived-rule` crosses as a KGP claim and MUST name at least one relation from them in `koineRelations`; every other kind (node / node-property / provenance / temporal / rule) is not a relation and MUST leave `koineRelations` empty. A bridged predicate with no registry relation is closed by adding the relation to the TSV by PR — never by naming it only here.",
+    "spec": "KGP §3.2 rule 1 — the registry fixes arity and canonical argument order, so claim ids are not producer-dependent."
+  },
+  "signaturePolicy": {
+    "signature": "relation · arity · ordered arg_roles · symmetric",
+    "rule": "A relation's signature is immutable once published. Changing arity, argument order or the symmetric flag silently changes every dependent claim id (KGP §3), so a change means a NEW relation name — never an edit to a published row.",
+    "appliesTo": [
+      "relations.tsv",
+      "relations/*.tsv"
+    ],
+    "mappingEntries": "A mapping entry's `id` and `external` are likewise stable within a project: retarget by adding an entry and superseding, not by rewriting a published one.",
+    "enforcedBy": "agora — the registry validator diffs signatures across `registryVersion`s (US-SRR4)"
+  },
+  "portabilityClasses": {
+    "horn-safe": "Crosses the boundary into pinakes's constrained-Horn Datalog layer (+ arithmetic after Phase 1).",
+    "grounding-only": "Reference data consumed at ground time; no runtime predicate crosses.",
+    "full-prolog": "Full ISO Prolog only (cuts / negation / probabilistic likelihood) — does not cross to Datalog.",
+    "local-only": "Never leaves the personal tier. Hard-gated out of open-data releases, packaged corpora, and any non-personal export or training set (the privacy invariant this bridge introduces)."
+  },
+  "idSpaces": [
+    {
+      "prefix": "sha256:",
+      "form": "sha256:<hex>",
+      "canonicalKind": "node",
+      "nodeType": "asset",
+      "description": "A content-addressed Argos asset (id = sha256 of bytes) → canonical `asset` node. Re-encode changes the hash; `derived-from` lineage partially compensates (registry future-work)."
+    },
+    {
+      "prefix": "cs:",
+      "form": "cs:<type>:<id>",
+      "canonicalKind": "entity",
+      "description": "A grounded canonical pinakes entity (csid). The Bridge-1 `refers_to` target: a fact may reference a real-world entity, not only an asset hash."
+    },
+    {
+      "prefix": "run:",
+      "form": "run:<id>",
+      "canonicalKind": "provenance",
+      "description": "An Argos run. Default: fact provenance only, not a graph node."
+    },
+    {
+      "prefix": "edl:",
+      "form": "edl:<run>:<v>",
+      "canonicalKind": "provenance",
+      "description": "A versioned Argos EDL take. Default: fact provenance only, not a graph node."
+    }
+  ],
+  "temporalFieldMap": {
+    "t_start": "time_start",
+    "t_end": "time_end"
+  },
+  "projects": {
+    "argos": {
+      "title": "Argos — agentic multimedia studio (the user's file web)",
+      "sourceDoc": "ARGOS_SYNC_PLAN.md Appendix A",
+      "direction": {
+        "AR->LS": "Argos predicate → pinakes canonical (Bridge 2: the file web as corpus).",
+        "LS->AR": "pinakes canonical → Argos (Bridge 1: entity grounding + world knowledge).",
+        "both": "Crosses in both directions."
+      },
+      "pendingSchemaAdditions": {
+        "targetVersion": "1.2.0",
+        "note": "Landed by argos-bridge US-003: the `asset` node type + `depicts`/`mentions` edge types now resolve in shared/canonical-schema.json (v1.2.0), so the relation `pending` flags below are flipped to false and these lists are empty. Nothing is pending.",
+        "nodeTypes": [],
+        "edgeTypes": []
+      },
+      "relations": [
+        {
+          "id": 1,
+          "external": "asset_technical",
+          "canonicalKind": "node-property",
+          "canonicalType": "asset",
+          "direction": "AR->LS",
+          "portability": [
+            "local-only"
+          ],
+          "koineRelations": [],
+          "pending": false,
+          "notes": "container / duration / codec / width / height sub-facts → asset node properties, not edges."
+        },
+        {
+          "id": 2,
+          "external": "shows(asset, X)",
+          "canonicalKind": "edge",
+          "canonicalType": "depicts",
+          "direction": "AR->LS",
+          "portability": [
+            "horn-safe",
+            "local-only"
+          ],
+          "koineRelations": [
+            "cine:shows"
+          ],
+          "pending": false,
+          "notes": "Vision caption / detected object. Object X may carry an entity_ref (csid) after Bridge-1 grounding."
+        },
+        {
+          "id": 3,
+          "external": "says(asset, text, t)",
+          "canonicalKind": "node-property",
+          "canonicalType": "asset",
+          "direction": "AR->LS",
+          "portability": [
+            "local-only"
+          ],
+          "koineRelations": [],
+          "pending": false,
+          "notes": "ASR segments → asset transcript property + temporal facts; t_start/t_end ⇄ time_start/time_end (see temporalFieldMap)."
+        },
+        {
+          "id": 4,
+          "external": "reads(asset, text)",
+          "canonicalKind": "node-property",
+          "canonicalType": "asset",
+          "direction": "AR->LS",
+          "portability": [
+            "local-only"
+          ],
+          "koineRelations": [],
+          "pending": false,
+          "notes": "Article / text ingest → asset text property."
+        },
+        {
+          "id": 5,
+          "external": "scene(asset, t_start, t_end)",
+          "canonicalKind": "temporal",
+          "direction": "AR->LS",
+          "portability": [
+            "local-only"
+          ],
+          "koineRelations": [],
+          "pending": false,
+          "notes": "Temporal segmentation facts; endpoints map through temporalFieldMap."
+        },
+        {
+          "id": 6,
+          "external": "co_occurs(a, b, t)",
+          "canonicalKind": "derived-rule",
+          "direction": "AR->LS",
+          "portability": [
+            "horn-safe"
+          ],
+          "koineRelations": [
+            "co_occurs"
+          ],
+          "pending": false,
+          "notes": "A derived rule, never a stored edge — same derived-not-stored discipline as pinakes's temporal edges."
+        },
+        {
+          "id": 7,
+          "external": "derived_from(output, source)",
+          "canonicalKind": "edge",
+          "canonicalType": "derived-from",
+          "direction": "AR->LS",
+          "portability": [
+            "horn-safe"
+          ],
+          "koineRelations": [
+            "derived_from"
+          ],
+          "pending": false,
+          "notes": "Existing canonical edge type. Lineage transitivity is one Horn rule (US-004)."
+        },
+        {
+          "id": 8,
+          "external": "refers_to(asset, entity)",
+          "canonicalKind": "edge",
+          "canonicalTypes": [
+            "depicts",
+            "mentions"
+          ],
+          "direction": "both",
+          "portability": [
+            "horn-safe"
+          ],
+          "koineRelations": [
+            "cine:shows",
+            "media:mentions"
+          ],
+          "pending": false,
+          "notes": "Bridge-1 grounding: `depicts`/`mentions` with entity_ref = csid. Confidence from the grounding rubric; ambiguous candidates never auto-merged."
+        },
+        {
+          "id": 9,
+          "external": "cinematography facts/violations",
+          "canonicalKind": "rule",
+          "direction": "AR->LS",
+          "portability": [
+            "horn-safe"
+          ],
+          "koineRelations": [],
+          "pending": false,
+          "notes": "US-CS6 constraint facts → rules-registry entries + violation facts. Third instance of the provenanced-rules pattern (pinakes Phase 4b, Insimul validators)."
+        },
+        {
+          "id": 10,
+          "external": "GroundingPack entities",
+          "canonicalKind": "node",
+          "canonicalTypes": [
+            "culture",
+            "place",
+            "language",
+            "deity"
+          ],
+          "direction": "LS->AR",
+          "portability": [
+            "grounding-only"
+          ],
+          "koineRelations": [],
+          "pending": false,
+          "notes": "Canonical nodes (culture / place / language / deity / …) exported as the shared GroundingPack format (same schema as the Insimul bridge)."
+        },
+        {
+          "id": 11,
+          "external": "fact provenance {source, source_url, retrieved_at, confidence, license}",
+          "canonicalKind": "provenance",
+          "direction": "both",
+          "portability": [],
+          "koineRelations": [],
+          "pending": false,
+          "notes": "The US-PL1 alignment — identical field names. `license` is an SPDX id; facts derived from licensed reference data keep the license through the bridge."
+        }
+      ]
+    }
+  }
+}
