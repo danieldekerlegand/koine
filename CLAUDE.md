@@ -43,11 +43,23 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
   weights/exports-as-KMI-lineage (§5), training-exhaust metric stream (§6). Machine-readable twin
   `koine/schemas/finetune-job.schema.json` + validators land in agora (ADR-0001), gated on koine:10.
   Pressure test `scenarios/e2e-finetune.md` pending before Candidate.
-- `registry/` — shared vocabularies; `relations.tsv` (core, **binary** relations only) +
+- `registry/` — shared vocabularies + contracts; `relations.tsv` (core, **binary** relations only) +
   `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
-  `relations/social.tsv` (soc:), plus `predicate-mapping.json` (registryVersion 0.4.0) — the
-  bridge layer mapping argos's and insimul's own predicates onto that vocabulary. A relation's
-  signature is immutable once published (changing it changes every dependent claim id).
+  `relations/social.tsv` (soc:), plus `predicate-mapping.json` (registryVersion 0.4.2) — the
+  bridge layer mapping argos's and insimul's own predicates onto that vocabulary — and now
+  `canonical-schema.json` (v1.3.0; 21 node types + 21 edge types, the `cs:<type>:<local>` csid
+  scheme, typed Neo4j-import column contracts), the entity **ontology** the (agora) translation
+  engine maps to/from. A relation's signature is immutable once published (changing it changes
+  every dependent claim id); the schema's node/edge name↔:LABEL/:TYPE bindings are immutable the
+  same way (a change is a NEW type). The schema was **lifted, not rebuilt** from pinakes
+  `shared/canonical-schema.json` — promoted verbatim + additively (only `canonicalHome` + `mirrors`
+  blocks added), koine now the sole authoritative copy and pinakes's copy demoted to a generated
+  mirror, per `decisions/ADR-0002-reconcile-with-existing-bridges.md` (the same amendment that lifted
+  `predicate-mapping.json`) and `decisions/ADR-0001-control-plane-topology.md` (koine = contracts,
+  no code; validator/loader stay in agora). Follow-ups (not done here — this tranche touches only
+  koine): pinakes `10-pinakes-koine-align` wires regeneration of `shared/canonical-schema.json` from
+  the koine copy + its byte-for-byte drift gate; the agora translation engine
+  (`20-shared-relation-registry`) loads the schema from koine over the wire.
 - **All four planes** validated by a pressure test (`scenarios/`); contract layer complete. Deltas
   F–L from `scenarios/e2e-media-transform.md` were folded into KCB 0.2.0 + KMI 0.2.0 (KMI ratified;
   KCB now **0.3.0 candidate** after the §2 manifest→AgentCard-extension redefinition, deltas intact).

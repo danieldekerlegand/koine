@@ -45,10 +45,108 @@ There is no `egress` column: a core or domain relation is `exportable` (the KGP 
 egress is a property of *what a project's own predicate carries*, so it is declared per bridge
 mapping entry below, not on the shared vocabulary.
 
+## Canonical node/edge schema — [`canonical-schema.json`](canonical-schema.json)
+
+The **entity ontology** the (agora) translation engine maps to and from — the shared node/edge
+contract every project targets, lifted **verbatim** out of pinakes `shared/canonical-schema.json`
+(v1.3.0) per ADR-0002's "lift, don't rebuild" amendment and demoting pinakes's copy to a
+generated mirror. It carries **21 node types** and **21 edge types** plus the typed Neo4j-import
+column contracts (`docs/canonical-schema.md` §1–§4).
+
+- **Node types (21)** — `language`, `language-family`, `writing-system`, `culture`,
+  `archaeological-culture`, `urheimat-hypothesis`, `religion`, `deity`, `myth-motif`,
+  `art-tradition`, `literary-tradition`, `cuisine`, `ingredient`, `trade-good`, `battle`,
+  `place`, `migration-route`, `asset`, `character`, `building`, `business`. Each binds a
+  `name` ↔ Neo4j `:LABEL` (`language` ↔ `Language`, `business` ↔ `Business`).
+- **Edge types (21)** — `descended-from`, `split-from`, `merged-with`, `influenced-by`,
+  `conquered-by`, `absorbed-into`, `spoken-in`, `located-in`, `contemporary-with`,
+  `part-of-period`, `borrowed-from`, `cognate-with`, `derived-from`, `syncretized-with`,
+  `depicts`, `mentions`, `parent-of`, `spouse-of`, `employed-by`, `resides-in`, `caused-by`.
+  Each binds a `name` ↔ Neo4j `:TYPE` (`descended-from` ↔ `DESCENDS_FROM`, `caused-by` ↔
+  `CAUSED_BY`) plus `from`/`to` endpoint constraints.
+
+**`idScheme` — the `csid`.** The primary key is `csid`, format `cs:<type>:<local>`, unique across
+all nodes. When a Wikidata QID is known it *is* the identity (`cs:<type>:Q12345`, QID-anchored);
+otherwise the local part is a readable slug plus a hash of the normalized `(name, lang)`. Minting
+is deterministic (idempotent re-runs). Every pinakes-origin row keeps its original lexicon id in
+the `pinakes_id` **alias column** so the canonical↔lexicon mapping survives round-trip (write-back).
+
+### Provenance of the vocabulary (v1.1 → v1.3)
+
+The lift preserves the changelog that grew the schema across three project bridges:
+
+| Version | Added | Source |
+|---|---|---|
+| **v1.1** | the `license` provenance column (on both node and edge families) | pinakes US-003 |
+| **v1.2** | the `asset` node + the `depicts` / `mentions` edges | argos-bridge US-003 |
+| **v1.3** | the `character` / `building` / `business` nodes + the `parent-of` / `spouse-of` / `employed-by` / `resides-in` edges, and the `caused-by` edge | insimul-bridge US-003 |
+
+`caused-by` is deliberately **endpoint-unconstrained** (empty `from`/`to`): it carries event
+causality in canonical `(effect, cause)` order over Insimul truth events, which anchor on
+`myth-motif` rather than a single fixed node type. Its claim counterpart is the core relation
+`caused_by` ([`relations.tsv`](relations.tsv)) — see the crosswalk below.
+
+### Canonical home (decided here)
+
+| | |
+|---|---|
+| **Data / contract** | **koine** — this directory ([`canonical-schema.json`](canonical-schema.json)). The only authoritative copy. |
+| **Tooling** | **agora** — the typed schema accessors, validator (`assertValidCanonicalSchema`) and loader consumers call ([../decisions/ADR-0001-control-plane-topology.md](../decisions/ADR-0001-control-plane-topology.md): koine specifies, agora implements). koine ships no code. |
+| **pinakes `shared/canonical-schema.json`** | a declared **generated mirror** in the file's own `mirrors` block: regenerated from this copy, never hand-edited, with the pinakes drift gate comparing the two. Its `shared/canonical-schema.ts` keeps typing and validating it. Wiring that regeneration is pinakes tasklist `10-pinakes-koine-align`; this lift follows the same "lift, don't rebuild" pattern that moved [`predicate-mapping.json`](predicate-mapping.json) here ([../decisions/ADR-0002-reconcile-with-existing-bridges.md](../decisions/ADR-0002-reconcile-with-existing-bridges.md)). |
+
+A consumer loads the schema **from koine** (over the wire, via the agora loader) or keeps a
+declared mirror; it never edits a local copy — that is how a schema forks. The claim-bearing edge
+types crosswalk to the relation vocabulary as shown next.
+
+## Schema and relations — two layers, one ontology
+
+[`canonical-schema.json`](canonical-schema.json) and the relation TSVs are **two distinct
+layers**, not two copies of the same thing:
+
+- The **canonical node/edge schema** is the entity **ontology**. It names *what entities are* —
+  the Neo4j `:LABEL` and `:TYPE` tokens (`language`↔`Language`, `descended-from`↔`DESCENDS_FROM`),
+  the `from`/`to` endpoint constraints on each edge, and the typed import-column contracts.
+- The **relation registry** ([`relations.tsv`](relations.tsv) + [`relations/<domain>.tsv`](relations/))
+  names the KGP **claim** relations — *how claims about those entities normalize* (arity,
+  `arg_roles`, `symmetric`, dialect `tier`), the facts that make claim normalization deterministic
+  (KGP §3.2).
+
+A claim-bearing schema edge type therefore has a counterpart relation it normalizes to; a schema
+node type does not (it is an entity, not a claim). The crosswalk is **exactly** the
+`koineRelations` already declared on the matching [`predicate-mapping.json`](predicate-mapping.json)
+entries — it is not a second declaration, only a reading of the same bridge:
+
+| Schema edge type (`name` ↔ `:TYPE`) | Registry relation | Vocabulary file |
+|---|---|---|
+| `descended-from` ↔ `DESCENDS_FROM` | `descended_from` | [`relations.tsv`](relations.tsv) (core) |
+| `located-in` ↔ `LOCATED_IN` | `located_in` | [`relations.tsv`](relations.tsv) (core) |
+| `caused-by` ↔ `CAUSED_BY` | `caused_by` | [`relations.tsv`](relations.tsv) (core) |
+| `parent-of` ↔ `PARENT_OF` | `soc:parent_of` | [`relations/social.tsv`](relations/social.tsv) (`soc:`) |
+| `spouse-of` ↔ `SPOUSE_OF` | `soc:spouse_of` | [`relations/social.tsv`](relations/social.tsv) (`soc:`) |
+| `employed-by` ↔ `EMPLOYED_BY` | `soc:employed_by` | [`relations/social.tsv`](relations/social.tsv) (`soc:`) |
+| `resides-in` ↔ `RESIDES_IN` | `soc:resides_in` | [`relations/social.tsv`](relations/social.tsv) (`soc:`) |
+
+**The schema coins no relation.** It names entity types and edge tokens; it never invents or
+redefines a relation `name`/signature. Closing a relation gap still means **adding a row to
+[`relations.tsv`](relations.tsv) / [`relations/<domain>.tsv`](relations/)** — never naming a
+relation only in the schema — the same "one vocabulary, no second source of truth" rule that
+governs the bridge mappings below. And the schema's own `name`↔`:LABEL`/`:TYPE` bindings are
+**immutable once published**: a change is a **new** node/edge type, never an in-place edit, the
+exact discipline of an immutable relation signature (a rename would silently change every
+dependent `csid` / claim id).
+
+**Why this lift matters.** With the schema promoted here, the (agora) translation engine maps
+to and from a **shared** node/edge ontology loaded from koine — not a pinakes-owned one. The
+schema, the relation vocabulary and the bridge mappings now sit in one directory, so translation
+becomes a genuine commons: every project targets the same ontology instead of a copy governed by
+a single project.
+
 ## Bridge mappings — [`predicate-mapping.json`](predicate-mapping.json)
 
 How each bridged project's own predicates cross into the canonical node/edge vocabulary
-(Pinakes hosts the canonical schema). Lifted **verbatim** out of pinakes
+(the [`canonical-schema.json`](canonical-schema.json) now hosted here in koine — every
+`canonicalType` reference resolves against it; pinakes holds a generated mirror). Lifted
+**verbatim** out of pinakes
 `shared/predicate-mapping.json` (merged as `17f0713`) — it was already a machine-validated
 cross-project registry carrying portability classes, `idSpaces`, `temporalFieldMap` and a
 multi-`projects` shape; ADR-0002's amendment ruled it be *lifted*, not rebuilt.
@@ -57,9 +155,10 @@ It covers both bridged projects. `argos` is exactly as merged; `insimul` was add
 registryVersion **0.4.0** (`20-shared-relation-registry` US-SRR3) from INSIMUL_SYNC_PLAN.md
 Appendix A plus the shipped `predicate-schema.ts` catalog — each entry naming the `sourceRow` it
 came from, since Appendix A rows that bundle a node with its edges split into one entry per
-`canonicalKind`. pinakes is deliberately *not* a `projects` entry: it is the canonical side of
+`canonicalKind`. pinakes is deliberately *not* a `projects` entry: it remains the canonical **side** of
 every mapping, so its coverage is the relation vocabulary and the canonical node/edge schema
-themselves. Where the draft and the shipped code disagreed (`settlement` vs the canonical
+themselves — but the canonical **schema** those entries resolve against now lives here in
+koine (pinakes keeps a generated mirror), not in a pinakes-owned copy. Where the draft and the shipped code disagreed (`settlement` vs the canonical
 `place`, `spouse_of/2` vs the emitted `married_to/2`), the entry follows the code and the
 divergence is recorded in the project's own `collisions` block rather than quietly reconciled.
 
