@@ -46,5 +46,30 @@ Where the axes appear:
 
 The registry-level counterpart — splitting the merged relation registry's single `portabilityClasses`
 key into these same separate axes — is handed to agora's `20-shared-relation-registry` **US-SRR2**
-(ADR-0003 §Axes). Validators + conformance fixtures for these schemas live in agora (ADR-0001,
-40 band), not koine.
+(ADR-0003 §Axes).
+
+## Policy enums — `../policy/`
+
+The license-class and trust-tier vocabularies the schemas reference are absorbed from rosetta into
+koine [`../policy/`](../policy/):
+
+- [`../policy/license-classes.json`](../policy/license-classes.json) — the SPDX license-class
+  allowlist (`public-domain` / `attribution` / `share-alike` / `proprietary` / `personal`) backing
+  every record `license` field (KGP §7.1). `Apache-2.0` — koine's own [`../LICENSE`](../LICENSE) —
+  classes under **attribution**.
+- [`../policy/trust-tiers.json`](../policy/trust-tiers.json) — the provenance trust tiers
+  (`curated` / `acquired` / `synthetic` / `personal`) backing every record `tier` field (KGP §7),
+  with the synthetic/personal containment rules.
+
+Per ADR-0002's reverse-flow finding, KGP already adopted the SPDX license policy (§7.1) and treats
+the provenance **trust tier** as an axis separate from the **dialect** (§5) and **egress** (§7.2)
+axes — so these two policy files are the *source* for the license-class + trust-tier enums, not a
+fourth conflated key.
+
+## Scope — contracts only; validators live in agora
+
+Koine holds **only** the machine-readable contract: the schemas in this directory plus the policy
+enums above. Per ADR-0001 (koine = contracts / agora = runtime), the thin validators
+(`validate.py` / `ajv`) and the golden conformance fixtures that exercise these schemas are **not**
+ported into koine — they are runtime and live in **agora**, targeted at the **40 band**. See
+[`../decisions/ADR-0003-deprecate-rosetta.md`](../decisions/ADR-0003-deprecate-rosetta.md) §Decision(c).
