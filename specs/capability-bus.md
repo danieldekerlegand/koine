@@ -100,8 +100,15 @@ object carries the KCB payload:
 
 ### 2.1 Ports span all planes (delta F)
 
-A **port** is a typed connection point used by `produces`, `consumes`, and every capability's
-`inputs`/`outputs`. Its `plane` selects the type vocabulary:
+Ports, capabilities, and their `cost` all live **inside the KCB extension's `params`** (§2) — the
+`produces`, `consumes`, and `capabilities` arrays on `capabilities.extensions[]` whose `uri` is
+`https://koine.dev/kcb/manifest/0.3`. Collapsing the standalone manifest onto the AgentCard moves
+*where* these fields are served (card extension, not a second file) but not *what* they carry: the
+plane-typed port model (F), `world_pattern` world-scoping (J), and capability `cost` (K) are all
+preserved verbatim as extension `params`, not dropped.
+
+A **port** is a typed connection point used by the extension's `produces`, `consumes`, and every
+capability's `inputs`/`outputs`. Its `plane` selects the type vocabulary:
 
 | Port plane | Typed by | Example |
 |---|---|---|
@@ -110,10 +117,13 @@ A **port** is a typed connection point used by `produces`, `consumes`, and every
 | `entity` | KINP entity `types` | a `mood` / `scene` / `plugin` entity ref |
 
 Because ports are plane-typed, a capability may **consume knowledge and produce media** — the
-"compose a score from a mood" leg the pressure test exposed (F). Path-finding (§3) therefore
-matches ports **across planes**, not media-to-media only. `world_pattern` on a media port lets
-the registry answer "media *from world X*" (J); without it, world-scoped media discovery is
-impossible. `cost` on a capability lets path search prefer cheaper routes and gate spend (K).
+"compose a score from a mood" leg the pressure test exposed (F). The `compose` capability in the
+§2 example carries exactly this shape (a `knowledge` input, a `media` output) inside the
+extension's `params.capabilities`, so the cross-plane example remains valid on the card. Path-finding
+(§3) therefore matches these extension ports **across planes**, not media-to-media only.
+`world_pattern` on a media port (in `params.produces`) lets the registry answer "media *from world
+X*" (J); without it, world-scoped media discovery is impossible. `cost` on a capability (in
+`params.capabilities`) lets path search prefer cheaper routes and gate spend (K).
 
 ---
 
@@ -124,16 +134,22 @@ Cuneiform-generated org, per the ecosystem thesis: the interconnect fabric is it
 Company-as-Code). The registry is a cache/index over the projects' own MCP/A2A surfaces, not a
 source of truth — a provider's manifest is authoritative; the registry just makes it findable.
 
-- **Population:** projects register their manifest (push) or the registry crawls known A2A
-  agent-cards / MCP servers (pull).
-- **Query:** `find(port | plane | world | capability)` → matching manifests, ranked. Media
-  ports match by `media_type` **and** `world_pattern` (delta J).
-- **Composition:** because ports are plane-typed (§2.1), the registry computes a *path* from a
-  start port to a goal port **across planes and providers** — e.g. `text → narration:audio`,
-  `mood(knowledge) → score:audio`, `assets → edl → CMX3600` — the bounded, contract-matched
-  form of any-to-any (delta F), resolved by matching contracts rather than a central
-  transform-gateway. Path search **prefers zero-`cost` routes** and returns the path's
-  projected cost so the caller can gate spend before invoking (delta K).
+- **Population:** projects register their manifest (push), or the registry crawls known A2A
+  agent-cards / MCP servers (pull) and **reads the KCB extension off each peer's
+  `/.well-known/agent-card.json`** — it looks for the `capabilities.extensions[]` entry whose
+  `uri` is `https://koine.dev/kcb/manifest/0.3` and indexes that entry's `params` (ports,
+  capabilities, cost). There is no separate manifest file to crawl; a card without the extension
+  simply advertises no KCB ports.
+- **Query:** `find(port | plane | world | capability)` → matching manifests, ranked. Ports are
+  the extension `params`' `produces`/`consumes`/capability ports (§2.1); media ports match by
+  `media_type` **and** `world_pattern` (delta J).
+- **Composition:** because the extension's ports are plane-typed (§2.1), the registry computes a
+  *path* from a start port to a goal port **across planes and providers** — e.g. `text →
+  narration:audio`, `mood(knowledge) → score:audio`, `assets → edl → CMX3600` — the bounded,
+  contract-matched form of any-to-any (delta F), resolved by matching the ports crawled off peers'
+  card extensions rather than a central transform-gateway. Path search **prefers zero-`cost`
+  routes** using each capability's `params.capabilities[].cost` and returns the path's projected
+  cost so the caller can gate spend before invoking (delta K).
 - **Route-by-lookup, not proxy ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)).**
   The registry returns *addresses*; peers then connect **directly** over MCP/A2A — no
   inter-service traffic flows through it. An optional **aggregator facade** MAY present a unified
@@ -189,7 +205,7 @@ live in Cuneiform infra; KCB fixes only the *shape* of grants and signing so the
 | Project | Already has | KCB role |
 |---|---|---|
 | **Cuneiform** | MCP sidecars, A2A/`a2a-sdk`, workforce governance, generator seams (`_mcp`,`_a2a`) | **Host**: provisions the registry; issues grants; every workforce agent publishes the KCB extension **on its own A2A agent-card** (no separate manifest file). |
-| **Argos** | `/mcp`, `/.well-known/agent-card.json`, surface map `/api/spec` | Publish the KCB extension **on the `/.well-known/agent-card.json`** it already serves; `produces` media + `grounding-only` knowledge (with `source_world`); `subscribe` to grounding worlds. |
+| **Argos** | `/mcp`, `/.well-known/agent-card.json`, surface map `/api/spec` | Publish the KCB extension **on the `/.well-known/agent-card.json`** it already serves; the extension's `params.produces` carries media ports with `world_pattern` (delta J) so a peer can still discover "media *from world X*" by crawling Argos's card; `produces` media + `grounding-only` knowledge (with `source_world`); `subscribe` to grounding worlds. |
 | **Pinakes** | resolver + KGP producer, graph API | Expose `resolve`/`reconcile`/`query` and KGP snapshot/delta as capabilities; the authority provider. |
 | **Insimul** | game server, generators | Consume grounding capabilities; expose world-export as a capability; agents (NPCs) MAY publish manifests. |
 | **Formant** | (agents planned) | Consumer now (ground plugin design); later **provider** — expose "play this plugin" as an invocable capability so Argos's composer/sound-designer agents can drive Formant plugins (Formant's own roadmap). |
