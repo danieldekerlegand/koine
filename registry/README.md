@@ -91,7 +91,9 @@ a single project.
 ## Bridge mappings — [`predicate-mapping.json`](predicate-mapping.json)
 
 How each bridged project's own predicates cross into the canonical node/edge vocabulary
-(Pinakes hosts the canonical schema). Lifted **verbatim** out of pinakes
+(the [`canonical-schema.json`](canonical-schema.json) now hosted here in koine — every
+`canonicalType` reference resolves against it; pinakes holds a generated mirror). Lifted
+**verbatim** out of pinakes
 `shared/predicate-mapping.json` (merged as `17f0713`) — it was already a machine-validated
 cross-project registry carrying portability classes, `idSpaces`, `temporalFieldMap` and a
 multi-`projects` shape; ADR-0002's amendment ruled it be *lifted*, not rebuilt.
@@ -100,9 +102,10 @@ It covers both bridged projects. `argos` is exactly as merged; `insimul` was add
 registryVersion **0.4.0** (`20-shared-relation-registry` US-SRR3) from INSIMUL_SYNC_PLAN.md
 Appendix A plus the shipped `predicate-schema.ts` catalog — each entry naming the `sourceRow` it
 came from, since Appendix A rows that bundle a node with its edges split into one entry per
-`canonicalKind`. pinakes is deliberately *not* a `projects` entry: it is the canonical side of
+`canonicalKind`. pinakes is deliberately *not* a `projects` entry: it remains the canonical **side** of
 every mapping, so its coverage is the relation vocabulary and the canonical node/edge schema
-themselves. Where the draft and the shipped code disagreed (`settlement` vs the canonical
+themselves — but the canonical **schema** those entries resolve against now lives here in
+koine (pinakes keeps a generated mirror), not in a pinakes-owned copy. Where the draft and the shipped code disagreed (`settlement` vs the canonical
 `place`, `spouse_of/2` vs the emitted `married_to/2`), the entry follows the code and the
 divergence is recorded in the project's own `collisions` block rather than quietly reconciled.
 
