@@ -63,6 +63,12 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
 - **All four planes** validated by a pressure test (`scenarios/`); contract layer complete. Deltas
   F–L from `scenarios/e2e-media-transform.md` were folded into KCB 0.2.0 + KMI 0.2.0 (KMI ratified;
   KCB now **0.3.0 candidate** after the §2 manifest→AgentCard-extension redefinition, deltas intact).
+- `schemas/` — the machine-readable twin of the prose specs (JSON Schema draft-2020-12): the layer
+  absorbed from the deprecated **rosetta** package (`provenance.schema.json` shared `$defs` +
+  grounding-pack / entity-grounding-snapshot / canonical-world-export / argos-canonical-export /
+  dataset-jsonl-header), updated to KGP 0.4.0. `policy/` holds the license-class + trust-tier policy.
+  Validators/CI + conformance fixtures live in agora (ADR-0001, 40 band), **not** here. See
+  `decisions/ADR-0003-deprecate-rosetta.md`.
 - `decisions/ADR-0004-adopt-erlang-provider-router.md` — **Accepted** (a record). Adopts Erlang/OTP
   for the provider-router (the always-completes `paid→mlx→local→placeholder` ladder as an OTP
   supervision tree) + KCB §4 `subscribe` fan-out (one BEAM process per subscriber); CPU-bound

@@ -1,0 +1,29 @@
+{
+  "policyVersion": "0.1.0",
+  "tiers": {
+    "curated": {
+      "description": "Human-curated records (e.g. Pinakes lexicons). Highest editorial trust.",
+      "mayEnterOpenReleases": true
+    },
+    "acquired": {
+      "description": "Machine-acquired from external sources with per-record provenance (e.g. Wikidata, CLDF). Confidence from the per-source rubric.",
+      "mayEnterOpenReleases": true,
+      "note": "Subject to per-record license class — share-alike records ship only in share-alike-labeled partitions."
+    },
+    "synthetic": {
+      "description": "Facts from generated fictional worlds (Insimul exports). Complete ground-truth KBs; not real-world claims.",
+      "mayEnterOpenReleases": false,
+      "containment": "Never mixed into real-world tiers; never in open-data releases; training use must be explicitly synthetic-scoped."
+    },
+    "personal": {
+      "description": "Facts derived from a user's own files and media (Argos exports). Private by definition.",
+      "mayEnterOpenReleases": false,
+      "containment": "Never leaves the local machine by default; never in open releases, packaged corpora, non-personal tiers, or non-personal-scoped training sets. Consumers enforce with a hard QA gate."
+    }
+  },
+  "rules": [
+    "Every interchange record carries an explicit tier (defaulting is forbidden for synthetic/personal producers).",
+    "Tier containment gates are monotone CI checks in every consumer (the convergence-qa ratchet pattern).",
+    "Models trained on a tier inherit that tier's distribution constraints; manifests must state the training tier scope."
+  ]
+}
