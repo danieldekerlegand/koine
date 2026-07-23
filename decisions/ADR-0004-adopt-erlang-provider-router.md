@@ -51,3 +51,50 @@ ADR stays strictly on the leaf side of that line.
 and **Rust for CPU-bound work**. Workloads (a) and (b) are pure concurrency/uptime, so they land on
 the BEAM; the CPU-bound translation/normalization they call into stays in Rust and is reached by
 in-node interop — the split this ADR records in the interop plan below.
+
+---
+
+## Decision
+
+**Decision 1 — the sacred ladder becomes an OTP supervision tree.** The provider-router is
+re-homed on Erlang/OTP, and the always-completes failover ladder is modeled as a **supervision
+tree**: each configurable rung (`paid` / `mlx` / `local`) is a supervised child that may crash or
+be absent, and the `placeholder` is a **permanent terminal worker** — the OTP analogue of
+`ladder.py`'s *"always appended, never configurable away"* tier. What is a hand-rolled fall-through
+loop in `router.py`'s `Router.complete` (walk the rungs, record each as an attempt, fall through on
+crash/absence/refusal, terminate in the offline placeholder) becomes a **supervision property**:
+the tree is constructed so the walk *cannot* fail to terminate, because the permanent placeholder
+child is always reachable and can never itself fail. This is what turns the **always-completes
+invariant** — and with it the **ZERO-SPEND guarantee** that `tests/test_zero_spend.py` asserts (no
+API keys and no local servers ⇒ every request falls to the placeholder ⇒ nothing is spent) — from
+a property maintained by careful loop code into a *structural* property of how the tree is wired.
+
+The router's per-rung **`Attempt`** record maps directly onto this tree. `Attempt`'s `dialed` flag
+(the *contacted-and-did-not-answer* vs. *refused-on-price-and-never-contacted* distinction) and its
+`projected` cost are exactly the audit trail a supervised child produces as the walk falls through:
+a crashed/unreachable child yields a `dialed = true` failed attempt, and a rung skipped by the
+budget walk yields a `dialed = false`, `projected`-only refusal. The **`budget_units` ceiling walk**
+(KCB §5) carries over unchanged in semantics: the ladder order is a *preference* and the ceiling a
+*request-level constraint*; because the ladder runs **expensive → free**, a rung whose `project`ed
+cost exceeds the ceiling is **refused without being dialed** and the walk falls to a cheaper rung.
+The ceiling stays a per-request constraint (never a ladder mutation), and the free, offline
+placeholder **survives every ceiling** — a ceiling of `0` can never spend, so the ZERO-SPEND
+terminal is reachable under any budget.
+
+**Decision 2 — KCB `subscribe` fan-out becomes BEAM per-subscriber pub-sub.** KCB §4's `subscribe`
+verb (A2A streaming / MCP notifications delivering KGP **deltas** to many consumers) is modeled as
+**one lightweight BEAM process per subscriber** behind a pub-sub fan-out. The BEAM fits because
+§4's delivery contract asks for *nothing the BEAM lacks and nothing it must add*: deltas are
+**ordering-independent** and **content-addressed**, so **redelivery is idempotent** and **no
+exactly-once machinery is required** — a subscriber process can simply re-apply a delta it has
+already seen. Delta-L **dangling-reference tolerance** is then a **per-subscriber concern**: because
+a stream may deliver a reference (an EDL, a claim) before the referenced asset's bytes have
+propagated, each consumer tolerates the dangling ref and **fetches lazily**, which is naturally a
+property of the isolated per-subscriber process rather than of the shared fan-out.
+
+**Subscription backpressure** — KCB §7 open question 3, flow-control for high-volume-world
+("firehose") subscriptions — maps naturally onto the BEAM's **per-process mailboxes and
+backpressure**: a slow subscriber's mailbox absorbs and throttles its own stream without stalling
+the others. This is a *fit note*, not a contract claim: firehose flow-control **remains an
+agora / Cuneiform (costadvisor) infra concern**, exactly as §7 leaves it, and is **NOT a KCB
+contract change** — the `subscribe` verb, its payloads, and its idempotency guarantees are untouched.
