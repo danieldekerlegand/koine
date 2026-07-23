@@ -160,6 +160,36 @@ own egress class. §6.1 invokes eval with no egress awareness. **Delta FT-D.**
 
 ---
 
+## Schema conformance — what the (agora) validator must enforce
+
+The machine-readable job manifest is [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json)
+(draft-2020-12); its golden positive example is [`../schemas/fixtures/finetune-job.json`](../schemas/fixtures/finetune-job.json),
+which validates green. Per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) the `ajv`/`jsonschema`
+validators and the conformance CI for this manifest are built in **agora:40**, not in koine — koine ships
+only the contract plus that one golden fixture.
+
+Structural validation (draft-2020-12) catches shape errors — a missing required field (`compute`,
+`base_model`, …), a bad `modality`/`method`/`compute.egress` enum value, an empty `dataset` (neither
+`knowledge` nor `media`). It **cannot**, by construction, catch the finetuning-specific *semantic* rules
+this pressure test surfaced. Two negative cases the agora validator/admission step MUST reject that the
+schema alone will pass:
+
+1. **Incompatible `modality × method` (FT-F).** A job that is structurally valid but pairs
+   `"modality": "text-to-image"` with `"method": "dpo"` MUST be rejected **at admission** with a report,
+   before compute is committed — the enums are each individually legal, so only the compatibility contract
+   (§3.1) rejects it. `dpo × text-to-image` is the canonical negative fixture.
+2. **A cross-boundary `compute.class` under a `local-only` effective egress (FT-B / §4.2).** A job whose
+   `{data ∪ base}` aggregates to `local-only` but requests a rented `compute.class`
+   (e.g. `single-gpu-a100-80gb`) MUST be rejected (or repinned to local) — even when
+   `compute.egress` is the permissive default `derived`, because the effective egress is computed from the
+   referenced records, not asserted in the manifest.
+
+Both are behavior of the agora admission path, driven by the registry vocabulary
+([`../registry/enums/modality.tsv`](../registry/enums/modality.tsv)) and the KGP §7.2 aggregation — the
+schema's job is only to guarantee the manifest is well-formed enough for that step to run.
+
+---
+
 ## Verdict
 
 The **core gate holds where it fires** (Step 3): a single `local-only` record keeps a whole run off

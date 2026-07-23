@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://koine.ecosystem/schemas/finetune-job.schema.json",
   "title": "FinetuneJob",
-  "description": "The invoke payload for the KFT `finetune` capability (specs/fine-tuning.md §3, KFT 0.2.0). The machine-readable twin of the job manifest. Data is referenced by KINP/KGP/KMI id, never inlined. DEPENDS ON koine:10 having landed schemas/provenance.schema.json (shared $defs) and schemas/dataset-jsonl-header.schema.json (the training-record header) — the cross-schema $refs below resolve only once those are present.",
+  "description": "The invoke payload for the KFT `finetune` capability (specs/fine-tuning.md §3, KFT 0.3.0). The machine-readable twin of the job manifest. Data is referenced by KINP/KGP/KMI id, never inlined. DEPENDS ON koine:10 having landed schemas/provenance.schema.json (shared $defs) and schemas/dataset-jsonl-header.schema.json (the training-record header) — the cross-schema $refs below resolve only once those are present. A golden positive example lives at schemas/fixtures/finetune-job.json; the ajv/jsonschema validators + conformance suite that exercise this schema are DEFERRED to agora:40 per ADR-0001 (koine = contracts / agora = runtime), NOT built in koine.",
   "type": "object",
   "$defs": {
     "kinpId": {
