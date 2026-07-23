@@ -48,3 +48,9 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
   signature is immutable once published (changing it changes every dependent claim id).
 - **All four planes RATIFIED**, each validated by a pressure test (`scenarios/`). Contract layer
   complete. Deltas F–L from `scenarios/e2e-media-transform.md` folded into KCB 0.2.0 + KMI 0.2.0.
+- `decisions/ADR-0004-adopt-erlang-provider-router.md` — **Accepted** (a record). Adopts Erlang/OTP
+  for the provider-router (the always-completes `paid→mlx→local→placeholder` ladder as an OTP
+  supervision tree) + KCB §4 `subscribe` fan-out (one BEAM process per subscriber); CPU-bound
+  translation stays Rust behind a NIF/port. Supersedes the Python router's *language only* — the
+  OpenAI `/v1` surface + `/.well-known/kcb-manifest.json` are preserved byte-for-byte, so agora `50`'s
+  parity suite is the port's acceptance contract. Changes no KCB/KGP/KINP contract; impl lands in agora.

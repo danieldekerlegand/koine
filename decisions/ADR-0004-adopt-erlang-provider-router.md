@@ -189,3 +189,63 @@ its rationale and nothing more. The **Erlang/OTP implementation and the actual p
 (runtime commons, per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md)), **not in koine**.
 This tasklist **edits no agora, argos, or cuneiform file**; the language migration is a follow-up
 tracked in agora, recorded here as an accepted decision.
+
+---
+
+## Alternatives considered
+
+- **Keep the router in Python/asyncio** — the current `50-provider-router-extract` loop, an
+  `async def` walk over the ladder with `try`/`except` fall-through. Rejected: the always-completes
+  contract stays a property of *careful loop code* rather than a structural one, and asyncio gives no
+  supervision and no cheap-process isolation — so it leaves workload (a)'s supervision-tree leverage
+  and workload (b)'s per-subscriber fan-out on the table. It works, but it hand-rolls what OTP gives
+  for free.
+- **Put `subscribe` fan-out on a non-BEAM external broker** (Kafka / Redis Streams / an MQ). Rejected
+  for this leaf: §4's deliveries are already **ordering-independent + content-addressed / idempotent**
+  (workload (b)), so the broker's exactly-once and total-order machinery is weight paid for guarantees
+  the contract explicitly does not need — while still requiring a per-subscriber process to hold the
+  lazy-fetch, dangling-ref-tolerant state. A broker remains a fine agora/Cuneiform infra choice for
+  cross-node durability, but it is not a *substitute* for the per-subscriber BEAM process; it would sit
+  behind one, not replace it.
+- **Rust end-to-end (router + fan-out in Rust/tokio)** — one language for CPU-bound and concurrent
+  work alike. Rejected: it inverts the ecosystem's language synthesis, buying raw throughput the router
+  (an I/O-bound dispatcher) does not need at the cost of OTP's supervision and "let it crash" uptime
+  model — the very properties workloads (a) and (b) are chosen for. Rust stays where it is CPU-bound
+  (Decision 3), reached from the BEAM, not the other way around.
+
+---
+
+## Consequences
+
+**Positive**
+- The **always-completes invariant becomes structural** — a permanent terminal placeholder child the
+  supervision tree can always reach — rather than a property maintained by loop code, and the
+  **ZERO-SPEND guarantee** (`tests/test_zero_spend.py`) rides on it.
+- **Per-subscriber BEAM processes** give `subscribe` fan-out natural isolation, lazy-fetch dangling-ref
+  tolerance, and mailbox backpressure with no exactly-once machinery to build (workload (b)).
+- The **external contract is preserved byte-for-byte** — OpenAI-compatible `/v1` + the
+  `/.well-known/kcb-manifest.json` document — so downstream adopters (argos `80`, cuneiform `81`) are
+  unaffected and the Python parity suite becomes the port's acceptance contract.
+
+**Negative / costs**
+- A **new Erlang/OTP toolchain + skill set** to stand up and maintain in agora (build, release, on-call
+  familiarity) alongside the existing Python/TS surfaces.
+- The **Rust-NIF failure-isolation burden** (Decision 3): every native call must be proven to stay on a
+  dirty scheduler / short-lived or behind a port, or it can defeat the very uptime guarantee the tree
+  exists to give — a standing correctness obligation, not a one-time cost.
+- A **byte-for-byte re-implementation** must clear the full Python parity suite before it can ship;
+  until it does, two implementations of the same contract exist.
+
+**Neutral**
+- The **KCB / KGP / KINP contracts are untouched** — this is a runtime choice inside one leaf, invisible
+  on the wire; the manifest, the `/v1` surface, and every spec version/status stay exactly as they are.
+- An external broker (rejected as a *substitute* above) remains available as agora/Cuneiform infra
+  *behind* the per-subscriber process if cross-node durability is later required — adopt only if needed.
+
+---
+
+## Scope boundary
+
+This ADR changes **no KCB / KGP / KINP contract**, adds **no runtime code to koine**, and leaves the
+**KCB 0.2.0 spec version and its Ratified status untouched** — it is a downstream runtime/implementation
+decision recorded here, not a spec revision.
