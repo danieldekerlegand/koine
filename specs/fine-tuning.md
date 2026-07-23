@@ -1,8 +1,8 @@
 # Koine Fine-Tuning Protocol (KFT)
 
 **Spec version:** 0.3.0
-**Status:** Candidate
-**Last updated:** 2026-07-22
+**Status:** Ratified
+**Last updated:** 2026-07-23
 **Applies to:** agora (provider/implementation), Cuneiform (host: registry, grants, orgs),
 Pinakes (specialized adapter + training-data producer), Insimul / Argos / Formant
 (training-data producers + finetuned-model consumers).
@@ -132,9 +132,12 @@ consume, so multimodal fine-tuning inherits an existing, ratified data plane rat
 `modality` and `method` are **not** independent: a provider **MUST validate** the
 `modality × method` combination (and the base model's architecture) **at admission** and reject an
 incompatible request — e.g. `dpo` on `text-to-image` — with a report, before any compute is
-committed (FT-F). The `modality` vocabulary, the `model` entity type, and the weight/export
-`media_type`s (§5.3) are registered in koine's shared registry (`registry/`, `registry/relations/media.tsv`)
-so path-matching and validators recognize them (FT-H).
+committed (FT-F). The `modality` enum ([`../registry/enums/modality.tsv`](../registry/enums/modality.tsv)),
+the `model` entity type ([`../registry/entity-types.tsv`](../registry/entity-types.tsv)), and the
+weight/export `media_type`s (§5.3, [`../registry/media-types.tsv`](../registry/media-types.tsv)) are
+registered in koine's shared registry so path-matching and validators recognize them from data, not
+prose — closing **FT-H**. These tokens are immutable once published (a change is a new token, never an
+edit in place), the same discipline as an immutable relation signature.
 
 ---
 
@@ -211,7 +214,8 @@ whole training lineage is queryable on the fabric.
 
 ### 5.1 Models are KINP entities
 
-Base and finetuned models are KINP entities of type `model` (with a `modality` refinement, §3.1).
+Base and finetuned models are KINP entities of type `model` (with a `modality` refinement, §3.1) —
+the type + its refinement registered in [`../registry/entity-types.tsv`](../registry/entity-types.tsv).
 An **external** base model (Hugging Face Hub, etc.) is a *minted* KINP `model` entity carrying an
 **external anchor** to its Hub coordinate — exactly as KINP entities anchor to Wikidata QIDs — so it
 is a resolvable fabric node, not an ad-hoc `hf:…` string (FT-G). A finetuned model id is likewise
@@ -248,14 +252,17 @@ nondeterminism means two identical runs do not produce byte-identical weights, s
 id **cannot** be content-addressed the way KGP packs and KMI assets are (KGP §2.1). The
 **reproducibility anchor is the run** — the `job` activity with its pinned input ids, `seed`, and
 `config_hash` — not the model bytes. A re-train over the same inputs mints a *new* model entity
-linked to its predecessor with a `retrains` / `supersedes` lifecycle relation (KINP §4), never a
-silent id collision.
+linked to its predecessor with a `retrains` / `supersedes` lifecycle relation (KINP §4;
+[`../registry/relations.tsv`](../registry/relations.tsv) — `retrains` is registered there alongside
+`supersedes` / `retracts`), never a silent id collision.
 
 ### 5.3 Weights & exports are KMI assets — the export matrix *is* the lineage graph
 
 Model weights are large bytes → KMI assets (byte-hash id, `application/vnd.koine.model+…` media
-type, fetched via `fetch:asset`). **Every export format is another asset in the KMI lineage graph
-(KMI §3)** — no bespoke export registry:
+type — registered in [`../registry/media-types.tsv`](../registry/media-types.tsv) — fetched via
+`fetch:asset`). **Every export format is another asset in the KMI lineage graph
+(KMI §3)** — no bespoke export registry; the `media:derived_from` / `media:variant_of` links below
+are the KMI relations in [`../registry/relations/media.tsv`](../registry/relations/media.tsv):
 
 | Artifact | KMI media type | Lineage link |
 |---|---|---|
@@ -384,6 +391,37 @@ Cuneiform is the control-plane host: it provisions the trainer as an org, hosts 
 grants, and its Go CLI / HTTP surface becomes a KCB client (discover → invoke → subscribe) — its
 stub loss curve replaced by the §6 stream, its 404 registry by §8, its export subcommands by §5.3.
 
+### 9.1 Downstream tasklists (cross-repo follow-ups — not built in koine)
+
+Per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) (koine = contracts, no runtime code)
+and the multi-provider decision (FT-K), ratifying KFT here **hands three runtime tasklists to their
+target repos**. None of them is authored or built in koine — they are recorded in the program map
+([`../tasks/chief/README.md`](../tasks/chief/README.md), Tranche D), authored in their own repos when
+scheduled, and run under those repos' own quality gates. The band numbers follow the ecosystem
+convention (a numeric prefix groups a program into a band; the **80s band = externally blocked on
+another repo**):
+
+| # | Tasklist | Repo | Role | `dependsOn` (numbered stems) |
+|---|---|---|---|---|
+| (a) | `90-finetune-trainer` | **agora** | The **general** `finetune` provider — the `trainer`/finetune-router leaf capability, sibling to (and **never merged with**) the provider-router; engine ladder LLaMA-Factory / Unsloth / Axolotl / diffusers, SkyPilot backend selection **gated by the §4.2 egress class**. Cloud-capable. | `agora:10-agora-bootstrap`, `koine:20-kft-finetune-profile` |
+| (b) | `90-finetune-provider` | **pinakes** | Pinakes's **own specialized** `finetune` provider — its `ml/` TRL+PEFT (SLM + neurosymbolic + Mac-MPS) path exposed as a distinct capability **on the bus, NOT an adapter inside agora**, routed to by the registry (§8/FT-K); its synthetic/proprietary/personal-tier data makes it inherently **local-only**. | `koine:20-kft-finetune-profile`, `pinakes:41-publish-kcb-manifest` |
+| (c) | `90-finetune-client` | **cuneiform** | The KCB **client** replacing `Runner::Stub` — discover → invoke → **subscribe** to the real §6 training-telemetry stream, un-404-ing export (§5.3) and the registry (§8), and issuing `invoke:finetune` grants (§7). | `koine:20-kft-finetune-profile` *(builds against stub manifests; **dials `agora:90` + `pinakes:90` at runtime** — its live end-to-end run is externally blocked on ≥1 real provider, the 80s-band condition)* |
+
+Two further handoffs are recorded in the same program map, downstream of the three above:
+- **`agora:41-finetune-job-validator`** — the ajv/jsonschema validator + conformance CI for
+  `finetune-job.schema.json` (§3), the US-3 handoff, landing in agora's 40 band alongside the
+  rosetta-absorbed validators (`dependsOn agora:40-absorb-rosetta-validators-ci`,
+  `koine:20-kft-finetune-profile`); the **semantic** admission rules (modality×method, egress
+  aggregation) stay in the providers (a) / (b).
+- **`formant:90-finetune-kft-bridge`** — the flagship consumer, realigning task 17's generic
+  "Cuneiform finetune bridge" onto the real KFT contract (`dependsOn
+  formant:16-agentic-design-assistants`, `koine:20-kft-finetune-profile`).
+
+The other consumers — **Argos** (finetuned media models) and **Insimul** (finetuned SLM GGUF into
+`LocalAIService`) — consume through their existing model loaders (point a loader at a
+registry-resolved asset), so they need configuration, not a dedicated wiring tasklist. The full
+build-order graph is in the program map.
+
 ---
 
 ## 10. Per-project mapping
@@ -422,7 +460,8 @@ stub loss curve replaced by the §6 stream, its 404 registry by §8, its export 
 found FT-A…FT-H → folded into 0.2.0) and
 [`../scenarios/e2e-finetune-multimodal.md`](../scenarios/e2e-finetune-multimodal.md) (fully-multimodal
 + multi-provider, found FT-I…FT-L → folded into 0.3.0). With both passes clear of unresolved blockers,
-KFT is **Candidate**, ready for ecosystem-owner ratification sign-off. The stressors run so far:
+KFT is **Ratified** (2026-07-23) — the four-plane composition holds under both a text and a
+fully-multimodal, multi-provider pass with no redesign required. The stressors exercised:
 
 - **Egress gate (§4.2):** a Pinakes Qwen SLM QLoRA over a corpus containing one `local-only` record
   — the run MUST pin to local MPS and MUST reject a `single-gpu-a100-80gb` (cloud) placement with a
@@ -439,6 +478,12 @@ KFT is **Candidate**, ready for ecosystem-owner ratification sign-off. The stres
 
 ## Changelog
 
+- **0.3.0 — Ratified** (2026-07-23) — Status Candidate → **Ratified** after both pressure passes
+  (`scenarios/e2e-finetune.md`, `scenarios/e2e-finetune-multimodal.md`) cleared with no unresolved
+  blockers and no redesign. No contract change from the 0.3.0 candidate — ratification is the status
+  transition on the same normative surface. Fine-tuning is now a **ratified profile** composing the
+  four planes; downstream runtime work (agora general `trainer`, Pinakes specialized provider,
+  cuneiform KCB client) is recorded as cross-repo follow-ups (§9), not built in koine.
 - **0.3.0** (2026-07-22) — Folded second-pass deltas from `scenarios/e2e-finetune-multimodal.md`:
   **FT-I** (per-sample multimodal pairing rides the `dataset-jsonl-header` training records; the
   `knowledge`/`media` arrays are referenced corpora — §3/§4.1), **FT-J** (an unsatisfiable

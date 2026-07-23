@@ -19,7 +19,14 @@ namespace — see [`../decisions/ADR-0003-deprecate-rosetta.md`](../decisions/AD
   graph export (personal trust tier, KGP §7).
 - [`dataset-jsonl-header.schema.json`](dataset-jsonl-header.schema.json) — first record of every
   training-exhaust JSONL file; carries tier + license + provenance.
-- [`finetune-job.schema.json`](finetune-job.schema.json) — KFT fine-tuning job manifest.
+- [`finetune-job.schema.json`](finetune-job.schema.json) — KFT fine-tuning job manifest
+  (the `invoke` payload; [`../specs/fine-tuning.md`](../specs/fine-tuning.md) §3, KFT 0.3.0). `$ref`s
+  `provenance.schema.json#/$defs/contractVersion` (as `kft_version`) and `dataset-jsonl-header.schema.json`
+  (as `dataset.header`) — both resolve within this directory once koine:10 has landed them.
+- [`fixtures/finetune-job.json`](fixtures/finetune-job.json) — a single **golden positive** example of
+  a finetune job, kept off any library surface (like koine's other fixtures). It validates green against
+  `finetune-job.schema.json`; the full negative/conformance fixture suite is agora's, not koine's (see
+  Scope below).
 
 ## The four portability axes (KGP 0.4.0)
 
@@ -70,6 +77,16 @@ fourth conflated key.
 
 Koine holds **only** the machine-readable contract: the schemas in this directory plus the policy
 enums above. Per ADR-0001 (koine = contracts / agora = runtime), the thin validators
-(`validate.py` / `ajv`) and the golden conformance fixtures that exercise these schemas are **not**
+(`validate.py` / `ajv`) and the conformance fixture *suite* that exercises these schemas are **not**
 ported into koine — they are runtime and live in **agora**, targeted at the **40 band**. See
 [`../decisions/ADR-0003-deprecate-rosetta.md`](../decisions/ADR-0003-deprecate-rosetta.md) §Decision(c).
+
+This includes `finetune-job.schema.json`: the ajv/jsonschema validators **and** the conformance CI for
+the finetune-job manifest land in **agora:40**, alongside the rosetta-absorbed validators, **not** in
+koine. What koine keeps is exactly the contract plus one `fixtures/finetune-job.json` golden positive —
+draft-2020-12 structural validation only checks the manifest's *shape*. The finetuning-specific
+**semantic** admission rules the schema can't express — `modality × method` compatibility
+([`../specs/fine-tuning.md`](../specs/fine-tuning.md) §3.1, FT-F) and egress/license aggregation over
+`{data ∪ base}` before pinning compute (§4.2, FT-B) — are the validator's job in agora, and their
+required behavior is pinned by the pressure-test scenarios
+([`../scenarios/e2e-finetune.md`](../scenarios/e2e-finetune.md) §"Schema conformance").

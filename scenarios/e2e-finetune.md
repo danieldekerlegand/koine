@@ -156,7 +156,37 @@ own egress class. §6.1 invokes eval with no egress awareness. **Delta FT-D.**
 | **FT-E** | Med | Static `cost.est_units` can't gate a variable-size (lazily-fetched) dataset; the spend ceiling is unenforceable at invoke. | Provider computes an **admission-time per-job estimate** after resolving dataset cardinality; ceiling checked against that. | KFT §7 |
 | **FT-F** | Med | `modality` and `method` are independent free fields; an incompatible combo (dpo × text-to-image) admits and fails late, after spend. | Provider validates modality×method (and base-arch) compatibility **at admission** and rejects with a report. | KFT §3.1 |
 | **FT-G** | Med (structural-ish) | `hf:model:…` is not a KINP namespace; no convention anchors an external (Hub) base model, so `derived_from` dangles. | External base models are minted KINP `model` entities carrying an **external anchor** to their Hub coordinate (as entities anchor to QIDs). | KFT §5.1 |
-| **FT-H** | Cleanup | "training-exhaust" collides with the dataset-records name; weight media types + `model` entity type + `modality` unregistered. | Rename the metric stream (**training-telemetry**); register the model media types + entity type + modality in the shared registry. | KFT §6, `registry/` |
+| **FT-H** ✅ resolved | Cleanup | "training-exhaust" collides with the dataset-records name; weight media types + `model` entity type + `modality` unregistered. | Rename the metric stream (**training-telemetry**, KFT 0.2.0 §6); **register** the model media types ([`../registry/media-types.tsv`](../registry/media-types.tsv)), the `model` entity type ([`../registry/entity-types.tsv`](../registry/entity-types.tsv)), the `modality` enum ([`../registry/enums/modality.tsv`](../registry/enums/modality.tsv)), and the `retrains` model-lineage relation ([`../registry/relations.tsv`](../registry/relations.tsv)) — landed in koine:20. | KFT §6/§3.1/§5, `registry/` |
+
+---
+
+## Schema conformance — what the (agora) validator must enforce
+
+The machine-readable job manifest is [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json)
+(draft-2020-12); its golden positive example is [`../schemas/fixtures/finetune-job.json`](../schemas/fixtures/finetune-job.json),
+which validates green. Per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) the `ajv`/`jsonschema`
+validators and the conformance CI for this manifest are built in **agora:40**, not in koine — koine ships
+only the contract plus that one golden fixture.
+
+Structural validation (draft-2020-12) catches shape errors — a missing required field (`compute`,
+`base_model`, …), a bad `modality`/`method`/`compute.egress` enum value, an empty `dataset` (neither
+`knowledge` nor `media`). It **cannot**, by construction, catch the finetuning-specific *semantic* rules
+this pressure test surfaced. Two negative cases the agora validator/admission step MUST reject that the
+schema alone will pass:
+
+1. **Incompatible `modality × method` (FT-F).** A job that is structurally valid but pairs
+   `"modality": "text-to-image"` with `"method": "dpo"` MUST be rejected **at admission** with a report,
+   before compute is committed — the enums are each individually legal, so only the compatibility contract
+   (§3.1) rejects it. `dpo × text-to-image` is the canonical negative fixture.
+2. **A cross-boundary `compute.class` under a `local-only` effective egress (FT-B / §4.2).** A job whose
+   `{data ∪ base}` aggregates to `local-only` but requests a rented `compute.class`
+   (e.g. `single-gpu-a100-80gb`) MUST be rejected (or repinned to local) — even when
+   `compute.egress` is the permissive default `derived`, because the effective egress is computed from the
+   referenced records, not asserted in the manifest.
+
+Both are behavior of the agora admission path, driven by the registry vocabulary
+([`../registry/enums/modality.tsv`](../registry/enums/modality.tsv)) and the KGP §7.2 aggregation — the
+schema's job is only to guarantee the manifest is well-formed enough for that step to run.
 
 ---
 

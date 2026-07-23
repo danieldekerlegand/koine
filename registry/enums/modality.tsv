@@ -1,0 +1,6 @@
+modality	data_planes	typical_base	typical_method	description
+text-generation	knowledge	Qwen, Llama, Mistral	sft|lora|qlora|full|dpo	Text LLM finetune; knowledge (KGP) training data only
+image-text-to-text	knowledge+media(image)	Qwen-VL, Llama-VL	lora|qlora	Vision-language image understanding; paired image (KMI) + caption (KGP)
+video-text-to-text	knowledge+media(video)	Qwen-VL	lora|qlora	Vision-language video understanding; paired video (KMI) + text (KGP)
+text-to-image	media(image)	FLUX, SD3.5	lora|full	Diffusion image generation; caption→image (KMI image) training data
+text-to-video	media(video)	Wan, LTX, CogVideoX	lora	Diffusion video generation; caption→video (KMI video) training data
