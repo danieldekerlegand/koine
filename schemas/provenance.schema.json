@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://koine.ecosystem/schemas/provenance.schema.json",
+  "title": "Koine shared building blocks",
+  "description": "Shared $defs used by every interchange schema — the machine-readable form of the KINP identity.md §7.1 assertion envelope and the KGP grounding-pack.md §7.1 license axis. Field names are contractual: source, source_url, retrieved_at, confidence, license, tier. Do not rename. Absorbed from the deprecated rosetta package (ADR-0003), rehomed to the koine namespace.",
+  "$defs": {
+    "contractVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "The koine spec version (semver) the emitting side was built against — e.g. KGP `kgp_version`, KFT `kft_version`. Supersedes rosetta's single `CONTRACT_VERSION` and its contractVersion-per-artifact discipline (ADR-0003)."
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "source": { "type": "string", "minLength": 1, "description": "Acquisition-source id, e.g. 'pinakes', 'wikidata', 'argos', 'insimul'." },
+        "source_url": { "type": "string" },
+        "retrieved_at": { "type": "string", "description": "ISO-8601 UTC." },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "required": ["source", "confidence"],
+      "additionalProperties": true
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "description": "License class per KGP §7.1 (the admission allowlist axis): an SPDX id (e.g. CC0-1.0, CC-BY-4.0, CC-BY-SA-4.0) or an ecosystem pseudo-id from policy/license-classes.json (e.g. PROPRIETARY, PERSONAL)."
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["curated", "acquired", "synthetic", "personal"],
+      "description": "Provenance trust tier per KGP §7 (policy/trust-tiers.json) — the descriptive 'how much to believe a source' axis, separate from the dialect (§5) and egress (§7.2) axes. personal and synthetic are containment-gated."
+    },
+    "csid": {
+      "type": "string",
+      "pattern": "^cs:[a-z0-9-]+:[^\\s]+$",
+      "description": "Canonical entity id: cs:<type>:<local>, QID-anchored when known (cs:language:Q1860). Structurally the KINP entity CURIE (ADR-0002 'csid -> KINP entity CURIE', identity.md §7.1)."
+    },
+    "assetId": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Content-addressed asset id — a KMI asset reference (media-interchange.md §2)."
+    },
+    "nodeRef": {
+      "anyOf": [ { "$ref": "#/$defs/csid" }, { "$ref": "#/$defs/assetId" } ],
+      "description": "A graph node reference: either a KINP entity CURIE (csid) or a content-addressed KMI assetId."
+    }
+  }
+}

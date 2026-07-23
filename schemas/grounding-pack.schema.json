@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://koine.ecosystem/schemas/grounding-pack.schema.json",
+  "title": "GroundingPack",
+  "description": "The machine-readable form of the KGP grounding-pack.md §2 envelope: real-world reference entities + Prolog facts that seed world generation or creative grounding (Pinakes -> Insimul/Argos). Exact on the envelope, ids, provenance, license; permissive on entity fields. Absorbed from rosetta (ADR-0003); US-4 reconciles the envelope onto KGP §2 and US-3 splits the portability axes.",
+  "type": "object",
+  "properties": {
+    "contractVersion": { "$ref": "provenance.schema.json#/$defs/contractVersion" },
+    "packId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string" },
+    "source": { "const": "pinakes" },
+    "domains": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "csid": { "$ref": "provenance.schema.json#/$defs/csid" },
+          "entityType": { "type": "string", "minLength": 1 },
+          "fields": { "type": "object" },
+          "provenance": { "$ref": "provenance.schema.json#/$defs/provenance" },
+          "license": { "$ref": "provenance.schema.json#/$defs/license" }
+        },
+        "required": ["csid", "entityType", "fields", "provenance", "license"],
+        "additionalProperties": true
+      }
+    },
+    "prologFacts": { "type": "array", "items": { "type": "string" } },
+    "licenseManifest": {
+      "type": "object",
+      "description": "license id -> record count; must cover every entity.",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    }
+  },
+  "required": ["contractVersion", "packId", "generatedAt", "source", "domains", "entities", "prologFacts", "licenseManifest"],
+  "additionalProperties": true
+}
