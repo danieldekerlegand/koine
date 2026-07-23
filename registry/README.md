@@ -45,6 +45,49 @@ There is no `egress` column: a core or domain relation is `exportable` (the KGP 
 egress is a property of *what a project's own predicate carries*, so it is declared per bridge
 mapping entry below, not on the shared vocabulary.
 
+## Schema and relations — two layers, one ontology
+
+[`canonical-schema.json`](canonical-schema.json) and the relation TSVs are **two distinct
+layers**, not two copies of the same thing:
+
+- The **canonical node/edge schema** is the entity **ontology**. It names *what entities are* —
+  the Neo4j `:LABEL` and `:TYPE` tokens (`language`↔`Language`, `descended-from`↔`DESCENDS_FROM`),
+  the `from`/`to` endpoint constraints on each edge, and the typed import-column contracts.
+- The **relation registry** ([`relations.tsv`](relations.tsv) + [`relations/<domain>.tsv`](relations/))
+  names the KGP **claim** relations — *how claims about those entities normalize* (arity,
+  `arg_roles`, `symmetric`, dialect `tier`), the facts that make claim normalization deterministic
+  (KGP §3.2).
+
+A claim-bearing schema edge type therefore has a counterpart relation it normalizes to; a schema
+node type does not (it is an entity, not a claim). The crosswalk is **exactly** the
+`koineRelations` already declared on the matching [`predicate-mapping.json`](predicate-mapping.json)
+entries — it is not a second declaration, only a reading of the same bridge:
+
+| Schema edge type (`name` ↔ `:TYPE`) | Registry relation | Vocabulary file |
+|---|---|---|
+| `descended-from` ↔ `DESCENDS_FROM` | `descended_from` | [`relations.tsv`](relations.tsv) (core) |
+| `located-in` ↔ `LOCATED_IN` | `located_in` | [`relations.tsv`](relations.tsv) (core) |
+| `caused-by` ↔ `CAUSED_BY` | `caused_by` | [`relations.tsv`](relations.tsv) (core) |
+| `parent-of` ↔ `PARENT_OF` | `soc:parent_of` | [`relations/social.tsv`](relations/social.tsv) (`soc:`) |
+| `spouse-of` ↔ `SPOUSE_OF` | `soc:spouse_of` | [`relations/social.tsv`](relations/social.tsv) (`soc:`) |
+| `employed-by` ↔ `EMPLOYED_BY` | `soc:employed_by` | [`relations/social.tsv`](relations/social.tsv) (`soc:`) |
+| `resides-in` ↔ `RESIDES_IN` | `soc:resides_in` | [`relations/social.tsv`](relations/social.tsv) (`soc:`) |
+
+**The schema coins no relation.** It names entity types and edge tokens; it never invents or
+redefines a relation `name`/signature. Closing a relation gap still means **adding a row to
+[`relations.tsv`](relations.tsv) / [`relations/<domain>.tsv`](relations/)** — never naming a
+relation only in the schema — the same "one vocabulary, no second source of truth" rule that
+governs the bridge mappings below. And the schema's own `name`↔`:LABEL`/`:TYPE` bindings are
+**immutable once published**: a change is a **new** node/edge type, never an in-place edit, the
+exact discipline of an immutable relation signature (a rename would silently change every
+dependent `csid` / claim id).
+
+**Why this lift matters.** With the schema promoted here, the (agora) translation engine maps
+to and from a **shared** node/edge ontology loaded from koine — not a pinakes-owned one. The
+schema, the relation vocabulary and the bridge mappings now sit in one directory, so translation
+becomes a genuine commons: every project targets the same ontology instead of a copy governed by
+a single project.
+
 ## Bridge mappings — [`predicate-mapping.json`](predicate-mapping.json)
 
 How each bridged project's own predicates cross into the canonical node/edge vocabulary
