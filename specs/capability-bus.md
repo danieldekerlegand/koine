@@ -148,7 +148,7 @@ source of truth — a provider's manifest is authoritative; the registry just ma
 | Verb | Transport | Meaning |
 |---|---|---|
 | **discover** | registry query (§3) | find providers by capability / interchange type / world |
-| **describe** | MCP `list_tools` / A2A agent-card | fetch a provider's full manifest + schemas |
+| **describe** | one A2A agent-card fetch (`/.well-known/agent-card.json`) + MCP `list_tools` for tool schemas | fetch the provider's AgentCard **including its KCB extension** (`capabilities.extensions[]`, §2) in a single fetch — there is no second `/.well-known/kcb-manifest.json` to retrieve |
 | **invoke** | MCP tool call / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference |
 | **subscribe** | A2A streaming / MCP notifications | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur |
 | **fetch** | CAS GET by `asset` id | retrieve asset bytes by their KINP id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant (§5). |
@@ -188,8 +188,8 @@ live in Cuneiform infra; KCB fixes only the *shape* of grants and signing so the
 
 | Project | Already has | KCB role |
 |---|---|---|
-| **Cuneiform** | MCP sidecars, A2A/`a2a-sdk`, workforce governance, generator seams (`_mcp`,`_a2a`) | **Host**: provisions the registry; issues grants; every workforce agent publishes a manifest. |
-| **Argos** | `/mcp`, `/.well-known/agent-card.json`, surface map `/api/spec` | Publish manifest; `produces` media + `grounding-only` knowledge (with `source_world`); `subscribe` to grounding worlds. |
+| **Cuneiform** | MCP sidecars, A2A/`a2a-sdk`, workforce governance, generator seams (`_mcp`,`_a2a`) | **Host**: provisions the registry; issues grants; every workforce agent publishes the KCB extension **on its own A2A agent-card** (no separate manifest file). |
+| **Argos** | `/mcp`, `/.well-known/agent-card.json`, surface map `/api/spec` | Publish the KCB extension **on the `/.well-known/agent-card.json`** it already serves; `produces` media + `grounding-only` knowledge (with `source_world`); `subscribe` to grounding worlds. |
 | **Pinakes** | resolver + KGP producer, graph API | Expose `resolve`/`reconcile`/`query` and KGP snapshot/delta as capabilities; the authority provider. |
 | **Insimul** | game server, generators | Consume grounding capabilities; expose world-export as a capability; agents (NPCs) MAY publish manifests. |
 | **Formant** | (agents planned) | Consumer now (ground plugin design); later **provider** — expose "play this plugin" as an invocable capability so Argos's composer/sound-designer agents can drive Formant plugins (Formant's own roadmap). |
