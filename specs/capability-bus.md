@@ -260,7 +260,20 @@ Exercised by [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-tran
 All blocking deltas were folded in 0.2.0: **F** (ports span all planes, §2.1/§3), **G**
 (`fetch` verb §4 + `fetch:asset` grant §5), **J** (`world_pattern` on media ports, §2.1/§3),
 **K** (capability `cost` + grant spend ceiling + cost-aware path search, §2.1/§3/§5), **L**
-(dangling-reference tolerance, §4). Ratified.
+(dangling-reference tolerance, §4).
+
+**0.3.0 re-check — the AgentCard-extension collapse reopens none of F/G/J/K/L.** The change is
+one of *shape and location*, not of the port/cost/world model: F's cross-plane ports and K's
+capability `cost` moved verbatim into the extension's `params.produces`/`consumes`/`capabilities`
+(§2.1), and J's `world_pattern` still rides on media ports in `params.produces` — the port table,
+the "compose a score from a mood" cross-plane leg, and cost-aware path search all hold unchanged,
+now matched off peers' card extensions (§3). G (`fetch` verb + `fetch:asset` grant) and L
+(dangling-reference tolerance) live in §4/§5 and are untouched by the manifest collapse. Because no
+delta is reopened, the 0.3.0 **Candidate** has a clean re-ratification path: re-run
+[`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) against the extension
+shape (discovery now crawls the `https://koine.dev/kcb/manifest/0.3` extension off
+`/.well-known/agent-card.json` rather than fetching a standalone `/.well-known/kcb-manifest.json`)
+and confirm each leg still resolves; nothing in the port contract needs to change to re-ratify.
 
 ## Changelog
 
