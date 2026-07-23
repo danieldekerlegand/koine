@@ -1,8 +1,8 @@
 # Koine Fine-Tuning Protocol (KFT)
 
 **Spec version:** 0.3.0
-**Status:** Candidate
-**Last updated:** 2026-07-22
+**Status:** Ratified
+**Last updated:** 2026-07-23
 **Applies to:** agora (provider/implementation), Cuneiform (host: registry, grants, orgs),
 Pinakes (specialized adapter + training-data producer), Insimul / Argos / Formant
 (training-data producers + finetuned-model consumers).
@@ -422,7 +422,8 @@ stub loss curve replaced by the §6 stream, its 404 registry by §8, its export 
 found FT-A…FT-H → folded into 0.2.0) and
 [`../scenarios/e2e-finetune-multimodal.md`](../scenarios/e2e-finetune-multimodal.md) (fully-multimodal
 + multi-provider, found FT-I…FT-L → folded into 0.3.0). With both passes clear of unresolved blockers,
-KFT is **Candidate**, ready for ecosystem-owner ratification sign-off. The stressors run so far:
+KFT is **Ratified** (2026-07-23) — the four-plane composition holds under both a text and a
+fully-multimodal, multi-provider pass with no redesign required. The stressors exercised:
 
 - **Egress gate (§4.2):** a Pinakes Qwen SLM QLoRA over a corpus containing one `local-only` record
   — the run MUST pin to local MPS and MUST reject a `single-gpu-a100-80gb` (cloud) placement with a
@@ -439,6 +440,12 @@ KFT is **Candidate**, ready for ecosystem-owner ratification sign-off. The stres
 
 ## Changelog
 
+- **0.3.0 — Ratified** (2026-07-23) — Status Candidate → **Ratified** after both pressure passes
+  (`scenarios/e2e-finetune.md`, `scenarios/e2e-finetune-multimodal.md`) cleared with no unresolved
+  blockers and no redesign. No contract change from the 0.3.0 candidate — ratification is the status
+  transition on the same normative surface. Fine-tuning is now a **ratified profile** composing the
+  four planes; downstream runtime work (agora general `trainer`, Pinakes specialized provider,
+  cuneiform KCB client) is recorded as cross-repo follow-ups (§9), not built in koine.
 - **0.3.0** (2026-07-22) — Folded second-pass deltas from `scenarios/e2e-finetune-multimodal.md`:
   **FT-I** (per-sample multimodal pairing rides the `dataset-jsonl-header` training records; the
   `knowledge`/`media` arrays are referenced corpora — §3/§4.1), **FT-J** (an unsatisfiable
