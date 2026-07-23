@@ -132,9 +132,12 @@ consume, so multimodal fine-tuning inherits an existing, ratified data plane rat
 `modality` and `method` are **not** independent: a provider **MUST validate** the
 `modality × method` combination (and the base model's architecture) **at admission** and reject an
 incompatible request — e.g. `dpo` on `text-to-image` — with a report, before any compute is
-committed (FT-F). The `modality` vocabulary, the `model` entity type, and the weight/export
-`media_type`s (§5.3) are registered in koine's shared registry (`registry/`, `registry/relations/media.tsv`)
-so path-matching and validators recognize them (FT-H).
+committed (FT-F). The `modality` enum ([`../registry/enums/modality.tsv`](../registry/enums/modality.tsv)),
+the `model` entity type ([`../registry/entity-types.tsv`](../registry/entity-types.tsv)), and the
+weight/export `media_type`s (§5.3, [`../registry/media-types.tsv`](../registry/media-types.tsv)) are
+registered in koine's shared registry so path-matching and validators recognize them from data, not
+prose — closing **FT-H**. These tokens are immutable once published (a change is a new token, never an
+edit in place), the same discipline as an immutable relation signature.
 
 ---
 
@@ -211,7 +214,8 @@ whole training lineage is queryable on the fabric.
 
 ### 5.1 Models are KINP entities
 
-Base and finetuned models are KINP entities of type `model` (with a `modality` refinement, §3.1).
+Base and finetuned models are KINP entities of type `model` (with a `modality` refinement, §3.1) —
+the type + its refinement registered in [`../registry/entity-types.tsv`](../registry/entity-types.tsv).
 An **external** base model (Hugging Face Hub, etc.) is a *minted* KINP `model` entity carrying an
 **external anchor** to its Hub coordinate — exactly as KINP entities anchor to Wikidata QIDs — so it
 is a resolvable fabric node, not an ad-hoc `hf:…` string (FT-G). A finetuned model id is likewise
@@ -248,14 +252,17 @@ nondeterminism means two identical runs do not produce byte-identical weights, s
 id **cannot** be content-addressed the way KGP packs and KMI assets are (KGP §2.1). The
 **reproducibility anchor is the run** — the `job` activity with its pinned input ids, `seed`, and
 `config_hash` — not the model bytes. A re-train over the same inputs mints a *new* model entity
-linked to its predecessor with a `retrains` / `supersedes` lifecycle relation (KINP §4), never a
-silent id collision.
+linked to its predecessor with a `retrains` / `supersedes` lifecycle relation (KINP §4;
+[`../registry/relations.tsv`](../registry/relations.tsv) — `retrains` is registered there alongside
+`supersedes` / `retracts`), never a silent id collision.
 
 ### 5.3 Weights & exports are KMI assets — the export matrix *is* the lineage graph
 
 Model weights are large bytes → KMI assets (byte-hash id, `application/vnd.koine.model+…` media
-type, fetched via `fetch:asset`). **Every export format is another asset in the KMI lineage graph
-(KMI §3)** — no bespoke export registry:
+type — registered in [`../registry/media-types.tsv`](../registry/media-types.tsv) — fetched via
+`fetch:asset`). **Every export format is another asset in the KMI lineage graph
+(KMI §3)** — no bespoke export registry; the `media:derived_from` / `media:variant_of` links below
+are the KMI relations in [`../registry/relations/media.tsv`](../registry/relations/media.tsv):
 
 | Artifact | KMI media type | Lineage link |
 |---|---|---|

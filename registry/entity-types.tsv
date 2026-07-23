@@ -1,0 +1,2 @@
+entity_type	plane	refinement	refinement_enum	external_anchor	description
+model	entity	modality	enums/modality.tsv	hub-coordinate	A base or finetuned model as a KINP entity (KFT §5.1); refined by modality (§3.1). Minted, NOT content-addressed — the run is the reproducibility anchor (FT-C). An external (Hub) base carries an external anchor to its Hub coordinate (FT-G), as KINP entities anchor to Wikidata QIDs.

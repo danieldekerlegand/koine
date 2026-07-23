@@ -45,6 +45,38 @@ There is no `egress` column: a core or domain relation is `exportable` (the KGP 
 egress is a property of *what a project's own predicate carries*, so it is declared per bridge
 mapping entry below, not on the shared vocabulary.
 
+## Entity-type, modality-enum & media-type registries (KFT)
+
+The fine-tuning profile ([`../specs/fine-tuning.md`](../specs/fine-tuning.md), KFT) contributes three
+small vocabularies so path-matching and validators recognize a finetuned-model entity, its modality,
+and its weight/export bytes (closes delta **FT-H**). Like the relation registry these are **data, not
+prose**, and each token is **immutable once published** (a change is a **new** token, never an
+in-place edit — the same discipline as an immutable relation signature; KGP §9 decision 1).
+
+- [`entity-types.tsv`](entity-types.tsv) — KINP **entity types** and their refinements. Currently the
+  KFT `model` type (KFT §5.1): plane `entity`, refined by `modality`, minted (not content-addressed,
+  FT-C), external bases carrying a Hub external anchor (FT-G). This is **not** a
+  [`canonical-schema.json`](canonical-schema.json) node type: that schema is the cultural/linguistic
+  translation ontology (immutable, mirrored from pinakes); `model` is a fabric entity of a different
+  kind, so it is registered here rather than added to that lifted schema.
+- [`enums/modality.tsv`](enums/modality.tsv) — the closed KFT `modality` enum
+  (`text-generation`, `image-text-to-text`, `video-text-to-text`, `text-to-image`, `text-to-video`),
+  shared by the model-entity `type` refinement (KFT §5), the `finetune` capability's port types
+  (KFT §2), and the job manifest (KFT §3.1). Additive: a new modality adds a row, never a new plane.
+- [`media-types.tsv`](media-types.tsv) — the weight/export `media_type`s (KFT §5.3):
+  `application/vnd.koine.model+safetensors` (weights) and the `+gguf` / `+onnx` / `+coreml` / `+tflite`
+  exports. Each row names the KMI lineage relation ([`relations/media.tsv`](relations/media.tsv))
+  its artifacts link with — weights `media:derived_from` their base, quantized/converted exports
+  `media:variant_of` the merged fp16 weights.
+
+**Model-lineage relation usage.** Model *entities* link with core lifecycle/lineage relations
+([`relations.tsv`](relations.tsv)): a finetuned model `based_on` / `derived_from` its base
+(KFT §5.1), and a re-train `retrains` / `supersedes` its predecessor (KFT §5.2) — `retrains` added
+to the core file here alongside `supersedes` / `retracts`. Model *weights/exports* are KMI **assets**
+and link with the `media:` relations above. No relation is coined only in prose or only in the media
+registry: the lineage predicates live in the relation TSVs, the media-type tokens in
+[`media-types.tsv`](media-types.tsv).
+
 ## Canonical node/edge schema — [`canonical-schema.json`](canonical-schema.json)
 
 The **entity ontology** the (agora) translation engine maps to and from — the shared node/edge

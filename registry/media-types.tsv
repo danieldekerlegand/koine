@@ -1,0 +1,6 @@
+media_type	category	lineage_relation	description
+application/vnd.koine.model+safetensors	weights	media:derived_from	LoRA adapter or merged fp16 model weights as a KMI asset (KFT §5.3); derived_from base weights (adapter) or adapter+base (merged)
+application/vnd.koine.model+gguf	export	media:variant_of	GGUF quantized export (e.g. Q4_K_M) — a byte-encoding variant of the merged fp16 weights
+application/vnd.koine.model+onnx	export	media:variant_of	ONNX export — a byte-encoding variant of the merged fp16 weights
+application/vnd.koine.model+coreml	export	media:variant_of	Apple CoreML export — a byte-encoding variant of the merged fp16 weights
+application/vnd.koine.model+tflite	export	media:variant_of	TensorFlow Lite export — a byte-encoding variant of the merged fp16 weights
