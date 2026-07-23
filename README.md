@@ -30,7 +30,7 @@ Three planes carry everything that crosses the ecosystem:
 
 | Plane | Carries | Owner / transport | Contract |
 |---|---|---|---|
-| **Control** | agent orgs, infra, tools, capabilities | Cuneiform + **MCP / A2A** | [`specs/capability-bus.md`](specs/capability-bus.md) ✅ *(ratified)* |
+| **Control** | agent orgs, infra, tools, capabilities | Cuneiform + **MCP / A2A** | [`specs/capability-bus.md`](specs/capability-bus.md) 🚧 *(candidate 0.3.0)* |
 | **Data — knowledge** | facts / predicates / graph | Pinakes (canonical store) | [`specs/grounding-pack.md`](specs/grounding-pack.md) ✅ *(ratified)* |
 | **Data — media** | assets, EDLs, metadata | Argos-originated interchange | [`specs/media-interchange.md`](specs/media-interchange.md) ✅ *(ratified)* |
 
@@ -62,7 +62,7 @@ koine/
   specs/
     identity.md                    ✅ Koine Identity & Namespace Protocol (KINP) — ratified
     grounding-pack.md              ✅ Koine Grounding-Pack Protocol (KGP) — ratified
-    capability-bus.md              ✅ Koine Capability-Bus Protocol (KCB) — ratified
+    capability-bus.md              🚧 Koine Capability-Bus Protocol (KCB) — candidate (0.3.0)
     media-interchange.md           ✅ Koine Media-Interchange Protocol (KMI) — ratified
     conformance-scenario.md        ✅ Koine Conformance-Scenario format (KCS) — ratified
   registry/

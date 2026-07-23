@@ -1,12 +1,19 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.2.0
-**Status:** Ratified
-**Last updated:** 2026-07-17
+**Spec version:** 0.3.0
+**Status:** Candidate
+**Last updated:** 2026-07-22
 **Applies to:** all five projects (Cuneiform hosts; every project both offers and consumes)
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for identifiers;
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
+
+> **Status note (0.3.0):** dropped from Ratified back to **Candidate** because 0.3.0 changes the
+> *shape* of the manifest — it is now an A2A AgentCard extension (§2), not a standalone
+> `/.well-known/kcb-manifest.json` — which re-enters validation per the koine
+> draft→candidate→ratified convention. Re-ratification path: re-run
+> [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) against the
+> extension shape (no delta F/G/J/K/L is reopened — see **Pressure test**).
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
 > capability bus moves *capability*: how a project advertises what it can do, how orgs and
@@ -125,6 +132,30 @@ extension's `params.capabilities`, so the cross-plane example remains valid on t
 X*" (J); without it, world-scoped media discovery is impossible. `cost` on a capability (in
 `params.capabilities`) lets path search prefer cheaper routes and gate spend (K).
 
+### 2.2 Migration — 0.2.0 standalone manifest → 0.3.0 card extension
+
+0.2.0 served a standalone `/.well-known/kcb-manifest.json`; 0.3.0 folds that payload onto the peer's
+existing A2A AgentCard as the `https://koine.dev/kcb/manifest/0.3` extension (§2). Field-by-field:
+
+| 0.2.0 standalone manifest field | 0.3.0 destination |
+|---|---|
+| `identity` (top-level) | **dropped** — read off the AgentCard's own agent id (`name`) |
+| `endpoints.a2a` (self-reference to the card) | **dropped** — the A2A endpoint is the card's own `url` |
+| `endpoints.mcp` (and any other non-A2A endpoint) | extension `params.mcp` (a plain `params` field) |
+| `produces` | extension `params.produces` |
+| `consumes` | extension `params.consumes` |
+| `capabilities` (incl. cross-plane ports + `cost`) | extension `params.capabilities` |
+| `auth` | extension `params.auth` |
+| `signing` | extension `params.signing` |
+
+- **Both MAY be served during transition.** A provider MAY continue serving the standalone
+  `/.well-known/kcb-manifest.json` alongside the card extension until all consumers crawl the
+  extension (§3); the extension on `/.well-known/agent-card.json` is the 0.3.0 authoritative form.
+- **`signing` MUST be preserved intact.** [`grounding-pack.md`](grounding-pack.md) line 313 declares
+  `manifest.signing = {key_id, alg}` the *shared* signing shape between the KCB manifest and KGP
+  packs; the collapse moves `signing` into `params` but MUST NOT change its shape, so provenance
+  attribution (KINP §7) stays cryptographically valid across the migration.
+
 ---
 
 ## 3. Discovery registry
@@ -233,6 +264,15 @@ All blocking deltas were folded in 0.2.0: **F** (ports span all planes, §2.1/§
 
 ## Changelog
 
+- **0.3.0** (2026-07-22) — **Candidate.** Redefined the §2 manifest as a named A2A **AgentCard
+  extension** (`capabilities.extensions[]`, uri `https://koine.dev/kcb/manifest/0.3`) instead of a
+  standalone document. Collapsed the two well-known files into one: the KCB payload now rides on the
+  peer's existing `/.well-known/agent-card.json`, so there is no separate
+  `/.well-known/kcb-manifest.json`. Dropped the duplicated top-level `identity`/`endpoints` (now read
+  off the card); moved `produces`/`consumes`/`capabilities`/`auth`/`signing` into the extension's
+  `params` with all deltas F/J/K preserved. Added a field-by-field migration note (§2.2). Status
+  dropped Ratified→Candidate pending re-validation of the extension shape against
+  `scenarios/e2e-media-transform.md`.
 - **0.2.0** (2026-07-17) — **Ratified.** Folded pressure-test deltas: F (cross-plane ports),
   G (`fetch` verb + `fetch:asset` grant), J (`world_pattern` on media ports), K (spend ceilings
   and cost-aware path search), L (dangling-reference tolerance).
