@@ -46,6 +46,11 @@
       "pattern": "^cs:[a-z0-9-]+:[^\\s]+$",
       "description": "Canonical entity id: cs:<type>:<local>, QID-anchored when known (cs:language:Q1860). Structurally the KINP entity CURIE (ADR-0002 'csid -> KINP entity CURIE', identity.md §7.1)."
     },
+    "claimId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*:claim:sha256-[0-9a-f]{64}$",
+      "description": "The KINP assertion-envelope id (identity.md §7.1): <namespace>:claim:sha256-<hex>, e.g. argos:claim:sha256-9f3c…. Content-addressed — the hash of the normalized claim (KGP §3), so identical claims from different producers dedup/merge. Replaces rosetta's ad-hoc fact ids (ADR-0003)."
+    },
     "assetId": {
       "type": "string",
       "pattern": "^sha256:[0-9a-f]{64}$",
