@@ -9,6 +9,7 @@
     "packId": { "type": "string", "minLength": 1 },
     "generatedAt": { "type": "string" },
     "source": { "const": "pinakes" },
+    "dialect": { "$ref": "provenance.schema.json#/$defs/dialect", "description": "Pack-level logic dialect (KGP §2 envelope, §5) — the highest logic tier a consumer may evaluate over this pack's prologFacts. NOT an egress or trust field; local-only is excluded here because it is an egress class, not a dialect tier (KGP §5)." },
     "domains": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
     "entities": {
       "type": "array",
@@ -19,7 +20,8 @@
           "entityType": { "type": "string", "minLength": 1 },
           "fields": { "type": "object" },
           "provenance": { "$ref": "provenance.schema.json#/$defs/provenance" },
-          "license": { "$ref": "provenance.schema.json#/$defs/license" }
+          "license": { "$ref": "provenance.schema.json#/$defs/license" },
+          "egress": { "$ref": "provenance.schema.json#/$defs/egress" }
         },
         "required": ["csid", "entityType", "fields", "provenance", "license"],
         "additionalProperties": true

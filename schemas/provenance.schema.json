@@ -30,6 +30,17 @@
       "enum": ["curated", "acquired", "synthetic", "personal"],
       "description": "Provenance trust tier per KGP §7 (policy/trust-tiers.json) — the descriptive 'how much to believe a source' axis, separate from the dialect (§5) and egress (§7.2) axes. personal and synthetic are containment-gated."
     },
+    "dialect": {
+      "type": "string",
+      "enum": ["grounding-only", "horn-safe", "full-prolog"],
+      "description": "Logic dialect per KGP §5 — what logic a consumer may safely evaluate: grounding-only (ground facts, no rules), horn-safe (definite Horn clauses), full-prolog (unrestricted). One of rosetta's conflated portabilityFlags, now its own axis (ADR-0003). NOTE local-only is NOT a dialect tier — it is an egress class (KGP §5), see the egress $def. Distinct from the egress (§7.2) and trust-tier (§7) axes."
+    },
+    "egress": {
+      "type": "string",
+      "enum": ["exportable", "local-only"],
+      "default": "exportable",
+      "description": "Egress class per KGP §7.2 — whether a record may cross a project boundary at all: exportable (default) or local-only. Enforced at pack construction (producer filters local-only out) and on import (consumer rejects local-only and reports). One of rosetta's conflated portabilityFlags, now its own axis (ADR-0003); separate from the descriptive provenance trust tier (§7) and the dialect (§5) axis."
+    },
     "csid": {
       "type": "string",
       "pattern": "^cs:[a-z0-9-]+:[^\\s]+$",

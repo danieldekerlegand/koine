@@ -27,7 +27,8 @@
             "additionalProperties": true
           },
           "provenance": { "$ref": "provenance.schema.json#/$defs/provenance" },
-          "license": { "$ref": "provenance.schema.json#/$defs/license" }
+          "license": { "$ref": "provenance.schema.json#/$defs/license" },
+          "egress": { "$ref": "provenance.schema.json#/$defs/egress" }
         },
         "required": ["csid", "entityType", "name", "keys", "provenance", "license"],
         "additionalProperties": true
