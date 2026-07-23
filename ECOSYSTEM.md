@@ -152,6 +152,7 @@ first):
 | [`specs/capability-bus.md`](specs/capability-bus.md) (KCB) | control plane | **Ratified** 0.2.0 |
 | [`specs/media-interchange.md`](specs/media-interchange.md) (KMI) | media data plane | **Ratified** 0.2.0 |
 | [`specs/conformance-scenario.md`](specs/conformance-scenario.md) (KCS) | test/verification format | **Ratified** 0.2.0 |
+| [`specs/fine-tuning.md`](specs/fine-tuning.md) (KFT) | fine-tuning profile (composes KCB/KGP/KMI/KINP) | **Candidate** 0.3.0 |
 | [`registry/`](registry/) | shared vocabularies | Relation registry seeded |
 
 See [`README.md`](README.md) for the repo's purpose and [`CLAUDE.md`](CLAUDE.md) for working

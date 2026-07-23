@@ -32,6 +32,15 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
   probe, asset-lineage graph (KINP delta E), canonical JSON EDL + NLE projections (with media
   map), analysis→KGP bridge, transforms typed by KCB ports; `source_world` conditional-on-ingest
   and per-asset.
+- `specs/fine-tuning.md` — KFT 0.3.0, **candidate** (two pressure passes: `scenarios/e2e-finetune.md`
+  → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L, all folded). Fine-tuning is
+  **multi-provider** — agora's general trainer + Pinakes's own specialized `finetune` provider, routed
+  by the registry. Fine-tuning as a *profile* composing the four
+  planes (no fifth plane): the `finetune` KCB capability + job manifest, KGP-egress-gated cloud/local
+  placement (§4.2, operationalizes KGP §7.2's "training set" clause), models-as-KINP-entities +
+  weights/exports-as-KMI-lineage (§5), training-exhaust metric stream (§6). Machine-readable twin
+  `koine/schemas/finetune-job.schema.json` + validators land in agora (ADR-0001), gated on koine:10.
+  Pressure test `scenarios/e2e-finetune.md` pending before Candidate.
 - `registry/` — shared vocabularies; `relations.tsv` (core, **binary** relations only) +
   `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
   `relations/social.tsv` (soc:), plus `predicate-mapping.json` (registryVersion 0.4.0) — the
