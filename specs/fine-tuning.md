@@ -391,6 +391,37 @@ Cuneiform is the control-plane host: it provisions the trainer as an org, hosts 
 grants, and its Go CLI / HTTP surface becomes a KCB client (discover → invoke → subscribe) — its
 stub loss curve replaced by the §6 stream, its 404 registry by §8, its export subcommands by §5.3.
 
+### 9.1 Downstream tasklists (cross-repo follow-ups — not built in koine)
+
+Per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) (koine = contracts, no runtime code)
+and the multi-provider decision (FT-K), ratifying KFT here **hands three runtime tasklists to their
+target repos**. None of them is authored or built in koine — they are recorded in the program map
+([`../tasks/chief/README.md`](../tasks/chief/README.md), Tranche D), authored in their own repos when
+scheduled, and run under those repos' own quality gates. The band numbers follow the ecosystem
+convention (a numeric prefix groups a program into a band; the **80s band = externally blocked on
+another repo**):
+
+| # | Tasklist | Repo | Role | `dependsOn` (numbered stems) |
+|---|---|---|---|---|
+| (a) | `90-finetune-trainer` | **agora** | The **general** `finetune` provider — the `trainer`/finetune-router leaf capability, sibling to (and **never merged with**) the provider-router; engine ladder LLaMA-Factory / Unsloth / Axolotl / diffusers, SkyPilot backend selection **gated by the §4.2 egress class**. Cloud-capable. | `agora:10-agora-bootstrap`, `koine:20-kft-finetune-profile` |
+| (b) | `90-finetune-provider` | **pinakes** | Pinakes's **own specialized** `finetune` provider — its `ml/` TRL+PEFT (SLM + neurosymbolic + Mac-MPS) path exposed as a distinct capability **on the bus, NOT an adapter inside agora**, routed to by the registry (§8/FT-K); its synthetic/proprietary/personal-tier data makes it inherently **local-only**. | `koine:20-kft-finetune-profile`, `pinakes:41-publish-kcb-manifest` |
+| (c) | `90-finetune-client` | **cuneiform** | The KCB **client** replacing `Runner::Stub` — discover → invoke → **subscribe** to the real §6 training-telemetry stream, un-404-ing export (§5.3) and the registry (§8), and issuing `invoke:finetune` grants (§7). | `koine:20-kft-finetune-profile` *(builds against stub manifests; **dials `agora:90` + `pinakes:90` at runtime** — its live end-to-end run is externally blocked on ≥1 real provider, the 80s-band condition)* |
+
+Two further handoffs are recorded in the same program map, downstream of the three above:
+- **`agora:41-finetune-job-validator`** — the ajv/jsonschema validator + conformance CI for
+  `finetune-job.schema.json` (§3), the US-3 handoff, landing in agora's 40 band alongside the
+  rosetta-absorbed validators (`dependsOn agora:40-absorb-rosetta-validators-ci`,
+  `koine:20-kft-finetune-profile`); the **semantic** admission rules (modality×method, egress
+  aggregation) stay in the providers (a) / (b).
+- **`formant:90-finetune-kft-bridge`** — the flagship consumer, realigning task 17's generic
+  "Cuneiform finetune bridge" onto the real KFT contract (`dependsOn
+  formant:16-agentic-design-assistants`, `koine:20-kft-finetune-profile`).
+
+The other consumers — **Argos** (finetuned media models) and **Insimul** (finetuned SLM GGUF into
+`LocalAIService`) — consume through their existing model loaders (point a loader at a
+registry-resolved asset), so they need configuration, not a dedicated wiring tasklist. The full
+build-order graph is in the program map.
+
 ---
 
 ## 10. Per-project mapping
