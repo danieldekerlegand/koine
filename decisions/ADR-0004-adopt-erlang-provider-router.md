@@ -98,3 +98,46 @@ backpressure**: a slow subscriber's mailbox absorbs and throttles its own stream
 the others. This is a *fit note*, not a contract claim: firehose flow-control **remains an
 agora / Cuneiform (costadvisor) infra concern**, exactly as §7 leaves it, and is **NOT a KCB
 contract change** — the `subscribe` verb, its payloads, and its idempotency guarantees are untouched.
+
+---
+
+## Interop — Rust stays CPU-bound, reached from the BEAM
+
+**Decision 3 — CPU-bound translation/normalization stays in Rust, invoked from the BEAM.** The
+BEAM is chosen for concurrency and uptime, not for raw single-threaded throughput; the CPU-bound
+translation and normalization the router and its subscribers call into stays in **Rust** and is
+invoked from Erlang across an in-node boundary. The concrete mechanism is either a **NIF** (e.g.
+[`rustler`](https://github.com/rusterlium/rustler)-generated native functions linked into the node)
+or an **isolated port program** (the Rust work runs as a separate OS process the BEAM talks to over
+a port). This is the operational form of the language-synthesis premise from the Context: **Rust =
+CPU-bound, Erlang = concurrency/uptime**, wired together in one node.
+
+**The uptime constraint is explicit.** The supervision tree of Decision 1 exists to give an
+always-completes guarantee, and a native call must not be able to defeat it. A NIF runs *inside* a
+BEAM scheduler thread, so a NIF that blocks too long or crashes can stall or take down a scheduler —
+and with it the very supervision tree the always-completes invariant depends on. Therefore any
+CPU-bound native work either (i) runs as a **NIF on a dirty scheduler** and stays **short-lived and
+non-blocking** (never occupying a normal scheduler, never running unbounded), or (ii) runs behind a
+**port / external process** whose crash the BEAM observes as an ordinary child failure the
+supervision tree can absorb. Either way a crashing or long-running translator **cannot take down a
+scheduler or the tree** — the always-completes guarantee the OTP tree is built to give survives the
+native boundary.
+
+**The class of work that stays Rust-side — by reference only.** The ecosystem already draws this
+CPU-bound line elsewhere, and this ADR names those surfaces **only as the *class* of work that
+belongs in Rust**, without re-specifying any of them (koine is contracts-only):
+[KGP §3](../specs/grounding-pack.md) **claim normalization** — the normative byte-canonicalization
+that maps a claim's canonical byte string to its `sha256-…` claim id — and the related
+**TSV ⇔ projection** translation, plus the **Insimul-native Trealla ABI reasoning core**, are the
+kind of deterministic, CPU-bound byte work that stays Rust-side. Those contracts are defined in
+their own specs and repos; this ADR does not restate or amend them — it only records that
+provider-router translation is the *same class* of work and lands on the *same side* of the split.
+
+**"Dumb pipes, smart endpoints" is not violated.** The Rust ⇔ Erlang boundary is **in-node interop
+private to the provider-router implementation** — invisible on the wire, appearing nowhere in the
+OpenAI-compatible `/v1` surface or the KCB manifest. Calling native code inside one leaf capability
+does **not** turn the router into a payload-aware, content-transforming proxy on the control plane;
+it stays a leaf that other platforms reach over the wire. This keeps the ADR clear of the
+**ESB / distributed-monolith anti-pattern** that
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) rejects: the smarts live *inside* an
+endpoint, the pipes between endpoints stay dumb.
