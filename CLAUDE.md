@@ -25,9 +25,11 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
   (Pinakes-as-authority, hybrid merge policy, `@world(W)` argument); `embedding_model` added.
 - `specs/grounding-pack.md` — KGP 0.2.0, **ratified**. Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed.
-- `specs/capability-bus.md` — KCB 0.2.0, **ratified**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.3.0, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
-  spend ceilings, dangling-ref tolerance.
+  spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
+  extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
+  card; back to candidate pending re-validation vs `scenarios/e2e-media-transform.md`.
 - `specs/media-interchange.md` — KMI 0.2.0, **ratified**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), canonical JSON EDL + NLE projections (with media
   map), analysis→KGP bridge, transforms typed by KCB ports; `source_world` conditional-on-ingest
@@ -46,8 +48,9 @@ projects (Insimul, Pinakes, Cuneiform, Argos, Formant). See `README.md` for the 
   `relations/social.tsv` (soc:), plus `predicate-mapping.json` (registryVersion 0.4.0) — the
   bridge layer mapping argos's and insimul's own predicates onto that vocabulary. A relation's
   signature is immutable once published (changing it changes every dependent claim id).
-- **All four planes RATIFIED**, each validated by a pressure test (`scenarios/`). Contract layer
-  complete. Deltas F–L from `scenarios/e2e-media-transform.md` folded into KCB 0.2.0 + KMI 0.2.0.
+- **All four planes** validated by a pressure test (`scenarios/`); contract layer complete. Deltas
+  F–L from `scenarios/e2e-media-transform.md` were folded into KCB 0.2.0 + KMI 0.2.0 (KMI ratified;
+  KCB now **0.3.0 candidate** after the §2 manifest→AgentCard-extension redefinition, deltas intact).
 - `decisions/ADR-0004-adopt-erlang-provider-router.md` — **Accepted** (a record). Adopts Erlang/OTP
   for the provider-router (the always-completes `paid→mlx→local→placeholder` ladder as an OTP
   supervision tree) + KCB §4 `subscribe` fan-out (one BEAM process per subscriber); CPU-bound
