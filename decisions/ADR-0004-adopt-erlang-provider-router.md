@@ -141,3 +141,51 @@ it stays a leaf that other platforms reach over the wire. This keeps the ADR cle
 **ESB / distributed-monolith anti-pattern** that
 [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) rejects: the smarts live *inside* an
 endpoint, the pipes between endpoints stay dumb.
+
+---
+
+## Supersession — the Python router's language, not its contract
+
+**Decision 4 — this supersedes the *language choice* of the Python `agora_provider_router`
+package, and nothing else.** The reference router stood up under the agora `50-provider-router-extract`
+tasklist is a Python/asyncio package; Decision 1 re-homes that leaf on Erlang/OTP. What is
+superseded is **only the language/runtime**. The router's **external contract is preserved
+byte-for-byte**:
+
+- The **OpenAI-compatible `/v1` wire surface** is unchanged. Every dialable backend speaks the
+  OpenAI wire format, so dispatch is a single code path regardless of which rung answers — that
+  property is a *contract with callers*, not an implementation detail of Python, and the Erlang
+  router presents the identical `/v1` surface.
+- The **KCB manifest at `/.well-known/kcb-manifest.json`** (`manifest.py` `MANIFEST_PATH`) is
+  served unchanged. A registry crawl (KCB §3) and any caller must see a **byte-identical manifest**
+  across the language change.
+
+**The preserved manifest surface, concretely.** The Erlang router republishes the same document
+`manifest.py` builds today:
+
+- the `generate.<modality>` **capabilities**, each carrying a `cost` object of
+  `tier` / `est_units` / `basis` / `unpriced` (KCB §2 / §2.1) — e.g. a keyless binary advertising
+  `{"tier": "placeholder", "est_units": 0}` and the same binary with a key advertising its paid
+  tier, figures made comparable by the shared `basis`;
+- the `auth.budget_units` **spend-ceiling declaration** (KCB §5) — the currency and ceiling a caller
+  reads before dialing;
+- the router **identity `agora:agent:provider-router`** (`ROUTER_IDENTITY`).
+
+Because these are the same bytes, a KCB §3 registry crawl and every downstream caller are blind to
+the language migration underneath.
+
+**Downstream adopters are unaffected — they call over the wire.** ADR-0001 decision 1 keeps the
+provider-router a service reached over the wire, and its consequence states it plainly:
+*"cross-language sharing is clean: the provider-router is a service over the wire (Argos=Python,
+Cuneiform=TS both call it), never an imported library."* Because argos
+`80-provider-router-argos-adopt` and cuneiform `81-provider-router-adopt-cuneiform` call the router
+over that wire and never import it, the Python→Erlang migration needs **no change on their side**.
+The Python package's **parity suite** — `tests/test_zero_spend.py`, `tests/test_cost.py`,
+`tests/test_manifest.py`, `tests/test_conformance_fixture.py` — is the **acceptance contract for the
+Erlang port**: the port ships only when it passes the same fixtures byte-for-byte.
+
+**Scope — koine only *records* this.** koine is contracts-only, so this ADR records the decision and
+its rationale and nothing more. The **Erlang/OTP implementation and the actual port land in agora**
+(runtime commons, per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md)), **not in koine**.
+This tasklist **edits no agora, argos, or cuneiform file**; the language migration is a follow-up
+tracked in agora, recorded here as an accepted decision.
