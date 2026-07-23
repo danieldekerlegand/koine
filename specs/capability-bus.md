@@ -33,37 +33,70 @@ infra provisioning (that is Cuneiform/kiln).
 
 ## 2. The capability manifest
 
-Every project (and every agent/org within Cuneiform) publishes one manifest declaring who it
-is and what it offers, in KINP terms:
+Every project (and every agent/org within Cuneiform) advertises what it offers. It does **not**
+publish a second, standalone document for this. A capability provider already publishes an **A2A
+AgentCard** (the standard `/.well-known/agent-card.json`), which carries its identity and its
+service endpoints. The KCB manifest is therefore defined as a **named extension of that card**,
+not as a top-level file of its own: the KCB-specific payload rides as one entry under the card's
+`capabilities.extensions[]` array.
+
+A2A's `AgentCard.capabilities.extensions` field is a list of **`AgentExtension`** objects, each
+`{ uri, description, required?, params }` — the standard, in-band way to attach protocol-specific
+metadata to a card without forking the A2A schema. The KCB manifest is one such extension,
+identified by the stable extension URI **`https://koine.dev/kcb/manifest/0.3`**; its `params`
+object carries the KCB payload:
 
 ```jsonc
 {
-  "kcb_version": "0.2.0",
-  "identity":   "cuneiform:agent:composer",     // KINP agent/entity id
-  "endpoints":  {
-    "mcp":  "https://…/mcp",                     // MCP server (tools)
-    "a2a":  "https://…/.well-known/agent-card.json"
-  },
-  "produces":   [                                // ports emitted (§2.1)
-    { "plane": "media", "media_types": ["audio/wav"], "world_pattern": "*" }
-  ],
-  "consumes":   [                                // ports accepted
-    { "plane": "knowledge", "dialect": "grounding-only" },
-    { "plane": "entity",    "types": ["mood", "scene"] }
-  ],
-  "capabilities": [                              // named, invocable units; i/o are ports
-    { "name": "compose",
-      "inputs":  [ { "plane": "knowledge", "shape": "mood-descriptor" } ],  // knowledge IN
-      "outputs": [ { "plane": "media", "media_types": ["audio/midi"] } ],   // media OUT  (delta F)
-      "cost":    { "tier": "paid", "est_units": 1200 } }                    // for path cost (delta K)
-  ],
-  "auth":       { "scheme": "capability-token", "grants_required": ["invoke:compose"] },
-  "signing":    { "key_id": "…", "alg": "ed25519" }   // shared shape with KGP manifest.signing
+  // ── standard A2A AgentCard fields (abridged) ──
+  "name":     "cuneiform:agent:composer",        // card identity — the KINP agent/entity id
+  "url":      "https://…/a2a",                    // A2A service endpoint (the card's own)
+  "capabilities": {
+    "extensions": [
+      // ── the KCB manifest, as ONE AgentExtension on the card ──
+      {
+        "uri":         "https://koine.dev/kcb/manifest/0.3",
+        "description": "Koine capability-bus manifest",
+        "required":    false,
+        "params": {
+          "kcb_version": "0.3.0",
+          "mcp":         "https://…/mcp",          // MCP tools endpoint the extension still needs
+          "produces":    [                          // ports emitted (§2.1)
+            { "plane": "media", "media_types": ["audio/wav"], "world_pattern": "*" }
+          ],
+          "consumes":    [                          // ports accepted
+            { "plane": "knowledge", "dialect": "grounding-only" },
+            { "plane": "entity",    "types": ["mood", "scene"] }
+          ],
+          "capabilities": [                         // named, invocable units; i/o are ports
+            { "name": "compose",
+              "inputs":  [ { "plane": "knowledge", "shape": "mood-descriptor" } ], // knowledge IN
+              "outputs": [ { "plane": "media", "media_types": ["audio/midi"] } ],  // media OUT (delta F)
+              "cost":    { "tier": "paid", "est_units": 1200 } }                   // for path cost (delta K)
+          ],
+          "auth":     { "scheme": "capability-token", "grants_required": ["invoke:compose"] },
+          "signing":  { "key_id": "…", "alg": "ed25519" }  // shared shape with KGP manifest.signing
+        }
+      }
+    ]
+  }
 }
 ```
 
-- `identity` uses the KINP namespace, so **a capability provider is itself a fabric entity** —
-  an agent can be referenced, grounded, and reasoned about like any other node.
+- The KCB extension carries **only** the KCB-specific fields — `kcb_version`, `produces`,
+  `consumes`, `capabilities` (with cross-plane ports + `cost`), `auth`, and `signing`. It
+  **drops** the old top-level `identity` and `endpoints` blocks: those duplicated fields the
+  AgentCard already carries and are now **read off the card itself** — `identity` from the card's
+  own agent id (`name`), and the A2A endpoint from the card's own service URL. Any non-A2A
+  endpoint the extension still needs (e.g. the MCP tools URL) is a plain field in `params`.
+- Because the provider's identity is the card's KINP agent id, **a capability provider is itself a
+  fabric entity** — an agent can be referenced, grounded, and reasoned about like any other node.
+- **Prior art (in-ecosystem).** Extending A2A by convention rather than forking it is already the
+  house style: Cuneiform's
+  `cuneiform/core/engine/crates/cuneiform-engine/src/a2a/protocol.rs` defines the Google-A2A-aligned
+  `AgentCard` type and already extends the standard A2A `Message` with two ACL extensions
+  (`fromAgent` / `toAgent`, lines 98–114). The KCB manifest applies the same convention to the
+  card's `capabilities.extensions[]`.
 
 ### 2.1 Ports span all planes (delta F)
 
