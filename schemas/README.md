@@ -1,8 +1,10 @@
 # koine/schemas — the machine-readable twin of the prose specs
 
-JSON Schema (draft-2020-12) formalizations of the KGP/KINP/KFT interchange contracts.
-Absorbed from the deprecated **rosetta** package and rehomed to the `https://koine.ecosystem/schemas/…`
-namespace — see [`../decisions/ADR-0003-deprecate-rosetta.md`](../decisions/ADR-0003-deprecate-rosetta.md).
+JSON Schema (draft-2020-12) formalizations of the KGP/KINP/KFT interchange contracts, published under
+the `https://koine.ecosystem/schemas/…` namespace. Every schema is **role-scoped** — it names producers,
+consumers, and authorities, never a specific product. Illustrative CURIEs use the placeholder namespaces
+registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `worldsim` / `analyzer` /
+`mediastore` / `orchestrator` / `provider`).
 
 ## Layout
 
@@ -13,10 +15,10 @@ namespace — see [`../decisions/ADR-0003-deprecate-rosetta.md`](../decisions/AD
 - [`grounding-pack.schema.json`](grounding-pack.schema.json) — KGP §2 grounding-pack envelope.
 - [`entity-grounding-snapshot.schema.json`](entity-grounding-snapshot.schema.json) — compact,
   license-filtered entity snapshot (KGP §2 entity envelope).
-- [`canonical-world-export.schema.json`](canonical-world-export.schema.json) — Insimul → Pinakes
-  generated-world export (synthetic trust tier, KGP §7).
-- [`argos-canonical-export.schema.json`](argos-canonical-export.schema.json) — Argos `to_canonical`
-  graph export (personal trust tier, KGP §7).
+- [`canonical-world-export.schema.json`](canonical-world-export.schema.json) — a **world producer's**
+  generated-world export to a knowledge authority (synthetic trust tier, KGP §7).
+- [`canonical-graph-export.schema.json`](canonical-graph-export.schema.json) — a **producer's**
+  canonical node/edge graph export (personal trust tier, KGP §7).
 - [`dataset-jsonl-header.schema.json`](dataset-jsonl-header.schema.json) — first record of every
   training-exhaust JSONL file; carries tier + license + provenance.
 - [`finetune-job.schema.json`](finetune-job.schema.json) — KFT fine-tuning job manifest
@@ -25,13 +27,13 @@ namespace — see [`../decisions/ADR-0003-deprecate-rosetta.md`](../decisions/AD
   (as `dataset.header`) — both resolve within this directory once koine:10 has landed them.
 - [`fixtures/finetune-job.json`](fixtures/finetune-job.json) — a single **golden positive** example of
   a finetune job, kept off any library surface (like koine's other fixtures). It validates green against
-  `finetune-job.schema.json`; the full negative/conformance fixture suite is agora's, not koine's (see
-  Scope below).
+  `finetune-job.schema.json`; the full negative/conformance fixture suite is a runtime concern, not
+  koine's (see Scope below).
 
 ## The four portability axes (KGP 0.4.0)
 
-Rosetta conflated logic-dialect and egress under one `portabilityFlags` key. KGP 0.4.0 separates
-them; the ported schemas model each as its own field so no consumer inherits the merged axis:
+Logic-dialect and egress are commonly conflated under one "portability" flag. KGP 0.4.0 keeps them
+apart; the schemas model each as its own field so no consumer inherits a merged axis:
 
 | Axis | `$def` | Values | Spec | Says |
 |---|---|---|---|---|
@@ -47,18 +49,17 @@ Where the axes appear:
 - **`dialect`** — a pack-level property on the `grounding-pack` envelope (KGP §2).
 - **`egress`** — a per-record property (defaulting to `exportable`) on the entity/node/edge record
   shapes (`grounding-pack.entities`, `entity-grounding-snapshot.entities`,
-  `argos-canonical-export.nodes`/`.edges`). Enforced at pack construction (producer filters
+  `canonical-graph-export.nodes`/`.edges`). Enforced at pack construction (producer filters
   `local-only` out) and on import (consumer rejects `local-only` and reports), per KGP §7.2.
 - **`license`** and **`tier`** — per-record axes already carried on every record.
 
-The registry-level counterpart — splitting the merged relation registry's single `portabilityClasses`
-key into these same separate axes — is handed to agora's `20-shared-relation-registry` **US-SRR2**
-(ADR-0003 §Axes).
+The registry-level counterpart — a relation registry that still carries a single merged
+`portabilityClasses` key — MUST split it into these same separate axes when it is loaded.
 
 ## Policy enums — `../policy/`
 
-The license-class and trust-tier vocabularies the schemas reference are absorbed from rosetta into
-koine [`../policy/`](../policy/):
+The license-class and trust-tier vocabularies the schemas reference live in koine
+[`../policy/`](../policy/):
 
 - [`../policy/license-classes.json`](../policy/license-classes.json) — the SPDX license-class
   allowlist (`public-domain` / `attribution` / `share-alike` / `proprietary` / `personal`) backing
@@ -68,25 +69,23 @@ koine [`../policy/`](../policy/):
   (`curated` / `acquired` / `synthetic` / `personal`) backing every record `tier` field (KGP §7),
   with the synthetic/personal containment rules.
 
-Per ADR-0002's reverse-flow finding, KGP already adopted the SPDX license policy (§7.1) and treats
-the provenance **trust tier** as an axis separate from the **dialect** (§5) and **egress** (§7.2)
-axes — so these two policy files are the *source* for the license-class + trust-tier enums, not a
-fourth conflated key.
+KGP adopts the SPDX license policy (§7.1) and treats the provenance **trust tier** as an axis separate
+from the **dialect** (§5) and **egress** (§7.2) axes — so these two policy files are the *source* for
+the license-class + trust-tier enums, not a fourth conflated key.
 
-## Scope — contracts only; validators live in agora
+## Scope — contracts only; validators live downstream
 
 Koine holds **only** the machine-readable contract: the schemas in this directory plus the policy
-enums above. Per ADR-0001 (koine = contracts / agora = runtime), the thin validators
-(`validate.py` / `ajv`) and the conformance fixture *suite* that exercises these schemas are **not**
-ported into koine — they are runtime and live in **agora**, targeted at the **40 band**. See
-[`../decisions/ADR-0003-deprecate-rosetta.md`](../decisions/ADR-0003-deprecate-rosetta.md) §Decision(c).
+enums above. Per [`../decisions/ADR-0001-control-plane-topology.md`](../decisions/ADR-0001-control-plane-topology.md)
+(koine = contracts, no code), the thin validators (`ajv` / `jsonschema`) and the conformance fixture
+*suite* that exercises these schemas are **not** held here — they are runtime and belong to whichever
+participant or runtime commons implements them.
 
-This includes `finetune-job.schema.json`: the ajv/jsonschema validators **and** the conformance CI for
-the finetune-job manifest land in **agora:40**, alongside the rosetta-absorbed validators, **not** in
-koine. What koine keeps is exactly the contract plus one `fixtures/finetune-job.json` golden positive —
-draft-2020-12 structural validation only checks the manifest's *shape*. The finetuning-specific
+This includes `finetune-job.schema.json`: its validators **and** its conformance CI land downstream,
+not in koine. What koine keeps is exactly the contract plus one `fixtures/finetune-job.json` golden
+positive — draft-2020-12 structural validation only checks the manifest's *shape*. The finetuning-specific
 **semantic** admission rules the schema can't express — `modality × method` compatibility
 ([`../specs/fine-tuning.md`](../specs/fine-tuning.md) §3.1, FT-F) and egress/license aggregation over
-`{data ∪ base}` before pinning compute (§4.2, FT-B) — are the validator's job in agora, and their
+`{data ∪ base}` before pinning compute (§4.2, FT-B) — are the downstream validator's job, and their
 required behavior is pinned by the pressure-test scenarios
 ([`../scenarios/e2e-finetune.md`](../scenarios/e2e-finetune.md) §"Schema conformance").

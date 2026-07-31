@@ -109,8 +109,8 @@ manifest figure. **Delta FT-E.**
 The consumer `subscribe`s to progress events.
 
 🟡 **BROKE (FT-H, cleanup).** §6 names this the **"training-exhaust"** stream — but the ecosystem
-already uses "training-exhaust JSONL" for the **dataset records** (the `dataset-jsonl-header` schema,
-rosetta/koine:10). Two different things under one name, on adjacent surfaces of the same spec. Rename
+already uses "training-exhaust JSONL" for the **dataset records** (the `dataset-jsonl-header`
+schema). Two different things under one name, on adjacent surfaces of the same spec. Rename
 the metric stream (e.g. **training-telemetry**). Relatedly, the weight `media_type`s
 (`application/vnd.koine.model+gguf`, …) and the `model` entity type + `modality` refinement (§3/§5)
 are invented in prose but **not registered** in koine's shared registry (`registry/relations/media.tsv`,
