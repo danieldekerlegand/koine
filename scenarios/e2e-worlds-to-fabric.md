@@ -1,30 +1,31 @@
 # Scenario: Worlds → Fabric (end-to-end pressure test)
 
 **Purpose:** stress-test [`../specs/identity.md`](../specs/identity.md) (KINP 0.1.0) against
-concrete data flowing through **three** projects, deliberately hunting for places it breaks.
+concrete data flowing through **three** participants, deliberately hunting for places it breaks.
 Each step names what *held* and what *broke*; §Findings collects the required spec deltas.
 
-**The story:** An Insimul designer builds a fiction (`alderforest`) containing an NPC
-*Général Renaud*, modeled on the real Napoleon. A player records a playthrough; the footage
-is uploaded to Argos, which extracts knowledge from it. Pinakes reconciles the extracted
-entities against consensus reality. The user then runs cross-project queries.
+**The story:** a designer using a **world producer** (`worldsim`) builds a fiction
+(`alderforest`) containing an NPC *Général Renaud*, modeled on the real Napoleon. A player
+records a playthrough; the footage is uploaded to a **knowledge producer** (`analyzer`), which
+extracts knowledge from it. The **identity authority** (`refkb`) reconciles the extracted
+entities against consensus reality. The user then runs cross-participant queries.
 
 ---
 
-## Step 1 — Insimul authors the world
+## Step 1 — the world producer authors the world
 
 ```prolog
 % World + entity (world-scoped namespace, §3.4/§5)
-world(id(world, insimul, alderforest), inherits(id(world, pinakes, 'consensus-reality'))).
-entity(id(ent, 'insimul:world:alderforest', 'npc-renaud'), type(person)).
+world(id(world, worldsim, alderforest), inherits(id(world, refkb, 'consensus-reality'))).
+entity(id(ent, 'worldsim:world:alderforest', 'npc-renaud'), type(person)).
 
 % Lineage to the real figure — based_on, NOT same_as (§4.3 firewall)
-based_on(id(ent, 'insimul:world:alderforest', 'npc-renaud'),
-         id(ent, pinakes, 'napoleon-i'), confidence(0.8)).
+based_on(id(ent, 'worldsim:world:alderforest', 'npc-renaud'),
+         id(ent, refkb, 'napoleon-i'), confidence(0.8)).
 
 % An in-fiction claim, world-scoped
-commands(id(ent,'insimul:world:alderforest','npc-renaud'),
-         id(ent,'insimul:world:alderforest','army-of-ash')) @ world(alderforest).
+commands(id(ent,'worldsim:world:alderforest','npc-renaud'),
+         id(ent,'worldsim:world:alderforest','army-of-ash')) @ world(alderforest).
 ```
 
 ✅ **Held.** Provisional/authored entity minted offline (§6); firewall link present; claim
@@ -32,15 +33,15 @@ scoped to its world.
 
 ---
 
-## Step 2 — Player records; footage uploaded to Argos
+## Step 2 — player records; footage uploaded to the knowledge producer
 
 The asset is bytes; it attaches to entities. **Critical:** the asset must carry the
-*source world*, or Argos has no way to know the footage is fiction.
+*source world*, or the knowledge producer has no way to know the footage is fiction.
 
 ```jsonc
-{ "id": "argos:asset:blake3-a1b2…", "media_type": "video/mp4",
-  "attaches_to": ["insimul:world:alderforest"],          // source world travels WITH the asset
-  "prov": { "activity": "argos:run/1a2b", "asserted": "2026-07-17T…" } }
+{ "id": "analyzer:asset:blake3-a1b2…", "media_type": "video/mp4",
+  "attaches_to": ["worldsim:world:alderforest"],          // source world travels WITH the asset
+  "prov": { "activity": "analyzer:run/1a2b", "asserted": "2026-07-17T…" } }
 ```
 
 🔴 **BROKE (found gap #1).** KINP §7.2 defines `attaches_to` as *entities*, and asset
@@ -50,23 +51,23 @@ the real graph. **Delta A required.**
 
 ---
 
-## Step 3 — Argos extracts knowledge from the footage
+## Step 3 — the knowledge producer extracts knowledge from the footage
 
-Vision/ASR yields a new *local* entity and a claim. Argos does **not** yet know this equals
-Renaud or Napoleon.
+Vision/ASR yields a new *local* entity and a claim. The producer does **not** yet know this
+equals Renaud or Napoleon.
 
 ```prolog
-entity(id(ent, 'argos:local', 'e-8842'), type(person)).
+entity(id(ent, 'analyzer:local', 'e-8842'), type(person)).
 % Extracted claim — lands in the SOURCE world (once Delta A lands), high-uncertainty
-commands(id(ent,'argos:local','e-8842'),
-         id(ent,'argos:local','e-8842-army')) @ world(alderforest) :- confidence(0.55).
+commands(id(ent,'analyzer:local','e-8842'),
+         id(ent,'analyzer:local','e-8842-army')) @ world(alderforest) :- confidence(0.55).
 ```
 
 ✅ **Held** (given Delta A): entity content-addressing avoided — a stable provisional local
 is minted (§2/§6), so learning more attributes later won't orphan these claims.
 
 🔴 **BROKE (found gap #2).** The extracted claim `commands(e-8842, e-8842-army)` and
-Insimul's `commands(npc-renaud, army-of-ash)` are *the same fact about the same referents*,
+the world producer's `commands(npc-renaud, army-of-ash)` are *the same fact about the same referents*,
 but they mint **different** `claim` hashes because (a) the entity IDs differ pre-reconciliation
 and (b) normalization is unspecified. Content-addressed dedup (§2) silently fails across
 producers. This is the dependency KINP §6 flags on `grounding-pack.md`, but the scenario
@@ -74,19 +75,19 @@ shows it is **load-bearing, not optional**. **Delta B required.**
 
 ---
 
-## Step 4 — Pinakes reconciles
+## Step 4 — the identity authority reconciles
 
-The resolver matches `argos:local:e-8842` against consensus reality via `reconcile` (§4.5).
+The resolver matches `analyzer:local:e-8842` against consensus reality via `reconcile` (§4.5).
 Two candidates score high: the real Napoleon, and (via Step 1's `based_on`) the fictional
 Renaud.
 
 ```prolog
 % Cross-world, differing ontological status → based_on, NOT same_as (§4.3)
-based_on(id(ent,'argos:local','e-8842'),
-         id(ent, pinakes, 'napoleon-i'), confidence(0.83), src('argos:run/1a2b')).
+based_on(id(ent,'analyzer:local','e-8842'),
+         id(ent, refkb, 'napoleon-i'), confidence(0.83), src('analyzer:run/1a2b')).
 % Same world, same ontological status → same_as
-same_as(id(ent,'argos:local','e-8842'),
-        id(ent,'insimul:world:alderforest','npc-renaud'), confidence(0.9)).
+same_as(id(ent,'analyzer:local','e-8842'),
+        id(ent,'worldsim:world:alderforest','npc-renaud'), confidence(0.9)).
 ```
 
 🔴 **BROKE (found gap #3).** KINP §4.5 says reconciliation *proposes* links but never states
@@ -101,7 +102,7 @@ intact through two hops.
 
 ---
 
-## Step 5 — Cross-project queries
+## Step 5 — cross-participant queries
 
 **Q1: "Which real historical figures inspired characters in my footage?"**
 Traverse `attaches_to` → entities in `alderforest` → `based_on` → `same_as`(wikidata).
@@ -116,7 +117,7 @@ core anti-contamination property.**
 **Q3 (in-playthrough): "Is Paris intact?"** where the fiction overrides a real fact.
 
 ```prolog
-destroyed(id(ent, pinakes, 'paris')) @ world('insimul:world:alderforest#save-7f').
+destroyed(id(ent, refkb, 'paris')) @ world('worldsim:world:alderforest#save-7f').
 ```
 
 Query at `save-7f` sees the override; the same query at `consensus-reality` does not. ✅ Held
@@ -131,7 +132,7 @@ and content-addressed (§2) — you cannot delete one. You assert a retraction w
 **transaction time** (§7.1 bitemporal split):
 
 ```prolog
-retracts(id(claim,argos,'sha256-…'), reason(misdetection)) @ world(alderforest)
+retracts(id(claim,analyzer,'sha256-…'), reason(misdetection)) @ world(alderforest)
     :- prov(asserted('2026-07-20T…')).
 ```
 
@@ -143,7 +144,8 @@ without mutating immutable claims. But 🔴 **minor gap #4:** KINP lists relatio
 
 ## Step 7 — The dedup limit (honest boundary)
 
-Formant renders `kick.wav`; Argos re-encodes it during editing. Byte hashes differ →
+The media producer renders `kick.wav`; the knowledge producer re-encodes it during editing.
+Byte hashes differ →
 **two** `asset` IDs though the audio is "the same." Content addressing is byte-exact; it does
 not capture perceptual identity.
 

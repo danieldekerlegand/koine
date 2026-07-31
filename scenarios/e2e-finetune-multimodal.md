@@ -3,23 +3,25 @@
 **Purpose:** the second pressure pass KFT 0.2.0 called for before ratification — stress
 [`../specs/fine-tuning.md`](../specs/fine-tuning.md) against **fully-multimodal** finetunes
 (image-text-to-text, text-to-video) whose data is KMI assets, **and** against the **multi-provider**
-topology now decided (agora hosts a general `finetune` provider; **Pinakes exposes its own
-specialized `finetune` provider**; the registry routes between them). Same method as
+topology now decided (a runtime commons hosts a **general** `finetune` provider; a specialist
+participant exposes **its own specialized** `finetune` provider; the registry routes between
+them). Same method as
 [`e2e-finetune.md`](e2e-finetune.md): mark what held / broke; §Findings collects deltas; delta
 labels continue at **FT-I**. This pass deliberately hunts the seams the text-only pass could not
 reach.
 
 **The stories:**
 
-- **Job 3 (Argos):** finetune a `Qwen2.5-VL` into a media-understanding model (`image-text-to-text`)
-  on **paired** samples — each is one KMI screenshot asset + its caption/QA text.
-- **Job 4 (Insimul + Argos):** a `text-to-video` LoRA (base `Wan2.2`) on Insimul gameplay **video
-  assets** (KMI, carrying `source_world`), for stylized world trailers. Large corpus; some clips are
+- **Job 3 (knowledge producer):** finetune a `Qwen2.5-VL` into a media-understanding model
+  (`image-text-to-text`) on **paired** samples — each is one KMI screenshot asset + its caption/QA text.
+- **Job 4 (world producer + knowledge producer):** a `text-to-video` LoRA (base `Wan2.2`) on
+  world-producer gameplay **video assets** (KMI, carrying `source_world`), for stylized world trailers. Large corpus; some clips are
   **player-recorded** and `local-only`.
 
-**Setup:** two `finetune` providers publish manifests (KCB §3) — agora's general trainer (accepts all
-modalities via LLaMA-Factory/diffusers) and Pinakes's specialized trainer (its `ml/` TRL+PEFT path,
-SLM + neurosymbolic + MPS). Argos is the KMI authority for the training assets.
+**Setup:** two `finetune` providers publish manifests (KCB §3) — a general trainer (accepts all
+modalities via LLaMA-Factory/diffusers) and a specialized trainer (a TRL+PEFT path for small
+language models on local accelerators). The knowledge producer `analyzer` is the KMI authority for
+the training assets.
 
 ---
 
@@ -31,14 +33,14 @@ capabilities (both accept `text-generation`).
 🔴 **BROKE (FT-K).** KFT §9 says the registry "routes a job to a provider that accepts its modality"
 — but two providers accept it, and KCB §3 path search only "prefers zero-`cost` routes." Both have
 real GPU cost; there is **no tiebreak** for *which finetune provider* wins, and no way for a caller
-to say "use Pinakes's specialized SLM path for this one." Selection is undefined the moment more than
+to say "use the specialized SLM path for this one." Selection is undefined the moment more than
 one provider exists — which the multi-provider decision guarantees. **Delta FT-K.**
 
 ---
 
 ## Step 2 — VLM paired training data (Job 3; KFT §3/§4.1)
 
-Job 3's samples are **pairings**: screenshot asset `argos:asset:blake3-s1…` ⟷ "What UI state is
+Job 3's samples are **pairings**: screenshot asset `analyzer:asset:blake3-s1…` ⟷ "What UI state is
 shown?". The job manifest (§3) carries `dataset.knowledge[]` and `dataset.media[]` as **separate
 arrays**.
 
@@ -107,7 +109,7 @@ path-searchable (KCB §2.1/§3), so it slots straight into the any-to-any graph.
 |---|---|---|---|---|
 | **FT-I** | **High (structural)** | `dataset.knowledge[]`/`media[]` are separate bags; per-sample image↔text alignment — the basic shape of every multimodal finetune — is inexpressible. | Per-sample pairing rides the `dataset-jsonl-header` training records (a row referencing both a KMI asset id and text); §3/§4.1 name the arrays as referenced corpora, records carry the join. | KFT §3/§4.1, koine:10 header |
 | **FT-J** | Med | An egress pin (§4.2) can be **unsatisfiable** — the local tier can't run the job — with no defined outcome (hang / silent cloud / silent downscope all wrong). | An unsatisfiable egress-pinned placement is an **admission failure with a report**, never a silent downgrade. | KFT §4.2 |
-| **FT-K** | Med | With two+ `finetune` providers (agora general + Pinakes specialized), provider selection is undefined; KCB cost-prefs don't disambiguate; caller can't target one. | Registry tiebreak: prefer the more **specialized**, then lower cost; the job MAY name a target provider; ties surface to the caller. | KFT §8/§9, KCB §3 |
+| **FT-K** | Med | With two+ `finetune` providers (a general one plus a specialized one), provider selection is undefined; KCB cost-prefs don't disambiguate; caller can't target one. | Registry tiebreak: prefer the more **specialized**, then lower cost; the job MAY name a target provider; ties surface to the caller. | KFT §8/§9, KCB §3 |
 | **FT-L** | Cleanup | Telemetry (§6) carries scalars + a checkpoint, but no **sample previews** — the only meaningful signal for a generative finetune. | Allow `samples: [<asset id>]` on the telemetry event (previews are KMI assets, fetched lazily). | KFT §6 |
 
 ---
@@ -125,13 +127,13 @@ But two seams the text-only pass couldn't reach broke:
 - **FT-I** — paired-sample expression — is **structural and blocking**: without it, the profile can't
   represent the fundamental input of every multimodal finetune.
 - **FT-J / FT-K** — the egress gate can pin to an *infeasible* tier, and multi-provider selection
-  (which the Pinakes-provider decision makes unavoidable) has no tiebreak.
+  (which the specialized-provider decision makes unavoidable) has no tiebreak.
 
 **Blocking for ratification: FT-I.** Should-fix: FT-J, FT-K. Cleanup: FT-L. None require redesign — FT-I
 moves the join into the records (where license/tier already live), FT-J adds a defined admission
 failure, FT-K adds a selection rule to the registry.
 
 > **Resolution (2026-07-22):** FT-I…FT-L folded into **KFT 0.3.0** (§3/§4.1 paired records, §4.2
-> unsatisfiable-pin failure, §6 `samples` previews, §8/§9 provider selection + Pinakes-as-provider
+> unsatisfiable-pin failure, §6 `samples` previews, §8/§9 provider selection + specialist-as-provider
 > reframe). KFT remains **Candidate**: with two pressure passes clean of *unresolved* blockers, it is
 > ready for ecosystem-owner ratification sign-off. This document records the second pass.

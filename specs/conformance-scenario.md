@@ -36,10 +36,10 @@ the console UI, transport internals (that's MCP/A2A + KCB), or payload formats (
   "title": "Fiction stays uncontaminated across the media→knowledge bridge",
   "timeout_ms": 120000,                     // scenario-level liveness bound (delta P)
   "participants": [                         // capability providers, by KINP identity (KCB §2)
-    { "identity": "pinakes:agent:resolver", "planes": ["knowledge"] },
-    { "identity": "argos:agent:pipeline",   "planes": ["media", "knowledge"] },
-    { "identity": "formant:agent:composer", "planes": ["media"],
-      "standin": { "fixtures": "fixtures/formant-composer.json" } }  // not-yet-adopted (delta N)
+    { "identity": "refkb:agent:resolver",      "planes": ["knowledge"] },
+    { "identity": "analyzer:agent:pipeline",   "planes": ["media", "knowledge"] },
+    { "identity": "mediastore:agent:composer", "planes": ["media"],
+      "standin": { "fixtures": "fixtures/mediastore-composer.json" } }  // not-yet-adopted (delta N)
   ],
   "setup":  [ /* steps run before the body (seed worlds/entities/assets) */ ],
   "steps":  [ /* the scenario body, §3 — every step has an `id` */ ],
@@ -122,9 +122,9 @@ executable and repeatable:
 - [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) → `kcs:worlds-to-fabric`
   (identity firewall across the media→knowledge bridge).
 - [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) → `kcs:media-transform`
-  (4-project transform chain; cross-plane ports, fetch, source_world, cost ceilings).
+  (4-participant transform chain; cross-plane ports, fetch, source_world, cost ceilings).
 
-Encoding them is the `agora-console-scenarios` tasklist (see `../tasks/chief/`).
+Encoding them is a downstream conformance-console tasklist (see `../tasks/chief/`).
 
 ## 7. Open questions
 
@@ -144,6 +144,10 @@ participants, §2), **P** (`timeout_ms`, §2/§3/§4). Ratified.
 
 ## Changelog
 
+- **Editorial** (2026-07-31) — Agnostic reframe, part 2: the §2 `participants` example uses the
+  KINP §3.4 illustrative placeholder namespaces, and the §6 pointer names a downstream
+  conformance console rather than a specific repo. No normative change — the scenario document
+  shape, step vocabulary, assertion vocabulary, and every MUST/SHOULD clause are unchanged.
 - **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
   authority / host / provider) instead of named products. No normative change — identifiers,
   envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
