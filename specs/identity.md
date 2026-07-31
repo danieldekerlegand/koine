@@ -3,12 +3,13 @@
 **Spec version:** 0.2.1
 **Status:** Ratified
 **Last updated:** 2026-07-17
-**Applies to:** Insimul, Pinakes, Cuneiform, Argos, Formant
+**Applies to:** every participant that mints, publishes, or resolves identifiers — producers,
+consumers, identity authorities, control-plane hosts.
 
 > The keystone protocol. Every other Koine contract (grounding-pack, media-interchange,
 > capability-bus) references the identifiers, envelopes, and resolution semantics defined
-> here. Get identity right and cross-project **intersection** — joining data produced by
-> different projects — becomes a query rather than an integration effort.
+> here. Get identity right and cross-participant **intersection** — joining data produced by
+> different participants — becomes a query rather than an integration effort.
 
 ---
 
@@ -43,7 +44,7 @@ KINP defines:
 - **minting** rules, including offline-first (§6),
 - the **assertion** and **asset** envelopes, with provenance and bitemporal time (§7),
 - the **resolver API** (§8),
-- the per-project **adoption map** (§10),
+- the per-role **adoption map** (§10),
 - the **ratified decisions** on the three design forks (§11).
 
 KINP does **not** define storage engines, wire encodings for bulk transfer (that is
@@ -421,18 +422,19 @@ gain. KINP stays IRI-*compatible* so an RDF export remains possible later.
 
 ---
 
-## 10. Per-project adoption map
+## 10. Adoption map (by role)
 
-Nobody rewrites their core. Most of this is promoting private conventions to the shared
-namespace and adding the equivalence layer.
+Nobody rewrites their core. Most of adoption is promoting private conventions to the shared
+namespace and adding the equivalence layer. A participant reads only the rows for the roles it
+claims; most participants claim several.
 
-| Project | Already has | Change needed |
+| Role | Typical starting point | Change needed |
 |---|---|---|
-| **Pinakes** | canonical entities, Wikidata anchoring, entity-resolution, TSV SoT | Become the **resolver/authority**; expose `resolve` + `reconcile`; emit KINP IRIs/CURIEs on the canonical schema. |
-| **Argos** | content-addressed predicates + assets, provenance, valid-time | Mostly **relabeling**: predicate → assertion (keep), subject/object → entity refs (resolve), asset id → `asset` kind; emit `same_as` to Pinakes; add transaction-time split. |
-| **Insimul** | Prolog facts, `predicate-schema.ts`, canon/save-file split | Add **world-scoped** entity IDs + `based_on` links to Pinakes; formalize canon/playthrough as worlds; represent ids as `id/3` terms with a prefix registry. |
-| **Formant** | plugin/node/hardware registries | Give plugins/gear **entity** IDs; anchor to MusicBrainz/real gear; audio outputs = `asset` kind with `attaches_to`. |
-| **Cuneiform** | agent roles, org model, `agent.pl` KBs | Agents/orgs get **entity/agent** IDs in the shared namespace; provision the resolver as an org. |
+| **Identity authority** | canonical entity store, external anchoring (e.g. Wikidata), entity-resolution, a tabular source of truth | Expose `resolve` + `reconcile` (§8); emit KINP IRIs/CURIEs on its canonical schema; run the equivalence layer (§4). |
+| **Knowledge producer / consumer** | content-addressed predicates + assets, provenance, valid-time | Mostly **relabeling**: predicate → assertion (keep), subject/object → entity refs (resolve), asset id → `asset` kind; emit `same_as` to the authority; add the transaction-time split (§7). |
+| **World producer** (simulation / generative) | engine-local facts, a local predicate schema, a canon/save-file split | Add **world-scoped** entity IDs + `based_on` links to real-world entities; formalize canon vs. playthrough as worlds (§5); carry ids as `id/3` terms against a registered prefix (§3). |
+| **Media producer** | asset / device / instrument registries | Give catalogued things **entity** IDs; anchor to an external authority where one exists; outputs are the `asset` kind with `attaches_to` (§7.2). |
+| **Control-plane host** | agent roles, an org model, agent knowledge bases | Agents/orgs get **entity/agent** IDs in the shared namespace; provision the resolver as an org. |
 
 ---
 
@@ -461,6 +463,10 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
 ---
 
 ## Changelog
+
+- **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
+  authority / host / provider) instead of named products. No normative change — identifiers,
+  envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
 
 - **0.2.1** (2026-07-17) — Added `embedding_model` to the assertion envelope (§7.1),
   resolving KGP §9 embedding-portability decision. Excluded from claim identity; non-breaking.

@@ -3,8 +3,8 @@
 **Spec version:** 0.2.0
 **Status:** Ratified
 **Last updated:** 2026-07-17
-**Applies to:** Argos (producer/authority for media + EDL), Formant (audio producer),
-Insimul (game-video producer), Pinakes & Cuneiform (consumers)
+**Applies to:** media authorities (producer/authority for assets + EDL), media producers of any
+modality, and media consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP) for the `asset` id, `source_world`, and
 `attaches_to`; [`grounding-pack.md`](grounding-pack.md) (KGP) for the analysis→knowledge
 bridge; [`capability-bus.md`](capability-bus.md) (KCB) for transforms-as-capabilities.
@@ -13,9 +13,9 @@ bridge; [`capability-bus.md`](capability-bus.md) (KCB) for transforms-as-capabil
 > *bytes and the edits over them*: assets, their technical metadata, the asset-lineage graph
 > (re-encodes, variants, clips), the timeline/EDL composition model, and the typed contract
 > that makes "any-to-any" transformation a **path computed over capabilities** rather than a
-> central transform-gateway. Generalizes Argos's existing asset library, `ffprobe`-based
-> `asset_probe`, canonical JSON EDL, and NLE exporters (FCPXML / Premiere xmeml / DaVinci
-> CMX3600 / Remotion) into one ecosystem contract.
+> central transform-gateway. It generalizes what a media authority already builds in isolation —
+> an asset library, a probe over technical metadata, a canonical JSON EDL, and NLE exporters
+> (FCPXML / Premiere xmeml / DaVinci CMX3600 / Remotion) — into one interchange contract.
 
 Division of labor with KINP: KINP fixes the `asset` *identifier*, `source_world`, and
 `attaches_to` (KINP §7.2). KMI defines everything else about an asset — technical metadata,
@@ -33,10 +33,10 @@ KMI defines:
 - the **analysis → knowledge bridge** into KGP (§5),
 - **transform typing** — the media-plane port profile; cross-plane typing lives in KCB §2.1 (§6),
 - **byte transport** via a content-addressed store (§7),
-- the per-project **mapping** (§8).
+- the per-role **mapping** (§8).
 
 KMI does **not** define knowledge semantics (KGP), capability discovery/invocation (KCB), or
-codec/render implementations (project-local; `ffmpeg` is the de-facto backbone).
+codec/render implementations (participant-local; `ffmpeg` is the de-facto backbone).
 
 ---
 
@@ -236,15 +236,15 @@ Assets are large; envelopes/EDLs are small. KMI is a **reference-by-id** protoco
 
 ---
 
-## 8. Per-project mapping
+## 8. Mapping (by role)
 
-| Project | Role | Emits / accepts |
+| Role | KMI participation | Emits / accepts |
 |---|---|---|
-| **Argos** | **Producer + authority** for media & EDL | Owns the canonical JSON EDL + NLE projections + `asset_probe`; emits analysis → KGP (§5); hosts run-artifact CAS. |
-| **Formant** | Audio producer | Emits `audio/*` assets + plugin renders; consumes EDLs to place audio; later a *transform provider* ("render this plugin") via KCB. |
-| **Insimul** | Game-video producer | Emits gameplay video assets with `source_world` = the world/playthrough; consumes assets for in-engine use. |
-| **Pinakes** | Consumer | Consumes analysis-derived KGP (not bytes); may catalog media entities. |
-| **Cuneiform** | Consumer + host | Provisions the CAS + transform capabilities as orgs; agents invoke transforms. |
+| **Media authority** | **Producer + authority** for assets & EDL | Owns the canonical JSON EDL + NLE projections + `asset_probe`; emits analysis → KGP (§5); hosts the run-artifact CAS. |
+| **Audio producer** | Producer | Emits `audio/*` assets + instrument renders; consumes EDLs to place audio; later a *transform provider* ("render this instrument") via KCB. |
+| **World producer** | Producer | Emits video/render assets with `source_world` = the world/playthrough; consumes assets for in-engine use. |
+| **Knowledge authority** | Consumer | Consumes analysis-derived KGP (not bytes); may catalog media entities. |
+| **Control-plane host** | Consumer + host | Provisions the CAS + transform capabilities as orgs; agents invoke transforms. |
 
 ---
 
@@ -270,6 +270,10 @@ on NLE projections, §4); plus the KCB-side **G** (`fetch` verb + grant, §7) an
 (dangling-reference tolerance, §7). Ratified.
 
 ## Changelog
+
+- **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
+  authority / host / provider) instead of named products. No normative change — identifiers,
+  envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
 
 - **0.2.0** (2026-07-17) — **Ratified.** Folded pressure-test deltas F (cross-plane transform
   typing via KCB ports), H (`source_world` conditional/per-asset + composite attribution),

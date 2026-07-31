@@ -3,9 +3,8 @@
 **Spec version:** 0.3.0
 **Status:** Ratified
 **Last updated:** 2026-07-23
-**Applies to:** agora (provider/implementation), Cuneiform (host: registry, grants, orgs),
-Pinakes (specialized adapter + training-data producer), Insimul / Argos / Formant
-(training-data producers + finetuned-model consumers).
+**Applies to:** `finetune` capability providers (general and specialized), the control-plane host
+(registry, grants, orgs), training-data producers, and finetuned-model consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for model/entity ids, lineage
 relations, and provenance; [`capability-bus.md`](capability-bus.md) (KCB 0.2.0) for the
 capability shape, verbs, cost, and grants; [`grounding-pack.md`](grounding-pack.md) (KGP 0.4.0)
@@ -21,10 +20,9 @@ for knowledge training data and the egress/license/trust axes; [`media-interchan
 > lineage conventions. Everything else is reuse. Dumb pipes: training data travels **by reference**
 > (KGP pack ids, KMI asset ids), never inlined into a job.
 
-This generalizes the real-but-siloed training harnesses already in the ecosystem — Pinakes's
-`ml/` TRL+PEFT QLoRA pipelines and Cuneiform's (archived) `train.py` — and the *simulated*
-finetune-job service in Cuneiform's engine, into one ratifiable contract that a shared executor
-implements.
+This generalizes the real-but-siloed training harnesses participants build independently —
+TRL+PEFT QLoRA pipelines, one-off `train.py` scripts, simulated finetune-job services — into one
+ratifiable contract that any conformant executor implements.
 
 ---
 
@@ -38,10 +36,10 @@ KFT defines:
 - the **run lifecycle & training-exhaust stream** (§6),
 - **authorization, cost & spend gating** (§7),
 - **discovery** — the finetuned-model registry as reuse of the KCB registry (§8),
-- the runtime split (informative, §9) and per-project mapping (§10).
+- the runtime split (informative, §9) and per-role mapping (§10).
 
 KFT does **not** define: payload formats (KGP/KMI own them), engine/adapter internals or compute
-provisioning (producer behavior, in agora/Cuneiform infra — §9), or reasoning semantics. It adds
+provisioning (provider- and host-local behavior — §9), or reasoning semantics. It adds
 no new identifier kind, no new plane, and no new transport.
 
 ---
@@ -424,16 +422,16 @@ build-order graph is in the program map.
 
 ---
 
-## 10. Per-project mapping
+## 10. Mapping (by role)
 
-| Project | Role | KFT participation |
+| Role | KFT participation | Responsibilities |
 |---|---|---|
-| **agora** | Runtime | Implements the `finetune` capability (the `trainer` leaf, §9); hosts registry + resolver (§8); runs KCS eval in the console (§6.1). |
-| **Cuneiform** | Control-plane host | Provisions the trainer org; issues `invoke:finetune` grants (§7); its CLI is a KCB client; provisions the CAS for weight assets (§5.3). |
-| **Pinakes** | Producer + **specialized `finetune` provider** | Emits knowledge training data (KGP packs from verbalization/KGQA); runs its own specialized `finetune` capability on the bus (its `ml/` TRL+PEFT path — SLM + neurosymbolic + MPS), routed to by the registry (§8, FT-K); owns eval protocols (§6.1). |
-| **Insimul** | Producer + consumer | Emits rejection-sampled SFT data (world facts, VESPACE/CEFR reward); consumes finetuned SLMs (GGUF) into `LocalAIService`. |
-| **Argos** | Producer + consumer | KMI authority for image/video/audio **training assets** (§3.1/§4.1); consumes finetuned media models. |
-| **Formant** | Consumer → producer | Consumes finetuned audio models (task 17's "Cuneiform finetune endpoint" resolves here); later a `produce`r ("play this plugin", KCB §6). |
+| **General `finetune` provider** | Runtime | Implements the `finetune` capability (the `trainer` leaf, §9); hosts registry + resolver (§8); runs KCS eval in the conformance console (§6.1). |
+| **Control-plane host** | Host | Provisions the trainer org; issues `invoke:finetune` grants (§7); its client tooling is a KCB client; provisions the CAS for weight assets (§5.3). |
+| **Knowledge authority** | Producer + **specialized `finetune` provider** | Emits knowledge training data (KGP packs from verbalization/KGQA); MAY run its own specialized `finetune` capability on the bus (e.g. a small-model neurosymbolic path on local accelerators), routed to by the registry (§8, FT-K); owns eval protocols (§6.1). |
+| **World producer** | Producer + consumer | Emits rejection-sampled SFT data (world facts, task-specific reward); consumes finetuned small models back into its local inference service. |
+| **Media authority** | Producer + consumer | KMI authority for image/video/audio **training assets** (§3.1/§4.1); consumes finetuned media models. |
+| **Domain consumer → producer** | Consumer → producer | Consumes finetuned models for its own domain; later a `produce`r of an invocable capability over them (KCB §6). |
 
 ---
 
@@ -477,6 +475,10 @@ fully-multimodal, multi-provider pass with no redesign required. The stressors e
 ---
 
 ## Changelog
+
+- **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
+  authority / host / provider) instead of named products. No normative change — identifiers,
+  envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
 
 - **0.3.0 — Ratified** (2026-07-23) — Status Candidate → **Ratified** after both pressure passes
   (`scenarios/e2e-finetune.md`, `scenarios/e2e-finetune-multimodal.md`) cleared with no unresolved

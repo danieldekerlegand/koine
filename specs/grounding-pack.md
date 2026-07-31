@@ -3,23 +3,22 @@
 **Spec version:** 0.4.0
 **Status:** Ratified
 **Last updated:** 2026-07-18
-**Applies to:** Pinakes (producer/authority), Argos & Insimul (producer + consumer),
-Cuneiform & Formant (consumer)
+**Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
+and control-plane hosts that broker packs on behalf of agents.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
 worlds, and resolution semantics; **satisfies KINP's normative dependency on claim
 normalization (KINP §6, delta B).**
 
 > The **knowledge data plane**. A GroundingPack is the unit in which facts move between
-> projects: Pinakes → Argos/Insimul (grounding real-world knowledge), Argos → Pinakes
-> (knowledge extracted from user media), Insimul → Pinakes (facts contributed by fictional
-> worlds). KINP makes cross-project *identity* possible; KGP makes cross-project *knowledge
-> transfer* possible, and its §3 Normalization is what makes content-addressed claim dedup
-> (KINP §2/§6) actually work.
+> participants: authority → consumer (grounding real-world knowledge), media producer →
+> authority (knowledge extracted from ingested media), world producer → authority (facts
+> contributed by fictional worlds). KINP makes cross-participant *identity* possible; KGP makes
+> cross-participant *knowledge transfer* possible, and its §3 Normalization is what makes
+> content-addressed claim dedup (KINP §2/§6) actually work.
 
-This generalizes the pre-existing `GroundingPack` contract already vendored in Argos
-(`bridge/grounding_pack.py`, `docs/grounding_pack_spec.md`) and Insimul
-(`docs/LINGUASCRAPE_SYNC_PLAN.md`), and Pinakes's existing SWI-Prolog / Soufflé / ProbLog
-exporters, into one ratifiable ecosystem contract.
+KGP generalizes the shape that grounding bundles converge on independently — a manifest plus
+claims plus provenance, exported to Prolog / Datalog / probabilistic backends — into one
+ratifiable contract, so that a producer's export is any consumer's import.
 
 ---
 
@@ -34,7 +33,7 @@ KGP defines:
 - **dialect & portability tiers** governing what a consumer may safely ingest (§5),
 - **directionality**: snapshot vs. delta/subscription (§6),
 - **confidence, provenance, license & egress filtering** (§7),
-- the per-project **producer/consumer mapping** (§8).
+- the per-role **producer/consumer mapping** (§8).
 
 KGP does **not** define media/asset transfer (that is `media-interchange.md`), reasoning
 semantics, or storage engines.
@@ -283,15 +282,15 @@ privacy invariant of the Argos bridge (ADR-0002 reverse flow). Note that registr
 under `portabilityClasses` alongside the dialect tiers; KGP deliberately separates the two axes
 (§5) — see `20-shared-relation-registry` US-SRR2 for the reconciliation.
 
-## 8. Producer / consumer mapping
+## 8. Producer / consumer mapping (by role)
 
-| Project | Role | Emits / accepts |
+| Role | KGP participation | Emits / accepts |
 |---|---|---|
-| **Pinakes** | **Producer + authority** | Emits `grounding-only`/`horn-safe` snapshots + deltas of consensus reality; hosts the canonical TSV; runs resolver `resolve`/`reconcile` (KINP §8). |
-| **Argos** | Producer + consumer | Consumes grounding packs to ground ingestion; emits `grounding-only` deltas of knowledge extracted from user media (with `source_world` from the asset, KINP §7.2). |
-| **Insimul** | Producer + consumer | Consumes packs to ground world-gen; emits world facts to Pinakes (may be `full-prolog` internally, downshifted to `grounding-only` for export). |
-| **Formant** | Consumer | Consumes DSP/music-theory/gear knowledge to ground plugin design. |
-| **Cuneiform** | Consumer + host | Agents query packs; provisions the resolver/producer as an org. |
+| **Knowledge authority** | **Producer + authority** | Emits `grounding-only`/`horn-safe` snapshots + deltas of consensus reality; hosts the canonical store; runs resolver `resolve`/`reconcile` (KINP §8). |
+| **Media producer** | Producer + consumer | Consumes grounding packs to ground ingestion; emits `grounding-only` deltas of knowledge extracted from ingested media (with `source_world` from the asset, KINP §7.2). |
+| **World producer** | Producer + consumer | Consumes packs to ground world generation; emits world facts back to the authority (may be `full-prolog` internally, downshifted to `grounding-only` for export). |
+| **Domain consumer** | Consumer | Consumes domain knowledge to ground its own generation or design work; ingests only what its declared portability tier admits (§5). |
+| **Control-plane host** | Consumer + host | Agents query packs; provisions the authority/producer as an org. |
 
 ---
 
@@ -315,6 +314,10 @@ Ratified 2026-07-17.
    attributable. Token issuance/rotation lives in Cuneiform infra, not here.
 
 ## Changelog
+
+- **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
+  authority / host / provider) instead of named products. No normative change — identifiers,
+  envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
 
 - **0.4.0** (2026-07-18) — Added the **egress class** `local-only` (§7.2, normative): knowledge
   that must never cross a project boundary — producers filter at pack construction, consumers

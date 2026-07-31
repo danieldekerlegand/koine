@@ -3,17 +3,17 @@
 **Spec version:** 0.2.0
 **Status:** Ratified
 **Last updated:** 2026-07-18
-**Applies to:** the `agora` conformance console (executor) and every project (participant)
+**Applies to:** the conformance console (executor) and every participant it drives
 **Depends on:** [`identity.md`](identity.md) (KINP), [`grounding-pack.md`](grounding-pack.md)
 (KGP), [`capability-bus.md`](capability-bus.md) (KCB), [`media-interchange.md`](media-interchange.md)
 (KMI); governed by [`../decisions/ADR-0001-control-plane-topology.md`](../decisions/ADR-0001-control-plane-topology.md).
 
 > A **conformance scenario** is a declarative, replayable script that drives *any combination*
-> of the five platforms — in any order — over their **real** MCP/A2A connections, and asserts
-> what was observed. It is the executable form of the hand-written pressure tests
-> (`../scenarios/*.md`). Why this belongs in koine and not just in `agora`: a scenario step is
-> typed against all four planes (a KCB `invoke`, a KGP claim, a KINP id, a KMI asset), so the
-> *format* is a cross-cutting contract; only the console's UI/runtime lives in `agora`.
+> of participants — in any order — over their **real** MCP/A2A connections, and asserts what was
+> observed. It is the executable form of the hand-written pressure tests (`../scenarios/*.md`).
+> Why the *format* belongs in koine and not in an executor: a scenario step is typed against all
+> four planes (a KCB `invoke`, a KGP claim, a KINP id, a KMI asset), so it is a cross-cutting
+> contract; only a console's UI/runtime is implementation-local.
 
 Per ADR-0001 decision 7, the console is an **observer on real connections, not a hub**: it
 opens the same direct links production uses and records traffic, so a green scenario proves the
@@ -143,6 +143,10 @@ bindings, §2.1/§3), **O** (`expect: ok|reject` + `refused`, §3/§5), **N** (`
 participants, §2), **P** (`timeout_ms`, §2/§3/§4). Ratified.
 
 ## Changelog
+
+- **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
+  authority / host / provider) instead of named products. No normative change — identifiers,
+  envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
 
 - **0.2.0** (2026-07-18) — **Ratified.** Folded format-stress deltas: step bindings (M),
   expected-rejection steps + `refused` (O), stand-in participants (N), timeouts (P).

@@ -1,51 +1,62 @@
 # Koine
 
-> *koinē* (κοινή) — "the common tongue." The shared protocol layer that lets five
-> otherwise-independent projects speak to each other as one system.
+> *koinē* (κοινή) — "the common tongue." A shared protocol layer that lets otherwise-
+> independent neuro-symbolic systems speak to each other as one system.
 
-Koine is the **meta-repository** for the abstract interconnections and protocols
-between the five projects in `~/Development`:
-
-- **Insimul** (`workspace/`) — hybrid-AI fictional worlds → games in any genre/platform.
-- **Pinakes** — global neuro-symbolic knowledge web + visualizations (grounding data layer).
-- **Cuneiform** — Company-as-Code: templated agentic organizations + infra.
-- **Argos** — any-to-any multimedia ingestion, neuro-symbolic KBs, and manipulation.
-- **Formant** — AI-built audio plugins/instruments, played agentically.
+Koine is the **meta-repository** for an agnostic **neuro-symbolic interchange fabric**: the
+contracts by which any conformant system publishes identity, knowledge, media, and capability,
+and by which any other conformant system consumes them.
 
 **Koine contains no application code.** It defines the contracts — identity, knowledge
-interchange, media interchange, and the capability bus — that the five projects
-implement in their own repos. Think of it as the ecosystem's constitution, not a runtime.
+interchange, media interchange, the capability bus, the conformance-scenario format, and the
+fine-tuning profile — which participants implement in their own repositories. Think of it as a
+constitution, not a runtime.
+
+Koine is written against **roles**, never against products. A participant adopts one or more
+roles and is bound only by the clauses for the roles it claims:
+
+| Role | What it does |
+|---|---|
+| **Producer** | Writes into the fabric — claims, assets, worlds — under Koine identifiers. |
+| **Consumer** | Reads from the fabric and ingests only what its declared portability tier admits. |
+| **Authority** | Holds the canonical record for a domain and answers resolution/reconciliation for it (identity authority, knowledge authority, media authority). Authority is a **role**, not a privileged node. |
+| **Host** | Provisions the control plane — the discovery registry, capability grants, orgs, infra. |
+| **Provider** | Offers a capability on the bus and executes invocations against it. |
+
+A participant is usually several of these at once, and the same deployment may host more than
+one authority. Nothing in the specs requires a particular number of participants, a particular
+vendor, or a particular deployment topology.
 
 ---
 
 ## The core thesis: a fabric, not a mesh of pipes
 
-The five projects are not peers passing files across N² bespoke edges. They are
-**producers of, and consumers from, one shared neuro-symbolic fabric.** There is no
-"Insimul → Pinakes" pipe; there is Insimul *writing worlds into the fabric* and Pinakes
-being the fabric's canonical store. The fabric **is** the interconnect, and it collapses
-the N² integration problem into "write-to-fabric / read-from-fabric."
+Participants are not peers passing files across N² bespoke edges. They are **producers of, and
+consumers from, one shared neuro-symbolic fabric.** There is no "system A → system B" pipe;
+there is a producer *writing worlds into the fabric* and an authority being the fabric's
+canonical store. The fabric **is** the interconnect, and it collapses the N² integration
+problem into "write-to-fabric / read-from-fabric."
 
-Three planes carry everything that crosses the ecosystem:
+Three planes carry everything that crosses the fabric:
 
-| Plane | Carries | Owner / transport | Contract |
+| Plane | Carries | Held by / transport | Contract |
 |---|---|---|---|
-| **Control** | agent orgs, infra, tools, capabilities | Cuneiform + **MCP / A2A** | [`specs/capability-bus.md`](specs/capability-bus.md) 🚧 *(candidate 0.3.0)* |
-| **Data — knowledge** | facts / predicates / graph | Pinakes (canonical store) | [`specs/grounding-pack.md`](specs/grounding-pack.md) ✅ *(ratified)* |
-| **Data — media** | assets, EDLs, metadata | Argos-originated interchange | [`specs/media-interchange.md`](specs/media-interchange.md) ✅ *(ratified)* |
+| **Control** | agent orgs, infra, tools, capabilities | host + providers over **MCP / A2A** | [`specs/capability-bus.md`](specs/capability-bus.md) 🚧 *(candidate 0.3.0)* |
+| **Data — knowledge** | facts / predicates / graph | knowledge authority (canonical store) | [`specs/grounding-pack.md`](specs/grounding-pack.md) ✅ *(ratified)* |
+| **Data — media** | assets, EDLs, metadata | media authority (asset library + CAS) | [`specs/media-interchange.md`](specs/media-interchange.md) ✅ *(ratified)* |
 
-Underpinning **all three** is the one thing that makes "intersection" — joining data
-across projects — possible at all:
+Underpinning **all three** is the one thing that makes "intersection" — joining data produced
+by different participants — possible at all:
 
 ### → [`specs/identity.md`](specs/identity.md) — the Koine Identity & Namespace Protocol
 
-Routing across the ecosystem is only hard because representations and *identities* don't
-match. Fix identity and the fabric, the joins, and most of the routing fall out for free.
-Identity is therefore the keystone and the first protocol specified here.
+Routing across the fabric is only hard because representations and *identities* don't match.
+Fix identity and the fabric, the joins, and most of the routing fall out for free. Identity is
+therefore the keystone and the first protocol specified here.
 
-Design principle throughout: **dumb pipes, smart endpoints.** Koine defines shared
-contracts and a shared namespace; intelligence stays in the projects. No central
-transform-gateway (the ESB / distributed-monolith trap).
+Design principle throughout: **dumb pipes, smart endpoints.** Koine defines shared contracts
+and a shared namespace; intelligence stays in the endpoints. No central transform-gateway
+(the ESB / distributed-monolith trap).
 
 ---
 
@@ -54,33 +65,51 @@ transform-gateway (the ESB / distributed-monolith trap).
 ```text
 koine/
   README.md                        this file — the fabric thesis + index
-  ECOSYSTEM.md                     ✅ full topology; supersedes the partial docs in
-                                   Pinakes / Argos / Insimul
+  ECOSYSTEM.md                     ✅ a concrete deployment topology (known implementations;
+                                   informative — the specs do not depend on it)
   decisions/
-    ADR-0001-control-plane-topology.md  ✅ direct-dial + thin commons; the `agora` repo
-    ADR-0002-reconcile-with-existing-bridges.md  ✅ Koine supersedes the LinguaScrape sync plans (fold)
+    ADR-0001-control-plane-topology.md           ✅ direct-dial + thin commons; contracts here, code elsewhere
+    ADR-0002-reconcile-with-existing-bridges.md  ✅ lifting pre-existing bridge artifacts into koine
+    ADR-0003-deprecate-rosetta.md                ✅ absorbing the schema layer into `schemas/`
+    ADR-0004-adopt-erlang-provider-router.md     ✅ implementation record (binds no contract)
   specs/
     identity.md                    ✅ Koine Identity & Namespace Protocol (KINP) — ratified
     grounding-pack.md              ✅ Koine Grounding-Pack Protocol (KGP) — ratified
     capability-bus.md              🚧 Koine Capability-Bus Protocol (KCB) — candidate (0.3.0)
     media-interchange.md           ✅ Koine Media-Interchange Protocol (KMI) — ratified
     conformance-scenario.md        ✅ Koine Conformance-Scenario format (KCS) — ratified
+    fine-tuning.md                 ✅ Koine Fine-Tuning Protocol (KFT) — ratified (a profile
+                                   composing the four planes, not a fifth plane)
   registry/
     relations.tsv                  ✅ core relation vocabulary (binary relations)
     relations/cinematography.tsv   ✅ example domain extension (cine:)
     relations/media.tsv            ✅ media-lineage relations (media:)
     relations/social.tsv           ✅ person-level social relations (soc:)
-    predicate-mapping.json         ✅ bridge mappings — argos + insimul ⇄ the canonical vocabulary
+    entity-types.tsv               ✅ entity-kind vocabulary
+    media-types.tsv                ✅ media-kind vocabulary
+    enums/                         ✅ shared closed vocabularies
+    canonical-schema.json          ✅ the canonical entity ontology (node/edge types + csids)
+    predicate-mapping.json         ✅ bridge mappings — producer-local predicates ⇄ the
+                                   canonical vocabulary (deployment-specific)
+  schemas/                         ✅ machine-readable twin of the prose specs (JSON Schema
+                                   draft-2020-12); validators + fixtures live downstream
+  policy/                          ✅ license-class + trust-tier policy
   scenarios/
     e2e-worlds-to-fabric.md        ✅ pressure test of the identity model (KINP)
     e2e-media-transform.md         ✅ pressure test of the control + media planes (KCB+KMI)
+    e2e-finetune.md                ✅ pressure test of the fine-tuning profile (KFT)
+    e2e-finetune-multimodal.md     ✅ multimodal pressure test of the same
     kcs-format-stress.md           ✅ pressure test of the KCS scenario format
-  tasks/chief/                     ✅ staged cross-project adoption tasklists (relocate to run)
+  tasks/chief/                     ✅ staged adoption tasklists (relocate to run)
 ```
 
 ## Status
 
-**All five specs ratified.** Identity (KINP), knowledge (KGP), control (KCB), media (KMI), and
-the conformance-scenario format (KCS) are all ratified, each validated by a pressure test
-(`scenarios/`). The contract layer is complete. See [`ECOSYSTEM.md`](ECOSYSTEM.md) for the full
-topology. Specs are versioned independently (see each doc's header).
+**Ratified:** identity (KINP), knowledge (KGP), media (KMI), the conformance-scenario format
+(KCS), and the fine-tuning profile (KFT). **Candidate:** the capability bus (KCB 0.3.0),
+pending re-validation of its AgentCard-extension manifest. Each spec is validated by a pressure test (`scenarios/`) before ratification. Specs
+are versioned independently (see each doc's header).
+
+**Known implementations.** [`ECOSYSTEM.md`](ECOSYSTEM.md) records one concrete deployment —
+which systems take which roles — as a worked reference. It is informative: no spec clause
+depends on it, and a new participant needs only the specs and the registry.
