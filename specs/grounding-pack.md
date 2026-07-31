@@ -3,23 +3,22 @@
 **Spec version:** 0.4.0
 **Status:** Ratified
 **Last updated:** 2026-07-18
-**Applies to:** Pinakes (producer/authority), Argos & Insimul (producer + consumer),
-Cuneiform & Formant (consumer)
+**Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
+and control-plane hosts that broker packs on behalf of agents.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
 worlds, and resolution semantics; **satisfies KINP's normative dependency on claim
 normalization (KINP §6, delta B).**
 
 > The **knowledge data plane**. A GroundingPack is the unit in which facts move between
-> projects: Pinakes → Argos/Insimul (grounding real-world knowledge), Argos → Pinakes
-> (knowledge extracted from user media), Insimul → Pinakes (facts contributed by fictional
-> worlds). KINP makes cross-project *identity* possible; KGP makes cross-project *knowledge
-> transfer* possible, and its §3 Normalization is what makes content-addressed claim dedup
-> (KINP §2/§6) actually work.
+> participants: authority → consumer (grounding real-world knowledge), media producer →
+> authority (knowledge extracted from ingested media), world producer → authority (facts
+> contributed by fictional worlds). KINP makes cross-participant *identity* possible; KGP makes
+> cross-participant *knowledge transfer* possible, and its §3 Normalization is what makes
+> content-addressed claim dedup (KINP §2/§6) actually work.
 
-This generalizes the pre-existing `GroundingPack` contract already vendored in Argos
-(`bridge/grounding_pack.py`, `docs/grounding_pack_spec.md`) and Insimul
-(`docs/LINGUASCRAPE_SYNC_PLAN.md`), and Pinakes's existing SWI-Prolog / Soufflé / ProbLog
-exporters, into one ratifiable ecosystem contract.
+KGP generalizes the shape that grounding bundles converge on independently — a manifest plus
+claims plus provenance, exported to Prolog / Datalog / probabilistic backends — into one
+ratifiable contract, so that a producer's export is any consumer's import.
 
 ---
 
@@ -34,7 +33,7 @@ KGP defines:
 - **dialect & portability tiers** governing what a consumer may safely ingest (§5),
 - **directionality**: snapshot vs. delta/subscription (§6),
 - **confidence, provenance, license & egress filtering** (§7),
-- the per-project **producer/consumer mapping** (§8).
+- the per-role **producer/consumer mapping** (§8).
 
 KGP does **not** define media/asset transfer (that is `media-interchange.md`), reasoning
 semantics, or storage engines.
@@ -50,8 +49,8 @@ one or more **worlds** (KINP §5). Logical shape:
 {
   "kgp_version": "0.1.0",
   "pack_id": "sha256-7b1e…",            // hash of the canonical manifest+contents (§2.1)
-  "producer": "pinakes",                // KINP namespace
-  "worlds":   ["pinakes:world:consensus-reality"],
+  "producer": "refkb",                  // KINP namespace
+  "worlds":   ["refkb:world:consensus-reality"],
   "kind":     "snapshot",               // "snapshot" | "delta"  (§6)
   "basis":    null,                     // for delta: the pack_id this delta applies against
   "dialect":  "grounding-only",         // portability tier (§5)
@@ -77,15 +76,15 @@ one or more **worlds** (KINP §5). Logical shape:
 `pack_id = sha256(canonical(manifest ⊕ sorted(entities) ⊕ sorted(assertions) ⊕ sorted(links)))`,
 where each element is canonicalized per §3 and lists are sorted by element id. A pack is thus
 itself content-addressed and byte-reproducible — two producers emitting the same knowledge
-emit the same `pack_id` (the same discipline Pinakes already applies to its DVC-pinned,
-git-diffable exports).
+emit the same `pack_id` (the same discipline an authority applies to DVC-pinned, git-diffable
+exports).
 
 ---
 
 ## 3. Normalization (NORMATIVE)
 
 > This section satisfies KINP §6 / delta B. It is load-bearing: cross-producer claim dedup
-> works **only** if every project reduces a claim to the identical byte string before
+> works **only** if every producer reduces a claim to the identical byte string before
 > hashing. A claim hashed under any other rule is non-conformant.
 
 ### 3.1 What is hashed
@@ -133,23 +132,23 @@ the *same* `claim` id and therefore **merges**, while their provenance records b
 
 ### 3.3 Worked example
 
-The Insimul claim and the Argos-extracted claim from the pressure test converge **iff** their
-entity references have been reconciled to the same canonical ids first:
+The world producer's claim and the knowledge producer's extracted claim from the pressure test
+converge **iff** their entity references have been reconciled to the same canonical ids first:
 
 ```
-world = insimul:world:alderforest
+world = worldsim:world:alderforest
 relation = commands   (registry arity 2, order: commander, force)
 
 Before reconciliation (distinct — expected):
-  insimul:world:alderforest | commands(insimul:world:alderforest:ent:npc-renaud,
-                                        insimul:world:alderforest:ent:army-of-ash)
-  insimul:world:alderforest | commands(argos:local:ent:e-8842,
-                                        argos:local:ent:e-8842-army)
+  worldsim:world:alderforest | commands(worldsim:world:alderforest:ent:npc-renaud,
+                                         worldsim:world:alderforest:ent:army-of-ash)
+  worldsim:world:alderforest | commands(analyzer:local:ent:e-8842,
+                                         analyzer:local:ent:e-8842-army)
       → different HASH_INPUT → different claim_id   ✔ (KINP §6: convergence not yet possible)
 
-After the resolver links e-8842 → npc-renaud and re-expresses the Argos claim:
-  both →  insimul:world:alderforest | commands(insimul:world:alderforest:ent:npc-renaud,
-                                                insimul:world:alderforest:ent:army-of-ash)
+After the resolver links e-8842 → npc-renaud and the extracted claim is re-expressed:
+  both →  worldsim:world:alderforest | commands(worldsim:world:alderforest:ent:npc-renaud,
+                                                 worldsim:world:alderforest:ent:army-of-ash)
       → identical HASH_INPUT → identical claim_id → MERGE, provenance from both retained ✔
 ```
 
@@ -157,17 +156,17 @@ After the resolver links e-8842 → npc-renaud and re-expresses the Argos claim:
 
 ## 4. Serializations
 
-One logical pack, several byte encodings. **TSV is canonical** (Pinakes's source-of-truth
+One logical pack, several byte encodings. **TSV is canonical** (the tabular source-of-truth
 discipline); the others are derived and MUST round-trip losslessly back to it.
 
 | Encoding | Role | Notes |
 |---|---|---|
-| **TSV** | Canonical, git-diffable, DVC-pinnable | `entities.tsv`, `assertions.tsv`, `links.tsv`, `provenance.tsv` + `manifest.json`. The wire default between projects. |
+| **TSV** | Canonical, git-diffable, DVC-pinnable | `entities.tsv`, `assertions.tsv`, `links.tsv`, `provenance.tsv` + `manifest.json`. The wire default between participants. |
 | **JSON** | Ergonomic API transfer (§2 shape) | Lossless twin of TSV. |
-| **Prolog facts** | For Insimul `libinsimul` / SWI ingest | `id/3` terms, `@world(W)` context arg (KINP §5). Tier-gated (§5). |
-| **Datalog (Soufflé `.dl`)** | Bulk deductive queries | grounding-only tier; Pinakes already emits this. |
-| **ProbLog** | Probabilistic reasoning | confidence → fact probability; Pinakes already emits this. |
-| **Neo4j property graph** | Visualization / graph queries | entities→nodes, assertions→edges, provenance→edge props. Pinakes already round-trips this. |
+| **Prolog facts** | For a consumer with a native Prolog / SWI core | `id/3` terms, `@world(W)` context arg (KINP §5). Tier-gated (§5). |
+| **Datalog (Soufflé `.dl`)** | Bulk deductive queries | grounding-only tier. |
+| **ProbLog** | Probabilistic reasoning | confidence → fact probability. |
+| **Neo4j property graph** | Visualization / graph queries | entities→nodes, assertions→edges, provenance→edge props; round-trips losslessly. |
 
 Projection is **one-directional from the canonical pack**; consumers never treat a Neo4j or
 ProbLog projection as authoritative. The relation registry (§3.2) is the shared vocabulary all
@@ -177,36 +176,37 @@ projections agree on.
 
 ## 5. Dialect & portability tiers
 
-Not every consumer can safely reason over every producer's logic. KGP adopts Insimul's
-dialect-portability registry as three tiers, declared per pack (`"dialect"`, §2) and per
-relation in the registry:
+Not every consumer can safely reason over every producer's logic. KGP declares three tiers, per
+pack (`"dialect"`, §2) and per relation in the registry:
 
 | Tier | Contains | Safe for |
 |---|---|---|
-| **`grounding-only`** | ground facts + confidence; **no rules** | everyone (Argos, Formant, viz). The lowest common denominator and the **default** for cross-project transfer. |
+| **`grounding-only`** | ground facts + confidence; **no rules** | every consumer (extraction pipelines, media producers, viz). The lowest common denominator and the **default** for cross-participant transfer. |
 | **`horn-safe`** | ground facts + **Horn/Datalog-safe rules** (no negation-as-failure, stratified, terminating) | Datalog/Soufflé, ProbLog, most reasoners. |
-| **`full-prolog`** | arbitrary Prolog (cut, NAF, non-termination risk) | Insimul `libinsimul` / SWI only. Never shipped to a consumer that cannot sandbox it. |
+| **`full-prolog`** | arbitrary Prolog (cut, NAF, non-termination risk) | a consumer with a full Prolog / SWI core only. Never shipped to a consumer that cannot sandbox it. |
 
 Rule: **a producer must ship the lowest tier that carries the needed content; a consumer must
-reject a pack whose tier exceeds what it can safely evaluate.** Pinakes → Argos defaults to
-`grounding-only`; Insimul internal transfer may use `full-prolog`.
+reject a pack whose tier exceeds what it can safely evaluate.** Authority → knowledge-producer
+transfer defaults to `grounding-only`; transfer internal to one participant may use
+`full-prolog`.
 
-**`local-only` is NOT a dialect tier.** pinakes's merged registry
-(`shared/predicate-mapping.json`) groups a fourth class, `local-only`, under its
-`portabilityClasses` key — but its meaning is *"never leaves the personal tier; hard-gated out
+**`local-only` is NOT a dialect tier.** A producer's predicate-mapping registry may group a
+fourth class, `local-only`, under a `portabilityClasses` key — but its meaning is *"never
+leaves the personal tier; hard-gated out
 of open-data releases, packaged corpora, and any non-personal export or training set."* That is
 an **egress/privacy** constraint, not a statement about what logic a consumer can evaluate.
 Keeping it in the dialect enum would conflate two orthogonal axes. KGP models it separately as
 an **egress class** — see §7.2. A relation therefore carries *both* a dialect tier (§5) and an
 egress class (§7.2).
 
-**Dialect tiers ≠ trust tiers.** These portability tiers were adopted from Insimul's Appendix-A
-registry (which is why the names predate this spec). They are **orthogonal** to the *provenance
-trust tiers* several projects already ship — Pinakes `curated`/`auto-admitted`/`quarantine`, the
-bridges' `synthetic`/`personal`. A **trust tier** says *how much to believe a source*; a
-**dialect tier** says *what logic a consumer may safely evaluate*. Keep them separate: `dialect`
-(§2) is the portability axis; provenance trust is carried per §7 and drives the merge-review
-queue (KINP §11 decision 2). (Both words appear in the projects' code — do not conflate them.)
+**Dialect tiers ≠ trust tiers.** These portability tiers were adopted from a pre-existing
+dialect-portability registry (which is why the names predate this spec). They are **orthogonal**
+to the *provenance trust tiers* that knowledge stores commonly ship —
+`curated`/`auto-admitted`/`quarantine`, `synthetic`/`personal` (see `policy/trust-tiers.json`).
+A **trust tier** says *how much to believe a source*; a **dialect tier** says *what logic a
+consumer may safely evaluate*. Keep them separate: `dialect` (§2) is the portability axis;
+provenance trust is carried per §7 and drives the merge-review queue (KINP §11 decision 2).
+(Both words are in common use — do not conflate them.)
 
 ---
 
@@ -238,7 +238,7 @@ accept records where prov.agent ∈ trusted ∧ confidence ≥ 0.9 ∧ world = c
 
 Merges preserve **all** provenance for a shared `claim` id (multiple `prov` records per
 claim), so "who told us this, and how sure were they" is always answerable — the basis for the
-hybrid review queue (KINP §11, decision 2) and for Pinakes's convergence-QA gate.
+hybrid review queue (KINP §11, decision 2) and for the authority's convergence-QA gate.
 
 ### 7.1 License-class policy (adopted from the existing bridges)
 
@@ -247,8 +247,8 @@ Every entity/assertion record carries an SPDX `license`; the pack manifest carri
 `permissive` / `attribution` / `share-alike` / `non-commercial` / `proprietary`; a consumer
 admits **per record** and **rejects with a report** anything outside its allowlist (default:
 `public-domain` + `permissive` + `attribution`). This is a first-class filter alongside
-confidence and provenance, not an afterthought — it was already built and proven in Pinakes
-(`LicensePolicy`) and Insimul (`classifyLicense`), and is lifted into the contract per
+confidence and provenance, not an afterthought — it was already built and proven in existing
+producer-side license classifiers, and is lifted into the contract per
 [ADR-0002](../decisions/ADR-0002-reconcile-with-existing-bridges.md) (reverse flow). License is
 carried on records (not in the claim hash), so it never affects claim identity.
 
@@ -278,20 +278,20 @@ Rules:
 - Because it is enforced at pack construction, egress class does **not** enter the claim hash
   (§3.1); it never affects claim identity.
 
-Adopted from pinakes's merged `shared/predicate-mapping.json`, which introduced this as the
-privacy invariant of the Argos bridge (ADR-0002 reverse flow). Note that registry groups it
+Adopted from an existing producer-side `predicate-mapping.json`, which introduced this as the
+privacy invariant of a personal-media bridge (ADR-0002 reverse flow). That registry groups it
 under `portabilityClasses` alongside the dialect tiers; KGP deliberately separates the two axes
 (§5) — see `20-shared-relation-registry` US-SRR2 for the reconciliation.
 
-## 8. Producer / consumer mapping
+## 8. Producer / consumer mapping (by role)
 
-| Project | Role | Emits / accepts |
+| Role | KGP participation | Emits / accepts |
 |---|---|---|
-| **Pinakes** | **Producer + authority** | Emits `grounding-only`/`horn-safe` snapshots + deltas of consensus reality; hosts the canonical TSV; runs resolver `resolve`/`reconcile` (KINP §8). |
-| **Argos** | Producer + consumer | Consumes grounding packs to ground ingestion; emits `grounding-only` deltas of knowledge extracted from user media (with `source_world` from the asset, KINP §7.2). |
-| **Insimul** | Producer + consumer | Consumes packs to ground world-gen; emits world facts to Pinakes (may be `full-prolog` internally, downshifted to `grounding-only` for export). |
-| **Formant** | Consumer | Consumes DSP/music-theory/gear knowledge to ground plugin design. |
-| **Cuneiform** | Consumer + host | Agents query packs; provisions the resolver/producer as an org. |
+| **Knowledge authority** | **Producer + authority** | Emits `grounding-only`/`horn-safe` snapshots + deltas of consensus reality; hosts the canonical store; runs resolver `resolve`/`reconcile` (KINP §8). |
+| **Media producer** | Producer + consumer | Consumes grounding packs to ground ingestion; emits `grounding-only` deltas of knowledge extracted from ingested media (with `source_world` from the asset, KINP §7.2). |
+| **World producer** | Producer + consumer | Consumes packs to ground world generation; emits world facts back to the authority (may be `full-prolog` internally, downshifted to `grounding-only` for export). |
+| **Domain consumer** | Consumer | Consumes domain knowledge to ground its own generation or design work; ingests only what its declared portability tier admits (§5). |
+| **Control-plane host** | Consumer + host | Agents query packs; provisions the authority/producer as an org. |
 
 ---
 
@@ -312,17 +312,26 @@ Ratified 2026-07-17.
 3. **Signing/trust → shared signing shape; inter-project packs SHOULD be signed.**
    `manifest.signing = {key_id, alg}` is shared with the capability-bus manifest
    ([`capability-bus.md`](capability-bus.md) §5), making `prov.agent` cryptographically
-   attributable. Token issuance/rotation lives in Cuneiform infra, not here.
+   attributable. Token issuance/rotation lives in the control-plane host's infra, not here.
 
 ## Changelog
 
+- **Editorial** (2026-07-31) — Agnostic reframe, part 2: worked examples and CURIEs now use the
+  illustrative placeholder namespaces registered in KINP §3.4 (`refkb` / `worldsim` / `analyzer`
+  / `mediastore` / `orchestrator`); the serialization, dialect-tier, and provenance notes name
+  **roles** and capabilities instead of products. No normative change — §3 normalization, §7.2
+  egress rules, and every MUST/SHOULD clause are unchanged in meaning.
+- **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
+  authority / host / provider) instead of named products. No normative change — identifiers,
+  envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
+
 - **0.4.0** (2026-07-18) — Added the **egress class** `local-only` (§7.2, normative): knowledge
   that must never cross a project boundary — producers filter at pack construction, consumers
-  reject. Adopted from pinakes's merged predicate-mapping registry (ADR-0002 reverse flow), but
+  reject. Adopted from an existing producer-side predicate-mapping registry (ADR-0002 reverse flow), but
   modelled as an axis **separate from** the dialect tiers (§5) rather than a fourth tier, since
   it constrains *egress*, not *evaluable logic*. Non-breaking, additive.
 - **0.3.0** (2026-07-18) — Added the SPDX **license-class policy** as a first-class filter
-  (§2 records + manifest `license_policy`, §7.1), lifted from the existing Pinakes/Insimul
+  (§2 records + manifest `license_policy`, §7.1), lifted from the existing producer-side
   bridges per ADR-0002 (reverse flow). Clarified that dialect (portability) tiers are distinct
   from provenance **trust tiers** (§5). Non-breaking, additive.
 - **0.2.0** (2026-07-17) — **Ratified.** Closed §9 (relation-registry governance → shared

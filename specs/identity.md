@@ -3,12 +3,13 @@
 **Spec version:** 0.2.1
 **Status:** Ratified
 **Last updated:** 2026-07-17
-**Applies to:** Insimul, Pinakes, Cuneiform, Argos, Formant
+**Applies to:** every participant that mints, publishes, or resolves identifiers — producers,
+consumers, identity authorities, control-plane hosts.
 
 > The keystone protocol. Every other Koine contract (grounding-pack, media-interchange,
 > capability-bus) references the identifiers, envelopes, and resolution semantics defined
-> here. Get identity right and cross-project **intersection** — joining data produced by
-> different projects — becomes a query rather than an integration effort.
+> here. Get identity right and cross-participant **intersection** — joining data produced by
+> different participants — becomes a query rather than an integration effort.
 
 ---
 
@@ -43,7 +44,7 @@ KINP defines:
 - **minting** rules, including offline-first (§6),
 - the **assertion** and **asset** envelopes, with provenance and bitemporal time (§7),
 - the **resolver API** (§8),
-- the per-project **adoption map** (§10),
+- the per-role **adoption map** (§10),
 - the **ratified decisions** on the three design forks (§11).
 
 KINP does **not** define storage engines, wire encodings for bulk transfer (that is
@@ -58,7 +59,7 @@ The most consequential decision in the whole protocol:
 | Kind | Is a… | Identity strategy | Rationale |
 |---|---|---|---|
 | **Entity** | *thing* (person, place, plugin, NPC, org, agent) | **Stable, minted, resolved.** Identity is independent of the thing's current attributes. | A thing stays the same thing as what we know about it changes. Deriving an entity ID from its properties breaks the instant a property changes. |
-| **Assertion** | *claim* about entities | **Content-addressed** (hash of the normalized claim). | Immutable; identical claims dedup/merge automatically. (Argos already does this for predicates.) |
+| **Assertion** | *claim* about entities | **Content-addressed** (hash of the normalized claim). | Immutable; identical claims dedup/merge automatically. (A producer that already content-addresses its predicates keeps its scheme.) |
 | **Asset** | *bytes* (a file / blob) | **Content-addressed** (hash of the bytes, à la git blob / IPFS CID). | Same file ingested twice = one asset. Perfect dedup. |
 
 **Corollary:** content-addressing is correct for assertions and assets and *wrong* for
@@ -93,25 +94,26 @@ For Prolog atoms, TSV cells, and human use:
 <namespace>:<kind>:<local-id>
 ```
 
-A prefix registry maps `<namespace>` → IRI root. Example expansions:
+A prefix registry maps `<namespace>` → IRI root. Example expansions (the namespaces below are
+**illustrative placeholders** — see §3.4):
 
 ```
-pinakes:ent:napoleon-i        → https://id.koine.example/ent/pinakes/napoleon-i
-argos:claim:sha256-9f3c1a…    → https://id.koine.example/claim/argos/sha256-9f3c1a…
-formant:asset:blake3-a1b2…    → https://id.koine.example/asset/formant/blake3-a1b2…
-insimul:world:alderforest     → https://id.koine.example/world/insimul/alderforest
-cuneiform:agent:dsp-engineer  → https://id.koine.example/agent/cuneiform/dsp-engineer
+refkb:ent:napoleon-i           → https://id.koine.example/ent/refkb/napoleon-i
+analyzer:claim:sha256-9f3c1a…  → https://id.koine.example/claim/analyzer/sha256-9f3c1a…
+mediastore:asset:blake3-a1b2…  → https://id.koine.example/asset/mediastore/blake3-a1b2…
+worldsim:world:alderforest     → https://id.koine.example/world/worldsim/alderforest
+orchestrator:agent:dsp-engineer → https://id.koine.example/agent/orchestrator/dsp-engineer
 ```
 
 ### 3.3 Prolog term form
 
-CURIEs map to a canonical compound term so the native Prolog core (Insimul `libinsimul`)
-handles identifiers as first-class terms, not string-matched atoms:
+CURIEs map to a canonical compound term so a participant with a native Prolog core handles
+identifiers as first-class terms, not string-matched atoms:
 
 ```prolog
 % id(Kind, Namespace, LocalId)
-id(ent, pinakes, 'napoleon-i')
-id(world, insimul, alderforest)
+id(ent, refkb, 'napoleon-i')
+id(world, worldsim, alderforest)
 
 % Convenience readers may be provided, e.g. ent(NS, L) :- ... but id/3 is canonical.
 ```
@@ -123,17 +125,31 @@ contexts that reject `https` IRIs; IRIs are preferred because resolvability is t
 
 `<namespace>` names the **minting authority**, embedding provenance into the identifier.
 
-| Namespace | Authority | Notes |
-|---|---|---|
-| `pinakes` | Pinakes | Canonical authority for real-world entities (§6). |
-| `insimul` | Insimul | World/context IDs are namespaced further: `insimul:world:<w>`; entities within a world use that world as their namespace — see §5. |
-| `argos` | Argos | Run-scoped locals: `argos:run/<runid>`. |
-| `formant` | Formant | Plugins, DSP nodes, hardware models. |
-| `cuneiform` | Cuneiform | Agents, roles, orgs (control plane). |
-| `wikidata`, `musicbrainz`, `geonames`, … | external authorities | For anchoring; not minted by us (§4.4). |
-| `<ns>:local` | any project | Provisional, pre-reconciliation locals (§6). |
+The registry is **open**: any participant that mints identifiers registers a prefix by PR, in
+the role it claims. A prefix is reserved to exactly one minting authority and is immutable once
+published (changing it changes every identifier under it). Registration confers a name, not a
+privilege — the only namespace the protocol treats specially is the one a deployment designates
+as its identity authority for real-world entities (§6, §11 decision 1).
 
-New namespaces are added by PR to this registry.
+**Illustrative registrations.** The rows below are the placeholder namespaces used by the worked
+examples throughout the Koine specs; they are **examples of what a registration looks like**, not
+a reserved set. Substitute your own.
+
+| Namespace | Registered to (role) | Notes |
+|---|---|---|
+| `refkb` | identity / knowledge **authority** | Canonical authority for real-world entities, anchored to external authorities (§6, §4.4). |
+| `worldsim` | **world producer** (simulation / generative) | World/context IDs are namespaced further: `worldsim:world:<w>`; entities within a world use that world as their namespace — see §5. |
+| `analyzer` | **knowledge producer** (extraction pipeline) | Run-scoped locals: `analyzer:run/<runid>`. |
+| `mediastore` | **media producer** | Assets, devices, instruments, plugins, hardware models. |
+| `orchestrator` | control-plane **host** | Agents, roles, orgs (control plane). |
+| `provider` | capability **provider** | Orgs/agents that execute capabilities on the bus (transforms, trainers, model providers). |
+
+Two rows are **normative**, not illustrative:
+
+| Namespace | Registered to | Notes |
+|---|---|---|
+| `wikidata`, `musicbrainz`, `geonames`, … | external authorities | For anchoring; never minted by a Koine participant (§4.4). |
+| `<ns>:local` | any participant | Provisional, pre-reconciliation locals under that participant's own prefix (§6). |
 
 ---
 
@@ -141,23 +157,23 @@ New namespaces are added by PR to this registry.
 
 ### 4.1 Local IDs, never a hard merge
 
-Every project mints its **own local entity IDs**. The same real-world thing will have
-several — a Wikidata-anchored `pinakes:ent:…`, an `argos:ent:…` extracted from a user's
-footage, an `insimul:world:…:ent:…` in a fictional world. **These are never merged
+Every participant mints its **own local entity IDs**. The same real-world thing will have
+several — a Wikidata-anchored `refkb:ent:…`, an `analyzer:ent:…` extracted from a user's
+footage, a `worldsim:world:…:ent:…` in a fictional world. **These are never merged
 destructively.** A separate **equivalence layer** records links between them with
 confidence and provenance. "The merged entity" is a *view* computed at query time from the
 `same_as` closure — it is never written back over the sources.
 
-This generalizes Pinakes's existing culture-scrape entity-resolution from intra-project to
-cross-project.
+This generalizes the intra-participant entity resolution such stores already run to the
+cross-participant case.
 
 ### 4.2 The equivalence layer
 
 Links are themselves assertions (§7), so they carry confidence, provenance, and time:
 
 ```prolog
-same_as(id(ent, argos, 'e-8842'), id(ent, pinakes, 'napoleon-i'),
-        confidence(0.97), src('argos:run/1a2b')).
+same_as(id(ent, analyzer, 'e-8842'), id(ent, refkb, 'napoleon-i'),
+        confidence(0.97), src('analyzer:run/1a2b')).
 ```
 
 Relations in the equivalence layer:
@@ -182,16 +198,16 @@ The single distinction that keeps fiction from corrupting real-world knowledge.
 - **`based_on`** — records that one entity was modeled on another; inference does **not**
   flow across.
 
-Worked case — Insimul's fictional general modeled on the real Napoleon:
+Worked case — a world producer's fictional general modeled on the real Napoleon:
 
 ```prolog
 % Lineage only — NOT same_as:
-based_on(id(ent, 'insimul:world:alderforest', 'npc-renaud'),
-         id(ent, pinakes, 'napoleon-i'), confidence(0.8)).
+based_on(id(ent, 'worldsim:world:alderforest', 'npc-renaud'),
+         id(ent, refkb, 'napoleon-i'), confidence(0.8)).
 
 % A claim asserted ONLY inside the fictional world (note the @world scoping, §5):
-fought(id(ent, 'insimul:world:alderforest', 'npc-renaud'),
-       id(ent, 'insimul:world:alderforest', 'dragon-3')) @ world(alderforest).
+fought(id(ent, 'worldsim:world:alderforest', 'npc-renaud'),
+       id(ent, 'worldsim:world:alderforest', 'dragon-3')) @ world(alderforest).
 ```
 
 Consequences:
@@ -204,23 +220,25 @@ One graph, both queries, zero contamination.
 
 ### 4.4 Anchoring to external authorities
 
-Do not reinvent identity for things the world already identifies. A `pinakes:ent:…` entity
-carries `same_as` / `exact_match` links to external authority IDs:
+Do not reinvent identity for things the world already identifies. An authority's entity
+(`refkb:ent:…`) carries `same_as` / `exact_match` links to external authority IDs:
 
 ```prolog
-same_as(id(ent, pinakes, 'napoleon-i'), id(ent, wikidata, 'Q517'), confidence(1.0)).
+same_as(id(ent, refkb, 'napoleon-i'), id(ent, wikidata, 'Q517'), confidence(1.0)).
 ```
 
-Wikidata is the primary real-world anchor (Pinakes already uses QIDs). MusicBrainz anchors
-Formant audio/artist/gear entities; GeoNames anchors places; etc.
+Wikidata is the primary general real-world anchor; a media producer anchors audio/artist/gear
+entities to MusicBrainz; places anchor to GeoNames; etc. Pick the authority that already
+identifies the *kind* of thing you mint.
 
 ### 4.5 Reconciliation
 
 Fuzzy matching a descriptor (name, type, attributes, embedding) to candidate entities is
 **probabilistic**, never assumed correct. KINP adopts the **OpenRefine / Wikidata
-Reconciliation API** shape for the `reconcile` operation (§8): a published standard that
-Pinakes's Wikidata backbone can answer directly, giving Argos and Insimul fuzzy matching
-against a standard interface for free. Reconciliation *proposes* links; per the ratified
+Reconciliation API** shape for the `reconcile` operation (§8): a published standard that an
+identity authority with a Wikidata backbone can answer directly, giving every knowledge and
+world producer fuzzy matching against a standard interface for free. Reconciliation *proposes*
+links; per the ratified
 merge policy (§11, decision 2) they are auto-applied above a confidence threshold and
 otherwise queued for review.
 
@@ -240,24 +258,25 @@ never promoted to `same_as` by transitivity.
 
 ## 5. Worlds / contexts
 
-Truth in this ecosystem is not global — it is **true-in-a-world**. The same
-world/context axis already exists independently in three projects; KINP unifies it:
+Truth in the fabric is not global — it is **true-in-a-world**. The same world/context axis
+already exists independently under different names in each role; KINP unifies it:
 
-- Insimul: **editor canon** vs. **per-playthrough save-file state**.
-- Argos: predicate **provenance**.
-- Pinakes: **source provenance**.
+- world producer: **editor canon** vs. **per-playthrough save-file state**.
+- knowledge producer: extraction **provenance** on each predicate.
+- knowledge authority: **source provenance**.
 
 Every assertion is stamped with a **world** (a named graph). Worlds form an inheritance
 chain; reasoning is always relative to a world and inherits from its parents unless
 overridden.
 
 ```
-consensus-reality                         (fab:world:pinakes/consensus-reality — default real world)
-└── insimul:world:alderforest             (a fiction; inherits real-world facts unless overridden)
-    └── insimul:world:alderforest#save-7f (a playthrough; forks the world's canon)
+consensus-reality                          (the authority's default real world)
+└── worldsim:world:alderforest             (a fiction; inherits real-world facts unless overridden)
+    └── worldsim:world:alderforest#save-7f (a playthrough; forks the world's canon)
 ```
 
-- Default world for real-world knowledge: `pinakes:world:consensus-reality`.
+- Default world for real-world knowledge: the identity authority's `…:world:consensus-reality`
+  (written `refkb:world:consensus-reality` in these examples).
 - A fictional world MAY inherit consensus reality (so "Paris is in France" holds in-fiction
   unless the fiction overrides it) — inheritance policy is per-world metadata.
 
@@ -277,16 +296,17 @@ Assertions without an explicit world default to the producer's declared world.
 
 The **resolver** (§8) later reconciles provisional locals against canonical entities and
 emits `same_as` links — eventually-consistent, never blocking. This preserves:
-- Argos's zero-spend / local-first operation,
-- Insimul-native's embedded (no-network) execution,
-- Pinakes bulk imports.
+- a knowledge producer's zero-spend / local-first operation,
+- an embedded (no-network) world-producer runtime,
+- an authority's bulk imports.
 
-**Canonical authority:** Pinakes is the single canonical authority for *real-world* entities
-(it anchors to Wikidata) — ratified, §11 decision 1. Other projects mint locals and defer
+**Canonical authority:** a deployment designates **one** participant in the identity-authority
+role as canonical for *real-world* entities (anchoring them to an external authority such as
+Wikidata) — ratified, §11 decision 1. Every other participant mints locals and defers
 canonicalization to the resolver.
 
 **Claim normalization is normative and load-bearing — not optional (delta B).**
-Content-addressed claim dedup across producers *only* works if every project canonicalizes a
+Content-addressed claim dedup across producers *only* works if every producer canonicalizes a
 claim to the exact same byte string before hashing. Producers MUST apply the shared
 normalization — canonical argument order, CURIE↔IRI normalization, world stamping, and
 literal/number/whitespace formatting — defined in
@@ -305,24 +325,25 @@ it *happen*.
 
 ### 7.1 Assertion envelope
 
-Every assertion carries provenance, confidence, and **bitemporal** time. Argos's predicate
-shape (subject/relation/object + confidence + embedding + provenance + `[t_start,t_end]`)
-is the seed; KINP promotes it to the ecosystem envelope and splits the two times.
+Every assertion carries provenance, confidence, and **bitemporal** time. The seed is the
+predicate shape common to extraction pipelines (subject/relation/object + confidence +
+embedding + provenance + `[t_start,t_end]`); KINP promotes it to the fabric envelope and
+splits the two times.
 
 ```jsonc
 {
-  "id":        "argos:claim:sha256-9f3c…",   // content hash (§6)
-  "world":     "insimul:world:alderforest",  // §5
-  "subject":   "insimul:world:alderforest:ent:npc-renaud",
+  "id":        "analyzer:claim:sha256-9f3c…", // content hash (§6)
+  "world":     "worldsim:world:alderforest",  // §5
+  "subject":   "worldsim:world:alderforest:ent:npc-renaud",
   "relation":  "fought",
-  "object":    "insimul:world:alderforest:ent:dragon-3",
+  "object":    "worldsim:world:alderforest:ent:dragon-3",
   "confidence": 0.62,
   "embedding":  [/* optional vector */],
   "embedding_model": "…",                          // REQUIRED when embedding present; re-embed on mismatch
   "valid_time": { "start": "…", "end": null },   // when true IN ITS WORLD
   "prov": {                                        // W3C PROV shape
-    "agent":    "cuneiform:agent:continuity-critic",
-    "activity": "argos:run/1a2b",
+    "agent":    "orchestrator:agent:continuity-critic",
+    "activity": "analyzer:run/1a2b",
     "asserted": "2026-07-17T12:00:00Z",            // transaction time
     "method":   "vision-analysis@2.3"
   }
@@ -343,14 +364,14 @@ is the seed; KINP promotes it to the ecosystem envelope and splits the two times
 
 ```jsonc
 {
-  "id":       "formant:asset:blake3-a1b2…",   // hash of bytes
+  "id":       "mediastore:asset:blake3-a1b2…", // hash of bytes
   "media_type": "audio/wav",
   "bytes":     480000,
-  "source_world": "insimul:world:alderforest", // REQUIRED at ingest — the world the bytes
+  "source_world": "worldsim:world:alderforest",// REQUIRED at ingest — the world the bytes
                                                 //   depict; claims extracted from this asset
                                                 //   default to this world (delta A)
-  "attaches_to": ["pinakes:ent:tr-808"],       // entities this asset depicts/realizes
-  "produced_by": "formant:run/…",
+  "attaches_to": ["refkb:ent:tr-808"],         // entities this asset depicts/realizes
+  "produced_by": "mediastore:run/…",
   "prov": { /* as above */ }
 }
 ```
@@ -398,10 +419,11 @@ query(pattern, world)
 ```
 
 **Deployment:** the resolver is a *thin* service over the fabric — a registry + reconciler
-+ forwarder, **not** a transform gateway. It holds no project business logic. Per the
-ecosystem thesis, it can itself be a Cuneiform-generated org. Pinakes provides the
-`resolve` / `reconcile` authority for real-world entities; each project can run a local
-resolver cache for offline use that syncs `same_as` links opportunistically.
++ forwarder, **not** a transform gateway. It holds no participant-specific business logic. Per
+the fabric thesis, it can itself be provisioned as an org by the control-plane host. The
+designated identity authority provides the `resolve` / `reconcile` surface for real-world
+entities; any participant can run a local resolver cache for offline use that syncs `same_as`
+links opportunistically.
 
 ---
 
@@ -416,23 +438,24 @@ resolver cache for offline use that syncs `same_as` links opportunistically.
 | `owl:sameAs` semantics (concept only) | `same_as` licensing (§4.3) | OWL reasoning stack |
 
 Storage stays **Prolog / TSV / grounding-pack native.** A full RDF triplestore + SPARQL
-commitment would fight Insimul's Prolog core and Pinakes's TSV-first discipline for little
-gain. KINP stays IRI-*compatible* so an RDF export remains possible later.
+commitment would fight a Prolog-cored world producer and a TSV-first knowledge authority for
+little gain. KINP stays IRI-*compatible* so an RDF export remains possible later.
 
 ---
 
-## 10. Per-project adoption map
+## 10. Adoption map (by role)
 
-Nobody rewrites their core. Most of this is promoting private conventions to the shared
-namespace and adding the equivalence layer.
+Nobody rewrites their core. Most of adoption is promoting private conventions to the shared
+namespace and adding the equivalence layer. A participant reads only the rows for the roles it
+claims; most participants claim several.
 
-| Project | Already has | Change needed |
+| Role | Typical starting point | Change needed |
 |---|---|---|
-| **Pinakes** | canonical entities, Wikidata anchoring, entity-resolution, TSV SoT | Become the **resolver/authority**; expose `resolve` + `reconcile`; emit KINP IRIs/CURIEs on the canonical schema. |
-| **Argos** | content-addressed predicates + assets, provenance, valid-time | Mostly **relabeling**: predicate → assertion (keep), subject/object → entity refs (resolve), asset id → `asset` kind; emit `same_as` to Pinakes; add transaction-time split. |
-| **Insimul** | Prolog facts, `predicate-schema.ts`, canon/save-file split | Add **world-scoped** entity IDs + `based_on` links to Pinakes; formalize canon/playthrough as worlds; represent ids as `id/3` terms with a prefix registry. |
-| **Formant** | plugin/node/hardware registries | Give plugins/gear **entity** IDs; anchor to MusicBrainz/real gear; audio outputs = `asset` kind with `attaches_to`. |
-| **Cuneiform** | agent roles, org model, `agent.pl` KBs | Agents/orgs get **entity/agent** IDs in the shared namespace; provision the resolver as an org. |
+| **Identity authority** | canonical entity store, external anchoring (e.g. Wikidata), entity-resolution, a tabular source of truth | Expose `resolve` + `reconcile` (§8); emit KINP IRIs/CURIEs on its canonical schema; run the equivalence layer (§4). |
+| **Knowledge producer / consumer** | content-addressed predicates + assets, provenance, valid-time | Mostly **relabeling**: predicate → assertion (keep), subject/object → entity refs (resolve), asset id → `asset` kind; emit `same_as` to the authority; add the transaction-time split (§7). |
+| **World producer** (simulation / generative) | engine-local facts, a local predicate schema, a canon/save-file split | Add **world-scoped** entity IDs + `based_on` links to real-world entities; formalize canon vs. playthrough as worlds (§5); carry ids as `id/3` terms against a registered prefix (§3). |
+| **Media producer** | asset / device / instrument registries | Give catalogued things **entity** IDs; anchor to an external authority where one exists; outputs are the `asset` kind with `attaches_to` (§7.2). |
+| **Control-plane host** | agent roles, an org model, agent knowledge bases | Agents/orgs get **entity/agent** IDs in the shared namespace; provision the resolver as an org. |
 
 ---
 
@@ -441,14 +464,15 @@ namespace and adding the equivalence layer.
 The three design forks were ratified on 2026-07-17. The choices below are now normative;
 rejected alternatives are recorded for provenance.
 
-1. **Resolver authority → Pinakes is the single canonical authority** for real-world
-   entities (anchored to Wikidata). *Rejected:* fully federated with no privileged node.
+1. **Resolver authority → a single canonical identity authority** for real-world entities
+   (anchored to an external authority such as Wikidata); a deployment designates which
+   participant holds the role. *Rejected:* fully federated with no privileged node.
    *Rationale:* canonical quality and dedup outweigh federation purity, and offline-first is
    preserved regardless because minting is local and reconciliation is eventually-consistent
    (§6). Authority is a **role**, not a hard dependency — federation stays a future option.
 2. **Merge aggressiveness → hybrid.** Auto-apply `same_as`/`based_on` above a confidence
-   threshold; route high-impact or below-threshold links to a **review queue**, reusing
-   Pinakes's convergence-QA gate. *Rejected:* always-auto (contamination risk) and
+   threshold; route high-impact or below-threshold links to a **review queue**, reusing the
+   authority's convergence-QA gate. *Rejected:* always-auto (contamination risk) and
    always-review (does not scale). The threshold is configurable per world.
 3. **World model in Prolog → explicit `@world(W)` context argument.** *Rejected:* one module
    per world. *Rationale:* the context argument round-trips cleanly to TSV and the
@@ -462,11 +486,23 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
 
 ## Changelog
 
+- **Editorial** (2026-07-31) — Agnostic reframe, part 2: the §3.4 namespace registry is now an
+  **open** registry whose product-named rows became **illustrative placeholder** registrations
+  (`refkb` / `worldsim` / `analyzer` / `mediastore` / `orchestrator`) keyed to roles; every worked
+  example, CURIE, and Prolog term across the spec uses those placeholders; §11 decision 1 is
+  stated as the identity-**authority role** rather than a named product. No normative change —
+  the registry's rules (one authority per prefix, immutable once published, PR to register), the
+  identifier grammar, the envelopes, and every MUST/SHOULD clause are unchanged in meaning.
+- **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
+  authority / host / provider) instead of named products. No normative change — identifiers,
+  envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
+
 - **0.2.1** (2026-07-17) — Added `embedding_model` to the assertion envelope (§7.1),
   resolving KGP §9 embedding-portability decision. Excluded from claim identity; non-breaking.
 - **0.2.0** (2026-07-17) — **Ratified.** Folded pressure-test deltas A–E: asset
   `source_world` (A, §7.2); claim normalization promoted to normative (B, §6); resolver
   `same_as`-vs-`based_on` rule (C, §4.5); reserved `retracts`/`supersedes` lifecycle relations
   (D, §4.2); perceptual/near-dup asset matching scoped out (E, §7.2). Ratified the three design
-  forks (§11): Pinakes-as-authority, hybrid merge policy, `@world(W)` argument.
+  forks (§11): a single identity **authority role** for real-world entities, hybrid merge
+  policy, `@world(W)` argument.
 - **0.1.0** (2026-07-17) — Initial candidate draft.

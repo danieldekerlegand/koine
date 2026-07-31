@@ -10,16 +10,16 @@ tests — findings feed deltas that must land before ratifying KCS.
 
 ## Attempt 1 — `kcs:worlds-to-fabric`
 
-Encoding the identity-firewall scenario: seed an Insimul world + a fiction entity `based_on` a
-real entity, have Argos ingest footage of it and extract a claim, Pinakes reconciles, then
-assert the firewall.
+Encoding the identity-firewall scenario: seed a world-producer world + a fiction entity
+`based_on` a real entity, have a knowledge producer ingest footage of it and extract a claim,
+the identity authority reconciles, then assert the firewall.
 
 ```jsonc
 "steps": [
-  { "step": "invoke", "capability": "argos:cap:extract",
+  { "step": "invoke", "capability": "analyzer:cap:extract",
     "inputs": [{ "plane": "media", "asset": "…" }] },      // → mints a provisional local entity
-  { "step": "resolve", "descriptor": { "name": "…", "world": "insimul:world:alderforest" } },
-  { "step": "assert", "that": "based_on_exists( ??? , pinakes:ent:napoleon-i )" }
+  { "step": "resolve", "descriptor": { "name": "…", "world": "worldsim:world:alderforest" } },
+  { "step": "assert", "that": "based_on_exists( ??? , refkb:ent:napoleon-i )" }
 ]
 ```
 
@@ -37,21 +37,22 @@ covers the firewall properties once M lets assertions name their operands.
 
 ## Attempt 2 — `kcs:media-transform`
 
-Encoding the 4-project trailer chain: participants Insimul + Argos + Formant + Pinakes + the
-Cuneiform registry; a transform path; a `fetch`; cost ceilings.
+Encoding the 4-participant trailer chain: a world producer + a knowledge producer + a media
+producer + an identity authority + the host-provisioned registry; a transform path; a `fetch`;
+cost ceilings.
 
 ```jsonc
 "participants": [
-  { "identity": "argos:agent:pipeline",  "planes": ["media","knowledge"] },
-  { "identity": "formant:agent:composer", "planes": ["media"] },   // not adopted KCB yet
+  { "identity": "analyzer:agent:pipeline",   "planes": ["media","knowledge"] },
+  { "identity": "mediastore:agent:composer", "planes": ["media"] },   // not adopted KCB yet
   ...
 ]
 ```
 
-🔴 **BROKE (N).** Formant is a *planned* KCB provider (capability-bus §6: "consumer now, provider
-later"). A scenario that needs it today can't run — and KCS has no way to declare a **stand-in**
-for a not-yet-adopted participant. The `agora-console-scenarios` tasklist already anticipates
-"documented stand-ins," but the format doesn't express them. **Delta N: participants may declare
+🔴 **BROKE (N).** The media producer is a *planned* KCB provider (capability-bus §6: "consumer
+now, provider later"). A scenario that needs it today can't run — and KCS has no way to declare
+a **stand-in** for a not-yet-adopted participant. The downstream conformance-console tasklist
+already anticipates "documented stand-ins," but the format doesn't express them. **Delta N: participants may declare
 a stand-in/fixture source.**
 
 🔴 **BROKE (O, structural).** The scenario asserts **negative paths**: an *unauthorized* `fetch`

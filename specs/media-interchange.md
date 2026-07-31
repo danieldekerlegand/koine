@@ -3,8 +3,8 @@
 **Spec version:** 0.2.0
 **Status:** Ratified
 **Last updated:** 2026-07-17
-**Applies to:** Argos (producer/authority for media + EDL), Formant (audio producer),
-Insimul (game-video producer), Pinakes & Cuneiform (consumers)
+**Applies to:** media authorities (producer/authority for assets + EDL), media producers of any
+modality, and media consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP) for the `asset` id, `source_world`, and
 `attaches_to`; [`grounding-pack.md`](grounding-pack.md) (KGP) for the analysis→knowledge
 bridge; [`capability-bus.md`](capability-bus.md) (KCB) for transforms-as-capabilities.
@@ -13,9 +13,9 @@ bridge; [`capability-bus.md`](capability-bus.md) (KCB) for transforms-as-capabil
 > *bytes and the edits over them*: assets, their technical metadata, the asset-lineage graph
 > (re-encodes, variants, clips), the timeline/EDL composition model, and the typed contract
 > that makes "any-to-any" transformation a **path computed over capabilities** rather than a
-> central transform-gateway. Generalizes Argos's existing asset library, `ffprobe`-based
-> `asset_probe`, canonical JSON EDL, and NLE exporters (FCPXML / Premiere xmeml / DaVinci
-> CMX3600 / Remotion) into one ecosystem contract.
+> central transform-gateway. It generalizes what a media authority already builds in isolation —
+> an asset library, a probe over technical metadata, a canonical JSON EDL, and NLE exporters
+> (FCPXML / Premiere xmeml / DaVinci CMX3600 / Remotion) — into one interchange contract.
 
 Division of labor with KINP: KINP fixes the `asset` *identifier*, `source_world`, and
 `attaches_to` (KINP §7.2). KMI defines everything else about an asset — technical metadata,
@@ -33,10 +33,10 @@ KMI defines:
 - the **analysis → knowledge bridge** into KGP (§5),
 - **transform typing** — the media-plane port profile; cross-plane typing lives in KCB §2.1 (§6),
 - **byte transport** via a content-addressed store (§7),
-- the per-project **mapping** (§8).
+- the per-role **mapping** (§8).
 
 KMI does **not** define knowledge semantics (KGP), capability discovery/invocation (KCB), or
-codec/render implementations (project-local; `ffmpeg` is the de-facto backbone).
+codec/render implementations (participant-local; `ffmpeg` is the de-facto backbone).
 
 ---
 
@@ -47,12 +47,12 @@ those bytes and is **excluded from the id** (a re-encode is a different asset �
 
 ```jsonc
 {
-  "id":         "argos:asset:blake3-a1b2…",   // KINP: hash of bytes
+  "id":         "analyzer:asset:blake3-a1b2…", // KINP: hash of bytes
   "media_type": "video/mp4",
   "bytes":      104857600,
-  "source_world": "insimul:world:alderforest", // REQUIRED for INGESTED world-depicting assets; null if generated (delta H)
-  "attaches_to":  ["insimul:world:alderforest:ent:npc-renaud"], // KINP entities depicted
-  "produced_by":  "argos:run/1a2b",
+  "source_world": "worldsim:world:alderforest",// REQUIRED for INGESTED world-depicting assets; null if generated (delta H)
+  "attaches_to":  ["worldsim:world:alderforest:ent:npc-renaud"], // KINP entities depicted
+  "produced_by":  "analyzer:run/1a2b",
   "probe": {                                   // technical metadata (ffprobe-shaped)
     "duration_ms": 42000,
     "streams": [
@@ -65,7 +65,7 @@ those bytes and is **excluded from the id** (a re-encode is a different asset �
 }
 ```
 
-- `probe` is the normalized output of a technical probe (Argos's `asset_probe`/`ffprobe`).
+- `probe` is the normalized output of a technical probe (an `ffprobe`-style asset probe).
   Its shape is descriptive, not identity-bearing.
 - An asset MAY be a *structured document* (an EDL, §4) rather than raw media; then
   `media_type` is `application/vnd.koine.edl+json` and `probe` is omitted.
@@ -108,11 +108,11 @@ on the excerpt *asset's* envelope (§2, optional `excerpt` block), keeping the g
 
 ```jsonc
 // A 4-second clip pulled from the ingested master, then downscaled for preview:
-{ "relation": "media:excerpt_of", "subject": "argos:asset:blake3-c3d4…",
-  "object": "argos:asset:blake3-a1b2…", "confidence": 1.0 }
+{ "relation": "media:excerpt_of", "subject": "analyzer:asset:blake3-c3d4…",
+  "object": "analyzer:asset:blake3-a1b2…", "confidence": 1.0 }
 //   → the range lives on asset c3d4: "excerpt": { "source": "…a1b2…", "start_ms": 12000, "end_ms": 16000 }
-{ "relation": "media:variant_of",  "subject": "argos:asset:blake3-e5f6…",
-  "object": "argos:asset:blake3-c3d4…", "confidence": 1.0 }
+{ "relation": "media:variant_of",  "subject": "analyzer:asset:blake3-e5f6…",
+  "object": "analyzer:asset:blake3-c3d4…", "confidence": 1.0 }
 ```
 
 ---
@@ -120,21 +120,21 @@ on the excerpt *asset's* envelope (§2, optional `excerpt` block), keeping the g
 ## 4. The EDL / timeline model
 
 The composition — how assets are arranged into an edit — is a **canonical JSON EDL**
-(Argos's format, promoted here). It is itself an asset
+(a media producer's edit-list format, promoted here). It is itself an asset
 (`application/vnd.koine.edl+json`, content-addressed), so edits are versioned and
 deduplicated like any other asset, and an EDL can `media:derived_from` a prior EDL.
 
 ```jsonc
 {
   "kmi_edl_version": "0.1.0",
-  "id":     "argos:asset:blake3-ed10…",
+  "id":     "analyzer:asset:blake3-ed10…",
   "fps":    "24000/1001",
   "tracks": [
     { "id": "V1", "kind": "video", "clips": [
-        { "asset": "argos:asset:blake3-c3d4…", "in_ms": 0, "out_ms": 4000,
+        { "asset": "analyzer:asset:blake3-c3d4…", "in_ms": 0, "out_ms": 4000,
           "timeline_ms": 0, "effects": [] } ] },
     { "id": "A1", "kind": "audio", "clips": [
-        { "asset": "formant:asset:blake3-aa01…", "in_ms": 0, "out_ms": 4000,
+        { "asset": "mediastore:asset:blake3-aa01…", "in_ms": 0, "out_ms": 4000,
           "timeline_ms": 0, "gain_db": -3.0 } ] },
     { "id": "A2", "kind": "audio", "clips": [ /* narration */ ] },
     { "id": "A3", "kind": "audio", "clips": [ /* SFX */ ] }
@@ -143,14 +143,14 @@ deduplicated like any other asset, and an EDL can `media:derived_from` a prior E
 }
 ```
 
-- Multitrack V/A (Argos's conform target: V1/A1–A3). Clips reference assets **by KINP id** with
+- Multitrack V/A (the usual conform target: V1/A1–A3). Clips reference assets **by KINP id** with
   in/out points; nothing is inlined.
 - **Canonical JSON EDL is the source of truth**; NLE formats are one-directional projections
   (mirrors KGP §4's TSV→projection rule):
 
 | Projection | Target | Notes |
 |---|---|---|
-| **FCPXML** | Final Cut Pro | Argos `skill_export_fcpxml` |
+| **FCPXML** | Final Cut Pro | `skill_export_fcpxml` |
 | **xmeml** | Adobe Premiere | `skill_export_premiere` |
 | **CMX3600 EDL** | DaVinci Resolve | `skill_export_davinci` |
 | **Remotion `.tsx`** | programmatic React video | `skill_export_remotion` |
@@ -172,8 +172,8 @@ This is where the media plane **feeds** the knowledge plane. Media analysis
 
 ```prolog
 % From vision-analysis of clip c3d4, in the asset's source_world:
-cine:shows(argos:asset:blake3-c3d4…, insimul:world:alderforest:ent:npc-renaud)
-    @ world(alderforest) :- confidence(0.88), src('argos:run/1a2b').
+cine:shows(analyzer:asset:blake3-c3d4…, worldsim:world:alderforest:ent:npc-renaud)
+    @ world(alderforest) :- confidence(0.88), src('analyzer:run/1a2b').
 ```
 
 Consequences that fall out of the earlier planes for free:
@@ -193,7 +193,7 @@ Consequences that fall out of the earlier planes for free:
 
 ## 6. Transform typing (any-to-any as a computed path)
 
-Argos's "any-to-any" (PDF→movie, movie→PDF) is realized as **typed transforms**, not a gateway.
+"Any-to-any" conversion (PDF→movie, movie→PDF) is realized as **typed transforms**, not a gateway.
 A transform is a **KCB capability** whose inputs/outputs are **ports** (KCB §2.1), which span
 all planes. KMI owns only the **media profile** — the `media`-plane port type: a `media_type`
 plus optional constraints (resolution ceiling, codec, duration) and `world_pattern`. Knowledge-
@@ -212,7 +212,7 @@ and entity-plane port types are owned by KGP / KINP.
 - The **discovery registry computes a path** from a start port to a goal port across providers
   *and planes* (KCB §3) — e.g. `pdf → text → treatment → shot-list → images → video`. That path
   *is* the any-to-any pipeline; no component needs global knowledge of the others.
-- Transform runtime concerns (Argos's paid→mlx→local→placeholder "sacred ladder", zero-spend
+- Transform runtime concerns (a provider's paid→accelerated→local→placeholder fallback ladder, zero-spend
   completion) are **producer behavior**; a capability's declared `cost` (KCB §2.1) lets path
   search prefer cheap/zero-spend routes and gate spend (delta K). KMI fixes only the media
   profile vocabulary so paths are computable and total.
@@ -227,8 +227,8 @@ Assets are large; envelopes/EDLs are small. KMI is a **reference-by-id** protoco
   knowledge-side links).
 - **Bytes live in a content-addressed store (CAS)** keyed by the KINP `asset` id and are
   fetched out-of-band. Because the id *is* the hash, integrity is self-verifying and any node
-  can cache. (Argos already stores run artifacts under `data/assets/`; the CAS generalizes
-  that across projects.)
+  can cache. (A producer that already stores run artifacts on local disk keeps doing so; the
+  CAS generalizes that across participants.)
 - Byte retrieval is the KCB **`fetch`** verb — a CAS GET by `asset` id (KCB §4) — authorized by
   a `fetch:asset` grant (KCB §5, **delta G**). Reference and byte-fetch both ride the capability
   bus; KMI defines the payloads, not the pipe. Because a reference can arrive before its bytes
@@ -236,15 +236,15 @@ Assets are large; envelopes/EDLs are small. KMI is a **reference-by-id** protoco
 
 ---
 
-## 8. Per-project mapping
+## 8. Mapping (by role)
 
-| Project | Role | Emits / accepts |
+| Role | KMI participation | Emits / accepts |
 |---|---|---|
-| **Argos** | **Producer + authority** for media & EDL | Owns the canonical JSON EDL + NLE projections + `asset_probe`; emits analysis → KGP (§5); hosts run-artifact CAS. |
-| **Formant** | Audio producer | Emits `audio/*` assets + plugin renders; consumes EDLs to place audio; later a *transform provider* ("render this plugin") via KCB. |
-| **Insimul** | Game-video producer | Emits gameplay video assets with `source_world` = the world/playthrough; consumes assets for in-engine use. |
-| **Pinakes** | Consumer | Consumes analysis-derived KGP (not bytes); may catalog media entities. |
-| **Cuneiform** | Consumer + host | Provisions the CAS + transform capabilities as orgs; agents invoke transforms. |
+| **Media authority** | **Producer + authority** for assets & EDL | Owns the canonical JSON EDL + NLE projections + `asset_probe`; emits analysis → KGP (§5); hosts the run-artifact CAS. |
+| **Audio producer** | Producer | Emits `audio/*` assets + instrument renders; consumes EDLs to place audio; later a *transform provider* ("render this instrument") via KCB. |
+| **World producer** | Producer | Emits video/render assets with `source_world` = the world/playthrough; consumes assets for in-engine use. |
+| **Knowledge authority** | Consumer | Consumes analysis-derived KGP (not bytes); may catalog media entities. |
+| **Control-plane host** | Consumer + host | Provisions the CAS + transform capabilities as orgs; agents invoke transforms. |
 
 ---
 
@@ -270,6 +270,15 @@ on NLE projections, §4); plus the KCB-side **G** (`fetch` verb + grant, §7) an
 (dangling-reference tolerance, §7). Ratified.
 
 ## Changelog
+
+- **Editorial** (2026-07-31) — Agnostic reframe, part 2: asset envelopes, lineage links, the EDL
+  example, and the analysis→KGP bridge use the KINP §3.4 illustrative placeholder namespaces
+  (`analyzer` / `mediastore` / `worldsim`); probe, EDL-provenance, transform-ladder, and CAS notes
+  name **roles** instead of products. No normative change — the envelope, lineage relations, EDL
+  schema, port typing, and every MUST/SHOULD clause are unchanged in meaning.
+- **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
+  authority / host / provider) instead of named products. No normative change — identifiers,
+  envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
 
 - **0.2.0** (2026-07-17) — **Ratified.** Folded pressure-test deltas F (cross-plane transform
   typing via KCB ports), H (`source_world` conditional/per-asset + composite attribution),

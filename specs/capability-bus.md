@@ -3,7 +3,8 @@
 **Spec version:** 0.3.0
 **Status:** Candidate
 **Last updated:** 2026-07-22
-**Applies to:** all five projects (Cuneiform hosts; every project both offers and consumes)
+**Applies to:** every participant on the bus — the control-plane host, capability providers, and
+capability consumers (most participants are both provider and consumer).
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for identifiers;
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
@@ -16,31 +17,32 @@ carries.
 > extension shape (no delta F/G/J/K/L is reopened — see **Pressure test**).
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
-> capability bus moves *capability*: how a project advertises what it can do, how orgs and
+> capability bus moves *capability*: how a participant advertises what it can do, how orgs and
 > agents discover and invoke each other, and how knowledge/media flow as subscriptions.
-> Transport is **MCP + A2A** — protocols Argos and Cuneiform already speak — so KCB is mostly
-> a *convention* over existing standards, not a new runtime. Dumb pipes: the bus carries
-> invocations and data *references* (KINP ids, KGP pack ids), never transforms payloads.
+> Transport is **MCP + A2A** — open standards a conformant participant is likely to speak
+> already — so KCB is mostly a *convention* over existing standards, not a new runtime. Dumb
+> pipes: the bus carries invocations and data *references* (KINP ids, KGP pack ids), never
+> transforms payloads.
 
 ---
 
 ## 1. Scope
 
 KCB defines:
-- the **capability manifest** every project publishes (§2),
+- the **capability manifest** every participant publishes (§2),
 - the **discovery registry** and how it is populated (§3),
 - the **verbs**: discover / describe / invoke / subscribe / **fetch** (§4),
 - **trust & authorization** — capability grants, signing, per-world scoping (§5),
-- the per-project **mapping** onto existing MCP/A2A surfaces (§6).
+- the per-role **mapping** onto existing MCP/A2A surfaces (§6).
 
 KCB does **not** define payload formats (KGP / media-interchange do), agent reasoning, or
-infra provisioning (that is Cuneiform/kiln).
+infra provisioning (host-local concerns).
 
 ---
 
 ## 2. The capability manifest
 
-Every project (and every agent/org within Cuneiform) advertises what it offers. It does **not**
+Every participant (and every agent/org a control-plane host runs) advertises what it offers. It does **not**
 publish a second, standalone document for this. A capability provider already publishes an **A2A
 AgentCard** (the standard `/.well-known/agent-card.json`), which carries its identity and its
 service endpoints. The KCB manifest is therefore defined as a **named extension of that card**,
@@ -56,7 +58,7 @@ object carries the KCB payload:
 ```jsonc
 {
   // ── standard A2A AgentCard fields (abridged) ──
-  "name":     "cuneiform:agent:composer",        // card identity — the KINP agent/entity id
+  "name":     "orchestrator:agent:composer",     // card identity — the KINP agent/entity id
   "url":      "https://…/a2a",                    // A2A service endpoint (the card's own)
   "capabilities": {
     "extensions": [
@@ -98,12 +100,11 @@ object carries the KCB payload:
   endpoint the extension still needs (e.g. the MCP tools URL) is a plain field in `params`.
 - Because the provider's identity is the card's KINP agent id, **a capability provider is itself a
   fabric entity** — an agent can be referenced, grounded, and reasoned about like any other node.
-- **Prior art (in-ecosystem).** Extending A2A by convention rather than forking it is already the
-  house style: Cuneiform's
-  `cuneiform/core/engine/crates/cuneiform-engine/src/a2a/protocol.rs` defines the Google-A2A-aligned
-  `AgentCard` type and already extends the standard A2A `Message` with two ACL extensions
-  (`fromAgent` / `toAgent`, lines 98–114). The KCB manifest applies the same convention to the
-  card's `capabilities.extensions[]`.
+- **Prior art.** Extending A2A by convention rather than forking it is already the house style
+  among control-plane implementations: an engine that defines the Google-A2A-aligned `AgentCard`
+  type typically also extends the standard A2A `Message` with its own ACL extensions (e.g. a
+  `fromAgent` / `toAgent` pair). The KCB manifest applies the same convention to the card's
+  `capabilities.extensions[]`.
 
 ### 2.1 Ports span all planes (delta F)
 
@@ -160,12 +161,13 @@ existing A2A AgentCard as the `https://koine.dev/kcb/manifest/0.3` extension (§
 
 ## 3. Discovery registry
 
-A thin index of manifests — *who offers what*. **Cuneiform provisions and hosts it** (it is a
-Cuneiform-generated org, per the ecosystem thesis: the interconnect fabric is itself
-Company-as-Code). The registry is a cache/index over the projects' own MCP/A2A surfaces, not a
-source of truth — a provider's manifest is authoritative; the registry just makes it findable.
+A thin index of manifests — *who offers what*. **The control-plane host provisions and hosts
+it** (it is itself a host-provisioned org, per the fabric thesis: the interconnect fabric is
+itself Company-as-Code). The registry is a cache/index over participants' own MCP/A2A surfaces,
+not a source of truth — a provider's manifest is authoritative; the registry just makes it
+findable.
 
-- **Population:** projects register their manifest (push), or the registry crawls known A2A
+- **Population:** participants register their manifest (push), or the registry crawls known A2A
   agent-cards / MCP servers (pull) and **reads the KCB extension off each peer's
   `/.well-known/agent-card.json`** — it looks for the `capabilities.extensions[]` entry whose
   `uri` is `https://koine.dev/kcb/manifest/0.3` and indexes that entry's `params` (ports,
@@ -185,8 +187,8 @@ source of truth — a provider's manifest is authoritative; the registry just ma
   The registry returns *addresses*; peers then connect **directly** over MCP/A2A — no
   inter-service traffic flows through it. An optional **aggregator facade** MAY present a unified
   tool namespace to clients (forwarding without transforming) for convenience, but is never the
-  mandatory path. The registry + resolver reference implementation lives in the `agora` runtime
-  commons.
+  mandatory path. The registry + resolver reference implementation is a downstream runtime
+  concern, not part of this contract.
 
 ---
 
@@ -213,9 +215,9 @@ referenced asset's bytes have propagated, consumers MUST tolerate dangling asset
 
 - **Capability grants.** Invocation requires a capability token naming the granted verb + scope
   — `invoke:compose`, `subscribe:world/consensus-reality`, `fetch:asset` (delta G). Grants are
-  issued by the hosting org's governance (Cuneiform workforce governance) and are
+  issued by the hosting org's governance (the control-plane host's workforce governance) and are
   **per-capability, per-world, and carry a spend ceiling** (`budget_units`, delta K), so a
-  cross-project chain (Argos → Formant → paid model) cannot exceed the caller's authorized
+  cross-participant chain (knowledge producer → media producer → paid model) cannot exceed the caller's authorized
   spend. Path-finding (§3) prefers zero-cost routes and surfaces the projected cost before an
   `invoke`.
 - **Signing.** Manifests and KGP packs share one signing shape (`{key_id, alg}`); inter-project
@@ -227,32 +229,33 @@ referenced asset's bytes have propagated, consumers MUST tolerate dangling asset
   the knowledge plane's contamination controls.
 
 Full auth mechanics (token issuance, rotation, identity providers like Keycloak/Authentik)
-live in Cuneiform infra; KCB fixes only the *shape* of grants and signing so the planes agree.
+live in the control-plane host's infra; KCB fixes only the *shape* of grants and signing so the
+planes agree.
 
 ---
 
-## 6. Per-project mapping
+## 6. Mapping onto existing surfaces (by role)
 
-| Project | Already has | KCB role |
+| Role | Typical starting point | KCB participation |
 |---|---|---|
-| **Cuneiform** | MCP sidecars, A2A/`a2a-sdk`, workforce governance, generator seams (`_mcp`,`_a2a`) | **Host**: provisions the registry; issues grants; every workforce agent publishes the KCB extension **on its own A2A agent-card** (no separate manifest file). |
-| **Argos** | `/mcp`, `/.well-known/agent-card.json`, surface map `/api/spec` | Publish the KCB extension **on the `/.well-known/agent-card.json`** it already serves; the extension's `params.produces` carries media ports with `world_pattern` (delta J) so a peer can still discover "media *from world X*" by crawling Argos's card; `produces` media + `grounding-only` knowledge (with `source_world`); `subscribe` to grounding worlds. |
-| **Pinakes** | resolver + KGP producer, graph API | Expose `resolve`/`reconcile`/`query` and KGP snapshot/delta as capabilities; the authority provider. |
-| **Insimul** | game server, generators | Consume grounding capabilities; expose world-export as a capability; agents (NPCs) MAY publish manifests. |
-| **Formant** | (agents planned) | Consumer now (ground plugin design); later **provider** — expose "play this plugin" as an invocable capability so Argos's composer/sound-designer agents can drive Formant plugins (Formant's own roadmap). |
+| **Control-plane host** | MCP sidecars, an A2A SDK, workforce governance, agent generator seams | Provisions the registry (§3); issues grants (§5); every agent it runs publishes the KCB extension **on its own A2A agent-card** (no separate manifest file). |
+| **Media authority** | an HTTP `/mcp` surface, a served `/.well-known/agent-card.json`, an API surface map | Publish the KCB extension **on the agent-card it already serves**; the extension's `params.produces` carries media ports with `world_pattern` (delta J) so a peer can discover "media *from world X*" by crawling that card; `produces` media + `grounding-only` knowledge (with `source_world`); `subscribe` to grounding worlds. |
+| **Knowledge authority** | a resolver + KGP producer, a graph API | Expose `resolve`/`reconcile`/`query` and KGP snapshot/delta as capabilities; the authority provider. |
+| **World producer** | a simulation/game server, generators | Consume grounding capabilities; expose world-export as a capability; in-world agents MAY publish their own manifests. |
+| **Domain consumer → provider** | no agent surface yet | Consumer first (ground its own design work); later a **provider** — expose its native operation ("render this instrument") as an invocable capability so a peer's agents can drive it. |
 
 ---
 
 ## 7. Open questions
 
-1. **Registry federation** — single Cuneiform-hosted registry vs. per-org registries that
+1. **Registry federation** — a single host-provisioned registry vs. per-org registries that
    peer. (Mirrors KINP §11 decision 1; likely resolve the same way: one authority as a role,
    federation as a future option.)
 2. **Capability versioning & deprecation** — how a provider evolves a capability's schema
    without breaking subscribers (semver on capability names? content-addressed schemas?).
 3. **Subscription backpressure** — flow-control for high-volume-world subscriptions (per-invoke
    *cost* is now handled by capability `cost` + grant spend ceilings, §2.1/§5); firehose
-   flow-control remains an infra concern (Cuneiform costadvisor).
+   flow-control remains an infra concern for the host's cost advisor.
 
 ## Pressure test
 
@@ -276,6 +279,14 @@ shape (discovery now crawls the `https://koine.dev/kcb/manifest/0.3` extension o
 and confirm each leg still resolves; nothing in the port contract needs to change to re-ratify.
 
 ## Changelog
+
+- **Editorial** (2026-07-31) — Agnostic reframe, part 2: the §2 card identity uses the KINP §3.4
+  illustrative placeholder namespaces; registry hosting, grant issuance, auth infra, and the §7
+  open questions name the **host** role rather than a named product. No normative change — the
+  manifest shape, extension URI, verbs, and every MUST/SHOULD clause are unchanged in meaning.
+- **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
+  authority / host / provider) instead of named products. No normative change — identifiers,
+  envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
 
 - **0.3.0** (2026-07-22) — **Candidate.** Redefined the §2 manifest as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`, uri `https://koine.dev/kcb/manifest/0.3`) instead of a

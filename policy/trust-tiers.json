@@ -2,7 +2,7 @@
   "policyVersion": "0.1.0",
   "tiers": {
     "curated": {
-      "description": "Human-curated records (e.g. Pinakes lexicons). Highest editorial trust.",
+      "description": "Human-curated records, authored or reviewed by a knowledge authority. Highest editorial trust.",
       "mayEnterOpenReleases": true
     },
     "acquired": {
@@ -11,12 +11,12 @@
       "note": "Subject to per-record license class — share-alike records ship only in share-alike-labeled partitions."
     },
     "synthetic": {
-      "description": "Facts from generated fictional worlds (Insimul exports). Complete ground-truth KBs; not real-world claims.",
+      "description": "Facts from generated fictional worlds (world-producer exports). Complete ground-truth KBs; not real-world claims.",
       "mayEnterOpenReleases": false,
       "containment": "Never mixed into real-world tiers; never in open-data releases; training use must be explicitly synthetic-scoped."
     },
     "personal": {
-      "description": "Facts derived from a user's own files and media (Argos exports). Private by definition.",
+      "description": "Facts derived from a user's own files and media (personal-media producer exports). Private by definition.",
       "mayEnterOpenReleases": false,
       "containment": "Never leaves the local machine by default; never in open releases, packaged corpora, non-personal tiers, or non-personal-scoped training sets. Consumers enforce with a hard QA gate."
     }

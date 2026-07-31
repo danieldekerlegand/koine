@@ -3,9 +3,8 @@
 **Spec version:** 0.3.0
 **Status:** Ratified
 **Last updated:** 2026-07-23
-**Applies to:** agora (provider/implementation), Cuneiform (host: registry, grants, orgs),
-Pinakes (specialized adapter + training-data producer), Insimul / Argos / Formant
-(training-data producers + finetuned-model consumers).
+**Applies to:** `finetune` capability providers (general and specialized), the control-plane host
+(registry, grants, orgs), training-data producers, and finetuned-model consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for model/entity ids, lineage
 relations, and provenance; [`capability-bus.md`](capability-bus.md) (KCB 0.2.0) for the
 capability shape, verbs, cost, and grants; [`grounding-pack.md`](grounding-pack.md) (KGP 0.4.0)
@@ -21,10 +20,9 @@ for knowledge training data and the egress/license/trust axes; [`media-interchan
 > lineage conventions. Everything else is reuse. Dumb pipes: training data travels **by reference**
 > (KGP pack ids, KMI asset ids), never inlined into a job.
 
-This generalizes the real-but-siloed training harnesses already in the ecosystem — Pinakes's
-`ml/` TRL+PEFT QLoRA pipelines and Cuneiform's (archived) `train.py` — and the *simulated*
-finetune-job service in Cuneiform's engine, into one ratifiable contract that a shared executor
-implements.
+This generalizes the real-but-siloed training harnesses participants build independently —
+TRL+PEFT QLoRA pipelines, one-off `train.py` scripts, simulated finetune-job services — into one
+ratifiable contract that any conformant executor implements.
 
 ---
 
@@ -38,10 +36,10 @@ KFT defines:
 - the **run lifecycle & training-exhaust stream** (§6),
 - **authorization, cost & spend gating** (§7),
 - **discovery** — the finetuned-model registry as reuse of the KCB registry (§8),
-- the runtime split (informative, §9) and per-project mapping (§10).
+- the runtime split (informative, §9) and per-role mapping (§10).
 
 KFT does **not** define: payload formats (KGP/KMI own them), engine/adapter internals or compute
-provisioning (producer behavior, in agora/Cuneiform infra — §9), or reasoning semantics. It adds
+provisioning (provider- and host-local behavior — §9), or reasoning semantics. It adds
 no new identifier kind, no new plane, and no new transport.
 
 ---
@@ -88,13 +86,13 @@ The `invoke` payload. All data is referenced by KINP/KGP/KMI id — nothing is i
 ```jsonc
 {
   "kft_version": "0.1.0",
-  "job":        "cuneiform:activity:ft-run/9f2a",          // KINP activity id — this run (PROV, §5)
+  "job":        "orchestrator:activity:ft-run/9f2a",       // KINP activity id — this run (PROV, §5)
   "base_model": "hf:model:Qwen/Qwen2.5-3B-Instruct",       // KINP model-entity ref
   "modality":   "text-generation",                         // §3.1
   "method":     "qlora",                                   // sft | lora | qlora | full | dpo
   "dataset": {                                             // data-plane refs (§4), never inline
     "knowledge": ["kgp:pack:sha256-7b1e…"],                // KGP GroundingPack ids
-    "media":     ["argos:asset:blake3-a1b2…"],             // KMI asset ids (multimodal)
+    "media":     ["analyzer:asset:blake3-a1b2…"],          // KMI asset ids (multimodal)
     "header":    { /* dataset-jsonl-header (koine/schemas, ported by koine:10) */ }
   },
   "hyperparams": { "epochs": 3, "lr": 2e-4, "max_seq_len": 2048,
@@ -108,9 +106,9 @@ The `invoke` payload. All data is referenced by KINP/KGP/KMI id — nothing is i
 ```
 
 The machine-readable twin is `koine/schemas/finetune-job.schema.json` (draft-2020-12), landing in
-`koine/schemas/` alongside the artifacts koine:10 ports, and validated in agora per
-[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) (koine specifies, agora implements) —
-**not** in koine.
+`koine/schemas/` alongside the artifacts koine:10 ports, and validated **downstream** per
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) (koine specifies, implementers
+validate) — **not** in koine.
 
 ### 3.1 Modality vocabulary
 
@@ -126,7 +124,7 @@ capability's port types (§2). Initial set:
 | `text-to-video` | media (KMI video) | Wan, LTX, CogVideoX | lora |
 
 The vocabulary is additive; a new modality adds a row plus a capability variant (§2), never a new
-plane. Argos is the KMI authority for the image/video/audio training assets these modalities
+plane. A **media authority** holds the image/video/audio training assets these modalities
 consume, so multimodal fine-tuning inherits an existing, ratified data plane rather than a new one.
 
 `modality` and `method` are **not** independent: a provider **MUST validate** the
@@ -224,9 +222,9 @@ reserved lifecycle relations (KINP §4):
 
 ```prolog
 % base is a minted entity with an external anchor to the Hub coordinate (FT-G):
-same_as(pinakes:model:qwen2.5-3b-instruct, ext:hf:Qwen/Qwen2.5-3B-Instruct).
-based_on(cuneiform:model:qwen2.5-3b-insimul-slm, pinakes:model:qwen2.5-3b-instruct).
-derived_from(cuneiform:model:qwen2.5-3b-insimul-slm, pinakes:model:qwen2.5-3b-instruct).
+same_as(refkb:model:qwen2.5-3b-instruct, ext:hf:Qwen/Qwen2.5-3B-Instruct).
+based_on(orchestrator:model:qwen2.5-3b-worldsim-slm, refkb:model:qwen2.5-3b-instruct).
+derived_from(orchestrator:model:qwen2.5-3b-worldsim-slm, refkb:model:qwen2.5-3b-instruct).
 ```
 
 ### 5.2 The run is a PROV activity
@@ -236,12 +234,12 @@ fully attributable and the lineage bidirectionally queryable ("what trained this
 derives from this base?"):
 
 ```jsonc
-{ "activity": "cuneiform:activity:ft-run/9f2a",
-  "agent":    "agora:org:trainer",                 // signed (§7); the training provider
-  "used":     ["kgp:pack:sha256-7b1e…", "argos:asset:blake3-a1b2…",
+{ "activity": "orchestrator:activity:ft-run/9f2a",
+  "agent":    "provider:org:trainer",              // signed (§7); the training provider
+  "used":     ["kgp:pack:sha256-7b1e…", "analyzer:asset:blake3-a1b2…",
                "hf:model:Qwen/Qwen2.5-3B-Instruct"],
-  "generated":["cuneiform:model:qwen2.5-3b-insimul-slm",
-               "cuneiform:asset:blake3-w0…"],       // the weight asset(s), §5.3
+  "generated":["orchestrator:model:qwen2.5-3b-worldsim-slm",
+               "orchestrator:asset:blake3-w0…"],    // the weight asset(s), §5.3
   "seed": 42, "config_hash": "sha256-cfg…",         // reproducibility anchor lives on the RUN (FT-C)
   "budget_units": 1800000, "spent_units": 1732004 } // §7
 }
@@ -272,7 +270,7 @@ are the KMI relations in [`../registry/relations/media.tsv`](../registry/relatio
 | ONNX / CoreML / TFLite | `application/vnd.koine.model+onnx` (etc.) | `media:variant_of` merged fp16 |
 
 Quantizations are `variant_of` (same model, different byte encoding) exactly as KMI models
-resolution variants of a video — so Cuneiform's planned GGUF/ONNX/CoreML/TFLite export surface
+resolution variants of a video — so a host's GGUF/ONNX/CoreML/TFLite export surface
 falls out of the ratified media plane for free, with lineage, rather than as a new subsystem.
 
 ### 5.4 Output egress & license inheritance (NORMATIVE, FT-A)
@@ -294,19 +292,19 @@ published model would exfiltrate exactly what §4.2 protected).
 
 ## 6. Run lifecycle & the training-telemetry stream
 
-- **Start.** `invoke` (KCB §4) begins an async run (A2A task). Lifecycle states — reusing the names
-  Cuneiform's engine already models for parity — `pending → running → succeeded | failed |
+- **Start.** `invoke` (KCB §4) begins an async run (A2A task). Lifecycle states — the conventional
+  set, for parity with existing control-plane engines — `pending → running → succeeded | failed |
   canceled`.
 - **Progress.** A consumer `subscribe`s (KCB §4) to receive the **training-telemetry** stream — the
-  real replacement for the fabricated loss curve in Cuneiform's current stub runner. (Named
+  real replacement for a stub runner's fabricated loss curve. (Named
   *telemetry*, not "training-exhaust", to avoid colliding with the `dataset-jsonl-header`
   training-record convention that already owns that term — FT-H.):
 
   ```jsonc
-  { "job": "cuneiform:activity:ft-run/9f2a", "step": 120,
+  { "job": "orchestrator:activity:ft-run/9f2a", "step": 120,
     "metrics": { "train_loss": 0.83, "eval_loss": 1.02, "lr": 1.7e-4, "grad_norm": 0.4 },
-    "checkpoint": "cuneiform:asset:blake3-ck12…",     // optional KMI asset (resumable)
-    "samples":    ["argos:asset:blake3-pv3…"],        // optional preview assets — grids/clips (FT-L)
+    "checkpoint": "orchestrator:asset:blake3-ck12…", // optional KMI asset (resumable)
+    "samples":    ["analyzer:asset:blake3-pv3…"],     // optional preview assets — grids/clips (FT-L)
     "ts": "2026-07-22T18:04:11.000Z" }
   ```
 
@@ -315,9 +313,10 @@ published model would exfiltrate exactly what §4.2 protected).
   consumers tolerate the dangling ref and `fetch` lazily (KCB delta L).
 - **Completion.** The terminal event carries the generated finetuned-model entity id, its weight
   asset ids (§5.3), the resolved eval results (§6.1), and `spent_units` (§7).
-- **Eval / reward** *(§6.1)*. `job.eval` names KCS conformance scenarios (Insimul's VESPACE and CEFR
-  harnesses, Pinakes's frozen eval protocols) run against the finetuned model **as a capability**,
-  over the real path, in agora's conformance console (KCS, ADR-0001 §7). The same scenarios serve as
+- **Eval / reward** *(§6.1)*. `job.eval` names KCS conformance scenarios (a world producer's
+  rule-generation and grading harnesses, an authority's frozen eval protocols) run against the
+  finetuned model **as a capability**, over the real path, in a downstream conformance console
+  (KCS, ADR-0001 §7). The same scenarios serve as
   reward signals for preference methods (`method: dpo`) and as release gates. **Eval respects the
   egress gate (FT-D):** a model that inherits `local-only` (§5.4) is evaluated **in-tier**, never
   shipped to the console across the boundary, and eval data carries its own egress class.
@@ -335,8 +334,8 @@ published model would exfiltrate exactly what §4.2 protected).
   variable-size job whose data is `fetch`ed lazily (KMI §7). The provider therefore computes a
   **per-job estimate** at admission — after resolving dataset cardinality — and checks *that* against
   the ceiling; a run is admitted only if the resolved estimate fits, not merely the manifest figure.
-- **Issuer.** Grants are issued by Cuneiform workforce governance (KCB §5/§6); Cuneiform hosts the
-  registry and provisions the training provider as an org.
+- **Issuer.** Grants are issued by the control-plane host's workforce governance (KCB §5/§6); the
+  host hosts the registry and provisions the training provider as an org.
 - **Signing.** The job manifest (§3) and the resulting model entity's provenance (§5.2) SHOULD be
   signed with the shared `{key_id, alg}` shape (KCB §5, KGP §9.3), so *who* trained *what* on
   *which* data under *which* budget is cryptographically attributable, not merely asserted. A model
@@ -348,18 +347,18 @@ published model would exfiltrate exactly what §4.2 protected).
 ## 8. Discovery — the finetuned-model registry is reuse, not a new registry
 
 A finetuned model is a KINP entity that a capability can `produce`; therefore it is registered in
-the **agora discovery registry** (KCB §3) and resolved via the **resolver** (KINP §8) like any other
-fabric node. This *is* the "finetuned-registry" that Cuneiform's CLI and the deprecated rosetta
+the **KCB discovery registry** (KCB §3) and resolved via the **resolver** (KINP §8) like any other
+fabric node. This *is* the "finetuned-registry" that host CLIs and the deprecated rosetta
 roadmap named — the existing index, not a bespoke one.
 
 Because ports are plane-typed and path-searchable (KCB §2.1/§3), a finetuned model is **composable**:
 a query "find a model that produces `audio/midi` from a `mood` (knowledge)" returns a finetuned
-Formant model and an address to invoke it directly. Fine-tuning thus feeds capability composition —
+audio model and an address to invoke it directly. Fine-tuning thus feeds capability composition —
 each finetuned model is a new leg the registry can route through — rather than terminating in a
 private artifact store.
 
-**Provider selection (FT-K).** More than one `finetune` provider can match a job — agora's general
-trainer and Pinakes's specialized provider (§9) both accept `text-generation`. The registry
+**Provider selection (FT-K).** More than one `finetune` provider can match a job — a general
+trainer and a specialized provider (§9) may both accept `text-generation`. The registry
 disambiguates by preferring the more **specialized** matching provider, then lower `cost` (KCB §3); a
 job MAY name a target provider explicitly; an unbroken tie is **surfaced to the caller**, not resolved
 silently.
@@ -369,71 +368,69 @@ silently.
 ## 9. Execution runtime (informative)
 
 Per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) decision 1 ("two distinct routers,
-never merged"), the `finetune` capability's **general implementation** is a leaf capability in the
-**agora** runtime commons — a general `trainer` / finetune-router, sibling to the provider-router, and explicitly
+never merged"), the `finetune` capability's **general implementation** is a leaf capability in a
+runtime commons — a general `trainer` / finetune-router, sibling to the provider-router, and explicitly
 **not** merged into it (inference routing and long-running stateful GPU training are different
 concerns; merging routers is the anti-pattern KCB exists to prevent). KFT fixes only the contract;
-the engine ladder and compute backend are **producer behavior**, exactly as KMI §6 leaves transform
-runtime to the producer's "sacred ladder":
+the engine ladder and compute backend are **provider behavior**, exactly as KMI §6 leaves transform
+runtime to the provider's fallback ladder:
 
-- **Engine ladder inside agora's general trainer** (selected by `modality`+`method`): LLaMA-Factory
+- **Engine ladder inside the general trainer** (selected by `modality`+`method`): e.g. LLaMA-Factory
   (text-generation + VLM), Unsloth (fast single-GPU LLM), Axolotl (multi-GPU LLM), and diffusers +
   ai-toolkit/SimpleTuner (text-to-image/video).
-- **Multiple providers, not one router (FT-K).** Pinakes runs its **own** specialized `finetune`
-  provider — its `ml/` TRL+PEFT path (SLM + neurosymbolic + Mac-MPS smoke) — as a distinct capability
-  on the bus, **not** an adapter inside agora's trainer. The registry (§8) routes each job between
-  agora's general provider and Pinakes's specialized one; training logic is deliberately
-  **multi-provider**, so agora is the home of the *general* executor, not the sole trainer.
-- **Compute backend** (SkyPilot/Modal → local MPS or rented/cloud GPU) selected under the §4.2
-  egress gate and the §7 spend ceiling.
+- **Multiple providers, not one router (FT-K).** A participant MAY run its **own** specialized
+  `finetune` provider — say a TRL+PEFT path tuned for small language models on local accelerators —
+  as a distinct capability on the bus, **not** an adapter inside the general trainer. The registry
+  (§8) routes each job between the general provider and any specialized one; training logic is
+  deliberately **multi-provider**, so the runtime commons is the home of the *general* executor, not
+  the sole trainer.
+- **Compute backend** (a cloud-launcher → local accelerator or rented/cloud GPU) selected under the
+  §4.2 egress gate and the §7 spend ceiling.
 
-Cuneiform is the control-plane host: it provisions the trainer as an org, hosts the registry, issues
-grants, and its Go CLI / HTTP surface becomes a KCB client (discover → invoke → subscribe) — its
-stub loss curve replaced by the §6 stream, its 404 registry by §8, its export subcommands by §5.3.
+The **control-plane host** provisions the trainer as an org, hosts the registry, issues grants, and
+its CLI / HTTP surface becomes a KCB client (discover → invoke → subscribe) — any stub loss curve
+replaced by the §6 stream, a 404 registry by §8, export subcommands by §5.3.
 
-### 9.1 Downstream tasklists (cross-repo follow-ups — not built in koine)
+### 9.1 Downstream runtime work (informative — cross-repo follow-ups, not built in koine)
 
 Per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) (koine = contracts, no runtime code)
-and the multi-provider decision (FT-K), ratifying KFT here **hands three runtime tasklists to their
-target repos**. None of them is authored or built in koine — they are recorded in the program map
-([`../tasks/chief/README.md`](../tasks/chief/README.md), Tranche D), authored in their own repos when
-scheduled, and run under those repos' own quality gates. The band numbers follow the ecosystem
-convention (a numeric prefix groups a program into a band; the **80s band = externally blocked on
-another repo**):
+and the multi-provider decision (FT-K), ratifying KFT here **hands three runtime programs to
+implementers**. None is authored or built in koine; each is run under its own repo's quality gates.
+This subsection is **informative** — it describes what implementers must build and binds no clause.
+The concrete repo-by-repo assignments, tasklist stems, and build order are deployment facts recorded
+in the program map ([`../tasks/chief/README.md`](../tasks/chief/README.md), Tranche D) and
+[`../ECOSYSTEM.md`](../ECOSYSTEM.md), not here.
 
-| # | Tasklist | Repo | Role | `dependsOn` (numbered stems) |
-|---|---|---|---|---|
-| (a) | `90-finetune-trainer` | **agora** | The **general** `finetune` provider — the `trainer`/finetune-router leaf capability, sibling to (and **never merged with**) the provider-router; engine ladder LLaMA-Factory / Unsloth / Axolotl / diffusers, SkyPilot backend selection **gated by the §4.2 egress class**. Cloud-capable. | `agora:10-agora-bootstrap`, `koine:20-kft-finetune-profile` |
-| (b) | `90-finetune-provider` | **pinakes** | Pinakes's **own specialized** `finetune` provider — its `ml/` TRL+PEFT (SLM + neurosymbolic + Mac-MPS) path exposed as a distinct capability **on the bus, NOT an adapter inside agora**, routed to by the registry (§8/FT-K); its synthetic/proprietary/personal-tier data makes it inherently **local-only**. | `koine:20-kft-finetune-profile`, `pinakes:41-publish-kcb-manifest` |
-| (c) | `90-finetune-client` | **cuneiform** | The KCB **client** replacing `Runner::Stub` — discover → invoke → **subscribe** to the real §6 training-telemetry stream, un-404-ing export (§5.3) and the registry (§8), and issuing `invoke:finetune` grants (§7). | `koine:20-kft-finetune-profile` *(builds against stub manifests; **dials `agora:90` + `pinakes:90` at runtime** — its live end-to-end run is externally blocked on ≥1 real provider, the 80s-band condition)* |
+| # | Program | Role that builds it | What it is |
+|---|---|---|---|
+| (a) | general `finetune` provider | capability **provider** (runtime commons) | The **general** `finetune` provider — the `trainer`/finetune-router leaf capability, sibling to (and **never merged with**) the provider-router; the §9 engine ladder, with backend selection **gated by the §4.2 egress class**. Cloud-capable. |
+| (b) | specialized `finetune` provider | capability **provider** (specialist) | A participant's **own specialized** `finetune` provider exposed as a distinct capability **on the bus, NOT an adapter inside the general trainer**, routed to by the registry (§8/FT-K). Where its data is synthetic/proprietary/personal-tier, the provider is inherently **local-only**. |
+| (c) | `finetune` client | control-plane **host** | The KCB **client** replacing any stub runner — discover → invoke → **subscribe** to the real §6 training-telemetry stream, wiring up export (§5.3) and the registry (§8), and issuing `invoke:finetune` grants (§7). Its live end-to-end run is externally blocked on ≥1 real provider. |
 
-Two further handoffs are recorded in the same program map, downstream of the three above:
-- **`agora:41-finetune-job-validator`** — the ajv/jsonschema validator + conformance CI for
-  `finetune-job.schema.json` (§3), the US-3 handoff, landing in agora's 40 band alongside the
-  rosetta-absorbed validators (`dependsOn agora:40-absorb-rosetta-validators-ci`,
-  `koine:20-kft-finetune-profile`); the **semantic** admission rules (modality×method, egress
-  aggregation) stay in the providers (a) / (b).
-- **`formant:90-finetune-kft-bridge`** — the flagship consumer, realigning task 17's generic
-  "Cuneiform finetune bridge" onto the real KFT contract (`dependsOn
-  formant:16-agentic-design-assistants`, `koine:20-kft-finetune-profile`).
+Two further handoffs follow from the three above:
+- **A `finetune-job.schema.json` validator + conformance CI** for §3 — the machine-readable twin's
+  syntactic gate, landing wherever the shared validators live (ADR-0001: downstream, not in koine).
+  The **semantic** admission rules (modality×method, egress aggregation) stay in the providers
+  (a) / (b).
+- **A flagship consumer bridge** — a media or design participant realigning its generic "finetune
+  bridge" onto the real KFT contract.
 
-The other consumers — **Argos** (finetuned media models) and **Insimul** (finetuned SLM GGUF into
-`LocalAIService`) — consume through their existing model loaders (point a loader at a
-registry-resolved asset), so they need configuration, not a dedicated wiring tasklist. The full
-build-order graph is in the program map.
+Other consumers (participants that load finetuned media models or SLM GGUF weights) consume through
+their existing model loaders — point a loader at a registry-resolved asset — so they need
+configuration, not a dedicated wiring program.
 
 ---
 
-## 10. Per-project mapping
+## 10. Mapping (by role)
 
-| Project | Role | KFT participation |
+| Role | KFT participation | Responsibilities |
 |---|---|---|
-| **agora** | Runtime | Implements the `finetune` capability (the `trainer` leaf, §9); hosts registry + resolver (§8); runs KCS eval in the console (§6.1). |
-| **Cuneiform** | Control-plane host | Provisions the trainer org; issues `invoke:finetune` grants (§7); its CLI is a KCB client; provisions the CAS for weight assets (§5.3). |
-| **Pinakes** | Producer + **specialized `finetune` provider** | Emits knowledge training data (KGP packs from verbalization/KGQA); runs its own specialized `finetune` capability on the bus (its `ml/` TRL+PEFT path — SLM + neurosymbolic + MPS), routed to by the registry (§8, FT-K); owns eval protocols (§6.1). |
-| **Insimul** | Producer + consumer | Emits rejection-sampled SFT data (world facts, VESPACE/CEFR reward); consumes finetuned SLMs (GGUF) into `LocalAIService`. |
-| **Argos** | Producer + consumer | KMI authority for image/video/audio **training assets** (§3.1/§4.1); consumes finetuned media models. |
-| **Formant** | Consumer → producer | Consumes finetuned audio models (task 17's "Cuneiform finetune endpoint" resolves here); later a `produce`r ("play this plugin", KCB §6). |
+| **General `finetune` provider** | Runtime | Implements the `finetune` capability (the `trainer` leaf, §9); hosts registry + resolver (§8); runs KCS eval in the conformance console (§6.1). |
+| **Control-plane host** | Host | Provisions the trainer org; issues `invoke:finetune` grants (§7); its client tooling is a KCB client; provisions the CAS for weight assets (§5.3). |
+| **Knowledge authority** | Producer + **specialized `finetune` provider** | Emits knowledge training data (KGP packs from verbalization/KGQA); MAY run its own specialized `finetune` capability on the bus (e.g. a small-model neurosymbolic path on local accelerators), routed to by the registry (§8, FT-K); owns eval protocols (§6.1). |
+| **World producer** | Producer + consumer | Emits rejection-sampled SFT data (world facts, task-specific reward); consumes finetuned small models back into its local inference service. |
+| **Media authority** | Producer + consumer | KMI authority for image/video/audio **training assets** (§3.1/§4.1); consumes finetuned media models. |
+| **Domain consumer → producer** | Consumer → producer | Consumes finetuned models for its own domain; later a `produce`r of an invocable capability over them (KCB §6). |
 
 ---
 
@@ -463,10 +460,10 @@ found FT-A…FT-H → folded into 0.2.0) and
 KFT is **Ratified** (2026-07-23) — the four-plane composition holds under both a text and a
 fully-multimodal, multi-provider pass with no redesign required. The stressors exercised:
 
-- **Egress gate (§4.2):** a Pinakes Qwen SLM QLoRA over a corpus containing one `local-only` record
-  — the run MUST pin to local MPS and MUST reject a `single-gpu-a100-80gb` (cloud) placement with a
-  report. Verifies the training-set clause of KGP §7.2 is actually enforced.
-- **Cross-plane ports (§2):** a Formant audio LoRA (`text-to-image`-style, media-in/model-out) whose
+- **Egress gate (§4.2):** an authority-run SLM QLoRA over a corpus containing one `local-only`
+  record — the run MUST pin to a local accelerator and MUST reject a `single-gpu-a100-80gb` (cloud)
+  placement with a report. Verifies the training-set clause of KGP §7.2 is actually enforced.
+- **Cross-plane ports (§2):** a media producer's audio LoRA (`text-to-image`-style, media-in/model-out) whose
   training data is KMI assets and whose output feeds capability composition (§8) — verifies a
   `finetune` capability spanning media + entity planes is expressible and path-searchable.
 - **Lineage & license (§4.3/§5):** a finetuned model trained on mixed-license data — verifies the
@@ -478,18 +475,29 @@ fully-multimodal, multi-provider pass with no redesign required. The stressors e
 
 ## Changelog
 
+- **Editorial** (2026-07-31) — Agnostic reframe, part 2: the §3 job manifest, §5 lineage terms, and
+  §6 telemetry event use the KINP §3.4 illustrative placeholder namespaces (`orchestrator` /
+  `analyzer` / `refkb` / `provider`); §8 provider selection, §9 execution runtime, and the §9.1
+  handoff table name **roles** instead of repos, with the concrete repo assignments left to the
+  program map and `ECOSYSTEM.md` (informative). No normative change — the job schema, egress gate,
+  license inheritance, telemetry shape, and every MUST/SHOULD clause are unchanged in meaning.
+- **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
+  authority / host / provider) instead of named products. No normative change — identifiers,
+  envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
+
 - **0.3.0 — Ratified** (2026-07-23) — Status Candidate → **Ratified** after both pressure passes
   (`scenarios/e2e-finetune.md`, `scenarios/e2e-finetune-multimodal.md`) cleared with no unresolved
   blockers and no redesign. No contract change from the 0.3.0 candidate — ratification is the status
   transition on the same normative surface. Fine-tuning is now a **ratified profile** composing the
-  four planes; downstream runtime work (agora general `trainer`, Pinakes specialized provider,
-  cuneiform KCB client) is recorded as cross-repo follow-ups (§9), not built in koine.
+  four planes; downstream runtime work (a general `trainer`, specialized providers, and a host-side
+  KCB client) is recorded as cross-repo follow-ups (§9), not built in koine.
 - **0.3.0** (2026-07-22) — Folded second-pass deltas from `scenarios/e2e-finetune-multimodal.md`:
   **FT-I** (per-sample multimodal pairing rides the `dataset-jsonl-header` training records; the
   `knowledge`/`media` arrays are referenced corpora — §3/§4.1), **FT-J** (an unsatisfiable
   egress-pinned placement is an admission failure with a report — §4.2), **FT-K** (registry provider
   selection — prefer specialized then cheaper, job MAY target a provider, ties surface — §8/§9; also
-  reframes Pinakes as its **own** specialized `finetune` provider, not an adapter inside agora),
+  reframes a specialist participant as its **own** `finetune` provider, not an adapter inside the
+  general trainer),
   **FT-L** (`samples` preview assets on the telemetry event — §6). Additive; remains Candidate,
   ready for owner ratification.
 - **0.2.0** (2026-07-22) — **Candidate.** Folded pressure-test deltas from

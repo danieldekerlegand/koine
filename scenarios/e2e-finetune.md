@@ -1,7 +1,7 @@
-# Scenario: Fine-tune across projects (KFT pressure test)
+# Scenario: Fine-tune across participants (KFT pressure test)
 
 **Purpose:** stress-test [`../specs/fine-tuning.md`](../specs/fine-tuning.md) (KFT 0.1.0)
-against two concrete finetune jobs crossing multiple projects and modalities, deliberately
+against two concrete finetune jobs crossing multiple participants and modalities, deliberately
 hunting for seam bugs **before** it leaves Draft. Same method as the media pressure test
 ([`e2e-media-transform.md`](e2e-media-transform.md)): each step marks what *held* and what
 *broke*; §Findings collects the deltas and flags which block promotion to Candidate. KFT composes
@@ -10,17 +10,18 @@ identity, and the model/weight artifact conventions.
 
 **The stories.** Two jobs submitted to the finetune capability in the same week:
 
-- **Job 1 (Insimul + Pinakes):** finetune `Qwen2.5-3B-Instruct` into an SLM that authors Prolog
+- **Job 1 (world producer + identity authority):** finetune `Qwen2.5-3B-Instruct` into an SLM that authors Prolog
   rules, on rejection-sampled Alderforest world data. The corpus is mostly `curated`/`exportable`
   verbalizations — but includes a handful of **player-authored** rules marked `personal` /
   `local-only`. Deliver as GGUF, registered and composable.
-- **Job 2 (Formant + Argos):** a `text-to-image` LoRA for generating plugin-skin art, trained on
-  Argos-held reference **image assets** (KMI), base `FLUX.1-dev`. Deliver as an invocable capability
-  so Argos's designer agents can drive it.
+- **Job 2 (media producer + knowledge producer):** a `text-to-image` LoRA for generating
+  plugin-skin art, trained on the knowledge producer's reference **image assets** (KMI), base
+  `FLUX.1-dev`. Deliver as an invocable capability so the media producer's designer agents can
+  drive it.
 
-**Setup:** manifests for the finetune provider (agora `trainer`), Pinakes (KGP producer + resolver),
-Argos (KMI authority), and the Cuneiform-hosted registry are published (KCB §3). All are KINP
-entities.
+**Setup:** manifests for the general finetune provider (`provider:org:trainer`), the identity
+authority `refkb` (KGP producer + resolver), the knowledge producer `analyzer` (KMI authority),
+and the host-provisioned registry are published (KCB §3). All are KINP entities.
 
 ---
 
@@ -76,13 +77,13 @@ commercial output regardless of the data. The aggregation must include the **bas
 
 ## Step 4 — The output artifact (KFT §5.3/§8)
 
-Job 1 finishes on MPS and mints GGUF weight assets (§5.3); §8 registers the finetuned model in the
-agora registry.
+Job 1 finishes on the local accelerator and mints GGUF weight assets (§5.3); §8 registers the
+finetuned model in the discovery registry.
 
 🔴 **BROKE (FT-A, structural).** The model was trained on `local-only` player data and can memorize
 it — but §5.3 mints the weight asset and §8 registers the model with **no egress or license carried
 forward**. Nothing stops the local-only-trained GGUF from being pushed to a cloud registry or shared
-cross-project, **exfiltrating the very data the §4.2 gate protected**. §4.2 is only *half a gate*: it
+cross-participant, **exfiltrating the very data the §4.2 gate protected**. §4.2 is only *half a gate*: it
 governs where training *runs*, not what the *output* may do. A finetuned model + its weight assets
 MUST inherit the most-restrictive egress and the union license of {training data ∪ base model}, and
 that inherited egress must gate registration/publication. **Delta FT-A.**
@@ -119,7 +120,7 @@ entity-type vocabulary) — path-matching and validators won't know them. **Delt
 
 ## Step 7 — Re-run & reproducibility (KFT §5.2)
 
-Pinakes re-runs Job 1 with identical inputs to reproduce the SLM for its convergence-QA gate.
+The authority re-runs Job 1 with identical inputs to reproduce the SLM for its convergence-QA gate.
 
 🔴 **BROKE (FT-C, structural).** KGP packs and KMI assets are **content-addressed** — same inputs →
 same id, byte-reproducible; that discipline is a load-bearing fabric assumption (KGP §2.1). A
@@ -136,10 +137,10 @@ seed/config), and that a re-train links to its predecessor with a lifecycle rela
 
 ## Step 8 — Eval (KFT §6.1)
 
-Job 1's SLM is evaluated by a KCS scenario (`vespace-rule-gen`) in the agora conformance console.
+Job 1's SLM is evaluated by a KCS scenario (`vespace-rule-gen`) in the conformance console.
 
 🔴 **BROKE (FT-D).** The model is `local-only` (per FT-A it inherits the gate), but the console runs
-it — and its eval prompts — in agora, **across the tier boundary**. That is the FT-A exfiltration
+it — and its eval prompts — in the console's own tier, **across the tier boundary**. That is the FT-A exfiltration
 hole again, on the eval path: a local-only model's eval MUST run in-tier, and eval data carries its
 own egress class. §6.1 invokes eval with no egress awareness. **Delta FT-D.**
 
@@ -160,18 +161,18 @@ own egress class. §6.1 invokes eval with no egress awareness. **Delta FT-D.**
 
 ---
 
-## Schema conformance — what the (agora) validator must enforce
+## Schema conformance — what the (downstream) validator must enforce
 
 The machine-readable job manifest is [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json)
 (draft-2020-12); its golden positive example is [`../schemas/fixtures/finetune-job.json`](../schemas/fixtures/finetune-job.json),
 which validates green. Per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) the `ajv`/`jsonschema`
-validators and the conformance CI for this manifest are built in **agora:40**, not in koine — koine ships
-only the contract plus that one golden fixture.
+validators and the conformance CI for this manifest are built **downstream**, not in koine — koine
+ships only the contract plus that one golden fixture.
 
 Structural validation (draft-2020-12) catches shape errors — a missing required field (`compute`,
 `base_model`, …), a bad `modality`/`method`/`compute.egress` enum value, an empty `dataset` (neither
 `knowledge` nor `media`). It **cannot**, by construction, catch the finetuning-specific *semantic* rules
-this pressure test surfaced. Two negative cases the agora validator/admission step MUST reject that the
+this pressure test surfaced. Two negative cases the validator/admission step MUST reject that the
 schema alone will pass:
 
 1. **Incompatible `modality × method` (FT-F).** A job that is structurally valid but pairs
@@ -184,7 +185,7 @@ schema alone will pass:
    `compute.egress` is the permissive default `derived`, because the effective egress is computed from the
    referenced records, not asserted in the manifest.
 
-Both are behavior of the agora admission path, driven by the registry vocabulary
+Both are behavior of the provider's admission path, driven by the registry vocabulary
 ([`../registry/enums/modality.tsv`](../registry/enums/modality.tsv)) and the KGP §7.2 aggregation — the
 schema's job is only to guarantee the manifest is well-formed enough for that step to run.
 
