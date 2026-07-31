@@ -248,8 +248,8 @@ Every entity/assertion record carries an SPDX `license`; the pack manifest carri
 admits **per record** and **rejects with a report** anything outside its allowlist (default:
 `public-domain` + `permissive` + `attribution`). This is a first-class filter alongside
 confidence and provenance, not an afterthought — it was already built and proven in existing
-producer-side license classifiers, and is lifted into the contract per
-[ADR-0002](../decisions/ADR-0002-reconcile-with-existing-bridges.md) (reverse flow). License is
+producer-side license classifiers, and is lifted into the contract per ADR-0002 (reverse flow —
+a deployment-history ADR, held in that deployment's own integration repo). License is
 carried on records (not in the claim hash), so it never affects claim identity.
 
 ---

@@ -348,8 +348,8 @@ published model would exfiltrate exactly what §4.2 protected).
 
 A finetuned model is a KINP entity that a capability can `produce`; therefore it is registered in
 the **KCB discovery registry** (KCB §3) and resolved via the **resolver** (KINP §8) like any other
-fabric node. This *is* the "finetuned-registry" that host CLIs and the deprecated rosetta
-roadmap named — the existing index, not a bespoke one.
+fabric node. This *is* the "finetuned-registry" that host CLIs and earlier deployment roadmaps
+named — the existing index, not a bespoke one.
 
 Because ports are plane-typed and path-searchable (KCB §2.1/§3), a finetuned model is **composable**:
 a query "find a model that produces `audio/midi` from a `mood` (knowledge)" returns a finetuned
@@ -398,8 +398,7 @@ and the multi-provider decision (FT-K), ratifying KFT here **hands three runtime
 implementers**. None is authored or built in koine; each is run under its own repo's quality gates.
 This subsection is **informative** — it describes what implementers must build and binds no clause.
 The concrete repo-by-repo assignments, tasklist stems, and build order are deployment facts recorded
-in the program map ([`../tasks/chief/README.md`](../tasks/chief/README.md), Tranche D) and
-[`../ECOSYSTEM.md`](../ECOSYSTEM.md), not here.
+in that deployment's own integration repo (its adoption program map and topology), not here.
 
 | # | Program | Role that builds it | What it is |
 |---|---|---|---|

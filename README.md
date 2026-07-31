@@ -65,13 +65,8 @@ and a shared namespace; intelligence stays in the endpoints. No central transfor
 ```text
 koine/
   README.md                        this file — the fabric thesis + index
-  ECOSYSTEM.md                     ✅ a concrete deployment topology (known implementations;
-                                   informative — the specs do not depend on it)
   decisions/
     ADR-0001-control-plane-topology.md           ✅ direct-dial + thin commons; contracts here, code elsewhere
-    ADR-0002-reconcile-with-existing-bridges.md  ✅ lifting pre-existing bridge artifacts into koine
-    ADR-0003-deprecate-rosetta.md                ✅ absorbing the schema layer into `schemas/`
-    ADR-0004-adopt-erlang-provider-router.md     ✅ implementation record (binds no contract)
   specs/
     identity.md                    ✅ Koine Identity & Namespace Protocol (KINP) — ratified
     grounding-pack.md              ✅ Koine Grounding-Pack Protocol (KGP) — ratified
@@ -88,9 +83,6 @@ koine/
     entity-types.tsv               ✅ entity-kind vocabulary
     media-types.tsv                ✅ media-kind vocabulary
     enums/                         ✅ shared closed vocabularies
-    canonical-schema.json          ✅ the canonical entity ontology (node/edge types + csids)
-    predicate-mapping.json         ✅ bridge mappings — producer-local predicates ⇄ the
-                                   canonical vocabulary (deployment-specific)
   schemas/                         ✅ machine-readable twin of the prose specs (JSON Schema
                                    draft-2020-12); validators + fixtures live downstream
   policy/                          ✅ license-class + trust-tier policy
@@ -100,7 +92,6 @@ koine/
     e2e-finetune.md                ✅ pressure test of the fine-tuning profile (KFT)
     e2e-finetune-multimodal.md     ✅ multimodal pressure test of the same
     kcs-format-stress.md           ✅ pressure test of the KCS scenario format
-  tasks/chief/                     ✅ staged adoption tasklists (relocate to run)
 ```
 
 ## Status
@@ -110,6 +101,14 @@ koine/
 pending re-validation of its AgentCard-extension manifest. Each spec is validated by a pressure test (`scenarios/`) before ratification. Specs
 are versioned independently (see each doc's header).
 
-**Known implementations.** [`ECOSYSTEM.md`](ECOSYSTEM.md) records one concrete deployment —
-which systems take which roles — as a worked reference. It is informative: no spec clause
-depends on it, and a new participant needs only the specs and the registry.
+## Scope — shape, not instance
+
+Koine holds the **shape** of the contract and nothing else. A schema saying "a canonical graph
+export has nodes and edges" is shape, and it is here. A predicate map saying "*this* producer's
+`depicts` edge lands on *that* authority's namespace" is deployment **instance** data, and it is
+not — nor is a deployment's topology, its bridge tables, its implementation-record ADRs, or its
+cross-repo adoption program.
+
+Those live in the operator's own **private integration repo** (`rosetta`, for the deployment this
+work grew out of). Nothing in `specs/`, `schemas/`, `registry/`, or `policy/` depends on that repo:
+a new participant needs only what is here.

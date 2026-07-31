@@ -14,7 +14,11 @@ vocabulary.
 - Application/runtime code. Koine is contracts only ("dumb pipes, smart endpoints"). Each
   participant implements Koine specs in its own repo.
 - Anything specific to one participant or one deployment — that lives in that participant's repo.
-  Concrete deployment facts are informative only (`ECOSYSTEM.md`) and bind no spec clause.
+- **Instance data, as opposed to contract shape.** A schema's keys/patterns/enums are shape and
+  belong here; a topology, a bridge/predicate mapping, a deployment's node/edge ontology, an
+  implementation-record ADR, or a cross-repo adoption program is instance data and does not.
+  Those live in the operator's **private integration repo** (`rosetta` for this deployment).
+  Koine must not grow a dependency on it — no spec, schema, registry, or policy file may link there.
 
 ## Conventions
 - Each spec in `specs/` carries a version + status header and its own changelog.
@@ -26,7 +30,6 @@ vocabulary.
   as clearly-marked illustrative examples or in informative "known implementations" pointers.
 
 ## Current state
-- `ECOSYSTEM.md` — a concrete deployment topology (known implementations); **informative**.
 - `specs/identity.md` — KINP 0.2.1, **ratified**. Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
@@ -53,20 +56,13 @@ vocabulary.
   stream (§6). Machine-readable twin `schemas/finetune-job.schema.json` lives here; validators
   live downstream (ADR-0001). Runtime work (trainers, provider adapters, bus clients) is
   recorded as downstream follow-ups (§9), not built in koine.
-- `registry/` — shared vocabularies + contracts; `relations.tsv` (core, **binary** relations only) +
-  `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
-  `relations/social.tsv` (soc:), plus `predicate-mapping.json` (registryVersion 0.4.2) — the
-  bridge layer mapping producer-local predicates onto that vocabulary (deployment-specific) — and
-  `canonical-schema.json` (v1.3.0; 21 node types + 21 edge types, the `cs:<type>:<local>` csid
-  scheme, typed Neo4j-import column contracts), the entity **ontology** downstream translation
-  engines map to/from. A relation's signature is immutable once published (changing it changes
-  every dependent claim id); the schema's node/edge name↔:LABEL/:TYPE bindings are immutable the
-  same way (a change is a NEW type). The schema was **lifted, not rebuilt** from a pre-existing
-  producer copy — promoted verbatim + additively (only `canonicalHome` + `mirrors` blocks added),
-  koine now the sole authoritative copy and the producer's copy demoted to a generated mirror, per
-  `decisions/ADR-0002-reconcile-with-existing-bridges.md` (the same amendment that lifted
-  `predicate-mapping.json`) and `decisions/ADR-0001-control-plane-topology.md` (koine = contracts,
-  no code; validators/loaders stay downstream).
+- `registry/` — shared **agnostic** vocabularies only: `relations.tsv` (core, **binary** relations
+  only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
+  `relations/social.tsv` (soc:), plus `entity-types.tsv`, `media-types.tsv`, and `enums/`.
+  A relation's signature is immutable once published (changing it changes every dependent claim
+  id), so a change means a NEW relation name, never an edit in place. Bridge/predicate mappings
+  and a deployment's own canonical node/edge ontology are **instance data** and were moved to the
+  private integration repo — do not reintroduce them here.
 - **All four planes** validated by a pressure test (`scenarios/`); contract layer complete. Deltas
   F–L from `scenarios/e2e-media-transform.md` were folded into KCB 0.2.0 + KMI 0.2.0 (KMI ratified;
   KCB now **0.3.0 candidate** after the §2 manifest→AgentCard-extension redefinition, deltas intact).
@@ -77,10 +73,9 @@ vocabulary.
   CURIEs use the KINP §3.4 placeholder namespaces. `canonical-graph-export` is the neutral name the
   downstream runtime mirror uses too — keep the two identical.
   `policy/` holds the license-class + trust-tier policy. Validators/CI + conformance fixtures live
-  downstream (ADR-0001), **not** here. See `decisions/ADR-0003-deprecate-rosetta.md`.
-- `decisions/ADR-0004-adopt-erlang-provider-router.md` — **Accepted** (an implementation record,
-  binding no contract). Adopts Erlang/OTP for a provider-router (the always-completes
-  `paid→mlx→local→placeholder` ladder as an OTP supervision tree) + KCB §4 `subscribe` fan-out
-  (one BEAM process per subscriber); CPU-bound translation stays Rust behind a NIF/port. The
-  OpenAI `/v1` surface + the served capability manifest are preserved byte-for-byte. Changes no
-  KCB/KGP/KINP contract; implementation lands downstream.
+  downstream (ADR-0001), **not** here.
+- `decisions/` — **ADR-0001 only**, the agnostic control-plane stance (direct-dial peers, thin
+  shared commons; koine specifies, `agora` implements). The deployment-history ADRs (ADR-0002/
+  0003/0004 — bridge reconciliation, contract-layer consolidation, the Erlang provider-router)
+  moved to the private integration repo, which continues koine's ADR numbering, so a citation of
+  `ADR-000N` for N ≥ 2 refers to a document that is deliberately not here.
