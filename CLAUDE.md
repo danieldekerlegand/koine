@@ -72,7 +72,10 @@ vocabulary.
   KCB now **0.3.0 candidate** after the §2 manifest→AgentCard-extension redefinition, deltas intact).
 - `schemas/` — the machine-readable twin of the prose specs (JSON Schema draft-2020-12):
   `provenance.schema.json` shared `$defs` + grounding-pack / entity-grounding-snapshot /
-  canonical-world-export / argos-canonical-export / dataset-jsonl-header, updated to KGP 0.4.0.
+  canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.4.0.
+  Every schema is role-scoped: no title, `$id`, or description names a product, and illustrative
+  CURIEs use the KINP §3.4 placeholder namespaces. `canonical-graph-export` is the neutral name the
+  downstream runtime mirror uses too — keep the two identical.
   `policy/` holds the license-class + trust-tier policy. Validators/CI + conformance fixtures live
   downstream (ADR-0001), **not** here. See `decisions/ADR-0003-deprecate-rosetta.md`.
 - `decisions/ADR-0004-adopt-erlang-provider-router.md` — **Accepted** (an implementation record,
