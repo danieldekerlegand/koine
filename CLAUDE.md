@@ -17,7 +17,7 @@ vocabulary.
 - **Instance data, as opposed to contract shape.** A schema's keys/patterns/enums are shape and
   belong here; a topology, a bridge/predicate mapping, a deployment's node/edge ontology, an
   implementation-record ADR, or a cross-repo adoption program is instance data and does not.
-  Those live in the operator's **private integration repo** (`rosetta` for this deployment).
+  Those live in the operator's **private integration repo** (out of scope for these contracts).
   Koine must not grow a dependency on it — no spec, schema, registry, or policy file may link there.
 
 ## Conventions
