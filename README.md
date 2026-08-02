@@ -71,6 +71,15 @@ The best way to understand the protocols is to watch one work end to end:
 - **[Pressure-test scenarios](scenarios/)** — the full end-to-end stories each spec must pass
   before it's ratified, including the four-participant media-transform scenario.
 
+## How Koine relates to A2A, MCP, and existing standards
+
+Koine is a **specification, not a runtime** ([agora](https://github.com/danieldekerlegand/agora)
+is the runtime that implements it), and it layers *above* A2A and MCP rather than competing with
+them — reusing them, and mature domain standards, for what they already do well, and adding only
+the identity/knowledge/media/capability *meaning* those layers leave undefined. The full
+positioning — the gaps it fills and exactly what it builds on — is in
+**[`docs/positioning.md`](docs/positioning.md)**.
+
 ## Repository layout
 
 | Path | Contents |
