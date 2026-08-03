@@ -59,7 +59,7 @@
         "A Resolution / note in the scenario records which KGP spec version reflects the decision.",
         "Internal consistency holds: specs/grounding-pack.md \u00a73/\u00a74, the schema twin, and the scenario agree, and the \u00a73.3 claim-id convergence result is preserved regardless of which option was decided."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ],
