@@ -1,25 +1,37 @@
 # Koine Media-Interchange Protocol (KMI)
 
-**Spec version:** 0.2.0
-**Status:** Ratified
-**Last updated:** 2026-07-17
-**Applies to:** media authorities (producer/authority for assets + EDL), media producers of any
-modality, and media consumers.
+**Spec version:** 0.3.0
+**Status:** Candidate
+**Last updated:** 2026-08-02
+**Applies to:** media authorities (producer/authority for assets + timelines), media producers of
+any modality, and media consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP) for the `asset` id, `source_world`, and
 `attaches_to`; [`grounding-pack.md`](grounding-pack.md) (KGP) for the analysis→knowledge
 bridge; [`capability-bus.md`](capability-bus.md) (KCB) for transforms-as-capabilities.
+**Adopts:** [OpenTimelineIO](https://opentimeline.io) (OTIO) as the canonical timeline /
+composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline.md)).
+
+> **Status note (0.3.0):** dropped from Ratified back to **Candidate** because 0.3.0 changes the
+> *canonical composition model* — a timeline is now an OTIO `Timeline` (§4) and the bespoke
+> `application/vnd.koine.edl+json` EDL is deprecated (§4.4) — which re-enters validation per the
+> koine draft→candidate→ratified convention. Re-ratification path: re-run
+> [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) against the OTIO
+> model (no delta F/H/I is reopened — see **Pressure test**).
 
 > The **media data plane** — the fourth and final plane. Where KGP moves *facts*, KMI moves
 > *bytes and the edits over them*: assets, their technical metadata, the asset-lineage graph
-> (re-encodes, variants, clips), the timeline/EDL composition model, and the typed contract
+> (re-encodes, variants, clips), the timeline/composition model, and the typed contract
 > that makes "any-to-any" transformation a **path computed over capabilities** rather than a
 > central transform-gateway. It generalizes what a media authority already builds in isolation —
-> an asset library, a probe over technical metadata, a canonical JSON EDL, and NLE exporters
-> (FCPXML / Premiere xmeml / DaVinci CMX3600 / Remotion) — into one interchange contract.
+> an asset library, a probe over technical metadata, an editorial timeline, and NLE interchange
+> (FCPXML / `xmeml` / CMX3600 / programmatic render) — into one interchange contract.
 
 Division of labor with KINP: KINP fixes the `asset` *identifier*, `source_world`, and
 `attaches_to` (KINP §7.2). KMI defines everything else about an asset — technical metadata,
-the asset-lineage relations (KINP delta E lives here), the EDL model, and transform typing.
+the asset-lineage relations (KINP delta E lives here), and transform typing. Division of labor
+with **OTIO**: OTIO owns the composition model (tracks, clips, timing, transitions, effects,
+nesting); KMI owns the **additive layer** OTIO has no model for — identity, lineage, and
+knowledge (§4.2).
 
 ---
 
@@ -29,14 +41,16 @@ KMI defines:
 - the **asset envelope** — technical metadata over the KINP `asset` id (§2),
 - the **asset-lineage graph** — `derived_from` / `variant_of` / `excerpt_of` /
   `perceptual_match` (§3),
-- the **EDL / timeline** composition model + NLE projections (§4),
+- the **timeline / composition** model — the adopted OTIO model, koine's additive layer over it,
+  and NLE interchange through OTIO's adapters (§4),
 - the **analysis → knowledge bridge** into KGP (§5),
 - **transform typing** — the media-plane port profile; cross-plane typing lives in KCB §2.1 (§6),
 - **byte transport** via a content-addressed store (§7),
 - the per-role **mapping** (§8).
 
-KMI does **not** define knowledge semantics (KGP), capability discovery/invocation (KCB), or
-codec/render implementations (participant-local; `ffmpeg` is the de-facto backbone).
+KMI does **not** define knowledge semantics (KGP), capability discovery/invocation (KCB),
+codec/render implementations (participant-local; `ffmpeg` is the de-facto backbone), or the
+composition model and its NLE adapters (adopted from OTIO — §4).
 
 ---
 
@@ -67,8 +81,10 @@ those bytes and is **excluded from the id** (a re-encode is a different asset �
 
 - `probe` is the normalized output of a technical probe (an `ffprobe`-style asset probe).
   Its shape is descriptive, not identity-bearing.
-- An asset MAY be a *structured document* (an EDL, §4) rather than raw media; then
-  `media_type` is `application/vnd.koine.edl+json` and `probe` is omitted.
+- An asset MAY be a *structured document* (a timeline, §4) rather than raw media; then
+  `media_type` is `application/vnd.opentimelineio+json` and `probe` is omitted. The deprecated
+  `application/vnd.koine.edl+json` (§4.4) is likewise probe-less and remains a valid asset type
+  to *read*.
 - **`source_world` (delta H).** Required only for **ingested** assets that *depict* a world —
   it scopes any knowledge *extracted from* them (§5) and is what engages the firewall (KINP
   §4.3). **Generated/synthesized** assets (a TTS narration, a composed score, a render) depict
@@ -117,49 +133,141 @@ on the excerpt *asset's* envelope (§2, optional `excerpt` block), keeping the g
 
 ---
 
-## 4. The EDL / timeline model
+## 4. The timeline / composition model (OpenTimelineIO)
 
-The composition — how assets are arranged into an edit — is a **canonical JSON EDL**
-(a media producer's edit-list format, promoted here). It is itself an asset
-(`application/vnd.koine.edl+json`, content-addressed), so edits are versioned and
-deduplicated like any other asset, and an EDL can `media:derived_from` a prior EDL.
+The composition — how assets are arranged into an edit — is an **OpenTimelineIO (OTIO)
+`Timeline`** in its JSON serialization. KMI **adopts** OTIO, the Academy Software Foundation's
+editorial-interchange format, instead of defining a timeline model of its own
+([ADR-0005](../decisions/ADR-0005-otio-canonical-timeline.md)). koine specifies only what OTIO
+deliberately leaves open — *identity*, *lineage*, and *knowledge* — as an additive layer (§4.2).
+
+A timeline is itself an **asset**: content-addressed by the hash of its serialized bytes, with
+`media_type` `application/vnd.opentimelineio+json` and `probe` omitted (§2). So edits are
+versioned and deduplicated like any other asset, and a timeline MAY `media:derived_from` a prior
+timeline (§3). OTIO has no IANA-registered media type; KMI fixes this identifier so a media-plane
+port (§6) can name it. The self-contained bundle serializations (`.otiod` directory / `.otioz`
+zip) MAY be carried instead as `application/vnd.opentimelineio+zip`, which is one way to satisfy
+the media-map obligation in §4.3.
+
+### 4.1 Conformance to OTIO
+
+- A canonical timeline MUST be a valid OTIO JSON document whose root is a `Timeline`.
+- Composition structure is **OTIO's, unmodified**: `Stack` → `Track` (`kind: "Video" | "Audio"`)
+  → `Clip` / `Gap` / `Transition`, with nested `Stack`s for nested sequences, plus OTIO `Effect`s
+  and `Marker`s. Timing is OTIO `RationalTime` / `TimeRange` (`value` + `rate`) — **the rate is
+  carried by each time value itself**; KMI defines no separate frame-rate field.
+- Multitrack V/A is the usual conform target (one video track over several audio tracks) and needs
+  nothing beyond OTIO's `Track.kind` — it is a `Stack` of `Track`s, not a KMI construct.
+- Each item declares its own `OTIO_SCHEMA` version (e.g. `"Timeline.1"`, `"Clip.2"`). A producer
+  MUST emit versions from the OTIO **core** schema family. A consumer that meets a schema version
+  it does not know SHOULD apply OTIO's own schema upgrade/downgrade path rather than rejecting the
+  document; version negotiation is OTIO's mechanism, not KMI's.
+- **KMI adds no classes to OTIO's schema.** Everything koine contributes rides OTIO's own
+  extension point — namespaced `metadata` dicts, under the `koine` key (§4.2). A stock OTIO reader
+  opens a koine timeline unchanged; a koine consumer additionally resolves ids, lineage, and
+  analysis.
+
+### 4.2 koine's additive layer over OTIO
+
+OTIO addresses media by **location** (`ExternalReference.target_url`) and has no identity model,
+no lineage model, and no assertion semantics. KMI supplies exactly those three — and only the
+first of them travels *inside* the timeline.
+
+**(a) Clips reference assets by KINP id.** A `Clip`'s media reference MUST carry the KINP `asset`
+id of the media it plays, in `metadata.koine.asset`:
 
 ```jsonc
-{
-  "kmi_edl_version": "0.1.0",
-  "id":     "analyzer:asset:blake3-ed10…",
-  "fps":    "24000/1001",
-  "tracks": [
-    { "id": "V1", "kind": "video", "clips": [
-        { "asset": "analyzer:asset:blake3-c3d4…", "in_ms": 0, "out_ms": 4000,
-          "timeline_ms": 0, "effects": [] } ] },
-    { "id": "A1", "kind": "audio", "clips": [
-        { "asset": "mediastore:asset:blake3-aa01…", "in_ms": 0, "out_ms": 4000,
-          "timeline_ms": 0, "gain_db": -3.0 } ] },
-    { "id": "A2", "kind": "audio", "clips": [ /* narration */ ] },
-    { "id": "A3", "kind": "audio", "clips": [ /* SFX */ ] }
-  ],
-  "transitions": [ { "kind": "crossfade", "track": "V1", "at_ms": 4000, "dur_ms": 500 } ]
-}
+{ "OTIO_SCHEMA": "Clip.2",
+  "name": "renaud-approach",
+  "source_range": {                                   // in/out, at the media's own rate
+    "OTIO_SCHEMA": "TimeRange.1",
+    "start_time": { "OTIO_SCHEMA": "RationalTime.1", "value": 288, "rate": 23.976 },
+    "duration":   { "OTIO_SCHEMA": "RationalTime.1", "value":  96, "rate": 23.976 } },
+  "media_reference": {
+    "OTIO_SCHEMA": "ExternalReference.1",
+    "target_url":  "file:///conform/renaud-approach.mov",          // location — may be stale
+    "metadata": { "koine": { "asset": "analyzer:asset:blake3-c3d4…" } }   // identity — always
+  } }
 ```
 
-- Multitrack V/A (the usual conform target: V1/A1–A3). Clips reference assets **by KINP id** with
-  in/out points; nothing is inlined.
-- **Canonical JSON EDL is the source of truth**; NLE formats are one-directional projections
-  (mirrors KGP §4's TSV→projection rule):
+- The **id is authoritative; the `target_url` is advisory.** A consumer that can `fetch` by asset
+  id (§7) MUST prefer the id over the URL when the two disagree or the URL does not resolve.
+- A producer that has no path to offer MUST still carry the id — on a `MissingReference` if
+  necessary — so an offline timeline is still resolvable in the fabric.
+- Nothing is inlined: the timeline carries references, never bytes (§7).
+- Where OTIO supports multiple media references per clip, the alternates SHOULD be the assets
+  linked `media:variant_of` (§3) — each carrying its own `metadata.koine.asset`.
 
-| Projection | Target | Notes |
+**(b) The asset-lineage graph (§3) stays outside the timeline.** How assets relate across
+re-encodes, renditions, excerpts, and perceptual matches is a graph *over assets*; a timeline is
+one node in it, not its container. Lineage links are KGP assertions (§3) and are unchanged by this
+adoption.
+
+**(c) The analysis → knowledge bridge (§5) stays outside the timeline.** OTIO `Marker`s are
+free-form annotations with no confidence, no provenance, and no world scoping. Knowledge extracted
+from media is emitted as **KGP assertions** into the asset's `source_world` (§5) — which is what
+keeps the KINP §4.3 firewall correct. A producer MAY mirror an assertion as a `Marker` for
+editorial display; the KGP assertion remains the normative form.
+
+Two adjacent guarantees ride the **asset envelope** and the **capability**, not the timeline, and
+are likewise unchanged: `source_world` conditional-on-ingest and per-asset (delta H, §2/§5), and
+transform typing by cross-plane KCB ports (§6).
+
+### 4.3 NLE interchange — OTIO's adapters
+
+NLE formats are reached through **OTIO's own adapters**. koine specifies *that* the canonical form
+is OTIO and *what koine adds*; it does not re-specify the adapters, and the bespoke one-directional
+`skill_export_*` family is withdrawn (ADR-0005).
+
+| Target format | OTIO adapter | Direction |
 |---|---|---|
-| **FCPXML** | Final Cut Pro | `skill_export_fcpxml` |
-| **xmeml** | Adobe Premiere | `skill_export_premiere` |
-| **CMX3600 EDL** | DaVinci Resolve | `skill_export_davinci` |
-| **Remotion `.tsx`** | programmatic React video | `skill_export_remotion` |
-| **ffmpeg script** | headless render | `skill_export_ffmpeg` |
+| **CMX3600 EDL** | `cmx_3600` | read + write |
+| **FCP7 `xmeml`** | `fcp_xml` | read + write |
+| **FCPXML** | `fcpx_xml` | read + write |
+| **AAF** | `aaf` | read + write |
+| **`ffmpeg` / programmatic render** | none — the render capability (§6) consumes the OTIO timeline directly | — |
 
-NLE projections reference media by **file path**, not KINP id, so each projection ships an
-**asset-id ↔ resolved-path media map** (delta I) that lets the NLE relink; without it, every
-clip goes "media offline." A consumer never treats a projection as authoritative — round-trip
-fidelity is only guaranteed through the canonical JSON EDL.
+Import/export remains a **KCB capability typed by media-plane ports** (§6): `timeline → CMX3600`
+is a capability like any other, and path search (KCB §3) routes through it. Only the
+*implementation* stops being koine's to define. Because the adapters are bidirectional, an edit
+that leaves the fabric can come back — round-tripping is no longer one-directional, though it is
+lossy at each format's own edges.
+
+**Media map (delta I) — retained, unchanged in purpose.** Adapter output addresses media by **file
+path**, exactly as the bespoke projections did, and OTIO's own `ExternalReference` is
+`target_url`-based. So any serialization handed to a consumer that resolves media by path MUST
+ship an **asset-id ↔ resolved-path media map** — or an equivalent self-contained OTIO bundle
+(§4) — so the far side can relink. Without it every clip goes "media offline."
+
+### 4.4 Legacy `application/vnd.koine.edl+json` (deprecated)
+
+KMI ≤ 0.2.0 defined a bespoke canonical JSON EDL. As of 0.3.0 it is **deprecated**: readable, not
+normative, and no longer the source of truth (ADR-0005).
+
+- Existing EDL assets **remain valid**, fetchable, content-addressed assets. Nothing is invalidated.
+- A producer MUST NOT emit `application/vnd.koine.edl+json` for a **new** timeline. It MAY continue
+  to serve the legacy form alongside the OTIO form for already-published edits.
+- A consumer SHOULD accept both while the transition window is open, and MUST treat the **OTIO
+  form as authoritative** when both are offered for the same edit.
+- The type is removed from this spec no earlier than the next **minor** version, and removal ends
+  the obligation to emit or accept it — not the ability to read archived assets.
+
+Every legacy construct maps totally onto OTIO, so no existing edit is orphaned:
+
+| Legacy EDL (KMI ≤ 0.2.0 §4) | OTIO |
+|---|---|
+| the EDL document | `Timeline` (its `tracks` a `Stack`) |
+| `fps` | the `rate` of each `RationalTime` / `TimeRange` |
+| `tracks[]` with `kind: video\|audio` | `Track` with `kind: Video\|Audio` inside the `Stack` |
+| clip `{ in_ms, out_ms }` | `Clip.source_range` — a `TimeRange` (start + duration) at that rate |
+| clip `timeline_ms` | position in the track's ordered children, with `Gap` filling any lead-in |
+| clip `asset` (KINP id) | `media_reference.metadata.koine.asset` (§4.2a) |
+| clip `effects[]`, `gain_db` | `Clip.effects` / namespaced clip metadata |
+| `transitions[]` | `Transition` items placed in the track at the cut |
+
+Conversion **mints a new asset** — converted bytes hash differently, so the timeline gets a new id
+— linked `media:derived_from` the legacy EDL asset (§3). The migration is therefore recorded in the
+lineage graph itself, and the legacy edit stays fetchable and auditable at its original id.
 
 ---
 
@@ -221,9 +329,9 @@ and entity-plane port types are owned by KGP / KINP.
 
 ## 7. Byte transport
 
-Assets are large; envelopes/EDLs are small. KMI is a **reference-by-id** protocol:
+Assets are large; envelopes and timelines are small. KMI is a **reference-by-id** protocol:
 
-- Envelopes, EDLs, and lineage/analysis links travel inline (or in KGP packs for the
+- Envelopes, timelines, and lineage/analysis links travel inline (or in KGP packs for the
   knowledge-side links).
 - **Bytes live in a content-addressed store (CAS)** keyed by the KINP `asset` id and are
   fetched out-of-band. Because the id *is* the hash, integrity is self-verifying and any node
@@ -240,8 +348,8 @@ Assets are large; envelopes/EDLs are small. KMI is a **reference-by-id** protoco
 
 | Role | KMI participation | Emits / accepts |
 |---|---|---|
-| **Media authority** | **Producer + authority** for assets & EDL | Owns the canonical JSON EDL + NLE projections + `asset_probe`; emits analysis → KGP (§5); hosts the run-artifact CAS. |
-| **Audio producer** | Producer | Emits `audio/*` assets + instrument renders; consumes EDLs to place audio; later a *transform provider* ("render this instrument") via KCB. |
+| **Media authority** | **Producer + authority** for assets & timelines | Owns the canonical OTIO timelines (§4) + the koine additive layer on them (§4.2) + `asset_probe`; runs NLE interchange through OTIO's adapters with a media map (§4.3); emits analysis → KGP (§5); hosts the run-artifact CAS. |
+| **Audio producer** | Producer | Emits `audio/*` assets + instrument renders; consumes timelines to place audio; later a *transform provider* ("render this instrument") via KCB. |
 | **World producer** | Producer | Emits video/render assets with `source_world` = the world/playthrough; consumes assets for in-engine use. |
 | **Knowledge authority** | Consumer | Consumes analysis-derived KGP (not bytes); may catalog media entities. |
 | **Control-plane host** | Consumer + host | Provisions the CAS + transform capabilities as orgs; agents invoke transforms. |
@@ -250,8 +358,11 @@ Assets are large; envelopes/EDLs are small. KMI is a **reference-by-id** protoco
 
 ## 9. Open questions
 
-1. **EDL expressiveness ceiling** — how far the canonical EDL goes (nested sequences,
-   keyframed effects, color grades) before it should defer to a projection's native format.
+1. **OTIO schema-version pinning** — which OTIO core schema versions a conformant timeline may
+   declare, and how strictly §4.1's "apply OTIO's upgrade/downgrade path" binds a consumer that
+   meets an unknown version. (The *expressiveness ceiling* this question used to ask about the
+   bespoke EDL — nested sequences, keyframed effects, color grades — is closed by adoption:
+   they are in the adopted model. ADR-0005.)
 2. **Profile vocabulary granularity** — how fine constraints get (e.g. "H.264 High@L4.1")
    before path-finding becomes brittle; likely a coarse core + optional constraints.
 3. **CAS operational model** — single shared store vs. per-project stores that replicate on
@@ -259,17 +370,40 @@ Assets are large; envelopes/EDLs are small. KMI is a **reference-by-id** protoco
 4. **Perceptual-hash choice** — which pHash/audio-fingerprint/embedding backs
    `media:perceptual_match`, and recording it (like KGP `embedding_model`) so scores are
    comparable.
+5. **Additive-metadata survival** — a naïve round-trip through a third-party OTIO tool can drop
+   `metadata.koine` (§4.2a). The media map and the lineage graph make recovery possible; whether
+   KMI should require a producer to *re-attach* ids on re-import, and how it detects that they
+   were lost, is open.
 
 ## Pressure test
 
 Exercised by [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md).
-All blocking deltas were folded in 0.2.0: **F** (transforms typed by cross-plane KCB ports; KMI
-owns only the media profile, §6), **H** (`source_world` conditional on ingest, `null` for
-generated, per-asset attribution across composites, §2/§5), and **I** (asset-id ↔ path media map
-on NLE projections, §4); plus the KCB-side **G** (`fetch` verb + grant, §7) and **L**
-(dangling-reference tolerance, §7). Ratified.
+All blocking deltas were folded in 0.2.0 and are **carried forward unchanged** by 0.3.0: **F**
+(transforms typed by cross-plane KCB ports; KMI owns only the media profile, §6), **H**
+(`source_world` conditional on ingest, `null` for generated, per-asset attribution across
+composites, §2/§5), and **I** (asset-id ↔ path media map, now on OTIO adapter output, §4.3);
+plus the KCB-side **G** (`fetch` verb + grant, §7) and **L** (dangling-reference tolerance, §7).
+
+**Re-validation required (0.3.0).** Because 0.3.0 replaces the canonical composition model, the
+scenario must be re-run against the OTIO timeline — in particular its conform (Step 5) and
+render/projection (Step 6) steps — confirming that the additive layer still holds: binary
+`media:excerpt_of` with range-on-asset, per-asset `source_world` (H), and the asset-id ↔ path
+media map (I). KMI stays at **candidate** until it re-validates cleanly.
 
 ## Changelog
+
+- **0.3.0** (2026-08-02) — **Candidate.** Adopted **OpenTimelineIO** as the canonical timeline /
+  composition model per
+  [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline.md): §4 is rewritten around the OTIO
+  `Timeline` (§4.1 conformance, §4.2 koine's additive layer via namespaced `metadata`, §4.3 NLE
+  interchange through OTIO's bidirectional adapters), and the bespoke
+  `application/vnd.koine.edl+json` EDL is **deprecated** with a total construct mapping and a
+  transition window (§4.4). The `skill_export_*` projection family is withdrawn; the asset-id ↔
+  path media map (delta I) is retained. §2's structured-document note, §1's scope list, §7's
+  transport wording, §8's role mapping, and §9.1 are updated for consistency. **Unchanged in
+  meaning:** the asset envelope (§2) including `source_world` (H), the asset-lineage graph (§3),
+  the analysis→KGP bridge (§5), transform typing (§6), and byte transport (§7). Status drops to
+  candidate pending re-validation against the pressure test.
 
 - **Editorial** (2026-07-31) — Agnostic reframe, part 2: asset envelopes, lineage links, the EDL
   example, and the analysis→KGP bridge use the KINP §3.4 illustrative placeholder namespaces

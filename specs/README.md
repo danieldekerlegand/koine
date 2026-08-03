@@ -13,7 +13,7 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 |---|---|---|---|
 | [`identity.md`](identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.2.1 · ✅ ratified |
 | [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.4.0 · ✅ ratified |
-| [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, EDLs, transforms) | 0.2.0 · ✅ ratified |
+| [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.0 · 🚧 candidate |
 | [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.3.0 · 🚧 candidate |
 | [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — a replayable script that drives participants over their real connections | 0.2.0 · ✅ ratified |
 | [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.3.0 · ✅ ratified |
@@ -29,7 +29,8 @@ header. KFT is not a fifth plane — it is a *profile* that composes KGP + KMI +
   claim.
 - **Status is a lifecycle:** `draft → candidate → ratified`. A spec is promoted only after a
   concrete pressure-test scenario in [`../scenarios/`](../scenarios/) fails to break it. KCB sits
-  at **candidate** pending re-validation of its 0.3.0 AgentCard-extension manifest.
+  at **candidate** pending re-validation of its 0.3.0 AgentCard-extension manifest; KMI sits at
+  **candidate** pending re-validation of its 0.3.0 OTIO composition model.
 - **Clauses are §-numbered and normative.** MUST / SHOULD / MAY carry RFC-2119 weight; other specs
   and the schemas cite these section numbers (e.g. "KGP §7.2", "KINP §4.3"), so the numbering is a
   stable reference surface.

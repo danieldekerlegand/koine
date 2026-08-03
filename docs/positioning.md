@@ -64,8 +64,11 @@ established work:
 - **KGP (knowledge)** — builds on SHA-256 for claim ids, PROV-shaped provenance, and [SPDX](https://spdx.org)
   license identifiers, and projects losslessly to RDF-adjacent and logic formats (Neo4j property
   graph, Datalog, ProbLog, Prolog, TSV).
-- **KMI (media)** — uses ffprobe-shaped technical metadata and projects to the industry NLE/EDL
-  formats (Final Cut FCPXML, Premiere xmeml, DaVinci CMX3600).
+- **KMI (media)** — uses ffprobe-shaped technical metadata and adopts [OpenTimelineIO](https://opentimeline.io)
+  (Academy Software Foundation) as its canonical timeline model, reaching the industry NLE/EDL
+  formats (FCPXML, `xmeml`, CMX3600, AAF) through OTIO's own adapters rather than bespoke
+  exporters. What KMI adds over OTIO is what OTIO has no model for: content-addressed asset
+  identity, the asset-lineage graph, and the analysis→knowledge bridge.
 - **KCB (capability)** — an A2A Agent Card extension over MCP/A2A transport (above).
 - **KFT (fine-tuning)** — a composition profile that references Hugging Face Hub coordinates, SPDX
   license classes, and safetensors/GGUF/ONNX weight formats; it adds no new plane or transport.

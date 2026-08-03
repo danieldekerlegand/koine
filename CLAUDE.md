@@ -40,10 +40,14 @@ vocabulary.
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
   card; back to candidate pending re-validation vs `scenarios/e2e-media-transform.md`.
-- `specs/media-interchange.md` — KMI 0.2.0, **ratified**. Media data plane; asset envelope +
-  probe, asset-lineage graph (KINP delta E), canonical JSON EDL + NLE projections (with media
-  map), analysis→KGP bridge, transforms typed by KCB ports; `source_world` conditional-on-ingest
-  and per-asset.
+- `specs/media-interchange.md` — KMI 0.3.0, **candidate**. Media data plane; asset envelope +
+  probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
+  `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
+  canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
+  reference, via OTIO's namespaced `metadata`), lineage, and the knowledge bridge; NLE
+  interchange goes through OTIO's own adapters (media map, delta I, retained). The bespoke
+  `application/vnd.koine.edl+json` EDL is deprecated (§4.4). Back to candidate pending
+  re-validation vs `scenarios/e2e-media-transform.md`.
 - `specs/conformance-scenario.md` — KCS 0.2.0, **ratified**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
 - `specs/fine-tuning.md` — KFT 0.3.0, **ratified** (2026-07-23; two pressure passes:
@@ -64,8 +68,9 @@ vocabulary.
   and a deployment's own canonical node/edge ontology are **instance data** and were moved to the
   private integration repo — do not reintroduce them here.
 - **All four planes** validated by a pressure test (`scenarios/`); contract layer complete. Deltas
-  F–L from `scenarios/e2e-media-transform.md` were folded into KCB 0.2.0 + KMI 0.2.0 (KMI ratified;
-  KCB now **0.3.0 candidate** after the §2 manifest→AgentCard-extension redefinition, deltas intact).
+  F–L from `scenarios/e2e-media-transform.md` were folded into KCB 0.2.0 + KMI 0.2.0 and are intact.
+  Both are now **0.3.0 candidate** on model-shape changes made after that fold — KCB's §2
+  manifest→AgentCard-extension redefinition, KMI's §4 OTIO adoption — each pending re-validation.
 - `schemas/` — the machine-readable twin of the prose specs (JSON Schema draft-2020-12):
   `provenance.schema.json` shared `$defs` + grounding-pack / entity-grounding-snapshot /
   canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.4.0.
@@ -74,8 +79,9 @@ vocabulary.
   downstream runtime mirror uses too — keep the two identical.
   `policy/` holds the license-class + trust-tier policy. Validators/CI + conformance fixtures live
   downstream (ADR-0001), **not** here.
-- `decisions/` — **ADR-0001 only**, the agnostic control-plane stance (direct-dial peers, thin
-  shared commons; koine specifies, `agora` implements). The deployment-history ADRs (ADR-0002/
-  0003/0004 — bridge reconciliation, contract-layer consolidation, the Erlang provider-router)
-  moved to the private integration repo, which continues koine's ADR numbering, so a citation of
-  `ADR-000N` for N ≥ 2 refers to a document that is deliberately not here.
+- `decisions/` — the **agnostic** ADRs only: ADR-0001 (control-plane stance — direct-dial peers,
+  thin shared commons; koine specifies, `agora` implements) and ADR-0005 (adopt OpenTimelineIO as
+  KMI's canonical timeline model). The deployment-history ADRs (ADR-0002/0003/0004 — bridge
+  reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
+  integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently
+  reserved**: new agnostic ADRs start at 0005 and go up.
