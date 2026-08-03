@@ -1,8 +1,8 @@
 # Koine Grounding-Pack Protocol (KGP)
 
-**Spec version:** 0.4.0
-**Status:** Ratified
-**Last updated:** 2026-07-18
+**Spec version:** 0.5.0
+**Status:** Candidate
+**Last updated:** 2026-08-02
 **Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
 and control-plane hosts that broker packs on behalf of agents.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
@@ -27,9 +27,9 @@ ratifiable contract, so that a producer's export is any consumer's import.
 KGP defines:
 - the **GroundingPack** bundle: manifest + contents + content-addressed pack id (§2),
 - **claim normalization** — the normative byte-canonicalization that produces a `claim` id
-  (§3),
+  (§3), and why that canonical is a byte discipline rather than a graph model (§3.4),
 - **serializations**: TSV (canonical), JSON, Prolog facts, and projections to
-  Neo4j / Datalog / ProbLog (§4),
+  Neo4j / Datalog / ProbLog and to RDF-star / W3C PROV / JSON-LD (§4, §4.1),
 - **dialect & portability tiers** governing what a consumer may safely ingest (§5),
 - **directionality**: snapshot vs. delta/subscription (§6),
 - **confidence, provenance, license & egress filtering** (§7),
@@ -70,6 +70,8 @@ one or more **worlds** (KINP §5). Logical shape:
   anchors). Attributes are *assertions*, not inline scalars, so nothing escapes provenance.
 - **License** rides on records: every entity/assertion record carries an SPDX `license`, and
   the manifest carries a `license_policy` (the admission allowlist). See §7.1.
+- **`provenance`** is PROV-*shaped* in the bundle and is named in W3C PROV's own vocabulary
+  only in the RDF projection (§4.1); the bundle itself carries no RDF dependency.
 
 ### 2.1 Pack identity
 
@@ -152,6 +154,34 @@ After the resolver links e-8842 → npc-renaud and the extracted claim is re-exp
       → identical HASH_INPUT → identical claim_id → MERGE, provenance from both retained ✔
 ```
 
+### 3.4 Why the canonical is a byte discipline (rationale, INFORMATIVE)
+
+A claim is structurally a provenance-stamped, world-scoped, named-graph triple — the same object
+RDF 1.2 / RDF-star, W3C PROV, and JSON-LD already model. That KGP nonetheless canonicalizes to
+bytes of its own is a decision, not an omission:
+[ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) weighed adopting those
+standards as the canonical against retaining this one, and retained it **because all three sit
+above the layer where claim identity lives** — they are graph and annotation models, and §3 is a
+byte discipline a graph model does not supply. The concrete requirements they do not meet
+natively, which is also the test to re-apply if any of them changes:
+
+| Requirement | Why the standards do not serve it natively |
+|---|---|
+| **Statement-level content-addressed identity that *excludes* its own annotations** (§3.1) | RDF-star can *express* the identity-vs-metadata split; it does not *canonicalize* it. W3C RDF Dataset Canonicalization hashes a *dataset*, and a graph carrying a claim's annotations hashes `confidence` and `prov` **into** the id — destroying the §3.3 cross-producer merge. A per-statement byte profile is required either way. |
+| **Byte-reproducibility across independent producers** (§3.2) | RDF distinguishes lexical form from value and mandates no Unicode normalization for literals, so equal values need not be equal bytes. The literal, IRI, and symmetric-operand rules of §3.2 are needed under any syntax. |
+| **Probabilistic reasoning over `confidence`** | SPARQL has no probabilistic semantics; confidence-as-probability is served by the ProbLog projection (§4), which the canonical feeds directly. |
+| **Egress gating enforced at pack construction** (§7.2) | RDF has no notion of a statement that must not cross a boundary. Gating is a property of the *bundle-building step* — which a graph model does not have and the pack manifest (§2) does. |
+| **Minting without a resolvable context** | JSON-LD term expansion depends on a context document; a content-addressed id must not depend on a document that can change. §3 depends only on the immutable relation registry (§3.2, §9 decision 1). |
+| **A canonical reviewable as a line diff** | Structural for TSV (§4); not a property any of the three standards offers. |
+
+Two consequences follow, and both are normative elsewhere in this spec rather than here:
+
+- The conformance floor stays where §5 puts it — minting a conformant claim id requires a hash
+  function and the relation registry, **not** a JSON-LD processor or context resolution. A
+  tabular or logic-cored producer is conformant at `grounding-only` with neither.
+- The interop those standards offer is not forgone: it is paid as a **specified, lossless,
+  round-trip-tested projection** (§4.1), on the same terms as every other projection.
+
 ---
 
 ## 4. Serializations
@@ -167,10 +197,51 @@ discipline); the others are derived and MUST round-trip losslessly back to it.
 | **Datalog (Soufflé `.dl`)** | Bulk deductive queries | grounding-only tier. |
 | **ProbLog** | Probabilistic reasoning | confidence → fact probability. |
 | **Neo4j property graph** | Visualization / graph queries | entities→nodes, assertions→edges, provenance→edge props; round-trips losslessly. |
+| **RDF-star / W3C PROV / JSON-LD** | Consumers on the RDF stack (triplestores, SPARQL endpoints, JSON-LD readers) | Worlds→named graphs, claims→quoted triples, claim metadata→statement annotations, `prov`→PROV terms. Mapping fixed in §4.1; round-trips losslessly over the binary core, with anything it declines to project reported rather than dropped. |
 
-Projection is **one-directional from the canonical pack**; consumers never treat a Neo4j or
-ProbLog projection as authoritative. The relation registry (§3.2) is the shared vocabulary all
-projections agree on.
+Projection is **one-directional from the canonical pack**; consumers never treat a Neo4j,
+ProbLog, or RDF projection as authoritative. The relation registry (§3.2) is the shared
+vocabulary all projections agree on.
+
+### 4.1 RDF-star / PROV / JSON-LD projection
+
+Per [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md), the mapping onto the
+RDF stack is **specified here rather than left to implementers**, so that alignment is testable
+instead of asserted. RDF-star supplies statement-level annotation, W3C PROV supplies the
+provenance vocabulary this spec's `prov` shape (§2) was already shaped after, and JSON-LD is the
+wire form; none of the three is canonical, and none is authoritative on ingest.
+
+| KGP construct | Projection |
+|---|---|
+| a claim's `world` (§3.1) | the **named graph**, identified by the world's KINP canonical IRI (KINP §3) |
+| a **binary** relation and its two arguments (§3.2) | the **triple** — predicate and identifier arguments as KINP canonical IRIs; literal arguments as typed RDF literals per §3.2's types |
+| `confidence`, `valid_time`, `embedding_model` | **annotations on the quoted triple** (RDF-star) |
+| `prov` (§2, §7) | **PROV terms** — the shape §2 already carries, named in the vocabulary it was shaped after |
+| the `claim` id (§3) | an **annotation on the quoted triple**, so an RDF consumer can round-trip back to the canonical and verify the hash |
+| `license` (§7.1), egress class (§7.2), dialect tier (§5) | record-level annotations, carried for filtering by the consumer |
+| a relation of arity > 2 (registry extension, §3.2) | **not projected as a bare triple.** The projection is defined only for the binary core; a higher-arity relation is emitted through whatever reification the consuming ecosystem uses, or omitted **with a report** — never silently dropped. |
+
+Rules:
+
+- The projection MUST **round-trip losslessly** back to the canonical pack for every claim it
+  projects, on the same terms as the Neo4j / Datalog / ProbLog projections, and is exercised by
+  the same pressure test. What it declines to project MUST appear in the report, so the result is
+  *complete or reported* — never silently lossy.
+- Because the `claim` id is carried as an annotation and is **not** recomputed from the graph, a
+  consumer round-tripping the projection MUST re-derive the id per §3 from the recovered
+  canonical and reject any claim whose annotation disagrees.
+- The egress **filter** (§7.2) is applied at pack construction and is **never delegated to the
+  projection**: `local-only` content is absent from the pack before any projection is emitted.
+  The egress class travels as an annotation only so a consumer can re-check it.
+- Emitting this projection is **optional** for a conformant producer; a producer that emits it
+  MUST emit it per this mapping.
+
+Exercised by [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md)
+(*Re-validation — KGP 0.5.0*): under this mapping the round-trip holds, the §3.3 convergence result
+is byte-unchanged, and the §7 filters survive every encoding. Two **minor findings** are open there
+against this section and §4 and close before KGP re-ratifies — **KGP-1**, which `confidence` a claim
+carrying several `prov` records projects to ProbLog, and **KGP-2**, that the annotations above are
+fixed in *structure* but their predicates are not *named* outside PROV.
 
 ---
 
@@ -189,6 +260,11 @@ Rule: **a producer must ship the lowest tier that carries the needed content; a 
 reject a pack whose tier exceeds what it can safely evaluate.** Authority → knowledge-producer
 transfer defaults to `grounding-only`; transfer internal to one participant may use
 `full-prolog`.
+
+The floor is deliberately cheap: producing a conformant `grounding-only` pack needs a SHA-256
+implementation, the relation registry (§3.2), and a TSV writer — no graph store, no JSON-LD
+processor, and no context resolution (§3.4). The RDF projection (§4.1) is optional and sits
+strictly above this floor.
 
 **`local-only` is NOT a dialect tier.** A producer's predicate-mapping registry may group a
 fourth class, `local-only`, under a `portabilityClasses` key — but its meaning is *"never
@@ -240,6 +316,10 @@ Merges preserve **all** provenance for a shared `claim` id (multiple `prov` reco
 claim), so "who told us this, and how sure were they" is always answerable — the basis for the
 hybrid review queue (KINP §11, decision 2) and for the authority's convergence-QA gate.
 
+These axes survive every serialization: in TSV and JSON they are record columns/fields, and in
+the RDF projection they are statement or record annotations (§4.1) — never part of the claim
+itself, in any encoding.
+
 ### 7.1 License-class policy (adopted from the existing bridges)
 
 Every entity/assertion record carries an SPDX `license`; the pack manifest carries a
@@ -277,6 +357,10 @@ Rules:
   class is *enforcing*.
 - Because it is enforced at pack construction, egress class does **not** enter the claim hash
   (§3.1); it never affects claim identity.
+- Enforcement is **never delegated to a serialization or projection**. `local-only` content is
+  filtered out before any encoding is emitted, so a Neo4j, ProbLog, or RDF projection (§4, §4.1)
+  of a boundary-crossing pack cannot contain it; the egress class travels in a projection only
+  so a consumer can re-check it.
 
 Adopted from an existing producer-side `predicate-mapping.json`, which introduced this as the
 privacy invariant of a personal-media bridge (ADR-0002 reverse flow). That registry groups it
@@ -316,6 +400,21 @@ Ratified 2026-07-17.
 
 ## Changelog
 
+- **0.5.0** (2026-08-02) — **Candidate** (re-enters validation per `draft → candidate →
+  ratified`). Decided KGP's relationship to RDF 1.2 / RDF-star, W3C PROV, and JSON-LD per
+  [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md): the **bespoke canonical
+  is retained** — TSV stays canonical and §3 stays the identity mechanism, unchanged in what is
+  hashed and in the §3.3 convergence result — and the interop debt is paid by promoting the
+  mapping onto those standards from unstated to a **specified, lossless, round-trip-tested
+  projection**. New §3.4 records the requirements the three standards do not meet natively
+  (statement-level content-addressed identity excluding its own annotations, byte-reproducibility,
+  probabilistic reasoning, pack-construction egress gating, minting without a resolvable context,
+  a line-diffable canonical) plus the re-open test. New §4.1 fixes the projection mapping
+  (world→named graph, binary relation→triple, `confidence`/`valid_time`/`embedding_model`→RDF-star
+  annotations, `prov`→PROV terms, `claim` id→annotation for verifiable round-trip, arity > 2→not
+  projected as a bare triple, reported). §2, §5, and §7/§7.2 gained the matching cross-references:
+  the bundle stays RDF-free, the `grounding-only` floor needs no JSON-LD processor, and egress
+  enforcement is never delegated to a projection. Additive — no existing claim id changes.
 - **Editorial** (2026-07-31) — Agnostic reframe, part 2: worked examples and CURIEs now use the
   illustrative placeholder namespaces registered in KINP §3.4 (`refkb` / `worldsim` / `analyzer`
   / `mediastore` / `orchestrator`); the serialization, dialect-tier, and provenance notes name

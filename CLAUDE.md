@@ -33,8 +33,17 @@ vocabulary.
 - `specs/identity.md` — KINP 0.2.1, **ratified**. Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
-- `specs/grounding-pack.md` — KGP 0.4.0, **ratified**. Knowledge data plane; normative §3
-  normalization (KINP delta B); §9 decisions closed.
+- `specs/grounding-pack.md` — KGP 0.5.0, **candidate**. Knowledge data plane; normative §3
+  normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
+  **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
+  the requirements RDF-star / PROV / JSON-LD do not meet natively plus the re-open test, and §4.1
+  fixes the lossless RDF-star/PROV/JSON-LD **projection** mapping. **Re-validated** against
+  `scenarios/e2e-worlds-to-fabric.md` (its *Re-validation — KGP 0.5.0* section): §3.3 claim-id
+  convergence is byte-unchanged, the §7 confidence/license/`local-only` filters survive every
+  encoding, and all §4 projections round-trip. Stays candidate on two **minor projection findings**
+  — KGP-1 (which confidence a multi-prov merged claim projects to ProbLog) and KGP-2 (§4.1 fixes the
+  annotation *structure* but never names the annotation predicates) — plus the still-missing
+  downstream round-trip fixture.
 - `specs/capability-bus.md` — KCB 0.3.0, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
@@ -78,7 +87,9 @@ vocabulary.
   outstanding, and both stay candidate until it lands.
 - `schemas/` — the machine-readable twin of the prose specs (JSON Schema draft-2020-12):
   `provenance.schema.json` shared `$defs` + grounding-pack / entity-grounding-snapshot /
-  canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.4.0;
+  canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.5.0
+  (grounding-pack = the §4 **JSON** encoding, not a JSON-LD document; no schema models a §4
+  projection — a projection's conformance is the round-trip, not a document shape);
   `media-timeline` (KMI §4) + `finetune-job` (KFT §3), each with one golden-positive fixture.
   Every schema is role-scoped: no title, `$id`, or description names a product, and illustrative
   CURIEs use the KINP §3.4 placeholder namespaces. `canonical-graph-export` is the neutral name the
@@ -86,8 +97,10 @@ vocabulary.
   `policy/` holds the license-class + trust-tier policy. Validators/CI + conformance fixtures live
   downstream (ADR-0001), **not** here.
 - `decisions/` — the **agnostic** ADRs only: ADR-0001 (control-plane stance — direct-dial peers,
-  thin shared commons; koine specifies, `agora` implements) and ADR-0005 (adopt OpenTimelineIO as
-  KMI's canonical timeline model). The deployment-history ADRs (ADR-0002/0003/0004 — bridge
+  thin shared commons; koine specifies, `agora` implements), ADR-0005 (adopt OpenTimelineIO as
+  KMI's canonical timeline model), and ADR-0006 (KGP keeps its bespoke TSV + content-addressed-claim
+  canonical; RDF-star / W3C PROV / JSON-LD become a specified, round-trip-tested **projection**, and
+  KINP §9's "not adopting RDF" narrows to *storage and identity*). The deployment-history ADRs (ADR-0002/0003/0004 — bridge
   reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
   integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently
   reserved**: new agnostic ADRs start at 0005 and go up.

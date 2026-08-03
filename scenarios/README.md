@@ -12,7 +12,7 @@ scenario is later encoded so the downstream console can replay it over real MCP/
 
 | Scenario | Pressure-tests | What it hunts | Deltas |
 |---|---|---|---|
-| [`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) | KINP ([`../specs/identity.md`](../specs/identity.md)) | The **identity firewall** — a fiction NPC `based_on` real Napoleon flowing world-producer → knowledge-producer → identity-authority, so fictional facts never contaminate consensus reality. | A–E |
+| [`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) | KINP ([`../specs/identity.md`](../specs/identity.md)), then KGP ([`../specs/grounding-pack.md`](../specs/grounding-pack.md)) | The **identity firewall** — a fiction NPC `based_on` real Napoleon flowing world-producer → knowledge-producer → identity-authority, so fictional facts never contaminate consensus reality. Its *Re-validation* pass then re-runs the claim-minting legs against KGP 0.5.0's retained canonical + RDF projection. | A–E, KGP-1/2 |
 | [`e2e-media-transform.md`](e2e-media-transform.md) | KCB + KMI ([`../specs/capability-bus.md`](../specs/capability-bus.md), [`../specs/media-interchange.md`](../specs/media-interchange.md)) | **Any-to-any across four participants** — discovery + cross-plane path planning (mood→score), cross-participant CAS byte-fetch, spend ceilings, and the media→knowledge bridge. | F–L |
 | [`e2e-finetune.md`](e2e-finetune.md) | KFT ([`../specs/fine-tuning.md`](../specs/fine-tuning.md)) | The seams KFT **adds** on top of the four planes — the KGP egress gate, model-as-entity identity, and weight/export artifact conventions — on two text finetune jobs. | FT-A…H |
 | [`e2e-finetune-multimodal.md`](e2e-finetune-multimodal.md) | KFT, second pass | **Fully-multimodal** finetunes (image-text-to-text, text-to-video) over KMI assets, plus the **multi-provider** topology (a general provider + a specialist provider, routed by the registry). | FT-I…L |
@@ -28,7 +28,12 @@ served its purpose keeps a **Resolution** note recording which spec version fold
 stands thereafter as the historical record of what the pressure test found.
 
 Concrete deltas already folded: KINP A–E (→ 0.2.0), KCB/KMI F–L (→ KCB 0.2.0 / KMI 0.2.0), KFT
-FT-A…L (→ KFT 0.3.0). **KMI 0.3.0**'s OTIO adoption has been re-validated against
+FT-A…L (→ KFT 0.3.0). **KGP 0.5.0**'s standards decision
+([`../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md`](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md))
+has been re-validated against [`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) (see its
+*Re-validation* section — claim-id convergence, the §7 filters, and every projection's round-trip all
+hold; two minor projection findings, **KGP-1/KGP-2**, are open, so KGP stays **candidate**).
+**KMI 0.3.0**'s OTIO adoption has been re-validated against
 [`e2e-media-transform.md`](e2e-media-transform.md) (see its *Re-validation* section — the additive
 layer holds, no delta reopened). Both KCB 0.3.0 and KMI 0.3.0 nonetheless remain **candidate**
 pending a re-run of the same scenario against KCB's new AgentCard-extension manifest shape, which
