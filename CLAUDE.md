@@ -33,8 +33,12 @@ vocabulary.
 - `specs/identity.md` — KINP 0.2.1, **ratified**. Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
-- `specs/grounding-pack.md` — KGP 0.4.0, **ratified**. Knowledge data plane; normative §3
-  normalization (KINP delta B); §9 decisions closed.
+- `specs/grounding-pack.md` — KGP 0.5.0, **candidate**. Knowledge data plane; normative §3
+  normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
+  **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
+  the requirements RDF-star / PROV / JSON-LD do not meet natively plus the re-open test, and §4.1
+  fixes the lossless RDF-star/PROV/JSON-LD **projection** mapping. Back to candidate pending
+  re-validation against the KGP-exercising pressure test.
 - `specs/capability-bus.md` — KCB 0.3.0, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard

@@ -432,7 +432,7 @@ links opportunistically.
 | Borrowed | Used for | Not adopting |
 |---|---|---|
 | IRIs / CURIEs (W3C) | identifier form (§3) | — |
-| W3C PROV (shape only) | provenance envelope (§7) | full PROV ontology / RDF |
+| W3C PROV (shape only) | provenance envelope (§7) | the full PROV ontology / the RDF stack **as storage and identity** — see the note below |
 | OpenRefine/Wikidata Reconciliation API | `reconcile` (§4.5, §8) | — |
 | Content addressing (git/IPFS-style) | claim + asset IDs (§2, §6) | IPFS network itself |
 | `owl:sameAs` semantics (concept only) | `same_as` licensing (§4.3) | OWL reasoning stack |
@@ -440,6 +440,16 @@ links opportunistically.
 Storage stays **Prolog / TSV / grounding-pack native.** A full RDF triplestore + SPARQL
 commitment would fight a Prolog-cored world producer and a TSV-first knowledge authority for
 little gain. KINP stays IRI-*compatible* so an RDF export remains possible later.
+
+**Scope of "not adopting" (narrowed by
+[ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md)).** The row above decides a
+*storage and identity* question, and only that one: no mandated triplestore, no SPARQL as the
+query contract, and no RDF dataset canonicalization as the id mechanism (claim ids are minted per
+[`grounding-pack.md`](grounding-pack.md) §3, which depends on no resolvable context document).
+RDF-star, W3C PROV, and JSON-LD **are** adopted as a specified **egress form** — the projection
+fixed in KGP §4.1. The design rule is unchanged: adopt the interface or the shape, not the
+runtime. Identifiers, envelopes, and resolution semantics are untouched; IRI-compatibility (§3) is
+what makes that projection mechanical.
 
 ---
 
@@ -486,6 +496,13 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
 
 ## Changelog
 
+- **Editorial** (2026-08-02) — §9's "not adopting" row is **narrowed, not reversed**, per
+  [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) decision 5: what is not
+  adopted is the RDF stack *as storage and identity* (no mandated triplestore, no SPARQL query
+  contract, no dataset canonicalization as the id mechanism); RDF-star / W3C PROV / JSON-LD are
+  adopted as a specified egress form via KGP §4.1's projection. No normative change — identifiers,
+  envelopes, resolution semantics, and every MUST/SHOULD clause are unchanged in meaning; KINP
+  stays **Ratified**.
 - **Editorial** (2026-07-31) — Agnostic reframe, part 2: the §3.4 namespace registry is now an
   **open** registry whose product-named rows became **illustrative placeholder** registrations
   (`refkb` / `worldsim` / `analyzer` / `mediastore` / `orchestrator`) keyed to roles; every worked
