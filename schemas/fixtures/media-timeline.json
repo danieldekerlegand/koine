@@ -1,0 +1,103 @@
+{
+  "OTIO_SCHEMA": "Timeline.1",
+  "name": "recap-trailer",
+  "global_start_time": {
+    "OTIO_SCHEMA": "RationalTime.1",
+    "value": 0,
+    "rate": 23.976
+  },
+  "metadata": {
+    "koine": {
+      "kmi_version": "0.3.0",
+      "media_map": {
+        "analyzer:asset:blake3-c3d4e5f6a1b2": "/conform/renaud-approach.mov",
+        "mediastore:asset:blake3-b7c8d9e0f1a2": "/conform/score.wav",
+        "analyzer:asset:blake3-d4e5f6a1b2c3": "/conform/narration.wav"
+      }
+    }
+  },
+  "tracks": {
+    "OTIO_SCHEMA": "Stack.1",
+    "name": "tracks",
+    "children": [
+      {
+        "OTIO_SCHEMA": "Track.1",
+        "name": "V1",
+        "kind": "Video",
+        "children": [
+          {
+            "OTIO_SCHEMA": "Gap.1",
+            "name": "lead-in",
+            "source_range": {
+              "OTIO_SCHEMA": "TimeRange.1",
+              "start_time": { "OTIO_SCHEMA": "RationalTime.1", "value": 0, "rate": 23.976 },
+              "duration": { "OTIO_SCHEMA": "RationalTime.1", "value": 24, "rate": 23.976 }
+            }
+          },
+          {
+            "OTIO_SCHEMA": "Clip.2",
+            "name": "renaud-approach",
+            "source_range": {
+              "OTIO_SCHEMA": "TimeRange.1",
+              "start_time": { "OTIO_SCHEMA": "RationalTime.1", "value": 288, "rate": 23.976 },
+              "duration": { "OTIO_SCHEMA": "RationalTime.1", "value": 96, "rate": 23.976 }
+            },
+            "media_reference": {
+              "OTIO_SCHEMA": "ExternalReference.1",
+              "target_url": "file:///conform/renaud-approach.mov",
+              "metadata": {
+                "koine": { "asset": "analyzer:asset:blake3-c3d4e5f6a1b2" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "OTIO_SCHEMA": "Track.1",
+        "name": "A1",
+        "kind": "Audio",
+        "children": [
+          {
+            "OTIO_SCHEMA": "Clip.2",
+            "name": "score",
+            "source_range": {
+              "OTIO_SCHEMA": "TimeRange.1",
+              "start_time": { "OTIO_SCHEMA": "RationalTime.1", "value": 0, "rate": 48000 },
+              "duration": { "OTIO_SCHEMA": "RationalTime.1", "value": 1440000, "rate": 48000 }
+            },
+            "media_reference": {
+              "OTIO_SCHEMA": "ExternalReference.1",
+              "target_url": "file:///conform/score.wav",
+              "metadata": {
+                "koine": { "asset": "mediastore:asset:blake3-b7c8d9e0f1a2" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "OTIO_SCHEMA": "Track.1",
+        "name": "A2",
+        "kind": "Audio",
+        "children": [
+          {
+            "OTIO_SCHEMA": "Clip.2",
+            "name": "narration",
+            "source_range": {
+              "OTIO_SCHEMA": "TimeRange.1",
+              "start_time": { "OTIO_SCHEMA": "RationalTime.1", "value": 0, "rate": 48000 },
+              "duration": { "OTIO_SCHEMA": "RationalTime.1", "value": 1392000, "rate": 48000 }
+            },
+            "media_reference": {
+              "OTIO_SCHEMA": "MissingReference.1",
+              "name": "narration (bytes not yet propagated)",
+              "metadata": {
+                "koine": { "asset": "analyzer:asset:blake3-d4e5f6a1b2c3" }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

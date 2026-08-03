@@ -46,8 +46,11 @@ vocabulary.
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
   reference, via OTIO's namespaced `metadata`), lineage, and the knowledge bridge; NLE
   interchange goes through OTIO's own adapters (media map, delta I, retained). The bespoke
-  `application/vnd.koine.edl+json` EDL is deprecated (§4.4). Back to candidate pending
-  re-validation vs `scenarios/e2e-media-transform.md`.
+  `application/vnd.koine.edl+json` EDL is deprecated (§4.4). Machine-readable twin
+  `schemas/media-timeline.schema.json` — a *profile over* an OTIO document, not a timeline model:
+  OTIO's structure stays open, the schema checks only the additive layer. The OTIO side is
+  **re-validated clean** vs `scenarios/e2e-media-transform.md` (its *Re-validation* section);
+  still candidate because the same scenario also gates KCB 0.3.0's manifest change.
 - `specs/conformance-scenario.md` — KCS 0.2.0, **ratified**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
 - `specs/fine-tuning.md` — KFT 0.3.0, **ratified** (2026-07-23; two pressure passes:
@@ -70,10 +73,13 @@ vocabulary.
 - **All four planes** validated by a pressure test (`scenarios/`); contract layer complete. Deltas
   F–L from `scenarios/e2e-media-transform.md` were folded into KCB 0.2.0 + KMI 0.2.0 and are intact.
   Both are now **0.3.0 candidate** on model-shape changes made after that fold — KCB's §2
-  manifest→AgentCard-extension redefinition, KMI's §4 OTIO adoption — each pending re-validation.
+  manifest→AgentCard-extension redefinition, KMI's §4 OTIO adoption. KMI's half has been re-run
+  (scenario *Re-validation — KMI 0.3.0*: additive layer holds, no delta reopened); KCB's is
+  outstanding, and both stay candidate until it lands.
 - `schemas/` — the machine-readable twin of the prose specs (JSON Schema draft-2020-12):
   `provenance.schema.json` shared `$defs` + grounding-pack / entity-grounding-snapshot /
-  canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.4.0.
+  canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.4.0;
+  `media-timeline` (KMI §4) + `finetune-job` (KFT §3), each with one golden-positive fixture.
   Every schema is role-scoped: no title, `$id`, or description names a product, and illustrative
   CURIEs use the KINP §3.4 placeholder namespaces. `canonical-graph-export` is the neutral name the
   downstream runtime mirror uses too — keep the two identical.

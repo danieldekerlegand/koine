@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://koine.ecosystem/schemas/media-timeline.schema.json",
+  "title": "MediaTimeline",
+  "description": "koine's additive profile over an OpenTimelineIO (OTIO) Timeline — the canonical timeline / composition model a media authority (producer + authority for assets and timelines) serves to any media consumer, per KMI media-interchange.md §4 and decisions/ADR-0005. This schema deliberately does NOT re-specify OTIO: composition structure is OTIO's own, unmodified, and stays open (KMI adds no classes to OTIO's schema — §4.1). It checks only koine's additive layer (§4.2): every clip's media reference carries the KINP asset id at metadata.koine.asset, timing is OTIO RationalTime / TimeRange with no separate frame-rate field, and the optional asset-id ↔ resolved-path media map (delta I, §4.3). The asset-lineage graph (§3) and the analysis → knowledge bridge (§5) are KGP assertions that live OUTSIDE the timeline and are therefore out of scope here. The deprecated application/vnd.koine.edl+json form (§4.4) is not modelled: this schema validates the canonical form only, and rejects the legacy clip shape it maps from.",
+  "type": "object",
+  "properties": {
+    "OTIO_SCHEMA": {
+      "type": "string",
+      "pattern": "^Timeline\\.\\d+$",
+      "description": "The root MUST be an OTIO Timeline (§4.1). Each item declares its own core-schema version, e.g. 'Timeline.1' — version negotiation is OTIO's mechanism, not KMI's.",
+      "examples": ["Timeline.1"]
+    },
+    "name": { "type": "string" },
+    "global_start_time": {
+      "anyOf": [{ "$ref": "#/$defs/rationalTime" }, { "type": "null" }],
+      "description": "Optional record start (timecode origin). Its rate is carried by the RationalTime itself."
+    },
+    "tracks": {
+      "$ref": "#/$defs/stack",
+      "description": "OTIO's Stack of Tracks. Multitrack V/A conform (one video track over several audio tracks) needs nothing beyond Track.kind — it is a Stack of Tracks, not a KMI construct (§4.1)."
+    },
+    "metadata": { "$ref": "#/$defs/timelineMetadata" }
+  },
+  "required": ["OTIO_SCHEMA", "tracks"],
+  "not": {
+    "required": ["fps"],
+    "$comment": "The rate is carried by each RationalTime / TimeRange (§4.1). A document-level `fps` is the deprecated EDL shape (§4.4 mapping table), not the canonical one."
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "assetRef": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*:asset:[a-z0-9]+-[0-9a-f]{8,}$",
+      "description": "A KINP asset id (identity.md §7.2): <namespace>:asset:<alg>-<hash>, content-addressed over the bytes. Namespaces in examples are the KINP §3.4 illustrative placeholders (analyzer / mediastore / worldsim). Distinct from provenance.schema.json#/$defs/assetId, which is the bare hash form used as a graph node reference in the canonical-graph export.",
+      "examples": ["analyzer:asset:blake3-c3d4e5f6a1b2", "mediastore:asset:sha256-9f3ca1b2c3d4"]
+    },
+    "rationalTime": {
+      "type": "object",
+      "description": "OTIO RationalTime — value + rate. The rate is carried by the time value itself; KMI defines no separate frame-rate field (§4.1).",
+      "properties": {
+        "OTIO_SCHEMA": { "type": "string", "pattern": "^RationalTime\\.\\d+$" },
+        "value": { "type": "number" },
+        "rate": { "type": "number", "exclusiveMinimum": 0 }
+      },
+      "required": ["OTIO_SCHEMA", "value", "rate"],
+      "additionalProperties": true
+    },
+    "timeRange": {
+      "type": "object",
+      "description": "OTIO TimeRange — start_time + duration, each a RationalTime carrying its own rate. This is the canonical form of a clip's in/out (§4.4 maps the legacy in_ms/out_ms pair onto it).",
+      "properties": {
+        "OTIO_SCHEMA": { "type": "string", "pattern": "^TimeRange\\.\\d+$" },
+        "start_time": { "$ref": "#/$defs/rationalTime" },
+        "duration": { "$ref": "#/$defs/rationalTime" }
+      },
+      "required": ["OTIO_SCHEMA", "start_time", "duration"],
+      "additionalProperties": true
+    },
+    "stack": {
+      "type": "object",
+      "description": "OTIO Stack — the timeline's track container, and also a nested sequence placed inside a Track.",
+      "properties": {
+        "OTIO_SCHEMA": { "type": "string", "pattern": "^Stack\\.\\d+$" },
+        "name": { "type": "string" },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/composable" } }
+      },
+      "required": ["OTIO_SCHEMA", "children"],
+      "additionalProperties": true
+    },
+    "track": {
+      "type": "object",
+      "description": "OTIO Track. kind is 'Video' or 'Audio' per §4.1; a producer emitting another OTIO track kind is outside the profile KMI describes.",
+      "properties": {
+        "OTIO_SCHEMA": { "type": "string", "pattern": "^Track\\.\\d+$" },
+        "name": { "type": "string" },
+        "kind": { "type": "string", "enum": ["Video", "Audio"] },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/composable" } }
+      },
+      "required": ["OTIO_SCHEMA", "kind", "children"],
+      "additionalProperties": true
+    },
+    "composable": {
+      "type": "object",
+      "description": "Any OTIO composable child — Clip / Gap / Transition / nested Stack / Track. Only the classes koine constrains are branched on; every other OTIO class passes through untouched, because composition structure is OTIO's, unmodified (§4.1).",
+      "required": ["OTIO_SCHEMA"],
+      "properties": {
+        "OTIO_SCHEMA": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*\\.\\d+$" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "OTIO_SCHEMA": { "pattern": "^Clip\\." } }, "required": ["OTIO_SCHEMA"] },
+          "then": { "$ref": "#/$defs/clip" }
+        },
+        {
+          "if": { "properties": { "OTIO_SCHEMA": { "pattern": "^Track\\." } }, "required": ["OTIO_SCHEMA"] },
+          "then": { "$ref": "#/$defs/track" }
+        },
+        {
+          "if": { "properties": { "OTIO_SCHEMA": { "pattern": "^Stack\\." } }, "required": ["OTIO_SCHEMA"] },
+          "then": { "$ref": "#/$defs/stack" }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "clip": {
+      "type": "object",
+      "description": "OTIO Clip. koine's one obligation on it (§4.2a): the media it plays is addressed by KINP asset id, so a media reference MUST be present and MUST carry that id. The legacy per-clip in_ms / out_ms / timeline_ms fields (§4.4) are rejected — their canonical form is source_range plus position in the track's ordered children.",
+      "properties": {
+        "OTIO_SCHEMA": { "type": "string", "pattern": "^Clip\\.\\d+$" },
+        "name": { "type": "string" },
+        "source_range": { "$ref": "#/$defs/timeRange" },
+        "media_reference": { "$ref": "#/$defs/mediaReference" },
+        "media_references": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/mediaReference" },
+          "description": "Alternate media references, where OTIO supports several per clip. These SHOULD be the assets linked media:variant_of (§3), each carrying its own metadata.koine.asset (§4.2a)."
+        },
+        "active_media_reference_key": { "type": "string" },
+        "effects": { "type": "array" },
+        "markers": {
+          "type": "array",
+          "description": "OTIO Markers are a non-normative editorial mirror. Knowledge extracted from media is emitted as KGP assertions into the asset's source_world (§4.2c / §5), which is the normative form."
+        },
+        "metadata": { "type": "object" }
+      },
+      "anyOf": [{ "required": ["media_reference"] }, { "required": ["media_references"] }],
+      "not": {
+        "anyOf": [
+          { "required": ["in_ms"] },
+          { "required": ["out_ms"] },
+          { "required": ["timeline_ms"] },
+          { "required": ["asset"] }
+        ]
+      },
+      "additionalProperties": true
+    },
+    "mediaReference": {
+      "type": "object",
+      "description": "Any OTIO media reference (ExternalReference / MissingReference / ImageSequenceReference / GeneratorReference / …). OTIO addresses media by location; koine adds identity. The asset id is authoritative and the target_url advisory — a consumer that can fetch by id (§7) MUST prefer the id when the two disagree (§4.2a). A producer with no path to offer MUST still carry the id, on a MissingReference if necessary.",
+      "properties": {
+        "OTIO_SCHEMA": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*Reference\\.\\d+$" },
+        "name": { "type": "string" },
+        "target_url": {
+          "type": "string",
+          "description": "Location — advisory, and may be stale. Absent on a MissingReference.",
+          "examples": ["file:///conform/renaud-approach.mov"]
+        },
+        "available_range": { "$ref": "#/$defs/timeRange" },
+        "metadata": {
+          "type": "object",
+          "properties": { "koine": { "$ref": "#/$defs/koineMediaMetadata" } },
+          "required": ["koine"],
+          "additionalProperties": true
+        }
+      },
+      "required": ["OTIO_SCHEMA", "metadata"],
+      "additionalProperties": true
+    },
+    "koineMediaMetadata": {
+      "type": "object",
+      "description": "koine's namespaced metadata on a media reference — the whole of what travels inside the timeline (§4.2a). Rides OTIO's own extension point, so a stock OTIO reader opens the document unchanged.",
+      "properties": {
+        "asset": { "$ref": "#/$defs/assetRef" }
+      },
+      "required": ["asset"],
+      "additionalProperties": true
+    },
+    "timelineMetadata": {
+      "type": "object",
+      "properties": { "koine": { "$ref": "#/$defs/koineTimelineMetadata" } },
+      "additionalProperties": true
+    },
+    "koineTimelineMetadata": {
+      "type": "object",
+      "description": "Optional koine metadata on the Timeline itself (§4.2d). Nothing here is required for a timeline to be canonical; lineage (§3) and analysis (§5) are KGP assertions and are NOT carried here.",
+      "properties": {
+        "kmi_version": {
+          "$ref": "provenance.schema.json#/$defs/contractVersion",
+          "description": "The KMI spec version the emitting side was built against."
+        },
+        "media_map": { "$ref": "#/$defs/mediaMap" }
+      },
+      "additionalProperties": true
+    },
+    "mediaMap": {
+      "type": "object",
+      "description": "The asset-id ↔ resolved-path media map (delta I, §4.3): one entry per referenced asset, mapping its KINP id to the path or URL the receiving side will resolve. Required somewhere alongside any serialization handed to a consumer that resolves media by path — an OTIO adapter's output, or a bundle serialization that carries the media instead. Without it every clip goes 'media offline' on the far side.",
+      "propertyNames": { "$ref": "#/$defs/assetRef" },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "description": "The resolved path or URL for that asset on the receiving side."
+      },
+      "examples": [{ "analyzer:asset:blake3-c3d4e5f6a1b2": "/conform/renaud-approach.mov" }]
+    }
+  }
+}

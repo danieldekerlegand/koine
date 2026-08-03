@@ -1,6 +1,6 @@
 # koine/schemas — the machine-readable twin of the prose specs
 
-JSON Schema (draft-2020-12) formalizations of the KGP/KINP/KFT interchange contracts, published under
+JSON Schema (draft-2020-12) formalizations of the KGP/KINP/KMI/KFT interchange contracts, published under
 the `https://koine.ecosystem/schemas/…` namespace. Every schema is **role-scoped** — it names producers,
 consumers, and authorities, never a specific product. Illustrative CURIEs use the placeholder namespaces
 registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `worldsim` / `analyzer` /
@@ -21,6 +21,18 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
   canonical node/edge graph export (personal trust tier, KGP §7).
 - [`dataset-jsonl-header.schema.json`](dataset-jsonl-header.schema.json) — first record of every
   training-exhaust JSONL file; carries tier + license + provenance.
+- [`media-timeline.schema.json`](media-timeline.schema.json) — KMI's canonical timeline
+  ([`../specs/media-interchange.md`](../specs/media-interchange.md) §4, KMI 0.3.0). Not a timeline
+  model: KMI **adopts** OpenTimelineIO
+  ([`../decisions/ADR-0005-otio-canonical-timeline.md`](../decisions/ADR-0005-otio-canonical-timeline.md)),
+  so this is a **profile over an OTIO document** — OTIO's composition structure stays open and
+  unmodified (§4.1), and the schema checks only koine's additive layer (§4.2): the KINP asset id at
+  every clip's `media_reference.metadata.koine.asset`, `RationalTime`/`TimeRange` timing with no
+  separate frame-rate field, and the OPTIONAL `metadata.koine` timeline carriers `kmi_version` +
+  the delta-I `media_map` (§4.2d/§4.3). It also rejects the deprecated EDL's clip shape (§4.4), so
+  a legacy document cannot pass as canonical. Lineage (§3) and analysis (§5) are KGP assertions
+  that live *outside* the timeline and are deliberately out of scope here. `$ref`s
+  `provenance.schema.json#/$defs/contractVersion` (as `kmi_version`).
 - [`finetune-job.schema.json`](finetune-job.schema.json) — KFT fine-tuning job manifest
   (the `invoke` payload; [`../specs/fine-tuning.md`](../specs/fine-tuning.md) §3, KFT 0.3.0). `$ref`s
   `provenance.schema.json#/$defs/contractVersion` (as `kft_version`) and `dataset-jsonl-header.schema.json`
@@ -29,6 +41,10 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
   a finetune job, kept off any library surface (like koine's other fixtures). It validates green against
   `finetune-job.schema.json`; the full negative/conformance fixture suite is a runtime concern, not
   koine's (see Scope below).
+- [`fixtures/media-timeline.json`](fixtures/media-timeline.json) — the same, for
+  `media-timeline.schema.json`: one **golden positive** multitrack V/A conform (V1 clip over an A1
+  score and an A2 narration), each clip carrying its asset id, plus a `media_map`. It mirrors the
+  conform step of [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md).
 
 ## The four portability axes (KGP 0.4.0)
 

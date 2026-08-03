@@ -209,9 +209,18 @@ from media is emitted as **KGP assertions** into the asset's `source_world` (§5
 keeps the KINP §4.3 firewall correct. A producer MAY mirror an assertion as a `Marker` for
 editorial display; the KGP assertion remains the normative form.
 
+**(d) Optional koine metadata on the timeline itself.** Under `metadata.koine` on the `Timeline`, a
+producer MAY carry `kmi_version` (the KMI version it was built against — the `contractVersion`
+convention every koine schema shares) and the `media_map` of §4.3. Both are OPTIONAL; neither is
+needed for a timeline to be canonical. Lineage (b) and analysis (c) are **not** carried here.
+
 Two adjacent guarantees ride the **asset envelope** and the **capability**, not the timeline, and
 are likewise unchanged: `source_world` conditional-on-ingest and per-asset (delta H, §2/§5), and
 transform typing by cross-plane KCB ports (§6).
+
+The machine-readable twin of this section is
+[`../schemas/media-timeline.schema.json`](../schemas/media-timeline.schema.json), which checks
+koine's additive layer over an OTIO document without re-specifying OTIO itself.
 
 ### 4.3 NLE interchange — OTIO's adapters
 
@@ -237,7 +246,9 @@ lossy at each format's own edges.
 path**, exactly as the bespoke projections did, and OTIO's own `ExternalReference` is
 `target_url`-based. So any serialization handed to a consumer that resolves media by path MUST
 ship an **asset-id ↔ resolved-path media map** — or an equivalent self-contained OTIO bundle
-(§4) — so the far side can relink. Without it every clip goes "media offline."
+(§4) — so the far side can relink. Without it every clip goes "media offline." The map is one entry
+per referenced asset (`{ <asset id>: <resolved path or URL> }`); it MAY ride the canonical timeline
+at `metadata.koine.media_map` (§4.2d), or travel beside the adapter output.
 
 ### 4.4 Legacy `application/vnd.koine.edl+json` (deprecated)
 
@@ -384,11 +395,18 @@ All blocking deltas were folded in 0.2.0 and are **carried forward unchanged** b
 composites, §2/§5), and **I** (asset-id ↔ path media map, now on OTIO adapter output, §4.3);
 plus the KCB-side **G** (`fetch` verb + grant, §7) and **L** (dangling-reference tolerance, §7).
 
-**Re-validation required (0.3.0).** Because 0.3.0 replaces the canonical composition model, the
-scenario must be re-run against the OTIO timeline — in particular its conform (Step 5) and
-render/projection (Step 6) steps — confirming that the additive layer still holds: binary
-`media:excerpt_of` with range-on-asset, per-asset `source_world` (H), and the asset-id ↔ path
-media map (I). KMI stays at **candidate** until it re-validates cleanly.
+**Re-validation (0.3.0) — recorded, clean.** Because 0.3.0 replaces the canonical composition
+model, the scenario's timeline-bearing steps were re-run against the OTIO model: leg typing
+(Step 1), conform (Step 5), and render/interchange (Step 6). The additive layer holds — binary
+`media:excerpt_of` with range-on-asset, per-asset `source_world` (H), clips referencing assets by
+KINP id, and the asset-id ↔ path media map (I), which OTIO's `target_url`-based references
+*reconfirm* rather than retire. See the scenario's **Re-validation — KMI 0.3.0** section. No delta
+is reopened; one non-blocking exposure is noted (namespaced metadata can be dropped by a
+third-party round-trip — §9.5).
+
+KMI nonetheless stays at **candidate**: the same scenario also gates **KCB 0.3.0**, whose §2
+manifest→AgentCard-extension change its discovery steps exercise and which has not been re-run.
+Promotion of both follows that pass.
 
 ## Changelog
 
@@ -404,6 +422,11 @@ media map (I). KMI stays at **candidate** until it re-validates cleanly.
   meaning:** the asset envelope (§2) including `source_world` (H), the asset-lineage graph (§3),
   the analysis→KGP bridge (§5), transform typing (§6), and byte transport (§7). Status drops to
   candidate pending re-validation against the pressure test.
+  Landed with the section's machine-readable twin,
+  [`../schemas/media-timeline.schema.json`](../schemas/media-timeline.schema.json) (§4.2), which
+  adds the OPTIONAL `metadata.koine` timeline carriers `kmi_version` and `media_map` (§4.2d/§4.3);
+  and with the re-validation pass folded into
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) (Steps 1/5/6).
 
 - **Editorial** (2026-07-31) — Agnostic reframe, part 2: asset envelopes, lineage links, the EDL
   example, and the analysis→KGP bridge use the KINP §3.4 illustrative placeholder namespaces

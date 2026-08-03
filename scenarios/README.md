@@ -28,6 +28,8 @@ served its purpose keeps a **Resolution** note recording which spec version fold
 stands thereafter as the historical record of what the pressure test found.
 
 Concrete deltas already folded: KINP A–E (→ 0.2.0), KCB/KMI F–L (→ KCB 0.2.0 / KMI 0.2.0), KFT
-FT-A…L (→ KFT 0.3.0). KCB 0.3.0 remains **candidate** pending a re-run of
-[`e2e-media-transform.md`](e2e-media-transform.md) against its new AgentCard-extension manifest
-shape.
+FT-A…L (→ KFT 0.3.0). **KMI 0.3.0**'s OTIO adoption has been re-validated against
+[`e2e-media-transform.md`](e2e-media-transform.md) (see its *Re-validation* section — the additive
+layer holds, no delta reopened). Both KCB 0.3.0 and KMI 0.3.0 nonetheless remain **candidate**
+pending a re-run of the same scenario against KCB's new AgentCard-extension manifest shape, which
+its discovery steps exercise.
