@@ -1,7 +1,9 @@
 # koine/schemas — the machine-readable twin of the prose specs
 
-JSON Schema (draft-2020-12) formalizations of the KGP/KINP/KMI/KFT interchange contracts, published under
-the `https://koine.ecosystem/schemas/…` namespace. Every schema is **role-scoped** — it names producers,
+JSON Schema (draft-2020-12) formalizations of the KGP/KINP/KMI/KFT interchange contracts — plus the one
+non-interchange document koine shapes, a participant's in-repo self-description
+([`../decisions/ADR-0007-self-describing-participant.md`](../decisions/ADR-0007-self-describing-participant.md))
+— published under the `https://koine.ecosystem/schemas/…` namespace. Every schema is **role-scoped** — it names producers,
 consumers, and authorities, never a specific product. Illustrative CURIEs use the placeholder namespaces
 registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `worldsim` / `analyzer` /
 `mediastore` / `orchestrator` / `provider`).
@@ -44,6 +46,20 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
   (the `invoke` payload; [`../specs/fine-tuning.md`](../specs/fine-tuning.md) §3, KFT 0.3.0). `$ref`s
   `provenance.schema.json#/$defs/contractVersion` (as `kft_version`) and `dataset-jsonl-header.schema.json`
   (as `dataset.header`) — both resolve within this directory once koine:10 has landed them.
+- [`participant-self-description.schema.json`](participant-self-description.schema.json) — the **source**
+  self-description a participant keeps in its **own** repository
+  ([`../decisions/ADR-0007-self-describing-participant.md`](../decisions/ADR-0007-self-describing-participant.md)
+  decision 7): where its four facets — identity (KINP §3.2–§3.4, §4.4, §6), capability (KCB §2, §2.1),
+  egress (KGP §7.1–§7.2), translation (KGP §5, §7) — live, so the artifact it serves can be derived from a
+  declared intent. The odd one out in this directory: it is not an interchange payload and is **never
+  served**. The runtime self-description remains the KCB AgentCard extension, and this schema **references**
+  that manifest shape rather than restating it (a second served manifest was rejected — KCB §2.2, ADR-0007
+  decision 7). Held to that decision's three bounds structurally: every facet block is
+  `additionalProperties: false` over **pointers and references only**, so a manifest payload, a mapping's
+  rows, a topology, or a node/edge ontology cannot be embedded — those are the deployment's instance data
+  and stay in the participant's repo. `$ref`s `provenance.schema.json#/$defs/contractVersion` (as
+  `self_description_version`) and `#/$defs/egress` (as `egress.default_class`). Having one is OPTIONAL; see
+  the adopter guide, [`../docs/self-describing-participant.md`](../docs/self-describing-participant.md).
 - [`fixtures/finetune-job.json`](fixtures/finetune-job.json) — a single **golden positive** example of
   a finetune job, kept off any library surface (like koine's other fixtures). It validates green against
   `finetune-job.schema.json`; the full negative/conformance fixture suite is a runtime concern, not
@@ -52,6 +68,10 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
   `media-timeline.schema.json`: one **golden positive** multitrack V/A conform (V1 clip over an A1
   score and an A2 narration), each clip carrying its asset id, plus a `media_map`. It mirrors the
   conform step of [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md).
+- [`fixtures/participant-self-description.json`](fixtures/participant-self-description.json) — the same, for
+  `participant-self-description.schema.json`: a minimal **golden positive** for a knowledge producer that is
+  also a consumer, in the `analyzer` placeholder namespace. Every value is a pointer — a repo-relative path
+  or a served URL — so the fixture demonstrates the bounds as much as the shape.
 
 ## The four portability axes (KGP 0.5.0)
 

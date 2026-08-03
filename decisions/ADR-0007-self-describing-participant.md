@@ -209,7 +209,10 @@ having and the AgentCard extension stands alone.
 - **[`../schemas/`](../schemas/)** MAY gain the shape-only in-repo self-description schema described
   in decision 7, role-scoped, draft-2020-12, with illustrative CURIEs in the KINP §3.4 placeholder
   namespaces (`refkb` / `worldsim` / `analyzer` / `mediastore` / `orchestrator`). It must reference
-  the KCB manifest shape, never restate it, and must carry no deployment values.
+  the KCB manifest shape, never restate it, and must carry no deployment values. It has since landed as
+  [`../schemas/participant-self-description.schema.json`](../schemas/participant-self-description.schema.json)
+  (golden positive: [`../schemas/fixtures/participant-self-description.json`](../schemas/fixtures/participant-self-description.json)),
+  which enforces those three bounds structurally; having one remains OPTIONAL for a participant.
 - **KMI**, **KCS**, and **KFT** are untouched. KFT §4.2's cloud/local placement gate is an
   application of the egress facet, and reads the same under this record.
 - Which endpoints a particular deployment serves, what it mints, and what it marks `local-only` are

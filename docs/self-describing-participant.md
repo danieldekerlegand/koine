@@ -107,6 +107,13 @@ against a declared intent instead of hand-maintained. It is a **source** documen
 manifest: pointers and references only, referencing the KCB manifest shape rather than restating it,
 and embedding no mapping, topology, or node/edge ontology. Nothing requires you to have one.
 
+Its shape is [`schemas/participant-self-description.schema.json`](../schemas/participant-self-description.schema.json),
+with a worked example at
+[`schemas/fixtures/participant-self-description.json`](../schemas/fixtures/participant-self-description.json).
+The schema holds those bounds for you: each facet block admits pointers only, so a manifest payload, a
+mapping's rows, or a node/edge ontology will not validate — which is the point. Fill it in **in your own
+repo**; the filled-in document never comes here.
+
 ## Further reading
 
 - [ADR-0007](../decisions/ADR-0007-self-describing-participant.md) — the convention, its
