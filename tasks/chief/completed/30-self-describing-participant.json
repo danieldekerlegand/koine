@@ -6,7 +6,13 @@
   "description": "Establish the koine convention that a participant is SELF-DESCRIBING: its own communication config -- its namespace and minting authority (KINP), its KCB capability manifest served as the A2A AgentCard extension (KCB §2), its egress policy (KGP §7.2 egress classes), and the bridge / predicate mappings for the data it produces and consumes -- lives in that participant's OWN repository and is served from its own endpoints, never centralized in a hub or a shared config store. This directly extends ADR-0001 (data plane is direct peer-to-peer; the control plane is route-by-lookup not route-by-proxy -- the registry returns addresses and peers dial each other) and reinforces koine's own scope rule (koine holds the SHAPE of a contract; a deployment's filled-in instance data lives in the operator's own repo, per README 'Scope: shape, not instance' and CLAUDE.md 'What does NOT belong here'). This ADR is the contract that lets downstream projects hold their own config instead of depending on a central private store. ADR-first spec work: US-1 writes the ADR defining what a participant must publish and where; the follow-ups add an adopter-facing guide and, if warranted, a shape-only JSON Schema for a participant's in-repo self-description. koine is a spec repo (Markdown + JSON Schema + TSV) with no build or test gate beyond schema validity and internal consistency. Public-safe: bind roles, not products; the config values themselves are instance data that stays in each participant's repo and MUST NOT be added here; illustrative CURIEs use the KINP §3.4 placeholder namespaces (refkb / worldsim / analyzer / mediastore / orchestrator).",
   "parked": false,
   "dependsOn": [],
-  "touches": ["decisions/", "docs/", "schemas/", "README.md", "specs/capability-bus.md"],
+  "touches": [
+    "decisions/",
+    "docs/",
+    "schemas/",
+    "README.md",
+    "specs/capability-bus.md"
+  ],
   "iters": 7,
   "warmup": [
     "grep -n 'direct\\|proxy\\|addresses\\|hub\\|route-by-lookup' decisions/ADR-0001-control-plane-topology.md",
@@ -56,5 +62,5 @@
       "notes": ""
     }
   ],
-  "mergedToMain": false
+  "mergedToMain": "0a3960b"
 }
