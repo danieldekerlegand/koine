@@ -26,7 +26,7 @@
         "The ADR grounds the convention in ADR-0001 and in koine's scope rule (README 'Scope: shape, not instance' and CLAUDE.md 'What does NOT belong here'): the filled-in config values are a deployment's instance data and live in the participant's own repo, while koine holds only their shape -- and states that this ADR is what lets a downstream participant hold its own config rather than depend on a central store.",
         "The ADR is agnostic per decisions/README.md (binds roles: producer / consumer / authority / host / provider; no participant/product names except as illustrative or known-implementation pointers), is numbered so it does not collide with the ADR-0002 through ADR-0004 numbers reserved for downstream records, and decisions/README.md's records table gains a row for it."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -39,7 +39,7 @@
         "The guide is linked from README.md (e.g. in the 'Learn by example' or repository-layout section) and cites the new ADR.",
         "The guide is agnostic and public-safe: it binds roles, uses the KINP §3.4 placeholder namespaces (refkb / worldsim / analyzer / mediastore / orchestrator) for any illustrative CURIEs, and names no participant/product except as a clearly-marked illustration."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -52,7 +52,7 @@
         "The schema is role-scoped (no participant/product name in title / $id / description), draft-2020-12 like the other schemas/, and its illustrative CURIEs use the KINP §3.4 placeholder namespaces; schemas/README.md is updated with a row for it, and a minimal fixture using the placeholder namespaces validates against it.",
         "If US-1's ADR concludes that a dedicated schema is not warranted (the existing KCB AgentCard extension + KINP namespace suffice), this story instead records that conclusion by adding a short note to the docs/ guide (US-2) explaining that a participant self-describes purely through its AgentCard extension, and no new schema is added -- either resolution leaves the repo internally consistent."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ],

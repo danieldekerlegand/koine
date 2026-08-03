@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://koine.ecosystem/schemas/participant-self-description.schema.json",
+  "title": "ParticipantSelfDescription",
+  "description": "The SOURCE self-description a participant keeps in its OWN repository (decisions/ADR-0007-self-describing-participant.md decision 7): one reviewable document stating where its four facets — identity, capability, egress, translation — live, so what it serves can be derived from and checked against a declared intent instead of hand-maintained. It is NOT a second manifest and is NOT served: the runtime self-description is the KCB AgentCard extension (specs/capability-bus.md §2), which this document only points at and which stays authoritative. Bounded by ADR-0007 decision 7 to pointers and references, never payloads — it references the KCB manifest shape rather than restating it, and embeds no bridge/predicate mapping entries, no topology, and no node/edge ontology (those are the deployment's instance data and stay in the participant's own repo, per CLAUDE.md). Koine holds this shape only; the filled-in values never come here. Role-scoped: the illustrative values in the field descriptions and in the golden positive at schemas/fixtures/participant-self-description.json use the KINP identity.md §3.4 placeholder namespaces (refkb / worldsim / analyzer / mediastore / orchestrator / provider). Validators live downstream per ADR-0001, NOT in koine.",
+  "type": "object",
+  "$defs": {
+    "kinpId": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+:[a-z0-9-]+:[^\\s]+$",
+      "description": "A KINP CURIE — namespace:kind:local (identity.md §3.2), e.g. orchestrator:agent:composer, provider:agent:transcoder."
+    },
+    "namespacePrefix": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "A KINP namespace prefix (identity.md §3.4) — the minting authority's name. Reserved to exactly one authority and immutable once published."
+    },
+    "location": {
+      "type": "object",
+      "description": "A pointer to where an artifact lives — a path inside the participant's own repository, and/or the URL it is served at. A pointer only: this document never carries the artifact itself. At least one of path / url is required.",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Path relative to the root of the participant's OWN repository. Never a path into another participant's repo — no participant reads another's repository (ADR-0007 decision 4)."
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Absolute URL the artifact is served at, where it is served at all. Serving any facet beyond the capability facet is OPTIONAL (ADR-0007, alternatives considered)."
+        },
+        "note": {
+          "type": "string",
+          "description": "Free-text note for a human reader of this document."
+        }
+      },
+      "anyOf": [{ "required": ["path"] }, { "required": ["url"] }],
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "self_description_version": {
+      "$ref": "provenance.schema.json#/$defs/contractVersion",
+      "description": "The version of this document's shape (semver), declared per artifact."
+    },
+    "participant": {
+      "$ref": "#/$defs/kinpId",
+      "description": "The KINP id of the participant this document describes — the same id its A2A AgentCard carries as its own agent id (KCB §2)."
+    },
+    "roles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["producer", "consumer", "authority", "host", "provider"]
+      },
+      "description": "The roles this participant claims. Role-scoped, never product-scoped: a participant publishes the facets the roles it claims reach (ADR-0007 decision 1)."
+    },
+    "identity": {
+      "type": "object",
+      "description": "The identity facet (KINP identity.md §3.2–§3.4, §4.4, §6): the namespace this participant mints under, and the fact that it is the sole minting authority for it.",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/namespacePrefix",
+          "description": "The prefix this participant mints under, as registered by PR in KINP §3.4. Registration reserves a name, not config — what is minted under it stays entirely with the participant."
+        },
+        "minting_authority": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether this participant is the sole minting authority for the namespace above (KINP §3.4). A participant that only reads ids minted elsewhere sets this false."
+        },
+        "kinds": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "The KINP kinds minted under the namespace (identity.md §2, §3.2) — e.g. entity, asset, activity, world, agent, model."
+        },
+        "external_anchors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/namespacePrefix" },
+          "uniqueItems": true,
+          "description": "External authority namespaces this participant anchors to (KINP §4.4) — e.g. wikidata, musicbrainz, geonames. Never minted by a Koine participant."
+        },
+        "minting_rules": {
+          "$ref": "#/$defs/location",
+          "description": "Pointer to where the participant records its own local-id scheme and reconciliation practice (KINP §6, offline-first). The rules themselves stay in the participant's repo."
+        }
+      },
+      "required": ["namespace"],
+      "additionalProperties": false
+    },
+    "capability": {
+      "type": "object",
+      "description": "The capability facet (KCB capability-bus.md §2, §2.1) — BY REFERENCE ONLY. The manifest payload (kcb_version, produces / consumes ports, capabilities with cost, auth, signing) is defined by KCB §2 and served in the AgentCard extension's params; it is deliberately NOT restated here, and additionalProperties:false keeps it from creeping in. What this block carries is where the served card is, which extension identifies the manifest on it, and where the in-repo source that card is generated from lives.",
+      "properties": {
+        "agent_card": {
+          "$ref": "#/$defs/location",
+          "description": "Where the participant serves its A2A AgentCard — conventionally its own /.well-known/agent-card.json. This is the authoritative, runtime self-description; no copy held elsewhere is authoritative (ADR-0007 decision 2)."
+        },
+        "manifest_extension_uri": {
+          "type": "string",
+          "pattern": "^https://koine\\.dev/kcb/manifest/\\d+\\.\\d+$",
+          "description": "The stable KCB extension URI identifying the manifest entry in the card's capabilities.extensions[] — currently https://koine.dev/kcb/manifest/0.3 (KCB §2). There is no second well-known file: a 0.2.0-style standalone /.well-known/kcb-manifest.json is superseded (KCB §2.2)."
+        },
+        "manifest_source": {
+          "$ref": "#/$defs/location",
+          "description": "Pointer to the reviewed in-repo source the served extension params are generated from, where the participant keeps one. A pointer, not the manifest: the payload's shape is KCB §2's, and the served card remains authoritative."
+        },
+        "mcp": {
+          "$ref": "#/$defs/location",
+          "description": "The participant's MCP tools endpoint, where it serves one — the non-A2A endpoint the extension still names as a plain params field (KCB §2)."
+        }
+      },
+      "required": ["agent_card", "manifest_extension_uri"],
+      "additionalProperties": false
+    },
+    "egress": {
+      "type": "object",
+      "description": "The egress facet (KGP grounding-pack.md §7.1, §7.2) — by reference: which relations and records are exportable and which are local-only, and the license classes released under, are the participant's own policy values and live in its own repo.",
+      "properties": {
+        "policy": {
+          "$ref": "#/$defs/location",
+          "description": "Pointer to the participant's egress policy — the per-relation / per-record exportable vs local-only assignment (KGP §7.2). Never inlined here."
+        },
+        "default_class": {
+          "$ref": "provenance.schema.json#/$defs/egress",
+          "description": "The egress class this participant applies to a record whose policy is unstated. exportable is KGP's default; a participant holding sensitive data may default to local-only."
+        },
+        "license_policy": {
+          "$ref": "#/$defs/location",
+          "description": "Pointer to the license classes this participant releases under and the allowlist it admits on (KGP §7.1, policy/license-classes.json)."
+        },
+        "enforced_at": {
+          "type": "string",
+          "const": "pack-construction",
+          "description": "Where enforcement happens, and the only conformant answer: in the emitting producer at pack construction, before any encoding is emitted (KGP §7.2, ADR-0007 decision 5). No central component ever holds a participant's egress rules."
+        }
+      },
+      "required": ["policy"],
+      "additionalProperties": false
+    },
+    "translation": {
+      "type": "object",
+      "description": "The translation facet (KGP §5, §7; registry/README.md) — LOCATIONS ONLY. Bridge / predicate mapping entries are a deployment's instance data and MUST NOT be committed into koine or embedded here; this block records where they live in the participant's own repo. A participant on the knowledge plane declares this even as a pure consumer, because it MUST reject a pack carrying local-only content (KGP §7.2) and can only do so against a stated policy.",
+      "properties": {
+        "mappings": {
+          "type": "array",
+          "minItems": 1,
+          "description": "One entry per mapping document the participant maintains — a pointer plus which direction of data it governs. The mapping rows themselves stay in the participant's repo.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "direction": {
+                "type": "string",
+                "enum": ["produces", "consumes", "both"],
+                "description": "Whether this mapping governs data the participant emits, data it accepts, or both (ADR-0007 decision 1)."
+              },
+              "location": {
+                "$ref": "#/$defs/location",
+                "description": "Where the mapping document lives in the participant's own repo."
+              },
+              "plane": {
+                "type": "string",
+                "enum": ["knowledge", "media", "entity"],
+                "description": "The plane whose vocabulary this mapping crosses into, using KCB §2.1's port planes."
+              },
+              "note": {
+                "type": "string",
+                "description": "Free-text note for a human reader."
+              }
+            },
+            "required": ["direction", "location"],
+            "additionalProperties": false
+          }
+        },
+        "target_registries": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "The shared koine relation files a mapping normalizes into — e.g. registry/relations.tsv, registry/relations/media.tsv. A mapping coins no relation name: closing a gap means adding a row to one of these, never naming a relation only in a mapping (registry/README.md)."
+        }
+      },
+      "required": ["mappings"],
+      "additionalProperties": false
+    },
+    "discovery": {
+      "type": "object",
+      "description": "How this participant is indexed, if it is. The discovery registry (KCB §3) returns an ADDRESS to a self-description, never the self-description (ADR-0007 decision 3): a registry entry is a cache and an index, never a source of truth.",
+      "properties": {
+        "registries": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/location" },
+          "description": "Registries the participant advertises its card address to. Optional in every sense — the participant MUST remain fully functional, and fully describable to a peer that dials it directly, with every registry unavailable."
+        },
+        "registry_optional": {
+          "type": "boolean",
+          "const": true,
+          "description": "Restates the invariant: discoverable without being dependent (ADR-0007 decision 3). The only conformant value is true."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["self_description_version", "participant", "roles", "identity", "capability", "egress"],
+  "additionalProperties": false
+}

@@ -1,0 +1,35 @@
+{
+  "self_description_version": "0.1.0",
+  "participant": "analyzer:agent:extractor",
+  "roles": ["producer", "consumer"],
+  "identity": {
+    "namespace": "analyzer",
+    "minting_authority": true,
+    "kinds": ["entity", "activity", "run"],
+    "external_anchors": ["wikidata"],
+    "minting_rules": { "path": "docs/identity.md", "note": "Run-scoped locals: analyzer:run/<runid> (KINP §6)." }
+  },
+  "capability": {
+    "agent_card": { "url": "https://analyzer.example/.well-known/agent-card.json" },
+    "manifest_extension_uri": "https://koine.dev/kcb/manifest/0.3",
+    "manifest_source": { "path": "config/kcb-manifest.yaml", "note": "The card's extension params are generated from this; the served card stays authoritative." },
+    "mcp": { "url": "https://analyzer.example/mcp" }
+  },
+  "egress": {
+    "policy": { "path": "config/egress-policy.yaml" },
+    "default_class": "exportable",
+    "license_policy": { "path": "config/license-allowlist.yaml" },
+    "enforced_at": "pack-construction"
+  },
+  "translation": {
+    "mappings": [
+      { "direction": "produces", "plane": "knowledge", "location": { "path": "config/predicate-map.produces.tsv" } },
+      { "direction": "consumes", "plane": "knowledge", "location": { "path": "config/predicate-map.consumes.tsv" }, "note": "Governs what this participant accepts from refkb and worldsim." }
+    ],
+    "target_registries": ["registry/relations.tsv", "registry/relations/cinematography.tsv"]
+  },
+  "discovery": {
+    "registries": [{ "url": "https://orchestrator.example/registry" }],
+    "registry_optional": true
+  }
+}
