@@ -86,8 +86,10 @@ vocabulary.
   `policy/` holds the license-class + trust-tier policy. Validators/CI + conformance fixtures live
   downstream (ADR-0001), **not** here.
 - `decisions/` — the **agnostic** ADRs only: ADR-0001 (control-plane stance — direct-dial peers,
-  thin shared commons; koine specifies, `agora` implements) and ADR-0005 (adopt OpenTimelineIO as
-  KMI's canonical timeline model). The deployment-history ADRs (ADR-0002/0003/0004 — bridge
+  thin shared commons; koine specifies, `agora` implements), ADR-0005 (adopt OpenTimelineIO as
+  KMI's canonical timeline model), and ADR-0006 (KGP keeps its bespoke TSV + content-addressed-claim
+  canonical; RDF-star / W3C PROV / JSON-LD become a specified, round-trip-tested **projection**, and
+  KINP §9's "not adopting RDF" narrows to *storage and identity*). The deployment-history ADRs (ADR-0002/0003/0004 — bridge
   reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
   integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently
   reserved**: new agnostic ADRs start at 0005 and go up.
