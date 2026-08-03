@@ -48,7 +48,7 @@
         "The spec version header is bumped and Status is set to Candidate (draft->candidate->ratified convention, since this is a normative change), with a new changelog entry describing the OTIO adoption and citing the new ADR, and the Pressure test section notes that re-validation against scenarios/e2e-media-transform.md is required before re-ratification.",
         "No section of specs/media-interchange.md still describes application/vnd.koine.edl+json as the authoritative source of truth; the spec reads consistently end to end."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
