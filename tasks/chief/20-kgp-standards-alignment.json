@@ -1,0 +1,60 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/20-kgp-standards-alignment",
+  "baseBranch": "main",
+  "description": "A KGP claim (specs/grounding-pack.md, 0.4.0 ratified) is a provenance-stamped, named-graph triple -- which puts it adjacent to three mature W3C / community standards: RDF 1.2 (RDF-star, for statement-level annotation), W3C PROV (the provenance shape KGP already borrows), and JSON-LD (a triple wire form). Yet KGP defines a BESPOKE canonical: TSV as the source of truth (§4) plus a content-addressed claim id computed by a normative byte-canonicalization (§3). This tasklist DECIDES the relationship rather than assuming one. The decision (US-1, an ADR) is genuinely open between two options: (a) ALIGN the KGP canonical / serialization with RDF-star + PROV + JSON-LD, keeping as annotations/extensions the parts those standards do not serve -- the content-addressed claim id, the confidence / license / egress gating (§7), and the Datalog / ProbLog / Prolog projections (§4); or (b) RETAIN the bespoke canonical and document explicitly why it earns its keep, because RDF/SPARQL serve neither probabilistic reasoning nor egress gating nor a content-addressed claim identity natively. The follow-up stories reflect whichever way the ADR decides, into the spec (§3/§4), the JSON Schema twin, and a pressure-test scenario. koine is a spec repo (Markdown + JSON Schema + TSV) with no build or test gate beyond schema validity and internal consistency. Public-safe: bind roles, not products; illustrative CURIEs use the KINP §3.4 placeholder namespaces (refkb / worldsim / analyzer). Any normative change drops KGP to candidate per the draft->candidate->ratified convention.",
+  "parked": false,
+  "dependsOn": [],
+  "touches": ["decisions/", "specs/grounding-pack.md", "schemas/grounding-pack.schema.json", "schemas/provenance.schema.json", "scenarios/e2e-worlds-to-fabric.md", "docs/"],
+  "iters": 8,
+  "warmup": [
+    "grep -n 'RDF\\|PROV\\|JSON-LD\\|SPARQL\\|TSV\\|Datalog\\|ProbLog' specs/grounding-pack.md",
+    "grep -n 'claim_id\\|Normalization\\|content-address\\|Serializ' specs/grounding-pack.md",
+    "ls -1 schemas/ decisions/ scenarios/",
+    "grep -n 'PROV\\|prov\\|provenance' schemas/provenance.schema.json"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "ADR: decide KGP's relationship to RDF-star, PROV, and JSON-LD",
+      "description": "Write the ADR that makes the genuine decision between aligning the KGP canonical with RDF-star + PROV + JSON-LD (option a) and retaining the bespoke TSV + content-addressed-claim-hash canonical with an explicit justification (option b). Present both options fairly, decide, and record what is invariant either way. This is a real decision -- do not treat either outcome as foregone.",
+      "acceptanceCriteria": [
+        "A new ADR file exists in decisions/ recording the decision on how the KGP canonical / serialization relates to RDF 1.2 (RDF-star), W3C PROV, and JSON-LD.",
+        "The ADR presents BOTH options fairly before deciding: option (a) align the KGP canonical / serialization with RDF-star + PROV + JSON-LD, keeping the content-addressed claim id, the confidence / license / egress gating (§7), and the Datalog / ProbLog / Prolog projections (§4) as annotations or extensions; option (b) retain the bespoke TSV + content-addressed-claim-hash canonical and document explicitly why it earns its keep -- the probabilistic reasoning, egress gating, and content-addressed claim identity that RDF/SPARQL do not serve natively.",
+        "The ADR states a clear decision and its rationale, framed as a genuine choice between the two options rather than a foregone conclusion; if it decides (a) it says what moves to RDF-star/PROV/JSON-LD and what stays an annotation, and if it decides (b) it states the concrete requirements RDF/SPARQL fail to meet.",
+        "The ADR records what is invariant regardless of the decision: the content-addressed claim id and its normative normalization (KGP §3), the confidence / license / egress gating as first-class filters (KGP §7), and the lossless Datalog / ProbLog / Prolog / Neo4j projections (KGP §4).",
+        "The ADR is agnostic per decisions/README.md (binds roles; standards named only as adopted external standards; no participant/product names except as illustrative or known-implementation pointers), is numbered so it does not collide with the ADR-0002 through ADR-0004 numbers reserved for downstream records, and decisions/README.md's records table gains a row for it."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Reflect the decision in KGP §3 / §4",
+      "description": "Edit specs/grounding-pack.md §3 (normalization) and §4 (serializations) to be consistent with whichever direction the ADR decided, preserving the invariants, bumping the version, and dropping status to candidate per the koine convention.",
+      "acceptanceCriteria": [
+        "specs/grounding-pack.md §3 (Normalization) and §4 (Serializations) are edited to be consistent with the ADR's decision.",
+        "If the ADR decided ALIGNMENT (a): §4 names JSON-LD as the (or a co-) canonical wire form and RDF-star as the statement-annotation model, references the W3C PROV shape for provenance, and re-frames the content-addressed claim id and the egress/license/confidence gating as annotations/extensions layered on top -- while §3's normative claim-id normalization is preserved as the identity mechanism.",
+        "If the ADR decided the BESPOKE canonical (b): §3 and/or §4 gain an explicit rationale subsection stating why the bespoke TSV + content-addressed-claim-hash canonical earns its keep (probabilistic + egress-gating + content-addressed-id needs), plus a note showing the canonical projects losslessly to RDF-star / PROV / JSON-LD for interoperability.",
+        "The spec version header is bumped and Status is set to Candidate (any normative change re-enters validation per draft->candidate->ratified), with a new changelog entry citing the new ADR; cross-references in §2 (bundle), §5, and §7 are kept consistent with the edited §3/§4 so the spec reads coherently end to end."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Align the KGP schema and validate against a pressure test",
+      "description": "Update the JSON Schema twin to match the decided direction, and update or add a pressure-test scenario proving the decided canonical still merges convergent claims, preserves egress/license gating, and round-trips to the projections.",
+      "acceptanceCriteria": [
+        "schemas/grounding-pack.schema.json (and schemas/provenance.schema.json if the PROV shape changes) is updated to match the direction the ADR decided and stays consistent with the edited specs/grounding-pack.md §3/§4; it remains role-scoped (no product name in title / $id / description) and its illustrative CURIEs use the KINP §3.4 placeholder namespaces (refkb / worldsim / analyzer); schemas/README.md is updated if affected.",
+        "A pressure-test scenario is updated or added (e.g. the KGP-exercising scenarios/e2e-worlds-to-fabric.md, or a new focused scenario) that validates the decided canonical still: (i) mints an identical claim id when two producers' references reconcile, preserving the §3.3 worked-example convergence result; (ii) preserves the confidence / license / egress (local-only) gating from §7; and (iii) round-trips losslessly to the Datalog / ProbLog / Neo4j projections in §4.",
+        "A Resolution / note in the scenario records which KGP spec version reflects the decision.",
+        "Internal consistency holds: specs/grounding-pack.md §3/§4, the schema twin, and the scenario agree, and the §3.3 claim-id convergence result is preserved regardless of which option was decided."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ],
+  "mergedToMain": false
+}

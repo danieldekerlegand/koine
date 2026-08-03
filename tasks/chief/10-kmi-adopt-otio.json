@@ -1,0 +1,63 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/10-kmi-adopt-otio",
+  "baseBranch": "main",
+  "description": "KMI (specs/media-interchange.md, 0.2.0 ratified) currently makes its OWN canonical JSON EDL (media_type application/vnd.koine.edl+json, §4) the source of truth and relegates FCPXML / Premiere xmeml / DaVinci CMX3600 to one-directional projections. Adopt OpenTimelineIO (OTIO) -- the Academy Software Foundation interchange format, which already ships the CMX3600/FCPXML adapters KMI lists as targets -- as the canonical timeline/composition model, demoting the bespoke JSON EDL to a legacy/deprecated form. Keep as koine's ADDITIVE layer only the parts OTIO does not cover: asset ids as content-addressed KINP entities, the asset-lineage graph (media:derived_from / variant_of / excerpt_of / perceptual_match, §3), and the analysis->KGP knowledge bridge (§5). This is ADR-first spec-editing work: US-1 records the decision as an ADR, the follow-ups edit the spec + its machine-readable schema and update the media-transform pressure test. koine is a spec repo (Markdown + JSON Schema + TSV) with no build or test gate beyond schema validity and internal consistency; there is nothing to compile or run. Per koine's draft->candidate->ratified convention, a normative change re-enters validation, so KMI drops to candidate pending re-validation against the pressure test. Public-safe: bind roles, not products; illustrative CURIEs use the KINP §3.4 placeholder namespaces (analyzer / mediastore / worldsim).",
+  "parked": false,
+  "dependsOn": [],
+  "touches": ["decisions/", "specs/media-interchange.md", "schemas/", "scenarios/e2e-media-transform.md", "docs/"],
+  "iters": 8,
+  "warmup": [
+    "grep -n 'EDL\\|edl\\|application/vnd.koine.edl' specs/media-interchange.md",
+    "grep -n 'FCPXML\\|CMX3600\\|xmeml\\|projection' specs/media-interchange.md",
+    "ls -1 schemas/ decisions/ scenarios/",
+    "grep -n 'EDL\\|CMX3600\\|conform\\|export' scenarios/e2e-media-transform.md"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "ADR: adopt OpenTimelineIO as KMI's canonical timeline model",
+      "description": "Write the Architecture Decision Record that adopts OTIO as KMI's canonical composition model, demotes the bespoke application/vnd.koine.edl+json EDL, delimits what stays additive over OTIO, and defines migration/compat for existing EDL data. This ADR is the decision the spec edits then implement.",
+      "acceptanceCriteria": [
+        "A new ADR file exists in decisions/ recording the decision to adopt OpenTimelineIO (OTIO) as KMI's canonical timeline / composition model and to demote the bespoke application/vnd.koine.edl+json EDL to a legacy (deprecated) form.",
+        "The ADR states the rationale: OTIO is the Academy Software Foundation interchange standard and already ships the CMX3600 / FCPXML adapters KMI §4 lists as export targets, so keeping a parallel bespoke canonical timeline is reinvention.",
+        "The ADR delimits what remains koine's ADDITIVE layer over OTIO -- and thus is NOT replaced: asset ids as content-addressed KINP entities (KINP §7.2), the asset-lineage graph (media:derived_from / variant_of / excerpt_of / perceptual_match, KMI §3), and the analysis->KGP knowledge bridge (KMI §5).",
+        "The ADR specifies migration / compatibility for existing application/vnd.koine.edl+json data: the deprecation path, whether both forms MAY be served during transition, and how a bespoke EDL maps onto the OTIO model so no existing edit is orphaned.",
+        "The ADR is agnostic per decisions/README.md: it binds roles (producer / consumer / authority / host / provider), names OTIO only as an adopted external standard, and uses no participant/product names except as clearly-marked illustrative or known-implementation pointers.",
+        "The ADR is numbered so it does not collide with the ADR-0002 through ADR-0004 numbers reserved for downstream deployment-history records (see decisions/README.md), and decisions/README.md's records table is updated with a row for the new ADR."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Rewrite KMI §4 so OTIO is canonical and the JSON EDL is demoted",
+      "description": "Edit specs/media-interchange.md to implement the ADR: OTIO becomes the canonical timeline model, the bespoke JSON EDL is demoted, the NLE projection table is reframed onto OTIO's adapters, and every additive-layer clause is preserved. Bump the version and drop status to candidate per the koine convention.",
+      "acceptanceCriteria": [
+        "specs/media-interchange.md §4 is rewritten so OTIO is the canonical timeline / composition model; the former 'Canonical JSON EDL is the source of truth' language is removed and the application/vnd.koine.edl+json EDL is described as a demoted legacy form (or removed), consistent with the ADR.",
+        "The timeline-asset media_type and the §2 asset-envelope note that referenced application/vnd.koine.edl+json are updated to the OTIO-based form, so §2 and §4 no longer describe the bespoke EDL as canonical.",
+        "The NLE projection table (§4) is reframed to reference OTIO's built-in CMX3600 / FCPXML / xmeml adapters rather than the bespoke one-directional skill_export_* projections; the asset-id <-> resolved-path media map (delta I) is retained because OTIO adapters likewise reference media by path.",
+        "The additive layer is preserved verbatim in meaning: clips still reference assets by KINP id, and §3 (asset-lineage graph) and §5 (analysis->KGP bridge) are unchanged in meaning; any cross-references in §8 (mapping) and the §1 scope list are updated so the spec is internally consistent.",
+        "The spec version header is bumped and Status is set to Candidate (draft->candidate->ratified convention, since this is a normative change), with a new changelog entry describing the OTIO adoption and citing the new ADR, and the Pressure test section notes that re-validation against scenarios/e2e-media-transform.md is required before re-ratification.",
+        "No section of specs/media-interchange.md still describes application/vnd.koine.edl+json as the authoritative source of truth; the spec reads consistently end to end."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Align the media schema and update the media-transform pressure test",
+      "description": "Make the machine-readable twin and the pressure-test scenario consistent with the OTIO adoption: add/adjust the media-timeline schema in schemas/, and re-express the conform/EDL/export steps of scenarios/e2e-media-transform.md against the OTIO canonical model while confirming the additive-layer assertions still hold.",
+      "acceptanceCriteria": [
+        "The machine-readable twin in schemas/ reflects the OTIO adoption: a media-timeline schema is added (there is no media/EDL schema today) or, if a bespoke-EDL schema is introduced by this work, it is marked deprecated -- either way the schema is consistent with the rewritten §4, is role-scoped (no product name in title / $id / description), and its illustrative CURIEs use the KINP §3.4 placeholder namespaces (analyzer / mediastore / worldsim); schemas/README.md is updated if it references media serialization.",
+        "scenarios/e2e-media-transform.md is updated so the conform / EDL / render / projection steps (Step 5 and Step 6) are expressed against the OTIO canonical timeline rather than the bespoke JSON EDL, and a Resolution / note records the KMI spec version that folded the OTIO adoption.",
+        "The scenario still confirms the additive-layer assertions hold under OTIO: the binary asset-lineage links (media:excerpt_of with range-on-asset, media:derived_from), the per-asset conditional source_world (delta H), and the asset-id <-> path media map (delta I) all still resolve.",
+        "Internal consistency holds across all three artifacts: specs/media-interchange.md §4, the schemas/ twin, and scenarios/e2e-media-transform.md agree, and no artifact still treats application/vnd.koine.edl+json as the canonical source of truth."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ],
+  "mergedToMain": false
+}

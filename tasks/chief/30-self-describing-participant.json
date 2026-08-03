@@ -1,0 +1,60 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/30-self-describing-participant",
+  "baseBranch": "main",
+  "description": "Establish the koine convention that a participant is SELF-DESCRIBING: its own communication config -- its namespace and minting authority (KINP), its KCB capability manifest served as the A2A AgentCard extension (KCB §2), its egress policy (KGP §7.2 egress classes), and the bridge / predicate mappings for the data it produces and consumes -- lives in that participant's OWN repository and is served from its own endpoints, never centralized in a hub or a shared config store. This directly extends ADR-0001 (data plane is direct peer-to-peer; the control plane is route-by-lookup not route-by-proxy -- the registry returns addresses and peers dial each other) and reinforces koine's own scope rule (koine holds the SHAPE of a contract; a deployment's filled-in instance data lives in the operator's own repo, per README 'Scope: shape, not instance' and CLAUDE.md 'What does NOT belong here'). This ADR is the contract that lets downstream projects hold their own config instead of depending on a central private store. ADR-first spec work: US-1 writes the ADR defining what a participant must publish and where; the follow-ups add an adopter-facing guide and, if warranted, a shape-only JSON Schema for a participant's in-repo self-description. koine is a spec repo (Markdown + JSON Schema + TSV) with no build or test gate beyond schema validity and internal consistency. Public-safe: bind roles, not products; the config values themselves are instance data that stays in each participant's repo and MUST NOT be added here; illustrative CURIEs use the KINP §3.4 placeholder namespaces (refkb / worldsim / analyzer / mediastore / orchestrator).",
+  "parked": false,
+  "dependsOn": [],
+  "touches": ["decisions/", "docs/", "schemas/", "README.md", "specs/capability-bus.md"],
+  "iters": 7,
+  "warmup": [
+    "grep -n 'direct\\|proxy\\|addresses\\|hub\\|route-by-lookup' decisions/ADR-0001-control-plane-topology.md",
+    "grep -n 'well-known\\|agent-card\\|extension\\|manifest' specs/capability-bus.md",
+    "grep -n 'Scope\\|instance\\|shape' README.md CLAUDE.md",
+    "ls -1 decisions/ docs/ schemas/"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "ADR: the self-describing-participant convention",
+      "description": "Write the ADR that defines the self-describing-participant convention -- what a participant must publish about how to communicate with it, and where that config lives (its own repo / its own well-known endpoints, discovered but never proxied) -- grounded in ADR-0001 and koine's shape-not-instance scope rule.",
+      "acceptanceCriteria": [
+        "A new ADR file exists in decisions/ defining the SELF-DESCRIBING-PARTICIPANT convention: a participant publishes its own communication config from its own repository and its own served endpoints, not from any central hub or shared config store.",
+        "The ADR enumerates WHAT a participant must publish: its namespace + minting authority (KINP), its KCB capability manifest as the A2A AgentCard extension (KCB §2, the https://koine.dev/kcb/manifest extension on /.well-known/agent-card.json), its egress policy (KGP §7.2 egress classes -- exportable / local-only), and the bridge / predicate mappings for the data it produces and consumes.",
+        "The ADR specifies WHERE each of those lives: in the participant's own repo and served from its own well-known endpoints (the KCB extension on the participant's agent-card), made findable through the discovery registry as an ADDRESS only -- consistent with ADR-0001 (route-by-lookup, not route-by-proxy; peers dial each other directly; no central relay).",
+        "The ADR grounds the convention in ADR-0001 and in koine's scope rule (README 'Scope: shape, not instance' and CLAUDE.md 'What does NOT belong here'): the filled-in config values are a deployment's instance data and live in the participant's own repo, while koine holds only their shape -- and states that this ADR is what lets a downstream participant hold its own config rather than depend on a central store.",
+        "The ADR is agnostic per decisions/README.md (binds roles: producer / consumer / authority / host / provider; no participant/product names except as illustrative or known-implementation pointers), is numbered so it does not collide with the ADR-0002 through ADR-0004 numbers reserved for downstream records, and decisions/README.md's records table gains a row for it."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Adopter guide documenting the convention",
+      "description": "Add a short adopter-facing guide in docs/ (and link it from README.md) that turns the ADR into a practical checklist: what a participant publishes to be self-describing, where each piece lives, and which spec defines each piece.",
+      "acceptanceCriteria": [
+        "A short guide exists in docs/ documenting the self-describing-participant convention for adopters: a checklist of what to publish (namespace + minting authority, KCB AgentCard-extension manifest, egress policy, bridge/predicate mappings) and where each lives, cross-referencing KINP (namespace), KCB (manifest / AgentCard), and KGP (§7.2 egress policy).",
+        "The guide states plainly that koine holds only the SHAPE of these artifacts and that the filled-in values live in the participant's own repo (consistent with README 'Scope: shape, not instance'), and that bridge / predicate mappings are instance data that must not be committed into koine.",
+        "The guide is linked from README.md (e.g. in the 'Learn by example' or repository-layout section) and cites the new ADR.",
+        "The guide is agnostic and public-safe: it binds roles, uses the KINP §3.4 placeholder namespaces (refkb / worldsim / analyzer / mediastore / orchestrator) for any illustrative CURIEs, and names no participant/product except as a clearly-marked illustration."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Shape-only schema for a participant's in-repo self-description",
+      "description": "If the ADR warrants it, add a JSON Schema in schemas/ describing the SHAPE of a participant's in-repo self-description document -- the pointers to what it publishes and where -- referencing (never duplicating or embedding) the KCB manifest and never containing deployment instance values.",
+      "acceptanceCriteria": [
+        "A JSON Schema exists in schemas/ describing the SHAPE of a participant's in-repo self-description: its namespace + minting authority, its agent-card / MCP endpoint locations, a reference to its egress policy, and the locations of its bridge / predicate mappings -- shape and pointers only.",
+        "The schema contains NO deployment instance data: it does not embed bridge / predicate mappings, a topology, or a node/edge ontology (those are instance data per CLAUDE.md and stay in the participant's repo); it references the KCB AgentCard-extension manifest shape (KCB §2) rather than duplicating it.",
+        "The schema is role-scoped (no participant/product name in title / $id / description), draft-2020-12 like the other schemas/, and its illustrative CURIEs use the KINP §3.4 placeholder namespaces; schemas/README.md is updated with a row for it, and a minimal fixture using the placeholder namespaces validates against it.",
+        "If US-1's ADR concludes that a dedicated schema is not warranted (the existing KCB AgentCard extension + KINP namespace suffice), this story instead records that conclusion by adding a short note to the docs/ guide (US-2) explaining that a participant self-describes purely through its AgentCard extension, and no new schema is added -- either resolution leaves the repo internally consistent."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ],
+  "mergedToMain": false
+}
