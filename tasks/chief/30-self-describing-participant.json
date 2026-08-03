@@ -52,7 +52,7 @@
         "The schema is role-scoped (no participant/product name in title / $id / description), draft-2020-12 like the other schemas/, and its illustrative CURIEs use the KINP §3.4 placeholder namespaces; schemas/README.md is updated with a row for it, and a minimal fixture using the placeholder namespaces validates against it.",
         "If US-1's ADR concludes that a dedicated schema is not warranted (the existing KCB AgentCard extension + KINP namespace suffice), this story instead records that conclusion by adding a short note to the docs/ guide (US-2) explaining that a participant self-describes purely through its AgentCard extension, and no new schema is added -- either resolution leaves the repo internally consistent."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ],
