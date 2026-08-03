@@ -26,7 +26,7 @@
         "The ADR grounds the convention in ADR-0001 and in koine's scope rule (README 'Scope: shape, not instance' and CLAUDE.md 'What does NOT belong here'): the filled-in config values are a deployment's instance data and live in the participant's own repo, while koine holds only their shape -- and states that this ADR is what lets a downstream participant hold its own config rather than depend on a central store.",
         "The ADR is agnostic per decisions/README.md (binds roles: producer / consumer / authority / host / provider; no participant/product names except as illustrative or known-implementation pointers), is numbered so it does not collide with the ADR-0002 through ADR-0004 numbers reserved for downstream records, and decisions/README.md's records table gains a row for it."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
