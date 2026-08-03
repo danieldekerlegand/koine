@@ -61,6 +61,7 @@ You adopt Koine in your *own* repository — there is nothing to install from he
 2. **Validate against the schemas.** [`schemas/`](schemas/) is the machine-readable twin of the prose specs (JSON Schema) — check your data against it.
 3. **Use the shared vocabularies.** Relation names, entity kinds, and media kinds come from [`registry/`](registry/). Extend it by adding a namespaced file, never by forking.
 4. **Vendor with a drift gate.** If you copy a file from here, add a test that fails when your copy diverges — and propose changes as edits *here*, not in your copy.
+5. **Publish your own self-description.** Your namespace, capability manifest, egress policy, and vocabulary mappings live in *your* repo and are served from *your* endpoints — there is no central config store. The [self-describing participant guide](docs/self-describing-participant.md) is the checklist.
 
 ## Learn by example
 
@@ -68,6 +69,10 @@ The best way to understand the protocols is to watch one work end to end:
 
 - **[Capability-Bus walkthrough](docs/walkthrough-capability-bus.md)** — a provider advertises a
   capability, a consumer discovers it, and the two connect directly, with real message payloads.
+- **[Self-describing participant guide](docs/self-describing-participant.md)** — the adopter
+  checklist for the four things you publish about yourself (namespace, capability manifest, egress
+  policy, vocabulary mappings), where each lives, and which spec fixes its shape. See
+  [ADR-0007](decisions/ADR-0007-self-describing-participant.md) for why none of it is centralized.
 - **[Pressure-test scenarios](scenarios/)** — the full end-to-end stories each spec must pass
   before it's ratified, including the four-participant media-transform scenario.
 
@@ -90,6 +95,7 @@ positioning — the gaps it fills and exactly what it builds on — is in
 | [`policy/`](policy/) | License-class and trust-tier policy. |
 | [`scenarios/`](scenarios/) | End-to-end pressure tests that gate ratification. |
 | [`decisions/`](decisions/) | Architecture Decision Records — the "why" behind the design. |
+| [`docs/`](docs/) | Guides and positioning — the walkthrough, the adopter checklist, how Koine relates to existing standards. |
 
 ## Scope: shape, not instance
 
