@@ -39,7 +39,7 @@
         "The guide is linked from README.md (e.g. in the 'Learn by example' or repository-layout section) and cites the new ADR.",
         "The guide is agnostic and public-safe: it binds roles, uses the KINP §3.4 placeholder namespaces (refkb / worldsim / analyzer / mediastore / orchestrator) for any illustrative CURIEs, and names no participant/product except as a clearly-marked illustration."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
