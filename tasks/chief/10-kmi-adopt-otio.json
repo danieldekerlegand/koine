@@ -6,7 +6,13 @@
   "description": "KMI (specs/media-interchange.md, 0.2.0 ratified) currently makes its OWN canonical JSON EDL (media_type application/vnd.koine.edl+json, §4) the source of truth and relegates FCPXML / Premiere xmeml / DaVinci CMX3600 to one-directional projections. Adopt OpenTimelineIO (OTIO) -- the Academy Software Foundation interchange format, which already ships the CMX3600/FCPXML adapters KMI lists as targets -- as the canonical timeline/composition model, demoting the bespoke JSON EDL to a legacy/deprecated form. Keep as koine's ADDITIVE layer only the parts OTIO does not cover: asset ids as content-addressed KINP entities, the asset-lineage graph (media:derived_from / variant_of / excerpt_of / perceptual_match, §3), and the analysis->KGP knowledge bridge (§5). This is ADR-first spec-editing work: US-1 records the decision as an ADR, the follow-ups edit the spec + its machine-readable schema and update the media-transform pressure test. koine is a spec repo (Markdown + JSON Schema + TSV) with no build or test gate beyond schema validity and internal consistency; there is nothing to compile or run. Per koine's draft->candidate->ratified convention, a normative change re-enters validation, so KMI drops to candidate pending re-validation against the pressure test. Public-safe: bind roles, not products; illustrative CURIEs use the KINP §3.4 placeholder namespaces (analyzer / mediastore / worldsim).",
   "parked": false,
   "dependsOn": [],
-  "touches": ["decisions/", "specs/media-interchange.md", "schemas/", "scenarios/e2e-media-transform.md", "docs/"],
+  "touches": [
+    "decisions/",
+    "specs/media-interchange.md",
+    "schemas/",
+    "scenarios/e2e-media-transform.md",
+    "docs/"
+  ],
   "iters": 8,
   "warmup": [
     "grep -n 'EDL\\|edl\\|application/vnd.koine.edl' specs/media-interchange.md",
@@ -27,7 +33,7 @@
         "The ADR is agnostic per decisions/README.md: it binds roles (producer / consumer / authority / host / provider), names OTIO only as an adopted external standard, and uses no participant/product names except as clearly-marked illustrative or known-implementation pointers.",
         "The ADR is numbered so it does not collide with the ADR-0002 through ADR-0004 numbers reserved for downstream deployment-history records (see decisions/README.md), and decisions/README.md's records table is updated with a row for the new ADR."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
