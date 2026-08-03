@@ -61,7 +61,7 @@
         "The scenario still confirms the additive-layer assertions hold under OTIO: the binary asset-lineage links (media:excerpt_of with range-on-asset, media:derived_from), the per-asset conditional source_world (delta H), and the asset-id <-> path media map (delta I) all still resolve.",
         "Internal consistency holds across all three artifacts: specs/media-interchange.md §4, the schemas/ twin, and scenarios/e2e-media-transform.md agree, and no artifact still treats application/vnd.koine.edl+json as the canonical source of truth."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ],
