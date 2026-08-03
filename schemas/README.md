@@ -12,7 +12,14 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
   `contractVersion`, `provenance`, `license`, `tier`, `dialect`, `egress`, `csid`, `assetId`, `nodeRef`.
   The machine-readable form of the KINP [`identity.md`](../specs/identity.md) §7.1 assertion envelope
   and the KGP [`grounding-pack.md`](../specs/grounding-pack.md) §5/§7 axes.
-- [`grounding-pack.schema.json`](grounding-pack.schema.json) — KGP §2 grounding-pack envelope.
+- [`grounding-pack.schema.json`](grounding-pack.schema.json) — KGP §2 grounding-pack envelope
+  ([`../specs/grounding-pack.md`](../specs/grounding-pack.md), KGP 0.5.0). This is the §4 **JSON**
+  encoding — the lossless twin of the canonical TSV, and deliberately *not* a JSON-LD document: per
+  [`../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md`](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md)
+  KGP **retains** its bespoke canonical, and RDF-star / W3C PROV / JSON-LD is a one-directional
+  **projection** (§4.1) that is never authoritative on ingest. So no `@context` sits in the identity
+  path, `provenance` stays PROV-*shaped* rather than PROV-*named*, and a `claimId` received as a
+  projection annotation must be re-derived per §3 before it is trusted.
 - [`entity-grounding-snapshot.schema.json`](entity-grounding-snapshot.schema.json) — compact,
   license-filtered entity snapshot (KGP §2 entity envelope).
 - [`canonical-world-export.schema.json`](canonical-world-export.schema.json) — a **world producer's**
@@ -46,9 +53,9 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
   score and an A2 narration), each clip carrying its asset id, plus a `media_map`. It mirrors the
   conform step of [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md).
 
-## The four portability axes (KGP 0.4.0)
+## The four portability axes (KGP 0.5.0)
 
-Logic-dialect and egress are commonly conflated under one "portability" flag. KGP 0.4.0 keeps them
+Logic-dialect and egress are commonly conflated under one "portability" flag. KGP keeps them
 apart; the schemas model each as its own field so no consumer inherits a merged axis:
 
 | Axis | `$def` | Values | Spec | Says |
@@ -69,8 +76,21 @@ Where the axes appear:
   `local-only` out) and on import (consumer rejects `local-only` and reports), per KGP §7.2.
 - **`license`** and **`tier`** — per-record axes already carried on every record.
 
+All four axes ride *records*, never the claim hash, so they survive every KGP §4 encoding — columns
+in TSV, fields here, statement or record annotations in the RDF projection (§4.1) — and slicing a
+pack along any of them never changes what a claim *is*. `egress` is the one with an ordering
+guarantee attached: it is enforced at pack construction, so `local-only` is gone before any encoding
+exists and no projection can reintroduce it.
+
 The registry-level counterpart — a relation registry that still carries a single merged
 `portabilityClasses` key — MUST split it into these same separate axes when it is loaded.
+
+**No schema models a §4 projection.** Prolog, Datalog, ProbLog, Neo4j, and RDF-star / PROV / JSON-LD
+are derived encodings, one-directional from the canonical pack; what makes one conformant is the
+lossless round-trip back to the canonical (§4.1), which is exercised by the pressure test
+([`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md), *Re-validation —
+KGP 0.5.0*) and by a downstream validator — not by a document shape held here. The **pack** is the
+unit of transfer; a bare projection, arriving without its manifest, is not.
 
 ## Policy enums — `../policy/`
 

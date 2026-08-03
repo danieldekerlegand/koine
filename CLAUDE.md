@@ -37,8 +37,13 @@ vocabulary.
   normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
   **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
   the requirements RDF-star / PROV / JSON-LD do not meet natively plus the re-open test, and §4.1
-  fixes the lossless RDF-star/PROV/JSON-LD **projection** mapping. Back to candidate pending
-  re-validation against the KGP-exercising pressure test.
+  fixes the lossless RDF-star/PROV/JSON-LD **projection** mapping. **Re-validated** against
+  `scenarios/e2e-worlds-to-fabric.md` (its *Re-validation — KGP 0.5.0* section): §3.3 claim-id
+  convergence is byte-unchanged, the §7 confidence/license/`local-only` filters survive every
+  encoding, and all §4 projections round-trip. Stays candidate on two **minor projection findings**
+  — KGP-1 (which confidence a multi-prov merged claim projects to ProbLog) and KGP-2 (§4.1 fixes the
+  annotation *structure* but never names the annotation predicates) — plus the still-missing
+  downstream round-trip fixture.
 - `specs/capability-bus.md` — KCB 0.3.0, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
@@ -82,7 +87,9 @@ vocabulary.
   outstanding, and both stay candidate until it lands.
 - `schemas/` — the machine-readable twin of the prose specs (JSON Schema draft-2020-12):
   `provenance.schema.json` shared `$defs` + grounding-pack / entity-grounding-snapshot /
-  canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.4.0;
+  canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.5.0
+  (grounding-pack = the §4 **JSON** encoding, not a JSON-LD document; no schema models a §4
+  projection — a projection's conformance is the round-trip, not a document shape);
   `media-timeline` (KMI §4) + `finetune-job` (KFT §3), each with one golden-positive fixture.
   Every schema is role-scoped: no title, `$id`, or description names a product, and illustrative
   CURIEs use the KINP §3.4 placeholder namespaces. `canonical-graph-export` is the neutral name the

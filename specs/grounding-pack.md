@@ -236,6 +236,13 @@ Rules:
 - Emitting this projection is **optional** for a conformant producer; a producer that emits it
   MUST emit it per this mapping.
 
+Exercised by [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md)
+(*Re-validation — KGP 0.5.0*): under this mapping the round-trip holds, the §3.3 convergence result
+is byte-unchanged, and the §7 filters survive every encoding. Two **minor findings** are open there
+against this section and §4 and close before KGP re-ratifies — **KGP-1**, which `confidence` a claim
+carrying several `prov` records projects to ProbLog, and **KGP-2**, that the annotations above are
+fixed in *structure* but their predicates are not *named* outside PROV.
+
 ---
 
 ## 5. Dialect & portability tiers
