@@ -39,7 +39,7 @@
         "A scenarios/ file demonstrates the app-exhaust -> KFT-by-reference -> lugh admission flow, replayable per koine's scenario convention, citing the header + finetune-job schema and the egress/license gate.",
         "Verify passes."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
