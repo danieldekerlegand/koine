@@ -62,9 +62,17 @@ vocabulary.
   still candidate because the same scenario also gates KCB 0.3.0's manifest change.
 - `specs/conformance-scenario.md` — KCS 0.2.0, **ratified**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
-- `specs/fine-tuning.md` — KFT 0.3.0, **ratified** (2026-07-23; two pressure passes:
-  `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L, all
-  folded, both clear of unresolved blockers). Fine-tuning is **multi-provider** — a general
+- `specs/fine-tuning.md` — KFT 0.4.0, **candidate** (ratified 2026-07-23 on two pressure passes:
+  `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L; a **third**
+  pass, `scenarios/e2e-producer-exhaust-finetune.md`, then pressure-tested a *producing application's*
+  training exhaust arriving via ADR-0008 and found the §4 **intake** incomplete — FT-M `dataset.records[]`
+  for a training-record JSONL as a KMI asset (`application/vnd.koine.dataset+jsonl`), FT-N `egress` on
+  the `dataset-jsonl-header` (the gate MUST NOT infer it from the trust tier), FT-O one header per
+  record file, FT-P `recordCount` so FT-E's before-you-fetch estimate survives, FT-Q doc cleanup. The
+  0.4.0 fold is strictly **additive** — 0.3.0 manifests/headers stay valid and the gate's behavior is
+  unchanged — but it touches a ratified normative surface, so status returns to candidate pending
+  owner re-ratification; that scenario's *Re-validation — KFT 0.4.0* walks it clean.) Fine-tuning is
+  **multi-provider** — a general
   trainer plus specialized providers, routed by the registry — and is a *profile* composing the
   four planes (no fifth plane): the `finetune` KCB capability + job manifest, KGP-egress-gated
   cloud/local placement (§4.2, operationalizes KGP §7.2's "training set" clause),

@@ -29,7 +29,13 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
 - [`canonical-graph-export.schema.json`](canonical-graph-export.schema.json) — a **producer's**
   canonical node/edge graph export (personal trust tier, KGP §7).
 - [`dataset-jsonl-header.schema.json`](dataset-jsonl-header.schema.json) — first record of every
-  training-exhaust JSONL file; carries tier + license + provenance.
+  training-record JSONL file; carries tier + license + **egress** + **recordCount** + provenance. The
+  file itself is a KMI asset (media type `application/vnd.koine.dataset+jsonl`,
+  [`../registry/media-types.tsv`](../registry/media-types.tsv)) referenced from a job's
+  `dataset.records[]`, and this header is copied inline into the manifest so the KFT §4.2 egress gate
+  and §7 spend estimate can run **before** any fetch (KFT 0.4.0, FT-M…FT-P). Every axis on it is a
+  *file-level aggregate* — most-restrictive egress, union license, row count — so a producer whose
+  rows differ in class splits the file instead of widening the header.
 - [`media-timeline.schema.json`](media-timeline.schema.json) — KMI's canonical timeline
   ([`../specs/media-interchange.md`](../specs/media-interchange.md) §4, KMI 0.3.0). Not a timeline
   model: KMI **adopts** OpenTimelineIO
@@ -43,9 +49,12 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
   that live *outside* the timeline and are deliberately out of scope here. `$ref`s
   `provenance.schema.json#/$defs/contractVersion` (as `kmi_version`).
 - [`finetune-job.schema.json`](finetune-job.schema.json) — KFT fine-tuning job manifest
-  (the `invoke` payload; [`../specs/fine-tuning.md`](../specs/fine-tuning.md) §3, KFT 0.3.0). `$ref`s
+  (the `invoke` payload; [`../specs/fine-tuning.md`](../specs/fine-tuning.md) §3, KFT 0.4.0). `$ref`s
   `provenance.schema.json#/$defs/contractVersion` (as `kft_version`) and `dataset-jsonl-header.schema.json`
-  (as `dataset.header`) — both resolve within this directory once koine:10 has landed them.
+  (as `dataset.header`) — both resolve within this directory. Training data is referenced under three
+  slots — `knowledge[]` (KGP packs), `media[]` (image/video/audio assets) and `records[]` (training-record
+  JSONL assets, FT-M) — and `dataset.header` is an object **or** an array, positionally one per
+  `records[]` entry (FT-O).
 - [`participant-self-description.schema.json`](participant-self-description.schema.json) — the **source**
   self-description a participant keeps in its **own** repository
   ([`../decisions/ADR-0007-self-describing-participant.md`](../decisions/ADR-0007-self-describing-participant.md)
@@ -141,7 +150,10 @@ This includes `finetune-job.schema.json`: its validators **and** its conformance
 not in koine. What koine keeps is exactly the contract plus one `fixtures/finetune-job.json` golden
 positive — draft-2020-12 structural validation only checks the manifest's *shape*. The finetuning-specific
 **semantic** admission rules the schema can't express — `modality × method` compatibility
-([`../specs/fine-tuning.md`](../specs/fine-tuning.md) §3.1, FT-F) and egress/license aggregation over
-`{data ∪ base}` before pinning compute (§4.2, FT-B) — are the downstream validator's job, and their
-required behavior is pinned by the pressure-test scenarios
-([`../scenarios/e2e-finetune.md`](../scenarios/e2e-finetune.md) §"Schema conformance").
+([`../specs/fine-tuning.md`](../specs/fine-tuning.md) §3.1, FT-F), egress/license aggregation over
+`{data ∪ base}` before pinning compute (§4.2, FT-B), and the inline-header checks an inline copy
+invites (header-vs-file disagreement, positional mismatch, `recordCount` overrun — §4.1/§7, FT-N…FT-P)
+— are the downstream validator's job, and their required behavior is pinned by the pressure-test
+scenarios ([`../scenarios/e2e-finetune.md`](../scenarios/e2e-finetune.md) and
+[`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md),
+each §"Schema conformance").

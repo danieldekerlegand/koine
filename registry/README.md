@@ -82,9 +82,13 @@ in-place edit — the same discipline as an immutable relation signature; KGP §
   (KFT §2), and the job manifest (KFT §3.1). Additive: a new modality adds a row, never a new plane.
 - [`media-types.tsv`](media-types.tsv) — the weight/export `media_type`s (KFT §5.3):
   `application/vnd.koine.model+safetensors` (weights) and the `+gguf` / `+onnx` / `+coreml` / `+tflite`
-  exports. Each row names the KMI lineage relation ([`relations/media.tsv`](relations/media.tsv))
-  its artifacts link with — weights `media:derived_from` their base, quantized/converted exports
-  `media:variant_of` the merged fp16 weights.
+  exports, plus `application/vnd.koine.dataset+jsonl` — a **training-record JSONL** (a
+  `dataset-jsonl-header` first line, then one training row per line), which is how a producer's
+  training exhaust is referenced from a finetune job's `dataset.records[]` (KFT §4.1, FT-M): the file
+  is an ordinary KMI asset, so it needs a registered media type rather than a new plane. Each row
+  names the KMI lineage relation ([`relations/media.tsv`](relations/media.tsv)) its artifacts link
+  with — weights `media:derived_from` their base, quantized/converted exports `media:variant_of` the
+  merged fp16 weights, a record file `media:derived_from` what the emitting run produced.
 
 **Model-lineage relation usage.** Model *entities* link with core lifecycle/lineage relations
 ([`relations.tsv`](relations.tsv)): a finetuned model `based_on` / `derived_from` its base

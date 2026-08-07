@@ -214,7 +214,14 @@ and the scenarios an adapter proves itself against.
   `skill_export_*` family is decision 3 in its earliest, spec-local form. Unchanged.
 - **KFT** §4.1's *references, not payloads* rule and §4.2's egress gate are what make "training
   exhaust" emittable at all: an adapter publishes pack/asset **references** plus a
-  `dataset-jsonl-header`, and admission happens in the commons under the gate. Unchanged.
+  `dataset-jsonl-header`, and admission happens in the commons under the gate.
+  **Amended (2026-08-06):** pressure-testing that path
+  ([`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md))
+  found the §4 *intake* incomplete for a producer-emitted corpus — no reference slot for a
+  training-record file, and no egress class or cardinality on its header — so KFT **0.4.0** folded
+  FT-M…FT-Q (`dataset.records[]`; `egress` + `recordCount` on the header; one header per file). The
+  decision above is unaffected: the adapter still emits the same four surfaces, by reference, and the
+  gate's behavior is unchanged — 0.4.0 supplies the fields the gate needs to *read*.
 - **KCB** §2's AgentCard extension is the adapter's control-plane surface; ADR-0007 already fixes
   where it is served. Unchanged.
 - **[`../registry/`](../registry/)** keeps holding shared vocabulary only — `same_as`, `based_on`,
