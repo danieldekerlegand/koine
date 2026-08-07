@@ -1,0 +1,46 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/40-fabric-producer-contracts",
+  "description": "Argos hand-rolled ecosystem-connectivity code (canonical-graph export, training-dataset export, entity grounding, read-time projections) that koine ALREADY specifies as ratified contracts: KGP knowledge (ADR-0006, RDF/PROV/JSON-LD), KFT fine-tuning (fine-tuning.md), KINP identity (identity.md), grounding-pack (grounding-pack.md), OTIO canonical timeline (ADR-0005), and the shared relation registry (registry/relations.tsv). The ecosystem decision (reached with the cuneiform owner): rather than port per-app bridge code, apps become fabric PRODUCERS by emitting koine contracts through a THIN, cuneiform-rendered adapter; agora implements the generic data-plane bridges; per-app projection/bridge modules are superseded. This tasklist RATIFIES that decision and confirms the contracts cover the 'app -> fabric producer' path so agora (40) and the cuneiform exporter (126) can build against them. No new protocol. Reference behavior: the Argos repo at tag `fabric-reference` (~/Development/argos: bridge/, core/projections.py).",
+  "dependsOn": [],
+  "touches": ["decisions", "registry", "schemas", "scenarios"],
+  "iters": 6,
+  "warmup": [
+    "sed -n '1,60p' specs/fine-tuning.md",
+    "sed -n '1,40p' specs/identity.md",
+    "cat registry/relations.tsv; ls schemas/",
+    "git -C ~/Development/argos show fabric-reference:src/filmstudio/bridge/dataset_export.py | head -60",
+    "git -C ~/Development/argos show fabric-reference:src/filmstudio/bridge/grounding.py | head -40"
+  ],
+  "verify": [
+    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas parse ok')\"",
+    "grep -q 'same_as' registry/relations.tsv && grep -q 'derived_from' registry/relations.tsv"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "ADR: apps are fabric producers via a thin adapter; grounding reuses same_as (not mentions)",
+      "description": "Record the ecosystem-architecture decision as a koine ADR (decisions/): a THIN adapter (cuneiform-rendered, or hand-written for any A2A/MCP app) makes an app a fabric PRODUCER by emitting koine contracts — KGP knowledge claims (ADR-0006 + the relation registry), KMI media refs, a KFT training-exhaust dataset (by reference), and a KCB capability manifest — while agora implements the generic data-plane bridges. Per-app bridge/projection code (Argos bridge/, core/projections.py) is SUPERSEDED, consistent with media-interchange.md withdrawing the skill_export_* projection family and identity.md making entity-merge a query-time view. DECISION (locked by the owner): entity grounding reuses `same_as` + the query-time merge VIEW (identity.md §4); NO new `mentions` relation is added — a mention->canonical assertion is a source-local-id `same_as`, merged at query time. The ADR states this rationale.",
+      "acceptanceCriteria": [
+        "A new decisions/ADR records the fabric-producer-adapter pattern (app emits KGP/KMI/KFT/KCB; agora bridges the data planes; per-app projection code superseded) and the same_as-not-mentions grounding decision, cross-referencing ADR-0006, identity.md §4, fine-tuning.md §4, grounding-pack.md, and media-interchange.md's withdrawn projection family.",
+        "registry/relations.tsv is confirmed to carry same_as (grounding) + derived_from (lineage) with the needed semantics — no new relation added; a doc-only annotation is fine. ECOSYSTEM.md (or README) gains a short 'fabric producer' note pointing at the ADR.",
+        "Verify passes (schemas parse; same_as + derived_from present)."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Confirm (or port) the KFT training-exhaust dataset contract via a scenario",
+      "description": "Confirm the KFT training-DATASET contract (fine-tuning.md §4: training data BY REFERENCE — KGP/KMI refs — plus the dataset-jsonl-header schema and the egress/license/trust gate) supports an app emitting its 'training exhaust' (a run's accepted records as training examples). If the dataset-jsonl-header (and/or finetune-job.schema.json) is not yet in schemas/, port it from fine-tuning.md's normative text. Then add a scenarios/ pressure-test walking: an app marks accepted records -> emits a by-reference KFT dataset with a dataset-jsonl-header -> agora's KFT bridge admits it under the egress/license gate -> a lugh finetune job consumes it. If the header lacks a field the exhaust needs (e.g. per-record source/provenance ref), add it minimally and note it in fine-tuning.md; else confirm reuse verbatim. Reference: Argos bridge/dataset_export.py at tag fabric-reference for the record shape.",
+      "acceptanceCriteria": [
+        "The dataset-jsonl-header + finetune-job schemas exist in schemas/ (ported from fine-tuning.md if absent) and are confirmed sufficient for the training-exhaust use case — by-reference only, never inlined training data (§4).",
+        "A scenarios/ file demonstrates the app-exhaust -> KFT-by-reference -> lugh admission flow, replayable per koine's scenario convention, citing the header + finetune-job schema and the egress/license gate.",
+        "Verify passes."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
