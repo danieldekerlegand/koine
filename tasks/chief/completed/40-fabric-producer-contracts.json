@@ -4,7 +4,12 @@
   "branchName": "chief/40-fabric-producer-contracts",
   "description": "Argos hand-rolled ecosystem-connectivity code (canonical-graph export, training-dataset export, entity grounding, read-time projections) that koine ALREADY specifies as ratified contracts: KGP knowledge (ADR-0006, RDF/PROV/JSON-LD), KFT fine-tuning (fine-tuning.md), KINP identity (identity.md), grounding-pack (grounding-pack.md), OTIO canonical timeline (ADR-0005), and the shared relation registry (registry/relations.tsv). The ecosystem decision (reached with the cuneiform owner): rather than port per-app bridge code, apps become fabric PRODUCERS by emitting koine contracts through a THIN, cuneiform-rendered adapter; agora implements the generic data-plane bridges; per-app projection/bridge modules are superseded. This tasklist RATIFIES that decision and confirms the contracts cover the 'app -> fabric producer' path so agora (40) and the cuneiform exporter (126) can build against them. No new protocol. Reference behavior: the Argos repo at tag `fabric-reference` (~/Development/argos: bridge/, core/projections.py).",
   "dependsOn": [],
-  "touches": ["decisions", "registry", "schemas", "scenarios"],
+  "touches": [
+    "decisions",
+    "registry",
+    "schemas",
+    "scenarios"
+  ],
   "iters": 6,
   "warmup": [
     "sed -n '1,60p' specs/fine-tuning.md",
@@ -42,5 +47,6 @@
       "passes": true,
       "notes": ""
     }
-  ]
+  ],
+  "mergedToMain": "9373552"
 }
