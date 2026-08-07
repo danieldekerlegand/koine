@@ -63,6 +63,19 @@ You adopt Koine in your *own* repository — there is nothing to install from he
 4. **Vendor with a drift gate.** If you copy a file from here, add a test that fails when your copy diverges — and propose changes as edits *here*, not in your copy.
 5. **Publish your own self-description.** Your namespace, capability manifest, egress policy, and vocabulary mappings live in *your* repo and are served from *your* endpoints — there is no central config store. The [self-describing participant guide](docs/self-describing-participant.md) is the checklist.
 
+### Joining as a fabric producer
+
+If you already have an application with its own store, you do **not** build a bridge for each system
+you want to reach. You write one **thin adapter** that translates your records into the shapes this
+repo already specifies — knowledge as [KGP](specs/grounding-pack.md) claims over the shared
+[relations](registry/), media as [KMI](specs/media-interchange.md) asset references and lineage,
+training data as a [KFT](specs/fine-tuning.md) dataset *by reference*, and your capability manifest
+on your [KCB](specs/capability-bus.md) AgentCard. Everything generic downstream of that — admission,
+license and egress filtering, entity merge, the RDF/PROV/JSON-LD projections — is built once in the
+runtime, not once per application. Grounding a record to a canonical entity is a `same_as` link, not
+a new relation. [ADR-0008](decisions/ADR-0008-fabric-producer-adapter.md) records the pattern and
+why per-application bridge and projection code is superseded by it.
+
 ## Learn by example
 
 The best way to understand the protocols is to watch one work end to end:
