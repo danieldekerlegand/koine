@@ -4,3 +4,4 @@ application/vnd.koine.model+gguf	export	media:variant_of	GGUF quantized export (
 application/vnd.koine.model+onnx	export	media:variant_of	ONNX export — a byte-encoding variant of the merged fp16 weights
 application/vnd.koine.model+coreml	export	media:variant_of	Apple CoreML export — a byte-encoding variant of the merged fp16 weights
 application/vnd.koine.model+tflite	export	media:variant_of	TensorFlow Lite export — a byte-encoding variant of the merged fp16 weights
+application/vnd.koine.dataset+jsonl	dataset	media:derived_from	Training-record JSONL — one training row per line after a dataset-jsonl-header first line (KFT §4.1, dataset.records[]); derived_from the assets/records the emitting run produced

@@ -45,6 +45,24 @@ There is no `egress` column: a core or domain relation is `exportable` (the KGP 
 egress is a property of *what a participant's own predicate carries*, so it is declared per entry
 on that deployment's own bridge mapping (see below), not on the shared vocabulary.
 
+### Grounding and lineage use the relations that are already here
+
+A producer's adapter (see [ADR-0008](../decisions/ADR-0008-fabric-producer-adapter.md)) needs two
+things from this file when it publishes records that point at canonical entities, and
+[`relations.tsv`](relations.tsv) already carries both:
+
+| Need | Relation | Semantics it must have — and does |
+|---|---|---|
+| **Grounding** — "this local record refers to that canonical entity" | `same_as` (`based_on` across a world boundary) | symmetric, `grounding-only`, **licenses fact transfer**; the merged entity is a view over the `same_as` closure computed at query time, never written back (KINP §4.1–§4.3). `based_on` is the non-transferring half of the same firewall, chosen by the KINP §4.5 rule. |
+| **Lineage** — "this record/artifact was derived from that one" | `derived_from` | asymmetric (`derived\|source`), `grounding-only`, **licenses no fact transfer** — general derivation, distinct from `based_on`'s modeled-on sense and from the `media:` asset-lineage relations. |
+
+**There is no `mentions` relation, and adding one is out of scope** (ADR-0008 decision 5). A mention
+*is* a source-local id (KINP §4.1), so a mention→canonical assertion is exactly a `same_as` between
+two ids, hedged by `confidence` (KINP §4.2) and filterable per KGP §7 — a third grounding predicate
+would sit outside the §4.3 firewall, express nothing `confidence` does not, and permanently fix a
+signature for one pipeline's internal step. Untyped "seen together, no identity claim" is already
+`co_occurs`.
+
 ## Entity-type, modality-enum & media-type registries (KFT)
 
 The fine-tuning profile ([`../specs/fine-tuning.md`](../specs/fine-tuning.md), KFT) contributes three
@@ -64,9 +82,13 @@ in-place edit — the same discipline as an immutable relation signature; KGP §
   (KFT §2), and the job manifest (KFT §3.1). Additive: a new modality adds a row, never a new plane.
 - [`media-types.tsv`](media-types.tsv) — the weight/export `media_type`s (KFT §5.3):
   `application/vnd.koine.model+safetensors` (weights) and the `+gguf` / `+onnx` / `+coreml` / `+tflite`
-  exports. Each row names the KMI lineage relation ([`relations/media.tsv`](relations/media.tsv))
-  its artifacts link with — weights `media:derived_from` their base, quantized/converted exports
-  `media:variant_of` the merged fp16 weights.
+  exports, plus `application/vnd.koine.dataset+jsonl` — a **training-record JSONL** (a
+  `dataset-jsonl-header` first line, then one training row per line), which is how a producer's
+  training exhaust is referenced from a finetune job's `dataset.records[]` (KFT §4.1, FT-M): the file
+  is an ordinary KMI asset, so it needs a registered media type rather than a new plane. Each row
+  names the KMI lineage relation ([`relations/media.tsv`](relations/media.tsv)) its artifacts link
+  with — weights `media:derived_from` their base, quantized/converted exports `media:variant_of` the
+  merged fp16 weights, a record file `media:derived_from` what the emitting run produced.
 
 **Model-lineage relation usage.** Model *entities* link with core lifecycle/lineage relations
 ([`relations.tsv`](relations.tsv)): a finetuned model `based_on` / `derived_from` its base

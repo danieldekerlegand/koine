@@ -1,8 +1,8 @@
 # Koine Fine-Tuning Protocol (KFT)
 
-**Spec version:** 0.3.0
-**Status:** Ratified
-**Last updated:** 2026-07-23
+**Spec version:** 0.4.0
+**Status:** Candidate
+**Last updated:** 2026-08-06
 **Applies to:** `finetune` capability providers (general and specialized), the control-plane host
 (registry, grants, orgs), training-data producers, and finetuned-model consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for model/entity ids, lineage
@@ -56,7 +56,9 @@ another):
   "inputs": [
     { "plane": "entity",    "types": ["model"], "shape": "base-model" },              // KINP model entity
     { "plane": "knowledge", "dialect": "grounding-only", "shape": "training-set" },   // KGP data …
-    { "plane": "media",     "media_types": ["image/*","video/*","audio/*"], "shape": "training-set" } // … or KMI data (multimodal)
+    { "plane": "media",     "media_types": ["image/*","video/*","audio/*"], "shape": "training-set" }, // … or KMI data (multimodal)
+    { "plane": "media",     "media_types": ["application/vnd.koine.dataset+jsonl"],
+                            "shape": "training-records" }                                             // … plus the §4.1 record files (FT-M)
   ],
   "outputs": [
     { "plane": "entity", "types": ["model"], "shape": "finetuned-model" },            // new KINP model entity
@@ -93,7 +95,8 @@ The `invoke` payload. All data is referenced by KINP/KGP/KMI id — nothing is i
   "dataset": {                                             // data-plane refs (§4), never inline
     "knowledge": ["kgp:pack:sha256-7b1e…"],                // KGP GroundingPack ids
     "media":     ["analyzer:asset:blake3-a1b2…"],          // KMI asset ids (multimodal)
-    "header":    { /* dataset-jsonl-header (koine/schemas, ported by koine:10) */ }
+    "records":   ["mediastore:asset:blake3-e9d7…"],        // training-record JSONL, as KMI assets (§4.1, FT-M)
+    "header":    [ { /* dataset-jsonl-header — one per records[] entry (§4.1, FT-O) */ } ]
   },
   "hyperparams": { "epochs": 3, "lr": 2e-4, "max_seq_len": 2048,
                    "lora": { "r": 16, "alpha": 32, "dropout": 0.05,
@@ -105,8 +108,10 @@ The `invoke` payload. All data is referenced by KINP/KGP/KMI id — nothing is i
 }
 ```
 
-The machine-readable twin is `koine/schemas/finetune-job.schema.json` (draft-2020-12), landing in
-`koine/schemas/` alongside the artifacts koine:10 ports, and validated **downstream** per
+The machine-readable twin is [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json)
+(draft-2020-12), which sits alongside its `$ref`ed
+[`../schemas/dataset-jsonl-header.schema.json`](../schemas/dataset-jsonl-header.schema.json) and
+[`../schemas/provenance.schema.json`](../schemas/provenance.schema.json), and is validated **downstream** per
 [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) (koine specifies, implementers
 validate) — **not** in koine.
 
@@ -146,21 +151,46 @@ turns those planes' existing axes into fine-tuning admission control.
 
 ### 4.1 References, not payloads
 
-- **Knowledge/text data** is one or more KGP GroundingPacks (`kgp:pack:…`); their `dialect`
-  (KGP §5) and the shared relation registry describe the content. A `dataset-jsonl-header`
-  (the machine-readable header koine:10 ports into `koine/schemas/`) describes the training-record
-  layout and carries the license + trust tier that travel with the set.
-- **Media data** (multimodal) is one or more KMI assets (`…:asset:…`), fetched lazily via the KCB
-  `fetch:asset` verb + grant (KMI §7, KCB delta G). Augmented/derived training samples are recorded
-  in the KMI asset-lineage graph (`media:variant_of` / `media:derived_from`, KMI §3), so a training
-  corpus is itself a byte-reproducible, lineage-tracked artifact.
+Training data is referenced under **three** slots, one per kind of thing a corpus can be:
+
+- **Knowledge/text data** (`dataset.knowledge[]`) is one or more KGP GroundingPacks (`kgp:pack:…`);
+  their `dialect` (KGP §5) and the shared relation registry describe the content.
+- **Media data** (`dataset.media[]`, multimodal) is one or more KMI assets (`…:asset:…`), fetched
+  lazily via the KCB `fetch:asset` verb + grant (KMI §7, KCB delta G). Augmented/derived training
+  samples are recorded in the KMI asset-lineage graph (`media:variant_of` / `media:derived_from`,
+  KMI §3), so a training corpus is itself a byte-reproducible, lineage-tracked artifact.
+- **Training records (`dataset.records[]`, FT-M)** are the JSONL files holding the training **rows**
+  themselves — a producing application's *training exhaust* (accepted edits, generations, preference
+  pairs, QA labels), and the join surface FT-I puts the per-sample pairing on. Such a file is neither
+  a bundle of KGP entities/assertions/links (KGP §2) nor image/video/audio bytes, so it gets its own
+  slot: it is referenced as a **KMI asset** carrying the media type
+  `application/vnd.koine.dataset+jsonl`
+  ([`../registry/media-types.tsv`](../registry/media-types.tsv)), content-addressed and fetched with
+  the same `fetch:asset` verb and grant as any other asset. Referencing it as an *asset* is what
+  keeps by-reference discipline honest — the rows never enter the manifest.
+
+Every file in `dataset.records[]` opens with a **`dataset-jsonl-header`**
+([`../schemas/dataset-jsonl-header.schema.json`](../schemas/dataset-jsonl-header.schema.json)): the
+first line of the file, describing the training-record layout and carrying the license, trust tier,
+**egress class** and record count that travel with the set.
+
+- **The header rides the manifest too, once per record file (FT-O).** `dataset.header` is that first
+  line, copied inline — an **array**, positionally one per `dataset.records[]` entry (a single header
+  object is the degenerate one-file form). It exists so the provider can run the §4.2 egress gate and
+  the §7 spend estimate **before** fetching a byte. A provider that later fetches the file **MUST**
+  verify the inline header against the file's actual first record and **reject the job with a report**
+  on disagreement — the inline copy is a claim, the file is the truth.
+- **The header's axes are file-level aggregates (FT-N/FT-P).** `egress` is the **most restrictive**
+  class over the file's rows and `license` the **union** of theirs; `recordCount` is the number of
+  rows after the header. A producer **MUST NOT** emit a file whose header understates any row —
+  the same producer-filters-at-construction discipline KGP §7.2 applies to a pack. A producer whose
+  rows differ in class splits the file rather than widening the header.
 - **Paired multimodal samples (FT-I).** `dataset.knowledge[]` and `dataset.media[]` name the
   *referenced corpora*, not the training samples. The **per-sample pairing** — which image goes with
   which caption, the basic shape of every image/video-text-to-text (and the caption side of
-  text-to-image) finetune — rides the **`dataset-jsonl-header` training records** (koine:10): a row
-  references both a KMI `asset` id *and* its text. Alignment thus travels with the same records that
-  already carry license + trust tier; the arrays are the fetch/egress manifest, the records are the
-  join.
+  text-to-image) finetune — rides the **`dataset.records[]` training records**: a row references both
+  a KMI `asset` id *and* its text. Alignment thus travels with the same records that already carry
+  license + trust tier; the corpus arrays are the fetch/egress manifest, the records are the join.
 
 ### 4.2 The egress gate (NORMATIVE)
 
@@ -168,10 +198,18 @@ KGP §7.2 already defines `local-only` as knowledge "hard-gated out of … any e
 set**." KFT operationalizes that sentence:
 
 - The **effective egress class** of a finetune run is the *most restrictive* egress class across
-  **all** its training data — every knowledge record (KGP §7.2) and every media asset — **and the
-  base-model entity's own egress class (FT-B).** If any input — data *or* base — is `local-only`, the
-  run's effective egress is `local-only`. (A can't-leave base pins an all-`exportable` corpus to
-  local compute just as a `local-only` record does.)
+  **all** its training data — every knowledge record (KGP §7.2), every media asset, and every
+  `dataset.records[]` file (its header's `egress`, §4.1) — **and the base-model entity's own egress
+  class (FT-B).** If any input — data *or* base — is `local-only`, the run's effective egress is
+  `local-only`. (A can't-leave base pins an all-`exportable` corpus to local compute just as a
+  `local-only` record does.)
+- **The gate reads the header, never the trust tier (FT-N).** For a record file the *only* descriptor
+  available at admission is its `dataset-jsonl-header`, so that header MUST carry the class
+  explicitly. A provider **MUST NOT** infer egress from the `tier` — KGP §7.2 makes the trust tier
+  descriptive and the egress class enforcing, and `personal` data that happens to be `exportable`
+  (or `curated` data that is not) is exactly the case an inference gets wrong. A record file whose
+  header omits `egress` takes KGP §7.2's `exportable` default, which is why understating it (§4.1) is
+  a producer bug, not a permissive choice.
 - A `local-only` run **MUST** execute on local / in-tier compute. The provider **MUST NOT** ship
   the training data, the base weights, or the job to any compute backend that crosses the
   originating trust boundary (a rented/cloud GPU, a managed training API). Only an **all-`exportable`**
@@ -334,6 +372,13 @@ published model would exfiltrate exactly what §4.2 protected).
   variable-size job whose data is `fetch`ed lazily (KMI §7). The provider therefore computes a
   **per-job estimate** at admission — after resolving dataset cardinality — and checks *that* against
   the ceiling; a run is admitted only if the resolved estimate fits, not merely the manifest figure.
+- **Cardinality of a record file comes from its header (FT-P).** For `dataset.knowledge[]` and
+  `dataset.media[]`, cardinality is resolvable from the manifest — the arrays enumerate their members.
+  A single `dataset.records[]` asset (§4.1) may hold ten rows or ten million, so cardinality is *not*
+  recoverable from the reference, and transferring the file to count it would defeat the
+  before-you-fetch estimate this clause exists for. The header's **`recordCount`** carries it, and the
+  provider **MUST** re-check the count when it fetches (§4.1) and **fail the run with a report** if
+  the file exceeds the estimate the ceiling was granted against.
 - **Issuer.** Grants are issued by the control-plane host's workforce governance (KCB §5/§6); the
   host hosts the registry and provisions the training provider as an org.
 - **Signing.** The job manifest (§3) and the resulting model entity's provenance (§5.2) SHOULD be
@@ -452,12 +497,20 @@ configuration, not a dedicated wiring program.
 
 ## Pressure test
 
-**Exercised by two passes** — [`../scenarios/e2e-finetune.md`](../scenarios/e2e-finetune.md) (text,
-found FT-A…FT-H → folded into 0.2.0) and
+**Exercised by three passes** — [`../scenarios/e2e-finetune.md`](../scenarios/e2e-finetune.md) (text,
+found FT-A…FT-H → folded into 0.2.0),
 [`../scenarios/e2e-finetune-multimodal.md`](../scenarios/e2e-finetune-multimodal.md) (fully-multimodal
-+ multi-provider, found FT-I…FT-L → folded into 0.3.0). With both passes clear of unresolved blockers,
-KFT is **Ratified** (2026-07-23) — the four-plane composition holds under both a text and a
-fully-multimodal, multi-provider pass with no redesign required. The stressors exercised:
++ multi-provider, found FT-I…FT-L → folded into 0.3.0), and
+[`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md)
+(a producing application's **training exhaust** entering the fabric under
+[`../decisions/ADR-0008-fabric-producer-adapter.md`](../decisions/ADR-0008-fabric-producer-adapter.md),
+found FT-M…FT-Q → folded into 0.4.0).
+
+The first two passes cleared with no redesign and KFT was **Ratified** on 2026-07-23 — the four-plane
+composition holds under both a text and a fully-multimodal, multi-provider pass. The third pass then
+found the §4 reference slots incomplete for a *producer-emitted* corpus, so 0.4.0's additive fold
+returns the spec to **Candidate** pending owner re-ratification; nothing in the ratified surface was
+withdrawn or changed in meaning. The stressors exercised across the three passes:
 
 - **Egress gate (§4.2):** an authority-run SLM QLoRA over a corpus containing one `local-only`
   record — the run MUST pin to a local accelerator and MUST reject a `single-gpu-a100-80gb` (cloud)
@@ -469,11 +522,32 @@ fully-multimodal, multi-provider pass with no redesign required. The stressors e
   union license class on the model provenance drives a downstream consumer's admit/reject correctly.
 - **Metrics idempotency (§6):** redelivered training-exhaust events converge (content-addressed
   job+step), and a checkpoint ref delivered before its bytes is tolerated (KCB delta L).
+- **A producer's own exhaust (§4.1, third pass):** an application's run records — accepted NL edits,
+  generations, preference pairs, QA labels — offered as a training set through a thin adapter
+  (ADR-0008), verifying that a corpus which is neither KGP claims nor image/video/audio bytes has a
+  reference slot, an admission-time egress class, and a resolvable cardinality *before* any transfer.
 
 ---
 
 ## Changelog
 
+- **0.4.0 — Candidate** (2026-08-06) — Folded third-pass deltas from
+  [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md),
+  which pressure-tests a producing application's **training exhaust** entering the fabric through the
+  thin adapter of [`../decisions/ADR-0008-fabric-producer-adapter.md`](../decisions/ADR-0008-fabric-producer-adapter.md):
+  **FT-M** (a training-record JSONL is neither a KGP pack nor image/video/audio bytes, so §3/§4.1 gain
+  the `dataset.records[]` slot — the file is a KMI asset carrying the newly registered
+  `application/vnd.koine.dataset+jsonl` media type), **FT-N** (the `dataset-jsonl-header` gains the
+  **`egress`** class, without which §4.2's gate is uncomputable for a record file; a provider MUST NOT
+  infer egress from the trust tier — §4.1/§4.2), **FT-O** (`dataset.header` is an array, one per
+  `records[]` entry, and the inline copy is verified against the file on fetch — §4.1), **FT-P** (the
+  header gains **`recordCount`**, since one asset id can hold any number of rows and FT-E's
+  before-you-fetch estimate is otherwise unenforceable — §4.1/§7), **FT-Q** (cleanup: §3/§4.1 cited the
+  header by an internal tasklist id instead of its path, though both schemas have long since landed).
+  Strictly **additive** — every 0.3.0-conformant job manifest and header remains valid, no clause was
+  withdrawn, and the four-plane composition is unchanged. Status returns Ratified → **Candidate** for
+  the new surface, pending owner re-ratification; the third pass's own *Re-validation* section walks
+  the corrected flow clean.
 - **Editorial** (2026-07-31) — Agnostic reframe, part 2: the §3 job manifest, §5 lineage terms, and
   §6 telemetry event use the KINP §3.4 illustrative placeholder namespaces (`orchestrator` /
   `analyzer` / `refkb` / `provider`); §8 provider selection, §9 execution runtime, and the §9.1

@@ -27,7 +27,7 @@
         "registry/relations.tsv is confirmed to carry same_as (grounding) + derived_from (lineage) with the needed semantics — no new relation added; a doc-only annotation is fine. ECOSYSTEM.md (or README) gains a short 'fabric producer' note pointing at the ADR.",
         "Verify passes (schemas parse; same_as + derived_from present)."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -39,7 +39,7 @@
         "A scenarios/ file demonstrates the app-exhaust -> KFT-by-reference -> lugh admission flow, replayable per koine's scenario convention, citing the header + finetune-job schema and the egress/license gate.",
         "Verify passes."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
