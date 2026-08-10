@@ -12,11 +12,11 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 | Spec | Protocol | Plane | Version · status |
 |---|---|---|---|
 | [`identity.md`](identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.2.1 · ✅ ratified |
-| [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.4.0 · ✅ ratified |
+| [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.5.0 · 🚧 candidate |
 | [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.0 · 🚧 candidate |
 | [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.3.0 · 🚧 candidate |
 | [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — a replayable script that drives participants over their real connections | 0.2.0 · ✅ ratified |
-| [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.3.0 · ✅ ratified |
+| [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.4.0 · 🚧 candidate |
 
 **KINP is the keystone.** Every other spec references its identifiers, envelopes, worlds, and
 resolution semantics rather than redefining them; KGP, KMI, and KCB each `Depends on:` it in their

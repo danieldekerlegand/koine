@@ -47,11 +47,11 @@ ratified only after passing a concrete pressure test.
 | Specification | In plain terms | Status |
 |---|---|---|
 | [Identity & Namespace](specs/identity.md) (KINP) | How every entity gets a stable, shared name — the keystone the rest build on | ✅ ratified |
-| [Grounding-Pack](specs/grounding-pack.md) (KGP) | How knowledge (facts, relationships, graphs) is exchanged | ✅ ratified |
+| [Grounding-Pack](specs/grounding-pack.md) (KGP) | How knowledge (facts, relationships, graphs) is exchanged | 🚧 candidate |
 | [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | ✅ ratified |
 | [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 🚧 candidate |
 | [Conformance-Scenario](specs/conformance-scenario.md) (KCS) | A test format for proving an implementation is correct | ✅ ratified |
-| [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | ✅ ratified |
+| [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 🚧 candidate |
 
 ## Using Koine: how to conform
 
