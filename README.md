@@ -44,14 +44,20 @@ usually several of these at once.
 Koine is six specifications, grouped by what they carry. Each is versioned independently and
 ratified only after passing a concrete pressure test.
 
-| Specification | In plain terms | Status |
-|---|---|---|
-| [Identity & Namespace](specs/identity.md) (KINP) | How every entity gets a stable, shared name — the keystone the rest build on | ✅ ratified |
-| [Grounding-Pack](specs/grounding-pack.md) (KGP) | How knowledge (facts, relationships, graphs) is exchanged | 🚧 candidate |
-| [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | ✅ ratified |
-| [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 🚧 candidate |
-| [Conformance-Scenario](specs/conformance-scenario.md) (KCS) | A test format for proving an implementation is correct | ✅ ratified |
-| [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 🚧 candidate |
+| Specification | In plain terms | Version | Status |
+|---|---|---|---|
+| [Identity & Namespace](specs/identity.md) (KINP) | How every entity gets a stable, shared name — the keystone the rest build on | 0.2.1 | ✅ ratified |
+| [Grounding-Pack](specs/grounding-pack.md) (KGP) | How knowledge (facts, relationships, graphs) is exchanged | 0.5.0 | 🚧 candidate |
+| [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | 0.3.0 | 🚧 candidate |
+| [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.3.0 | 🚧 candidate |
+| [Conformance-Scenario](specs/conformance-scenario.md) (KCS) | A test format for proving an implementation is correct | 0.2.0 | ✅ ratified |
+| [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 0.4.0 | 🚧 candidate |
+
+Each spec's header is the authority for its current version and status. The path from
+🚧 candidate back to ✅ ratified — which re-validations are outstanding and why — is tracked in
+[`ROADMAP.md`](ROADMAP.md). For the shape-level map of the whole fabric these specs describe
+(the topology principles, the protocol planes, and the informative pointer to known
+implementations), see [`ECOSYSTEM.md`](ECOSYSTEM.md).
 
 ## Using Koine: how to conform
 
@@ -105,10 +111,13 @@ positioning — the gaps it fills and exactly what it builds on — is in
 | [`specs/`](specs/) | The six protocol specifications — the authoritative contracts. |
 | [`registry/`](registry/) | Shared vocabularies: relations, entity kinds, media kinds, enums. |
 | [`schemas/`](schemas/) | Machine-readable twin of the specs (JSON Schema). |
-| [`policy/`](policy/) | License-class and trust-tier policy. |
+| [`policy/`](policy/) | License-class and trust-tier policy — the two closed JSON vocabularies behind every record's `license` and `tier` fields, which consumers load to decide what a record is allowed to do. |
 | [`scenarios/`](scenarios/) | End-to-end pressure tests that gate ratification. |
 | [`decisions/`](decisions/) | Architecture Decision Records — the "why" behind the design. |
 | [`docs/`](docs/) | Guides and positioning — the walkthrough, the adopter checklist, how Koine relates to existing standards. |
+| `tasks/` | The repo's own work queue — machine-readable tasklists that drive spec/scenario work; process metadata, not part of the contracts. |
+| [`ROADMAP.md`](ROADMAP.md) | Where each spec stands and the path from candidate to ratified. |
+| [`ECOSYSTEM.md`](ECOSYSTEM.md) | The living, shape-level topology of the fabric (informative). |
 
 ## Scope: shape, not instance
 
