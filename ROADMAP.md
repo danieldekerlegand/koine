@@ -48,7 +48,10 @@ koine holds contract **shape**, never a deployment instance.
   relations + entity/media kinds + enums; signatures immutable once published), `policy/`
   (license-class + trust-tier), `scenarios/` (six end-to-end pressure tests + the KCS stress
   test), `decisions/` (five agnostic ADRs).
-- **Chief program:** all 4 tasklists (`10`–`40`) merged; **nothing pending**.
+- **Chief program:** 4/4 built-program tasklists (`10`–`40`) merged; **4 koine-owned forward
+  tasklists authored** (`tasks/chief/*.json`, `passes:false`, unrun) — pending a run, not merged;
+  plus **17 parked markers** — proposal-only Phase-F stems and cross-repo runtime built downstream
+  per ADR-0001, neither run under koine.
 - **Note on drift:** `specs/README.md` and the root `README.md` still list KGP and KFT as
   *ratified* at older versions (KGP 0.4.0, KFT 0.3.0). The authoritative status is each spec's
   own header, reflected below: both are now in **candidate** at higher versions pending
@@ -227,7 +230,7 @@ Smaller open threads noted across the specs/registry, not big enough to anchor a
 
 ## Chief Tasklist Status
 
-- **Chief:** 4/4 tasklists merged (`10`–`40`); **0 pending**. Records in [`tasks/chief/completed/`](tasks/chief/completed/), each carrying a `mergedToMain` commit.
+- **Chief:** 4/4 built-program tasklists merged (`10`–`40`); **4 koine-owned forward tasklists authored** (`tasks/chief/*.json`, `passes:false`, unrun) — pending a run, not merged; plus **17 parked markers** — proposal-only Phase-F stems and cross-repo runtime built downstream per ADR-0001, neither run under koine. Records in [`tasks/chief/completed/`](tasks/chief/completed/), each carrying a `mergedToMain` commit.
   - `10-kmi-adopt-otio` → ADR-0005 · `20-kgp-standards-alignment` → ADR-0006 · `30-self-describing-participant` → ADR-0007 · `40-fabric-producer-contracts` → ADR-0008.
 - **21 proposed tasklists** (`chief/50`–`chief/70`) back Phase 1's doc-sync and the planned Phases F1–F6 above — **all now authored** as `tasks/chief/*.json` (`passes:false`, unrun), numbered above the existing `10`–`40` band so they cannot collide. Eleven are koine-owned spec/ADR/scenario stems; the other ten are **cross-repo** (agora / lugh / a consumer) and sit here only as *parked* markers — runtime work built downstream per ADR-0001, moved to the sibling repo when actionable, never in koine.
 
