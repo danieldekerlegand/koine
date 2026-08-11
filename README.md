@@ -128,4 +128,4 @@ participant needs only what's in this repository.
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+Apache-2.0 — see [`LICENSE`](LICENSE).
