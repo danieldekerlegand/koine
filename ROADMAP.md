@@ -6,7 +6,7 @@
 > *any two conformant AI systems interoperate on identity, knowledge, media, and capability
 > without a single point-to-point bridge.*
 
-**Status:** Contract layer complete — 2 of 6 specs ratified (KINP, KCS), 4 in candidate re-validation (KGP, KMI, KCB, KFT) · maintenance + ratification cadence, with a planned "second act" (Phases F1–F6 below) · **Last updated:** 2026-08-10
+**Status:** Contract layer complete — 2 of 6 specs ratified (KINP, KCS), 4 in candidate re-validation (KGP, KMI, KCB, KFT) · maintenance + ratification cadence, with a planned "second act" (Phases F1–F6 below) · **Last updated:** 2026-08-11
 
 This is the single canonical roadmap for koine. koine has no prior ROADMAP; this file
 synthesizes the contract program from the spec headers, the ADRs, the pressure-test scenarios,
@@ -48,7 +48,7 @@ koine holds contract **shape**, never a deployment instance.
   relations + entity/media kinds + enums; signatures immutable once published), `policy/`
   (license-class + trust-tier), `scenarios/` (six end-to-end pressure tests + the KCS stress
   test), `decisions/` (five agnostic ADRs).
-- **Chief program:** 4/4 built-program tasklists (`10`–`40`) merged; **4 koine-owned forward
+- **Chief program:** 4/4 built-program tasklists (`10`–`40`) merged; **6 koine-owned forward
   tasklists authored** (`tasks/chief/*.json`, `passes:false`, unrun) — pending a run, not merged;
   plus **17 parked markers** — proposal-only Phase-F stems and cross-repo runtime built downstream
   per ADR-0001, neither run under koine.
@@ -99,15 +99,19 @@ test; two specs are ratified, and four ADR-driven hardening passes landed via Ch
 
 Four specs sit at **candidate** because their *model shape* changed after their last pass, not
 because new contract is needed. These are spec-owner gates — re-run the existing scenario against
-the new shape — except the doc-sync and the one missing fixture (which is Phase F5).
+the new shape — except the doc-sync (`chief/50`), the two discrete spec edits the tail needs
+(`chief/71` KFT dep re-pin, `chief/72` KGP findings closure), and the one missing fixture (which
+is Phase F5).
 
 | Status | Milestone | Tasklist |
 |---|---|---|
 | ⬜ | **Re-ratify KCB 0.3.0** — the §2 manifest is now a named A2A **AgentCard extension** (`capabilities.extensions[]`, `https://koine.dev/kcb/manifest/0.3`); re-run the media-transform scenario against the extension shape. The single outstanding gate (KCB §7 pressure-test note) | re-run `scenarios/e2e-media-transform.md` · — |
 | 🚧 | **Re-ratify KMI 0.3.0** — OTIO half already re-validated clean; blocked only because the same scenario also gates KCB's manifest change (media-interchange.md pressure-test §) | rides with KCB re-run · — |
-| 🚧 | **Re-ratify KGP 0.5.0** — close projection findings **KGP-1** (which confidence a multi-provenance merged claim projects to ProbLog) and **KGP-2** (name the §4.1 annotation predicates); the missing round-trip fixture is Phase F5 | `scenarios/e2e-worlds-to-fabric.md` *(Re-validation — KGP 0.5.0)* · — |
-| 🚧 | **Re-ratify KFT 0.4.0** — owner re-ratification of the strictly-additive FT-M…FT-Q intake fold (already walked clean; fine-tuning.md pressure-test §) | `scenarios/e2e-producer-exhaust-finetune.md` *(Re-validation — KFT 0.4.0)* · — |
-| ⬜ | **Doc-sync the index tables** — bring `specs/README.md` + root `README.md` status columns in line with the spec headers (KGP 0.5.0, KFT 0.4.0, KMI/KCB 0.3.0 all candidate) — the only discrete koine edit in this phase · S | `chief/50-doc-sync-status-tables` *(proposed, koine)* |
+| 🚧 | **Re-ratify KGP 0.5.0** — close projection findings **KGP-1** (which confidence a multi-provenance merged claim projects to ProbLog) and **KGP-2** (name the §4.1 annotation predicates); the normative §4/§4.1 closure edits are `chief/72` (below); the missing round-trip fixture is Phase F5 | `scenarios/e2e-worlds-to-fabric.md` *(Re-validation — KGP 0.5.0)* · — |
+| 🚧 | **Re-ratify KFT 0.4.0** — owner re-ratification of the strictly-additive FT-M…FT-Q intake fold (already walked clean; fine-tuning.md pressure-test §); the header's stale plane-version pins are a named precondition, closed by `chief/71` (below) | `scenarios/e2e-producer-exhaust-finetune.md` *(Re-validation — KFT 0.4.0)* · — |
+| ⬜ | **Doc-sync the index tables** — bring `specs/README.md` + root `README.md` status columns in line with the spec headers (KGP 0.5.0, KFT 0.4.0, KMI/KCB 0.3.0 all candidate). *Its ECOSYSTEM.md story context is already resolved* — the file exists since `2e228c6` (see Loose wishlist ✅), so `50`'s remaining scope is the index tables + link integrity · S | `chief/50-doc-sync-status-tables` *(proposed, koine)* |
+| ⬜ | **KFT dependency re-pin** — re-pin or explicitly justify KFT §1/header's plane-version pins (KGP 0.4.0 / KMI 0.2.0 / KCB 0.2.0 — the last-ratified versions — vs current 0.5.0 / 0.3.0 / 0.3.0 candidates) as part of the 0.4.0 re-ratification; reconcile the in-body cross-plane citations (esp. §2's KCB manifest shape) · S | `chief/71-kft-dep-repin` *(proposed, koine)* |
+| ⬜ | **KGP findings closure** — the normative §4/§4.1 spec edits closing KGP-1 (one ProbLog fact per admitted prov record; aggregation is consumer policy) and KGP-2 (name the annotation predicates: a koine-owned term namespace, reusing external terms where they exist) + the §4.1 reference to the downstream round-trip fixture — the spec-edit work `chief/50` is barred from · S | `chief/72-kgp-findings-closure` *(proposed, koine)* |
 
 *Depends on:* nothing external; all are re-runs of existing `scenarios/`. KMI re-ratifies the moment KCB's re-run passes.
 
@@ -123,6 +127,7 @@ build programs are Phases F3–F5 below. Real conformance results feed back into
 | 🚧 | **Fabric producers** — worlds / knowledge / media / audio join as producers (KINP + KGP + KMI + KCB, KFT by reference) | insimul · pinakes · argos · formant |
 | 🚧 | **Memory substrate** — joins as a KCB provider (KINP + KCB) | tessera |
 | 🚧 | **Fine-tuning providers** — general + specialized (local-only) trainers, registry-routed (KFT) | agora (general) · lugh (specialist) |
+| ⬜ | **D: conformance-results intake** — the koine-side half of "real conformance results feed back into the ratification gates" is undefined and needs a decision, not code: **where downstream results land** (proposed: a per-scenario *Downstream results* section in the relevant `scenarios/*.md`, recording run date, participants-by-role, and pass/fail per assertion — instance-free, role-scoped) and **which gate consumes them** (proposed: the Phase 1 spec-owner re-ratification rows, which MAY cite a recorded downstream pass as evidence alongside the hand-walked re-validation, and MUST reopen a finding a downstream failure contradicts). Until decided, the feedback loop has a defined downstream half (agora's console emits KCS reports) and an undefined koine half | — |
 
 ### Phase F1 — Cross-spec federation — ⬜ planned (scale: L)
 
@@ -230,13 +235,15 @@ Smaller open threads noted across the specs/registry, not big enough to anchor a
 
 ## Chief Tasklist Status
 
-- **Chief:** 4/4 built-program tasklists merged (`10`–`40`); **4 koine-owned forward tasklists authored** (`tasks/chief/*.json`, `passes:false`, unrun) — pending a run, not merged; plus **17 parked markers** — proposal-only Phase-F stems and cross-repo runtime built downstream per ADR-0001, neither run under koine. Records in [`tasks/chief/completed/`](tasks/chief/completed/), each carrying a `mergedToMain` commit.
+- **Chief:** 4/4 built-program tasklists merged (`10`–`40`); **6 koine-owned forward tasklists authored** (`tasks/chief/*.json`, `passes:false`, unrun) — pending a run, not merged; plus **17 parked markers** — proposal-only Phase-F stems and cross-repo runtime built downstream per ADR-0001, neither run under koine. Records in [`tasks/chief/completed/`](tasks/chief/completed/), each carrying a `mergedToMain` commit.
   - `10-kmi-adopt-otio` → ADR-0005 · `20-kgp-standards-alignment` → ADR-0006 · `30-self-describing-participant` → ADR-0007 · `40-fabric-producer-contracts` → ADR-0008.
-- **21 proposed tasklists** (`chief/50`–`chief/70`) back Phase 1's doc-sync and the planned Phases F1–F6 above — **all now authored** as `tasks/chief/*.json` (`passes:false`, unrun), numbered above the existing `10`–`40` band so they cannot collide. Eleven are koine-owned spec/ADR/scenario stems; the other ten are **cross-repo** (agora / lugh / a consumer) and sit here only as *parked* markers — runtime work built downstream per ADR-0001, moved to the sibling repo when actionable, never in koine.
+- **23 proposed tasklists** (`chief/50`–`chief/72`) back Phase 1's doc-sync + ratification-tail edits and the planned Phases F1–F6 above — **all now authored** as `tasks/chief/*.json` (`passes:false`, unrun), numbered above the existing `10`–`40` band so they cannot collide. Thirteen are koine-owned spec/ADR/scenario stems (including the Phase-1 `71-kft-dep-repin` and `72-kgp-findings-closure`); the other ten are **cross-repo** (agora / lugh / a consumer) and sit here only as *parked* markers — runtime work built downstream per ADR-0001, moved to the sibling repo when actionable, never in koine.
 
 The four candidate **re-ratifications** are spec-owner gates driven by re-running existing
-scenarios, not Chief tasklists; the only new koine-own contract edits are the F1/F2/F6 spec/ADR/
-scenario stems and the Phase-1 doc-sync (`chief/50`). Everything F-banded is a **proposal only**.
+scenarios, not Chief tasklists; the koine-own contract edits are the F1/F2/F6 spec/ADR/scenario
+stems and the Phase-1 stems — the doc-sync (`chief/50`) plus the two ratification-tail spec edits
+(`chief/71-kft-dep-repin`, `chief/72-kgp-findings-closure`). Everything F-banded is a
+**proposal only**.
 
 ---
 
