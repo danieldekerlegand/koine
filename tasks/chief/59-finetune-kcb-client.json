@@ -5,8 +5,8 @@
   "description": "CROSS-REPO — owned and built in AGORA, not koine. Delivers KFT §9.1(c): the finetune KCB client that replaces the stub runner — discover -> invoke -> SUBSCRIBE to the §6 telemetry stream, wiring export (§5.3) + registry (§8) + invoke:finetune grants (§7). Per ADR-0001 the runtime lives downstream; koine holds only the KFT contract it implements. Tracked here as a koine ROADMAP Phase F3 marker ('agora chief/59-finetune-kcb-client'). Its live end-to-end run is blocked until chief/57 (agora general provider) OR chief/58 (lugh specialist) ships a real provider (ROADMAP.md F3 depends-on). PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.",
   "parked": true,
   "dependsOn": [
-    "agora:57-general-finetune-provider",
-    "lugh:58-specialist-finetune-provider"
+    "57-general-finetune-provider",
+    "58-specialist-finetune-provider"
   ],
   "touches": [
     "agora:finetune-client"

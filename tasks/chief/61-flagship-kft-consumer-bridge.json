@@ -5,7 +5,7 @@
   "description": "CROSS-REPO — owned and built in a downstream CONSUMER (a media/design participant such as formant/argos), not koine. Delivers KFT §9.1 follow-up: a flagship consumer realigning its generic 'finetune bridge' onto the real KFT contract, so a producing application's training exhaust flows through the ratified job manifest + egress gate rather than bespoke glue. Per ADR-0001 this is downstream runtime; koine holds only the contract. Tracked here as a koine ROADMAP Phase F3 marker ('consumer chief/61-flagship-kft-consumer-bridge'). PARKED in koine: placeholder; move to the consumer repo's tasks/chief/ to activate.",
   "parked": true,
   "dependsOn": [
-    "agora:59-finetune-kcb-client"
+    "59-finetune-kcb-client"
   ],
   "touches": [
     "consumer:finetune-bridge"

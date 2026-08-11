@@ -5,7 +5,7 @@
   "description": "CROSS-REPO — owned and built in AGORA, not koine. Run the encoded KCS suite (chief/62) over REAL MCP/A2A connections, using delta-N standin fixtures for not-yet-adopted providers (the still-planned media KCB provider). KCS 0.2.0 (ratified, delta N folded) already expresses the standins; the console runtime is downstream per ADR-0001. Tracked here as a koine ROADMAP Phase F4 marker ('agora chief/63-run-kcs-over-live-links'). Depends on Phase 2 adoption (real participants to drive) and the F3 finetune legs. PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.",
   "parked": true,
   "dependsOn": [
-    "agora:62-encode-scenarios-as-kcs"
+    "62-encode-scenarios-as-kcs"
   ],
   "touches": [
     "agora:conformance-console"
