@@ -69,7 +69,7 @@ koine's own (`chief/NN-…`) for a spec/ADR/scenario edit, or a **cross-repo** t
 sibling (agora / lugh / a consumer) for runtime work that is built downstream, never in koine.
 A `—` means the row is a spec-owner gate (re-run an existing scenario) or continuous work with no
 discrete tasklist. Existing tasklists occupy band `10`–`40`; every proposed one is numbered `50`+
-so it cannot collide. **All F-phase rows are proposals only — no `tasks/chief/*.json` is authored.**
+so it cannot collide. **Every F-phase proposal is now authored as a `tasks/chief/*.json` (`passes:false`, unrun)** — the koine-owned rows as live koine spec/ADR/scenario tasklists, the **cross-repo** rows only as *parked* markers whose runtime work is built downstream (agora / lugh / a consumer) per ADR-0001, moving to the sibling repo when actionable and never running under koine's gates.
 
 > **A spec is promoted only after a concrete pressure test fails to break it**; a change to a
 > *ratified* model's shape drops it back to **candidate** and re-enters validation. The per-row
@@ -229,7 +229,7 @@ Smaller open threads noted across the specs/registry, not big enough to anchor a
 
 - **Chief:** 4/4 tasklists merged (`10`–`40`); **0 pending**. Records in [`tasks/chief/completed/`](tasks/chief/completed/), each carrying a `mergedToMain` commit.
   - `10-kmi-adopt-otio` → ADR-0005 · `20-kgp-standards-alignment` → ADR-0006 · `30-self-describing-participant` → ADR-0007 · `40-fabric-producer-contracts` → ADR-0008.
-- **~21 proposed tasklists** (`chief/50`–`chief/70`) back Phase 1's doc-sync and the planned Phases F1–F6 above — **none authored yet** (no new `tasks/chief/*.json`); they are roadmap stubs, numbered above the existing `10`–`40` band so they cannot collide. Several are **cross-repo** (agora / lugh / a consumer) — runtime work built downstream per ADR-0001, not in koine.
+- **21 proposed tasklists** (`chief/50`–`chief/70`) back Phase 1's doc-sync and the planned Phases F1–F6 above — **all now authored** as `tasks/chief/*.json` (`passes:false`, unrun), numbered above the existing `10`–`40` band so they cannot collide. Eleven are koine-owned spec/ADR/scenario stems; the other ten are **cross-repo** (agora / lugh / a consumer) and sit here only as *parked* markers — runtime work built downstream per ADR-0001, moved to the sibling repo when actionable, never in koine.
 
 The four candidate **re-ratifications** are spec-owner gates driven by re-running existing
 scenarios, not Chief tasklists; the only new koine-own contract edits are the F1/F2/F6 spec/ADR/
