@@ -220,7 +220,7 @@ note says "unless a pressure test forces it into the contract"). Grouped by spec
 
 Smaller open threads noted across the specs/registry, not big enough to anchor a phase:
 
-- **Reconcile the dangling `ECOSYSTEM.md` references** — the root `CLAUDE.md` and `specs/fine-tuning.md` §changelog both cite an `ECOSYSTEM.md` as "the living topology," but **no such file exists in koine** (topology is deployment instance data → the private integration repo). Either point those references at the private integration repo, or add a thin, agnostic in-repo index that carries no instance data.
+- ✅ **Reconcile the dangling `ECOSYSTEM.md` references** — resolved 2026-08-11: [`ECOSYSTEM.md`](ECOSYSTEM.md) now exists as the thin, informative, shape-level living topology (planes + status, role map, ADR-0001 topology principles, cross-repo conventions) carrying **no instance data** — the instance topology stays in the private integration repo, per its §7.
 - **Reserved-but-unexercised lifecycle relations** — KINP `retracts` / `supersedes` (delta D, identity.md §4.2) and KFT `retrains` / `supersedes` (registry) are registered but never driven by a scenario.
 - **Perceptual / near-dup asset matching** — scoped *out* of KINP 0.2.0 (delta E) and still unbacked; the `media:perceptual_match` relation has no chosen backend (ties to KMI §9.4).
 - **Registry vocabulary growth** — the `cine:` / `media:` / `soc:` domain families grow by PR (new immutable names), driven by real producer needs.
