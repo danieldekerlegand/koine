@@ -6,7 +6,7 @@
 > *any two conformant AI systems interoperate on identity, knowledge, media, and capability
 > without a single point-to-point bridge.*
 
-**Status:** Contract layer complete — 2 of 6 specs ratified (KINP, KCS), 4 in candidate re-validation (KGP, KMI, KCB, KFT) · maintenance + ratification cadence, with a planned "second act" (Phases F1–F6 below) · **Last updated:** 2026-08-11
+**Status:** Contract layer complete — 2 of 6 specs ratified (KINP, KCS), 4 in candidate re-validation (KGP, KMI, KCB, KFT) · maintenance + ratification cadence, with a planned "second act" (Phases F1–F6 below) and an **in-progress prior-art/standards-hygiene pass (Phase F7)** · **Last updated:** 2026-08-11
 
 This is the single canonical roadmap for koine. koine has no prior ROADMAP; this file
 synthesizes the contract program from the spec headers, the ADRs, the pressure-test scenarios,
@@ -48,14 +48,26 @@ koine holds contract **shape**, never a deployment instance.
   relations + entity/media kinds + enums; signatures immutable once published), `policy/`
   (license-class + trust-tier), `scenarios/` (six end-to-end pressure tests + the KCS stress
   test), `decisions/` (five agnostic ADRs).
-- **Chief program:** 4/4 built-program tasklists (`10`–`40`) merged; **6 koine-owned forward
+- **Chief program:** 4/4 built-program tasklists (`10`–`40`) merged; **13 koine-owned forward
   tasklists authored** (`tasks/chief/*.json`, `passes:false`, unrun) — pending a run, not merged;
   plus **17 parked markers** — proposal-only Phase-F stems and cross-repo runtime built downstream
   per ADR-0001, neither run under koine.
-- **Note on drift:** `specs/README.md` and the root `README.md` still list KGP and KFT as
+- **Note on drift (internal):** `specs/README.md` and the root `README.md` still list KGP and KFT as
   *ratified* at older versions (KGP 0.4.0, KFT 0.3.0). The authoritative status is each spec's
   own header, reflected below: both are now in **candidate** at higher versions pending
   re-ratification. Those two index tables are a small doc-sync tail (see Remaining / Next).
+- **Note on drift (external) — new, 2026-08-11:** until now **no koine spec pinned any external
+  standard version**, and a prior-art sweep found drift already present in three places (the A2A
+  card shape, an MCP method name, and MCP's breaking 2026-07-28 revision). The pin table and the
+  drift-check cadence now live in [`docs/upstream-standards.md`](docs/upstream-standards.md); the
+  normative corrections are Phase F7. Separately, **`https://koine.dev` — the KCB extension URI —
+  is unregistered and therefore squattable** (verified 2026-08-11); migrating it to
+  `w3id.org/koine/…` is the first row of that phase.
+- **Prior art:** [`docs/positioning.md`](docs/positioning.md) now cites and dismisses the six
+  bodies koine had never engaged (nanopublications/Trusty URIs · C2PA · Croissant ·
+  Frictionless/Data Package · Pact/consumer-driven contract testing · DIDs/VCs). The sweep's
+  verdict was **keep the suite** — but it narrowed KMI to a bridge and moved half of KFT's manifest
+  surface to adoption-by-reference (Phase F7).
 
 ---
 
@@ -214,6 +226,37 @@ note says "unless a pressure test forces it into the contract"). Grouped by spec
 
 *Depends on:* a new pressure-test leg for each before it folds — these are intentionally reactive. Source: media-interchange.md §9, conformance-scenario.md §7, fine-tuning.md §11, capability-bus.md §7.3.
 
+### Phase F7 — Prior-art closure, standards pins & governance — 🚧 in progress (scale: M, koine)
+
+The output of the **2026-08 prior-art sweep** (`ADOPT-DECIDE-REGISTER.md` D14 · D15 · D15b · D15c).
+Its headline is that **the suite is KEPT** — four of six specs sit in a real gap and two are
+correctly-scoped profiles — but that koine had **zero written engagement** with six prior-art
+bodies, **no external-standard version pin anywhere**, and **one squattable identifier**. Nothing
+here adds a plane; it closes citations, narrows two claims to what they can defend, and fixes two
+verified defects. The informative half is already landed in
+[`docs/positioning.md`](docs/positioning.md) (prior art cited and dismissed) and
+[`docs/upstream-standards.md`](docs/upstream-standards.md) (the pin table + drift check); the rows
+below are the **normative** half.
+
+| Status | Milestone | Tasklist |
+|---|---|---|
+| ⬜ | ⚠️ **`koine.dev` is UNREGISTERED and is the KCB extension URI** — verified 2026-08-11 (`curl` → could not resolve). Migrate the namespace to **`w3id.org/koine/…`** (a PR against `perma-id/w3id.org`) and specify the dual-accept transition window; the extension URI is a *matching key*, so the change is breaking · S — **schedule first** | `chief/75-w3id-namespace-migration` *(proposed, koine)* |
+| ⬜ | **No spec pins any external standard version**, and drift is already present: KCB's example card uses the A2A **v0.x** top-level `"url"` where **v1.0 uses `supported_interfaces[]`** (`AgentInterface{url, protocol_binding}`); KCB §6 cites `MCP list_tools` where the method is **`tools/list`**; and **MCP's 2026-07-28 revision went stateless** (no `initialize`, no session id, per-request `_meta`) and added a mandatory `server/discover`. Fix all three, make the pin table load-bearing, adopt the drift-check cadence · M | `chief/76-upstream-standards-pins` *(proposed, koine)* |
+| ⬜ | **KGP prior art + ADR-0006 re-founding** — cite nanopublications/**Trusty URIs** (they hash *all four graphs*, so identical triples mint *different* URIs; **KGP hashes the claim alone**, and that inversion is what makes cross-producer merge work) and Frictionless/Data Package; lead ADR-0006 with the decisive argument — **RDFC-1.0 is RDF-1.1-only with no defined behaviour for RDF 1.2 triple terms, and revising it is explicitly out of the RDF/SPARQL WG charter (to 2027)** · M | `chief/73-kgp-prior-art-and-canonicalization` *(proposed, koine)* |
+| ⬜ | **KINP + KCS prior art and novelty** — cite DIDs/VCs and Pact/consumer-driven contract testing; record that **no standard does cross-authority MERGE** (ANS v2 *revokes*, MCP Registry *prevents*, `owl:sameAs` is 15 years into documented failure) and that **Web Bot Auth is not a competitor** (zero `draft-ietf-webbotauth-*` documents; scope is bot→website authn "using existing identifiers"); fix the positioning bug that **KCS is the most defensible spec and the least advertised** (Pact is bilateral + mock-based; A2A's own TCK is 45★) · M | `chief/74-kinp-kcs-prior-art-and-novelty` *(proposed, koine)* |
+| ⬜ | **KMI narrows to a BRIDGE** — **C2PA** already ships a *signed* derivation chain (`c2pa.ingredient` · `parentOf`/`componentOf`/`inputTo`, 159 certified products) and **MovieLabs OMC v2.8** a *richer* vocabulary (Revision/Variant/Derivation/Representation/Alternative), so KMI defines **projections onto both** instead of being a third vocabulary; what stays KMI's is the **analysis→knowledge bridge** + world-scoping. Plus the ADR-0005 caveat: **OTIO is not 1.0** (1.0 milestone due 2026-04-10, ~4 months late) and `target_url` is under-specified enough that **Premiere Beta 26.1 and DaVinci Resolve 20.2 break against each other** (#1985) · L | `chief/77-kmi-lineage-bridge-projections` *(proposed, koine)* |
+| ⬜ | **KFT keeps the gate, adopts the rest** — by reference: **Croissant v1.1** (datasets), **ModelPack/KitOps** (weights; `model.parts[].type` already contemplates LoRA), **HF `base_model`** (lineage), **Kubeflow TrainJob** `initializer.{dataset,model}.storageUri` (structural precedent). Defensible and kept: the **objective × adaptation taxonomy**, **egress-gated placement**, **graded refusal routing**, and **cross-provider job portability** — nothing converts between Axolotl/LLaMA-Factory/torchtune/TRL/OpenAI despite 190k+ combined stars, which makes portability arguably KFT's most valuable deliverable · L | `chief/78-kft-adopt-by-reference` *(proposed, koine)* |
+| ⬜ | **Conformance-gated ratification** — adopt MCP's **SEP-2484**: *a spec cannot reach Final without a matching conformance scenario.* Directly fixes the ratification treadmill (four specs are back at candidate on model-shape changes, and all six scenarios are hand-walked prose). Promotes Phase F4 from "the unbuilt KCS payoff" to the **ratification critical path**, and forces the Phase 2 conformance-results-intake decision · M | `chief/79-conformance-gated-ratification` *(proposed, koine)* |
+
+*Depends on:* `76` depends on `75` (the pin corrections rewrite the same example card the namespace
+move touches). `77` fills the OTIO/C2PA/OMC rows of the pin table and `78` the KFT rows, so both
+share `docs/upstream-standards.md` as a conflict domain with `76`. `78` coordinates with
+`chief/71-kft-dep-repin`, which owns the cross-*plane* pins where `78` owns the cross-*standard*
+ones. `79` changes the lifecycle every other row lands under, so it is cheapest either first or
+last, never mid-flight. **Downstream:** `75` has a cross-repo half — a runtime commons pins the
+same extension URI in at least four places including a byte-for-byte conformance corpus
+(`agora:72-kcb-extension-uri-migration`), built there per ADR-0001, never here.
+
 ### Ongoing — steady-state, not a phase — 🚧 continuous
 
 | Status | Milestone | Tasklist |
@@ -235,9 +278,10 @@ Smaller open threads noted across the specs/registry, not big enough to anchor a
 
 ## Chief Tasklist Status
 
-- **Chief:** 4/4 built-program tasklists merged (`10`–`40`); **6 koine-owned forward tasklists authored** (`tasks/chief/*.json`, `passes:false`, unrun) — pending a run, not merged; plus **17 parked markers** — proposal-only Phase-F stems and cross-repo runtime built downstream per ADR-0001, neither run under koine. Records in [`tasks/chief/completed/`](tasks/chief/completed/), each carrying a `mergedToMain` commit.
+- **Chief:** 4/4 built-program tasklists merged (`10`–`40`); **13 koine-owned forward tasklists authored** (`tasks/chief/*.json`, `passes:false`, unrun) — pending a run, not merged; plus **17 parked markers** — proposal-only Phase-F stems and cross-repo runtime built downstream per ADR-0001, neither run under koine. Records in [`tasks/chief/completed/`](tasks/chief/completed/), each carrying a `mergedToMain` commit.
   - `10-kmi-adopt-otio` → ADR-0005 · `20-kgp-standards-alignment` → ADR-0006 · `30-self-describing-participant` → ADR-0007 · `40-fabric-producer-contracts` → ADR-0008.
-- **23 proposed tasklists** (`chief/50`–`chief/72`) back Phase 1's doc-sync + ratification-tail edits and the planned Phases F1–F6 above — **all now authored** as `tasks/chief/*.json` (`passes:false`, unrun), numbered above the existing `10`–`40` band so they cannot collide. Thirteen are koine-owned spec/ADR/scenario stems (including the Phase-1 `71-kft-dep-repin` and `72-kgp-findings-closure`); the other ten are **cross-repo** (agora / lugh / a consumer) and sit here only as *parked* markers — runtime work built downstream per ADR-0001, moved to the sibling repo when actionable, never in koine.
+- **30 proposed tasklists** (`chief/50`–`chief/79`) back Phase 1's doc-sync + ratification-tail edits, the planned Phases F1–F6, and the Phase F7 prior-art/standards pass above — **all now authored** as `tasks/chief/*.json` (`passes:false`, unrun), numbered above the existing `10`–`40` band so they cannot collide. Twenty are koine-owned spec/ADR/scenario stems (including the Phase-1 `71-kft-dep-repin` and `72-kgp-findings-closure` and the seven Phase-F7 stems `73`–`79`); the other ten are **cross-repo** (agora / lugh / a consumer) and sit here only as *parked* markers — runtime work built downstream per ADR-0001, moved to the sibling repo when actionable, never in koine.
+- **Phase F7 (`73`–`79`) is decided work, not a proposal shelf.** It comes from the 2026-08 prior-art sweep and includes the two **verified defects** — the unregistered `koine.dev` extension URI (`75`) and the total absence of external-standard pins (`76`) — which are the highest-value rows on this roadmap by cost-to-fix. One row of `75` is cross-repo (`agora:72-kcb-extension-uri-migration`).
 
 The four candidate **re-ratifications** are spec-owner gates driven by re-running existing
 scenarios, not Chief tasklists; the koine-own contract edits are the F1/F2/F6 spec/ADR/scenario
@@ -256,7 +300,8 @@ stems and the Phase-1 stems — the doc-sync (`chief/50`) plus the two ratificat
 - [`scenarios/`](scenarios/) — the end-to-end pressure tests that gate ratification.
 
 **Guides & positioning:**
-- [`docs/positioning.md`](docs/positioning.md) — how koine relates to A2A, MCP, and mature domain standards (the governance gaps it fills; what it builds on rather than replaces).
+- [`docs/positioning.md`](docs/positioning.md) — how koine relates to A2A, MCP, and mature domain standards (the governance gaps it fills; what it builds on rather than replaces), and the **prior art it cites and dismisses** — nanopublications/Trusty URIs, C2PA, Croissant, Frictionless, Pact, DIDs/VCs.
+- [`docs/upstream-standards.md`](docs/upstream-standards.md) — the **pin table**: which version or dated revision of each external standard koine was validated against, and the drift-check cadence that keeps it honest.
 - [`docs/self-describing-participant.md`](docs/self-describing-participant.md) — the adopter checklist (namespace, capability manifest, egress policy, vocabulary mappings).
 - [`docs/walkthrough-capability-bus.md`](docs/walkthrough-capability-bus.md) — a KCB advertise → discover → direct-dial walkthrough with real payloads.
 - [`README.md`](README.md) · [`CLAUDE.md`](CLAUDE.md) — the fabric thesis / role vocabulary, and the in-repo working conventions + per-spec current state.

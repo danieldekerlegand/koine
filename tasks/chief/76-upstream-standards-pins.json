@@ -1,0 +1,71 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/76-upstream-standards-pins",
+  "description": "D15 defect 2 — VERIFIED: NO koine spec pins any external standard version, and drift is already present in three concrete places. (1) KCB's example AgentCard uses the A2A v0.x top-level `\"url\"` field; **A2A v1.0 replaced it with `supported_interfaces[]`, each entry an `AgentInterface{url, protocol_binding}`** — so koine's canonical example of the shape it rides inside is a version behind the standard it names. (2) KCB §6 cites `MCP list_tools`; **the MCP method is `tools/list`** — a wrong method name in the clause that maps KCB verbs onto MCP tool-calls. (3) **MCP's 2026-07-28 revision is a BREAKING change** — a stateless core (no `initialize` handshake, no session id, per-request `_meta`) plus a mandatory `server/discover` — and MCP's own conformance suite treats the two wires as non-interchangeable, so any koine clause that assumes a session must say WHICH REVISION it assumes. The remedy has two halves. First, the pin table: docs/upstream-standards.md already exists as the informative table (A2A, MCP, OTIO, C2PA, OMC, PROV, RDF/RDFC, SPDX, the Reconciliation API, Croissant, KitOps/ModelPack, HF base_model, Kubeflow TrainJob) plus the drift-check cadence; this tasklist makes the specs REFERENCE it and fills its ⬜ rows. Second, the rule: every normative reference to an external standard names a version or dated revision — a bare reference is a defect, a pin is a claim about what koine was VALIDATED AGAINST (not that the upstream is frozen), and moving a pin is a spec change under the normal lifecycle. Note the pin table's OTIO row is filled by chief/77 (which owns the ADR-0005 pre-1.0 caveat) — do not duplicate that work here. Lifecycle: KCB is candidate (0.3.0) and this corrects a normative example + a normative method name — version bump + dated changelog, Status stays candidate; KCS 0.2.0 is RATIFIED, so its MCP-revision note must be informative or the change must be split out rather than dropping it back to candidate. Agnostic: bind roles. ROADMAP.md Phase F7.",
+  "parked": false,
+  "dependsOn": [
+    "75-w3id-namespace-migration"
+  ],
+  "iters": 6,
+  "touches": [
+    "specs/capability-bus.md",
+    "specs/conformance-scenario.md",
+    "specs/README.md",
+    "docs/upstream-standards.md"
+  ],
+  "warmup": [
+    "cat docs/upstream-standards.md",
+    "grep -n 'list_tools\\|tools/list\\|MCP' specs/capability-bus.md | head -20",
+    "grep -n '\"url\"\\|supported_interfaces\\|AgentCard\\|A2A' specs/capability-bus.md | head -30",
+    "grep -rn 'initialize\\|session' specs/conformance-scenario.md | head"
+  ],
+  "verify": [
+    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
+    "! grep -q 'list_tools' specs/capability-bus.md",
+    "grep -q 'supported_interfaces' specs/capability-bus.md",
+    "grep -q '2026-07-28' specs/capability-bus.md",
+    "grep -q 'upstream-standards' specs/README.md"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Fix the two verified KCB drifts — A2A v1.0 card shape and the MCP method name",
+      "description": "Correct the two places where koine's text is demonstrably behind the standards it rides on. Both are in KCB, and both are in the clauses that carry the most weight — the canonical example of the manifest's host document, and the verb-to-tool-call mapping.",
+      "acceptanceCriteria": [
+        "specs/capability-bus.md's example AgentCard uses the A2A v1.0 shape: `supported_interfaces[]` with entries of the form `AgentInterface{url, protocol_binding}`, replacing the v0.x top-level `\"url\"` — and the surrounding prose describes the v1.0 shape, not the v0.x one.",
+        "Every occurrence of `list_tools` in specs/capability-bus.md is corrected to `tools/list`, and the §6 mapping prose is re-read for any other method name that does not match the pinned MCP revision.",
+        "The KCB manifest's own shape (the `capabilities.extensions[]` entry, its uri and params) is unchanged by this story — only the HOST card shape and the MCP method names move.",
+        "capability-bus.md bumps its version with a dated changelog entry naming both corrections and the versions they align to; Status stays candidate."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Name the target MCP revision, and say what the 2026-07-28 break means",
+      "description": "MCP's 2026-07-28 revision removed the session model KCB and KCS clauses may implicitly assume. A spec that maps onto MCP without naming a revision is unimplementable against a moving target.",
+      "acceptanceCriteria": [
+        "specs/capability-bus.md pins the MCP revision it maps onto (2026-07-28) and states the properties that revision has which the previous one did not: stateless core — no `initialize` handshake, no session id, per-request `_meta` — plus a mandatory `server/discover`.",
+        "Any KCB clause whose behaviour depends on a session or handshake is either rewritten to the stateless model or explicitly marked as applying to the pre-2026-07-28 wire, with no clause left silently ambiguous.",
+        "specs/conformance-scenario.md gains an INFORMATIVE note that a KCS scenario driving MCP participants must record which MCP revision each participant speaks, because the two wires are not interchangeable — KCS 0.2.0's Status stays ratified and no normative clause or assertion-vocabulary entry changes.",
+        "Both pins point at docs/upstream-standards.md as the single table, rather than restating the version facts in several places."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Make the pin table load-bearing and adopt the drift-check cadence",
+      "description": "Wire docs/upstream-standards.md into the spec lifecycle so pins are maintained rather than written once, and fill in the rows left open at authoring time.",
+      "acceptanceCriteria": [
+        "specs/README.md states the rule normatively for authors: every normative reference to an external standard names a version or dated revision; a bare reference is a defect; moving a pin is a spec change (version bump + changelog + gating-scenario re-run for a normative surface), and it links docs/upstream-standards.md as the table of record.",
+        "The ⬜ rows in docs/upstream-standards.md that this tasklist owns are filled with a concrete version or dated revision — W3C PROV, SPDX license list, the W3C Entity Reconciliation API — or explicitly marked 'deliberately unpinned' with the reason; the OTIO and C2PA/OMC rows are left to chief/77 and the KFT rows to chief/78, and the file says so.",
+        "The drift check is adopted as a stated cadence — at every ratification or re-ratification, and at minimum quarterly — with the review date recorded in the file header even when nothing moved, and with the rule that a difference opens a FINDING rather than a silent prose update.",
+        "Each spec that carries an external reference points at the table rather than duplicating the version, so there is exactly one place a pin can be wrong."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
