@@ -17,6 +17,17 @@ learn every other system's private format. Koine replaces that web of point-to-p
 with a single shared format that everyone reads from and writes to. A new participant learns
 *one* set of contracts, not one per peer.
 
+The concrete case Koine was built for is not one team's convenience. Its first implementers are
+products of **two separate companies** — **Ontolo Labs** (multimedia analysis, insight, and
+manipulation; video-capable small models) and **Overpowered Inc.** (trend-aware game IP,
+agentically produced and tested, with lore held by a neuro-symbolic authoring runtime) — plus
+independent tooling and personal projects. Those participants deliberately do **not** share a
+codebase, a license posture, or a data-containment policy, and their products must still
+interoperate: game QA sends media to a multimedia analyzer; a world authority ships training data
+to a fine-tuning provider. Each of those edges crosses a company boundary. That is why Koine is a
+contract rather than a library, why it is owned by neither side, and why every clause is written
+against a *role* instead of a system.
+
 ## How it works: a shared format, not a hub
 
 Koine is deliberately a **specification only**. It defines a shared namespace and shared data

@@ -53,22 +53,45 @@ Six specs, versioned independently; each spec's own header is authoritative for 
 
 Koine's clauses bind **roles** (producer / consumer / authority / host / provider), never
 products. The table below is the current cast — which sibling repository presently implements
-which role. It is descriptive, changes as the ecosystem evolves, and binds nothing.
+which role, and **which organization owns it**. It is descriptive, changes as the ecosystem
+evolves, and binds nothing.
 
-| Repo | Role(s) in the fabric | What it contributes |
+The owner column is not bookkeeping. The known implementations span **two separate companies**
+plus neutral infrastructure and independent projects, so some edges in §4 are *inter-company*
+integrations between parties that share no codebase, license posture, or containment policy.
+That is the reason the clauses are role-scoped rather than product-scoped, and the reason koine,
+agora, and tessera are owned by neither company.
+
+| Repo | Owner | Role(s) in the fabric | What it contributes |
+|---|---|---|---|
+| **koine** | shared / cross-org | the contracts | This repo — specs, schemas, registry vocabularies, policy, scenarios, ADRs. No runtime code: *"koine specifies, agora implements."* |
+| **agora** | shared / cross-org | the runtime commons (host) | Reference implementations any participant can run or judge itself against: the provider-router (model-backend gateway, a leaf capability), the KCB discovery registry, the KINP resolver, egress-gated KGP knowledge sync, the translation engine, the conformance console, and the *general* KFT trainer. |
+| **tessera** | shared / cross-org | provider (memory substrate) | Pooled-RAM inference-caching fabric under the agentic runtime. Joins as an ordinary KCB provider — discovered and dialed like any peer, never a coordinator. |
+| **lugh** | Ontolo Labs | provider (specialized KFT trainer) | The narrow, local-only `finetune` provider for containment-gated (`synthetic` / `personal`) training data. Trains the video-capable small models that run inside the Argos runtime. Refuses out-of-envelope jobs with a graded code that names the general trainer — a rejection is a routing signal, not a failure. |
+| **argos** | Ontolo Labs | producer / consumer | Any-to-any agentic multimedia: KMI assets and lineage in a content-addressed store, analysis claims into KGP, capabilities on KCB. |
+| **studio-os** | Overpowered Inc. | producer / consumer | The IP factory: trend-aware IP construction evaluated against audience-persona agents, with a governance ledger over the run. Produces the IP the world authority then makes canonical. |
+| **insimul** | Overpowered Inc. | producer / consumer | Hybrid-AI fictional worlds → games; a Prolog core holds canonical world state. Produces world corpora (KGP), consumes routing and training. |
+| **talos** | Overpowered Inc. | tooling / provider | AI game-QA pipeline (build → playtest → capture → analyze → feedback); defines the analysis contract a media participant implements; exposes its conductor as a KCB/MCP surface. |
+| **pinakes** | personal | authority / producer | The canonical knowledge authority — a Wikidata-anchored cultural/linguistic graph, published over KGP/KCB with KINP identity. |
+| **formant** | personal | consumer (provider planned) | Audio-plugin/instrument IDE; routes model calls through the provider-router and fine-tuning through KFT. |
+| **cuneiform** | shared tooling | host / consumer | Company-as-Code agent organizations; the most integrated MCP/A2A consumer — discovers capabilities, routes `finetune` jobs, reads the graded refusal taxonomy. Also the *export* origin of argos and studio-os — provenance, not ownership. |
+| **chief / chief-cloud** | shared tooling | tooling (not fabric) | The autonomous tasklist runner every repo is built with, and its remote control plane. Build harness — not a fabric participant. |
+| **praxis / vita** | personal | standalone (agora-optional) | Consumer products outside the fabric: BYO-key model access with an *optional* route through the provider-router — no ecosystem dependency. |
+
+### Edges that cross an organizational boundary (informative)
+
+Two of the known edges connect participants under different owners. They are ordinary fabric
+traffic — the contracts do not distinguish them — but implementers should treat them as external
+integrations rather than internal composition:
+
+| Edge | Crosses | Plane |
 |---|---|---|
-| **koine** | the contracts | This repo — specs, schemas, registry vocabularies, policy, scenarios, ADRs. No runtime code: *"koine specifies, agora implements."* |
-| **agora** | the runtime commons (host) | Reference implementations any participant can run or judge itself against: the provider-router (model-backend gateway, a leaf capability), the KCB discovery registry, the KINP resolver, egress-gated KGP knowledge sync, the translation engine, the conformance console, and the *general* KFT trainer. |
-| **tessera** | provider (memory substrate) | Pooled-RAM inference-caching fabric under the agentic runtime. Joins as an ordinary KCB provider — discovered and dialed like any peer, never a coordinator. |
-| **lugh** | provider (specialized KFT trainer) | The narrow, local-only `finetune` provider for containment-gated (`synthetic` / `personal`) training data. Refuses out-of-envelope jobs with a graded code that names the general trainer — a rejection is a routing signal, not a failure. |
-| **insimul** | producer / consumer | Hybrid-AI fictional worlds → games; a Prolog core holds canonical world state. Produces world corpora (KGP), consumes routing and training. |
-| **pinakes** | authority / producer | The canonical knowledge authority — a Wikidata-anchored cultural/linguistic graph, published over KGP/KCB with KINP identity. |
-| **argos** | producer / consumer | Any-to-any agentic multimedia: KMI assets and lineage in a content-addressed store, analysis claims into KGP, capabilities on KCB. |
-| **formant** | consumer (provider planned) | Audio-plugin/instrument IDE; routes model calls through the provider-router and fine-tuning through KFT. |
-| **cuneiform** | host / consumer | Company-as-Code agent organizations; the most integrated MCP/A2A consumer — discovers capabilities, routes `finetune` jobs, reads the graded refusal taxonomy. |
-| **chief / chief-cloud** | tooling (not fabric) | The autonomous tasklist runner every repo is built with, and its remote control plane. Build harness — not a fabric participant. |
-| **talos** | tooling / provider | AI game-QA pipeline (build → playtest → capture → analyze → feedback); defines the analysis contract a media participant implements; exposes its conductor as a KCB/MCP surface. |
-| **praxis / vita** | standalone (agora-optional) | Consumer products outside the fabric: BYO-key model access with an *optional* route through the provider-router — no ecosystem dependency. |
+| **talos → argos** (Tier-B/C A/V analysis of playtest captures) | Overpowered Inc. → Ontolo Labs | KCB discovery, then direct MCP/A2A; findings as KGP claims |
+| **insimul → lugh** (world-derived corpora for specialized fine-tuning) | Overpowered Inc. → Ontolo Labs | KFT job, containment-gated by data classification |
+
+A third boundary is upstream rather than lateral: **pinakes** (personal) supplies corpora to both
+companies, so an upstream license term — CC-BY-SA, CC-BY-NC-SA — propagates into two different
+commercial products from one source. KGP's egress gating is where that gets enforced.
 
 ### Fine-tuning role assignments (KFT §8/§9, informative)
 
@@ -109,11 +132,14 @@ KFT deliberately names roles, not repos; the concrete assignments live here:
   production uses to replay KCS scenarios. It watches; it never routes.
 ```
 
-Every producer/consumer/authority/provider above — insimul, pinakes, argos, formant, cuneiform,
-tessera, lugh — sits in the "participant" box and reaches every other the same way. There is no
-privileged edge: an authority is dialed like a provider, the runtime commons' own services are
-dialed like any peer's, and an absent registry degrades discovery, never a peer's ability to
-serve a connection it has already made.
+Every producer/consumer/authority/provider above — studio-os, insimul, pinakes, argos, formant,
+cuneiform, tessera, lugh — sits in the "participant" box and reaches every other the same way.
+There is no privileged edge: an authority is dialed like a provider, the runtime commons' own
+services are dialed like any peer's, and an absent registry degrades discovery, never a peer's
+ability to serve a connection it has already made. **Nor does organizational ownership create a
+privileged edge** — the two cross-company edges above are dialed by exactly the same lookup-then-
+direct-dial path as two peers inside one company. The boundary shows up in contracts and
+containment policy, never in topology.
 
 ## 5. What travels on each plane
 
