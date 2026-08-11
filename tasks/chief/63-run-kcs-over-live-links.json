@@ -1,0 +1,31 @@
+{
+  "name": null,
+  "project": "agora",
+  "branchName": "chief/63-run-kcs-over-live-links",
+  "description": "CROSS-REPO — owned and built in AGORA, not koine. Run the encoded KCS suite (chief/62) over REAL MCP/A2A connections, using delta-N standin fixtures for not-yet-adopted providers (the still-planned media KCB provider). KCS 0.2.0 (ratified, delta N folded) already expresses the standins; the console runtime is downstream per ADR-0001. Tracked here as a koine ROADMAP Phase F4 marker ('agora chief/63-run-kcs-over-live-links'). Depends on Phase 2 adoption (real participants to drive) and the F3 finetune legs. PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.",
+  "parked": true,
+  "dependsOn": [
+    "agora:62-encode-scenarios-as-kcs"
+  ],
+  "touches": [
+    "agora:conformance-console"
+  ],
+  "iters": 6,
+  "warmup": [
+    "echo 'Cross-repo: implement in agora; standins per koine scenarios/kcs-format-stress.md delta N'"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Run the KCS suite over live MCP/A2A links with delta-N standins",
+      "description": "In agora, run the encoded KCS suite over real connections, using delta-N standin fixtures for not-yet-adopted providers. koine ROADMAP marker; work is agora's.",
+      "acceptanceCriteria": [
+        "Implemented in agora (not koine): the encoded KCS documents (chief/62) run over REAL MCP/A2A connections, using delta-N standin fixtures for not-yet-adopted providers (the still-planned media KCB provider) as expressed by KCS 0.2.0 (scenarios/kcs-format-stress.md, delta N).",
+        "Real conformance results feed back into koine's ratification gates (ROADMAP.md Phase 2), per ADR-0001 (console runtime downstream; koine only records the results as gate evidence).",
+        "Runs under agora's own gates; no koine file is edited by this tasklist."
+      ],
+      "passes": false,
+      "notes": "Cross-repo (agora). Parked in koine as a ROADMAP F4 marker."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": null,
+  "project": "agora",
+  "branchName": "chief/60-finetune-job-validator-ci",
+  "description": "CROSS-REPO — owned and built in AGORA, not koine. Delivers the KFT §3 SYNTACTIC gate: a finetune-job.schema.json validator + conformance CI, landing wherever the shared validators live (ADR-0001: downstream, never in koine — koine holds schemas/finetune-job.schema.json as the contract, not its runtime validator). Tracked here as a koine ROADMAP Phase F5/F3 marker ('agora chief/60-finetune-job-validator-ci'). The SEMANTIC admission rules the schema cannot express are chief/66 (Phase F5). PARKED in koine: placeholder; move to agora/tasks/chief/ to activate under agora's gates.",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "agora:validators"
+  ],
+  "iters": 5,
+  "warmup": [
+    "echo 'Cross-repo: implement in agora against koine schemas/finetune-job.schema.json (KFT §3)'"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "finetune-job schema validator + conformance CI (KFT §3)",
+      "description": "In agora, implement the syntactic validator for finetune-job.schema.json plus conformance CI. koine ROADMAP marker; work is agora's per ADR-0001.",
+      "acceptanceCriteria": [
+        "Implemented in agora / the shared-validator repo (not koine): a validator that enforces the KFT §3 syntactic gate against koine's schemas/finetune-job.schema.json, wired into conformance CI, per ADR-0001 (validators live downstream, not in koine).",
+        "It validates the golden fixture koine ships and rejects malformed job manifests; it defers all SEMANTIC admission (modality x method, egress/license aggregation, inline-header checks) to chief/66 (Phase F5), which the schema cannot express.",
+        "Runs under agora's own gates; no koine file is edited by this tasklist."
+      ],
+      "passes": false,
+      "notes": "Cross-repo (agora). Parked in koine as a ROADMAP F3/F5 marker."
+    }
+  ]
+}

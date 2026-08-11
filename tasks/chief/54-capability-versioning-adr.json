@@ -1,0 +1,50 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/54-capability-versioning-adr",
+  "description": "KCB §7 open question 2 (capability-bus.md ~line 254) asks how a provider evolves a capability's schema without breaking subscribers — semver on capability names vs content-addressed schemas — and KFT §11 open question 5 (fine-tuning.md ~line 493) explicitly INHERITS it, adding that a finetuned model pins the kft_version it was trained under. Separately, KMI's deprecated application/vnd.koine.edl+json transition window (§4.4, media-interchange.md ~line 253) has no removal date. This tasklist resolves the shared 'how the fabric evolves a capability' question ONCE in an agnostic ADR (ROADMAP.md Phase F2), which then gates the KCB §7.2 §-edit (chief/55) and the mutate-live-schema pressure test (chief/56). This is actionable koine-own contract work with no external deployment trigger (ROADMAP.md: 'Depends on: none hard'). Agnostic per decisions/README.md: bind roles, number at or above 0009 (0002-0004 reserved, 0005-0008 taken).",
+  "parked": false,
+  "dependsOn": [],
+  "touches": [
+    "decisions/",
+    "decisions/README.md"
+  ],
+  "iters": 5,
+  "warmup": [
+    "sed -n '250,260p' specs/capability-bus.md",
+    "sed -n '481,496p' specs/fine-tuning.md",
+    "sed -n '253,266p' specs/media-interchange.md",
+    "ls decisions/ADR-00*.md && sed -n '1,20p' decisions/README.md"
+  ],
+  "verify": [
+    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
+    "ls decisions/ADR-00[01][0-9]-*version*.md >/dev/null 2>&1 || ls decisions/ADR-00[01][0-9]-*.md | grep -qi version"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "ADR deciding capability versioning + deprecation",
+      "description": "Write the agnostic ADR that decides how a provider evolves a capability's schema without breaking subscribers, resolving KCB §7 open question 2 and the KFT §11.5 inheritance in one place.",
+      "acceptanceCriteria": [
+        "A new decisions/ADR (numbered at or above 0009) decides the capability-versioning contract, presenting the fork the spec names — semver on capability names vs content-addressed schemas — and stating the subscriber-compatibility rule (what a provider MAY change without breaking a live subscriber, and how a breaking change is signalled).",
+        "The ADR states the KFT inheritance explicitly: a finetuned model pins the kft_version it was trained under (KFT §11.5, §fine-tuning.md ~line 493), and shows the decision is consistent with KCB's existing capability cost + grant-spend model (§2.1/§5).",
+        "The ADR is agnostic per decisions/README.md (binds roles, no deployment/product names), numbered so it does not collide with the reserved 0002-0004 or the taken 0005-0008, and decisions/README.md's records table gains a row for it.",
+        "The ADR names its follow-ups: the KCB §7.2 §-edit (chief/55, which also sets the KMI §4.4 edl+json removal date) and the mutate-live-schema pressure test (chief/56)."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Record the deprecation half — the missing edl+json removal date",
+      "description": "Fold KMI's unfinished deprecation into the same decision: the deprecated application/vnd.koine.edl+json transition window (§4.4) currently has no removal date; the ADR decides the deprecation policy the §-edit will apply.",
+      "acceptanceCriteria": [
+        "The ADR records the deprecation-window policy (how a deprecated capability/media-type is retired without breaking subscribers) and states that KMI §4.4's edl+json type gets a concrete removal version under that policy — to be applied by chief/55, not in this ADR.",
+        "No normative spec clause is edited in THIS tasklist (that is chief/55); this story lands only the ADR text and README row, so no spec version is bumped here.",
+        "The ADR records what stays invariant so the follow-up §-edit is additive, not a breaking redefinition of the capability manifest (KCB §2 AgentCard extension)."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

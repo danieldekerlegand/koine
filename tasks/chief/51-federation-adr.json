@@ -1,0 +1,50 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/51-federation-adr",
+  "description": "Three specs independently deferred the SAME single-authority to federation question, each promising to 'likely resolve the same way': KINP §11 decision 1 (a single canonical identity authority ROLE for real-world entities; 'federation stays a future option', identity.md around line 477), KCB §7 open question 1 (a single host-provisioned registry vs per-org registries that peer; 'Mirrors KINP §11 decision 1', capability-bus.md ~line 251), and KMI §9 open question 3 (single shared CAS vs per-project stores that replicate on reference; 'mirrors KINP §11 authority fork and KCB §7 registry federation', media-interchange.md ~line 380). This tasklist resolves that shared single-authority-role to federated-peers pattern ONCE, in a new agnostic ADR, so the three specs stop deferring it three separate ways (ROADMAP.md Phase F1). PARKED: per the roadmap, nothing is built until a real deployment actually needs more than one authority; this file is the authored proposal, held until that trigger. Public-safe/agnostic per decisions/README.md: bind roles, standards named only as adopted standards, number at or above 0009 (0002-0004 permanently reserved; 0005-0008 taken).",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "decisions/",
+    "decisions/README.md"
+  ],
+  "iters": 5,
+  "warmup": [
+    "sed -n '470,486p' specs/identity.md",
+    "sed -n '248,260p' specs/capability-bus.md",
+    "sed -n '370,388p' specs/media-interchange.md",
+    "ls -1 decisions/ && sed -n '1,20p' decisions/README.md"
+  ],
+  "verify": [
+    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
+    "ls decisions/ADR-0009-*.md >/dev/null 2>&1 || ls decisions/ADR-00[1-9][0-9]-*.md >/dev/null 2>&1"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "ADR resolving the shared single-authority-role to federated-peers pattern once",
+      "description": "Write one agnostic ADR that resolves the pattern the three specs each defer to — a single authority as a ROLE today, federation as the future option — so KINP/KCB/KMI can point at one decision instead of restating it.",
+      "acceptanceCriteria": [
+        "A new decisions/ADR (numbered at or above 0009; 0002-0004 reserved, 0005-0008 taken) records the shared decision: the pattern by which a single authority ROLE (identity authority, discovery registry, CAS) generalizes to federated peers, stated once so KINP §11 decision 1, KCB §7 open question 1, and KMI §9 open question 3 all cite it.",
+        "The ADR presents the fork fairly before deciding — single privileged authority role vs fully federated peers with no privileged node — and preserves the invariant the three specs already share: authority is a role, not a hard dependency, and offline-first minting must not require reaching the authority (KINP §11, §6).",
+        "The ADR is agnostic per decisions/README.md (binds roles; names no deployment, topology, or product except as illustrative/known-implementation pointers), and decisions/README.md's records table gains a row for it.",
+        "The ADR names the concrete cross-authority hazards a later pressure test must hunt (cross-authority same_as reconciliation, registry peering, per-project CAS replication on reference) without specifying a deployment — it resolves contract SHAPE only."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Record the ADR as the single referent for the three deferred questions",
+      "description": "Make the ADR the durable single source the three open questions defer to, without yet editing the normative clauses (that is tasklist 52, gated on this ADR).",
+      "acceptanceCriteria": [
+        "The ADR explicitly enumerates the three deferral sites it supersedes (KINP §11 decision 1, KCB §7 open question 1, KMI §9 open question 3) and states that the per-spec §-edits applying it are the follow-up (chief/52-federation-spec-edits) and the multi-authority pressure test is chief/53-multi-authority-scenario.",
+        "No normative spec clause is edited in THIS tasklist (the §-edits are 52); this story only lands the ADR and its README row, so no spec version is bumped here.",
+        "The ADR records what stays invariant regardless of when federation is switched on, so the future §-edits are additive rather than a breaking redefinition."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

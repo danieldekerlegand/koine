@@ -1,0 +1,49 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/67-kmi-open-questions",
+  "description": "KMI's own §9 'Open questions' (media-interchange.md ~line 370), each folded ONLY on the next pressure break, never speculatively (ROADMAP.md Phase F6): (1) OTIO schema-version pinning — which OTIO core schema versions a conformant timeline may declare and how strictly §4.1's upgrade/downgrade path binds an unknown-version consumer; (2) profile-vocabulary granularity — how fine constraints get (e.g. H.264 High@L4.1) before path-finding gets brittle; (4) perceptual-hash choice backing media:perceptual_match, recorded like KGP embedding_model so scores are comparable (§9.4, ties to the Loose-wishlist perceptual-hash-provenance thread); (5) additive-metadata survival — id re-attach after a third-party OTIO round-trip drops metadata.koine (§4.2a). PARKED: reactive by design — each note says 'unless a pressure test forces it into the contract'; this file is authored and held until a pressure break. Public-safe: bind roles.",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "specs/media-interchange.md",
+    "scenarios/",
+    "registry/relations/media.tsv"
+  ],
+  "iters": 6,
+  "warmup": [
+    "sed -n '370,390p' specs/media-interchange.md",
+    "grep -n 'perceptual_match\\|metadata.koine\\|schema-version\\|profile' specs/media-interchange.md",
+    "cat registry/relations/media.tsv"
+  ],
+  "verify": [
+    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
+    "python3 -c \"import csv,glob; [list(csv.reader(open(f),delimiter=chr(9))) for f in glob.glob('registry/**/*.tsv',recursive=True)]; print('tsv ok')\""
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "New KMI pressure-test leg exposing the forced question",
+      "description": "Before folding any KMI §9 open question, add the scenario leg that FORCES it — koine only folds an open question when a pressure test breaks on it (each §9 note is explicit).",
+      "acceptanceCriteria": [
+        "A scenarios/ pressure-test leg is added (extending scenarios/e2e-media-transform.md or a new focused scenario) that exercises whichever §9 question the break demands — OTIO schema-version pinning (§9.1), profile-vocabulary granularity (§9.2), perceptual-hash backend for media:perceptual_match (§9.4), or metadata.koine id re-attach after a third-party OTIO round-trip (§9.5) — and demonstrates the concrete break that forces a contract answer.",
+        "The leg is adversarial (prefer finding a break) and uses the KINP §3.4 placeholder namespaces per scenarios/README.md.",
+        "Only the question(s) the break actually forces are carried into US-2 — the others stay open, consistent with the reactive-fold policy."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Fold the forced §9 question(s) into the KMI contract",
+      "description": "Reflect only the pressure-forced open question(s) into media-interchange.md (and registry/schema if perceptual-hash provenance is involved), bumping the version and returning to candidate.",
+      "acceptanceCriteria": [
+        "media-interchange.md §4 / §9 is edited to fold the forced question: e.g. pin the allowed OTIO core schema versions (§9.1), fix profile-vocabulary granularity (§9.2), name the pHash/fingerprint/embedding backend and record it like KGP embedding_model (§9.4), or require id re-attach on re-import (§9.5).",
+        "If perceptual-hash provenance is folded, the recording field is added minimally (schema twin + registry note if a new immutable relation name is needed — never an in-place signature edit, CLAUDE.md registry rule), keeping media:perceptual_match a similarity signal, never identity.",
+        "The KMI version header is bumped and Status set to candidate with a changelog entry citing the scenario leg; the remaining §9 questions stay listed as open."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

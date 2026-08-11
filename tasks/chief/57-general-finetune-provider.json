@@ -1,0 +1,29 @@
+{
+  "name": null,
+  "project": "agora",
+  "branchName": "chief/57-general-finetune-provider",
+  "description": "CROSS-REPO — owned and built in AGORA, not koine. koine's contract side (KFT fine-tuning.md §9.1, the finetune KCB capability + job manifest, and schemas/finetune-job.schema.json) is already authored; this is the downstream RUNTIME program that implements it, which per ADR-0001 lives in agora, never in koine. Tracked here only as a koine ROADMAP Phase F3 marker (ROADMAP.md, 'agora chief/57-general-finetune-provider'). Delivers KFT §9.1(a): a general finetune provider — the trainer / finetune-router leaf capability with an engine ladder gated by the §4.2 egress class, cloud-capable, sibling to (never merged with) the provider-router. PARKED in koine: this file is a placeholder; when actionable it moves to agora/tasks/chief/ and runs under agora's own gates.",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "agora:finetune-provider"
+  ],
+  "iters": 6,
+  "warmup": [
+    "echo 'Cross-repo: implement in agora against koine specs/fine-tuning.md §9.1(a) + schemas/finetune-job.schema.json'"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "General finetune provider implementing KFT §9.1(a)",
+      "description": "In agora, implement the general finetune provider — the trainer / finetune-router leaf capability — against koine's KFT contract. This is a koine ROADMAP marker; the work is agora's.",
+      "acceptanceCriteria": [
+        "Implemented in agora (not koine): the finetune KCB capability with an engine ladder gated by the KFT §4.2 egress class, cloud-capable, as a sibling to the provider-router (not merged with it), per fine-tuning.md §9.1(a).",
+        "Conforms to koine's ratified/candidate KFT contract by reference (finetune-job.schema.json, §3 job manifest, §4.2 egress gate, §5 models-as-KINP-entities / weights-as-KMI-lineage, §6 telemetry) — koine holds the contract, agora holds the runtime (ADR-0001).",
+        "Runs under agora's own quality gates; no koine file is edited by this tasklist."
+      ],
+      "passes": false,
+      "notes": "Cross-repo (agora). Parked in koine as a ROADMAP F3 marker; move to agora/tasks/chief/ to activate."
+    }
+  ]
+}

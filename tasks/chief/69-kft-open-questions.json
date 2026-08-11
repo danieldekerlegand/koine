@@ -1,0 +1,49 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/69-kft-open-questions",
+  "description": "KFT's own §11 'Open questions' (fine-tuning.md ~line 481), folded only on the next pressure break, never speculatively (each note says 'unless a pressure test forces it into the contract'; ROADMAP.md Phase F6): (1) adapter-selection hint — whether the job manifest may carry an engine hint or it stays producer-internal (§9); (2) multi-node / distributed runs — cost metering + checkpoint lineage across GPUs (§5.3/§6), where the cost unit + checkpoint-asset shape must not preclude it; (3) resume-checkpoint ref — confirm the job manifest carries a resume checkpoint ref cleanly (a run based_on a prior finetuned model, §5 lineage); (4) eval-as-reward — how tightly method:dpo binds to a KCS scenario as its reward (§6.1) and whether reward scenarios need a distinct KCS profile. (Item 5, capability versioning, is resolved by Phase F2 / chief/54.) PARKED: reactive by design; authored and held. KFT is candidate (0.4.0). Public-safe: bind roles.",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "specs/fine-tuning.md",
+    "schemas/finetune-job.schema.json",
+    "scenarios/"
+  ],
+  "iters": 6,
+  "warmup": [
+    "sed -n '481,496p' specs/fine-tuning.md",
+    "sed -n '1,40p' scenarios/e2e-finetune.md",
+    "python3 -c \"import json; json.load(open('schemas/finetune-job.schema.json')); print('ok')\""
+  ],
+  "verify": [
+    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
+    "python3 -c \"import json; json.load(open('schemas/finetune-job.schema.json')); print('finetune-job schema ok')\""
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "New KFT pressure-test leg forcing the open question",
+      "description": "Add the scenario leg that FORCES whichever §11 question demands an answer, before folding — KFT folds each open question only under pressure (each note is explicit).",
+      "acceptanceCriteria": [
+        "A scenarios/ leg (extending scenarios/e2e-finetune.md / e2e-finetune-multimodal.md / e2e-producer-exhaust-finetune.md, or a new focused scenario) forces one §11 question: adapter-selection hint (§11.1), distributed-run cost metering + checkpoint lineage (§11.2), resume-checkpoint ref (§11.3), or eval-as-reward KCS profile for method:dpo (§11.4).",
+        "The leg is adversarial and shows the concrete break that forces a contract answer; only the forced question is carried into US-2.",
+        "It uses the KINP §3.4 placeholder namespaces and names no product."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Fold the forced §11 question into the KFT contract + schema",
+      "description": "Reflect only the pressure-forced question into fine-tuning.md and, where it touches job shape, schemas/finetune-job.schema.json — keeping the 0.3.0 fold's additive discipline — bumping the version and staying candidate.",
+      "acceptanceCriteria": [
+        "fine-tuning.md §11 (and the relevant §5/§6 clause) is edited to fold the forced question — e.g. allow an adapter-selection hint in the manifest, confirm the resume-checkpoint ref, or define the eval-as-reward KCS profile — and schemas/finetune-job.schema.json is updated in lockstep if the job shape changes, keeping the golden fixture valid.",
+        "The change is strictly additive where possible (0.3.0/0.4.0 manifests stay valid) per KFT's additive-fold precedent; the schema stays role-scoped with KINP §3.4 placeholder CURIEs.",
+        "The KFT version header is bumped and Status set to candidate with a changelog entry citing the leg; the remaining §11 questions stay open, and item 5 (capability versioning) is noted as resolved by Phase F2 (chief/54)."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

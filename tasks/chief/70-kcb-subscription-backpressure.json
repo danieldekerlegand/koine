@@ -1,0 +1,48 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/70-kcb-subscription-backpressure",
+  "description": "KCB §7 open question 3 (capability-bus.md ~line 256): subscription firehose backpressure / flow-control for high-volume-world subscriptions. Per-invoke cost is already handled by capability cost + grant spend ceilings (§2.1/§5); the spec currently parks firehose flow-control as 'an infra concern for the host's cost advisor.' This tasklist folds it into the contract ONLY on the next pressure break (ROADMAP.md Phase F6) — i.e. when a high-volume-world subscription scenario demonstrates that leaving flow-control purely to the host breaks a subscriber. PARKED: reactive by design; authored and held. KCB is candidate (0.3.0). Public-safe: bind roles.",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "specs/capability-bus.md",
+    "scenarios/"
+  ],
+  "iters": 5,
+  "warmup": [
+    "sed -n '254,262p' specs/capability-bus.md",
+    "grep -n 'subscribe\\|subscription\\|cost\\|grant\\|spend' specs/capability-bus.md | head -20",
+    "ls -1 scenarios/"
+  ],
+  "verify": [
+    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
+    "grep -qiE 'backpressure|flow-control|subscription' specs/capability-bus.md"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "A high-volume-subscription pressure leg forcing the backpressure question",
+      "description": "Add the scenario leg where a high-volume-world subscription firehose breaks a subscriber, forcing the §7.3 flow-control question into the contract — KCB folds it only under pressure.",
+      "acceptanceCriteria": [
+        "A scenarios/ leg drives a high-volume-world subscription (a firehose) and demonstrates the concrete break that leaving flow-control purely to the host's cost advisor causes a subscriber — the pressure that forces §7.3 into the contract.",
+        "The leg confirms per-invoke cost + grant spend ceilings (§2.1/§5) do NOT by themselves solve firehose backpressure, distinguishing this from the already-handled cost question.",
+        "It follows the scenarios/ convention and uses the KINP §3.4 placeholder namespaces; names no product."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Fold subscription backpressure into KCB §7.3",
+      "description": "Reflect the pressure-forced flow-control decision into capability-bus.md's subscribe contract, bumping the version and staying candidate.",
+      "acceptanceCriteria": [
+        "capability-bus.md's §7.3 / subscribe clause is edited to specify subscription flow-control / backpressure for high-volume-world subscriptions (e.g. subscriber-declared rate/window, provider signalling), consistent with the §2.1/§5 cost + grant model and the KCB §2 AgentCard-extension manifest.",
+        "The KCB version header is bumped and Status set to candidate with a changelog entry citing the scenario leg.",
+        "schemas/*.json still parse; if the subscribe manifest gains a flow-control field the schema twin is updated in lockstep, staying role-scoped with KINP §3.4 placeholder CURIEs."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

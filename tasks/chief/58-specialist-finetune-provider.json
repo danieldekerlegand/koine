@@ -1,0 +1,29 @@
+{
+  "name": null,
+  "project": "lugh",
+  "branchName": "chief/58-specialist-finetune-provider",
+  "description": "CROSS-REPO — owned and built in LUGH, not koine. koine's contract side (KFT fine-tuning.md §9.1, the finetune capability, egress/license gate §4.2) is authored; this is the downstream RUNTIME provider that implements it and per ADR-0001 lives in lugh. Tracked here only as a koine ROADMAP Phase F3 marker ('lugh chief/58-specialist-finetune-provider'). Delivers KFT §9.1(b): a distinct, specialized, local-only finetune capability ON THE BUS (a separate KCB capability, not an adapter inside the general trainer), registry-routed, local-only where its data is synthetic/proprietary/personal-tier. PARKED in koine: placeholder; move to lugh/tasks/chief/ to activate under lugh's gates.",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "lugh:finetune-provider"
+  ],
+  "iters": 6,
+  "warmup": [
+    "echo 'Cross-repo: implement in lugh against koine specs/fine-tuning.md §9.1(b) + §4.2 egress gate'"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Specialized local-only finetune provider implementing KFT §9.1(b)",
+      "description": "In lugh, implement the specialized local-only finetune provider as a distinct KCB capability on the bus (not an adapter inside the general trainer), registry-routed. koine ROADMAP marker; work is lugh's.",
+      "acceptanceCriteria": [
+        "Implemented in lugh (not koine): a distinct finetune KCB capability, registry-routed, local-only where its data is synthetic / proprietary / personal-tier per the KFT §4.2 egress class, per fine-tuning.md §9.1(b) — a separate capability, never an adapter merged into the general trainer.",
+        "Refuses any job outside its narrow envelope with a graded code that names agora's general trainer instead (the lugh specialist / agora general split, koine CLAUDE.md ecosystem note), conforming to koine's KFT contract by reference (ADR-0001).",
+        "Runs under lugh's own quality gates; no koine file is edited by this tasklist."
+      ],
+      "passes": false,
+      "notes": "Cross-repo (lugh). Parked in koine as a ROADMAP F3 marker."
+    }
+  ]
+}

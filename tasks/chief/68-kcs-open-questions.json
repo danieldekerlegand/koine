@@ -1,0 +1,47 @@
+{
+  "name": null,
+  "project": "koine",
+  "branchName": "chief/68-kcs-open-questions",
+  "description": "KCS's own §7 'Open questions' (conformance-scenario.md ~line 129), folded only on the next pressure break (ROADMAP.md Phase F6): (1) assertion extensibility — a fixed vocabulary (§5) vs a small predicate DSL over the observation log (leaning: fixed core + an escape hatch); (2) determinism — scenarios must assert structure/invariants (firewall, cost, world-scoping), not exact generated content, and how strictly the format enforces this; (3) recording fidelity — how much stream payload the observation log retains vs references by id (ties to KMI byte transport). PARKED: reactive — folded only when scenarios/kcs-format-stress.md (or a new leg) breaks on it; this file is authored and held. KCS is currently ratified (0.2.0), so any normative fold returns it to candidate. Public-safe: bind roles.",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "specs/conformance-scenario.md",
+    "scenarios/kcs-format-stress.md"
+  ],
+  "iters": 5,
+  "warmup": [
+    "sed -n '129,140p' specs/conformance-scenario.md",
+    "sed -n '1,40p' scenarios/kcs-format-stress.md"
+  ],
+  "verify": [
+    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
+    "grep -qiE 'assertion|determinism|observation' specs/conformance-scenario.md"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "New KCS format-stress leg forcing the open question",
+      "description": "Add the scenarios/kcs-format-stress.md leg (or a new leg) that breaks on whichever §7 question demands an answer, before folding anything — KCS folds reactively.",
+      "acceptanceCriteria": [
+        "A new leg in scenarios/kcs-format-stress.md (or a focused scenario) forces one of the §7 questions: assertion extensibility (§7.1 — a case the fixed §5 vocabulary cannot express), determinism strictness (§7.2 — a scenario that must assert structure/invariants not generated content), or observation-log fidelity (§7.3 — payload retained vs referenced by id).",
+        "The leg is adversarial and demonstrates the concrete break that forces a contract answer; only the forced question is carried into US-2.",
+        "It follows the KCS format (observation model §4, assertion vocabulary §5) and names no product."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Fold the forced §7 question into the KCS contract",
+      "description": "Reflect only the pressure-forced question into conformance-scenario.md — e.g. add the escape-hatch predicate to the fixed §5 vocabulary, or codify the determinism/recording rule — bumping the version and returning KCS to candidate.",
+      "acceptanceCriteria": [
+        "conformance-scenario.md §5/§7 is edited to fold the forced question consistent with the leaning already recorded (fixed core + an escape hatch for §7.1; assert structure/invariants for §7.2), keeping the existing §5 assertion vocabulary and step vocabulary backward-compatible.",
+        "The KCS version header is bumped and Status set from ratified to candidate (per the draft->candidate->ratified convention any normative change re-enters validation), with a changelog entry citing the leg; the remaining §7 questions stay open.",
+        "schemas/*.json still parse; the fold is a format/prose change requiring no schema-twin shape break."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

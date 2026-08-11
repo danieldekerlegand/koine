@@ -1,0 +1,29 @@
+{
+  "name": null,
+  "project": "agora",
+  "branchName": "chief/64-kgp-projection-roundtrip-fixture",
+  "description": "CROSS-REPO — owned and built in AGORA (downstream validator obligations), not koine. Delivers the missing RDF-star / PROV / JSON-LD round-trip fixture for KGP §4 (ADR-0006): proves a projection is lossless back to the canonical pack. koine deliberately does NOT hold this (ADR-0001: conformance fixtures + validators live downstream); the KGP §4.1 projection mapping and the golden-positive schema fixtures live in koine, but the round-trip PROOF fixture is downstream. Tracked here as a koine ROADMAP Phase F5 marker ('agora chief/64-kgp-projection-roundtrip-fixture'). This also closes the last KGP 0.5.0 re-ratification blocker (ROADMAP.md Phase 1 / CLAUDE.md 'still-missing downstream round-trip fixture'). PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "agora:validators"
+  ],
+  "iters": 5,
+  "warmup": [
+    "echo 'Cross-repo: implement in agora against koine specs/grounding-pack.md §4 + ADR-0006'"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Lossless RDF-star/PROV/JSON-LD round-trip fixture for KGP §4",
+      "description": "In agora / the shared-validator repo, build the round-trip fixture proving a KGP §4 projection is lossless back to the canonical pack. koine ROADMAP marker; work is downstream per ADR-0001.",
+      "acceptanceCriteria": [
+        "Implemented downstream (not koine): a fixture that takes a KGP canonical pack, projects it to RDF-star / PROV / JSON-LD (KGP §4, ADR-0006), and round-trips back byte-lossless to the canonical pack — the §3.3 claim-id convergence and the §7 confidence/license/local-only filters survive every encoding.",
+        "The fixture closes the last KGP 0.5.0 re-ratification blocker (the still-missing downstream round-trip fixture, CLAUDE.md / ROADMAP.md Phase 1); its clean result is fed back to koine as gate evidence, not by editing koine.",
+        "Runs under agora's own gates; no koine file is edited by this tasklist."
+      ],
+      "passes": false,
+      "notes": "Cross-repo (agora). Parked in koine as a ROADMAP F5 marker; also unblocks Phase 1 KGP re-ratification."
+    }
+  ]
+}
