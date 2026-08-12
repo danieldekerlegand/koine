@@ -1,8 +1,9 @@
 {
   "name": null,
   "project": "koine",
+  "category": "feature",
   "branchName": "chief/56-live-schema-mutation-scenario",
-  "description": "The pressure test that gates the capability-versioning §-edits (chief/54 ADR, chief/55 §7.2 edit): a provider ships a capability v2 while a v1 subscriber is still live, and the scenario asserts no silent break (ROADMAP.md Phase F2). koine promotes only after a concrete pressure test fails to break the contract (CLAUDE.md conventions). Follows the scenarios/ convention (replayable, cross-plane assertions) as in scenarios/e2e-media-transform.md, which already exercises KCB. Actionable koine-own contract work. Public-safe: bind roles, illustrative CURIEs use the KINP §3.4 placeholder namespaces.",
+  "description": "The pressure test that gates the capability-versioning \u00a7-edits (chief/54 ADR, chief/55 \u00a77.2 edit): a provider ships a capability v2 while a v1 subscriber is still live, and the scenario asserts no silent break (ROADMAP.md Phase F2). koine promotes only after a concrete pressure test fails to break the contract (CLAUDE.md conventions). Follows the scenarios/ convention (replayable, cross-plane assertions) as in scenarios/e2e-media-transform.md, which already exercises KCB. Actionable koine-own contract work. Public-safe: bind roles, illustrative CURIEs use the KINP \u00a73.4 placeholder namespaces.",
   "parked": false,
   "dependsOn": [
     "54-capability-versioning-adr",
@@ -28,9 +29,9 @@
       "title": "A mutate-live-schema pressure scenario",
       "description": "Author a scenarios/ pressure test where a provider ships a capability v2 while a v1 subscriber is live, hunting a silent break in the subscriber-compatibility contract the ADR decided.",
       "acceptanceCriteria": [
-        "A new scenarios/ file (e.g. scenarios/e2e-live-schema-mutation.md) drives a provider evolving a capability's schema from v1 to v2 while a v1 subscriber remains connected, and asserts the subscriber does NOT silently break — per the KCB §7.2 rule (chief/55) and the ADR (chief/54).",
+        "A new scenarios/ file (e.g. scenarios/e2e-live-schema-mutation.md) drives a provider evolving a capability's schema from v1 to v2 while a v1 subscriber remains connected, and asserts the subscriber does NOT silently break \u2014 per the KCB \u00a77.2 rule (chief/55) and the ADR (chief/54).",
         "The scenario exercises both a compatible change (must not break the v1 subscriber) and, per the ADR's signalling rule, a breaking change (must be signalled, not silent), written adversarially to find the break; assertions use the KCS cross-plane vocabulary.",
-        "It follows the scenarios/ convention and scenarios/README.md (illustrative CURIEs use the KINP §3.4 placeholder namespaces; no deployment/product names)."
+        "It follows the scenarios/ convention and scenarios/README.md (illustrative CURIEs use the KINP \u00a73.4 placeholder namespaces; no deployment/product names)."
       ],
       "passes": false,
       "notes": ""
@@ -38,10 +39,10 @@
     {
       "id": "US-2",
       "title": "Record the re-ratification resolution",
-      "description": "Wire the scenario back to the KCB §7.2 edit so a clean pass re-ratifies it, matching the existing Re-validation notes.",
+      "description": "Wire the scenario back to the KCB \u00a77.2 edit so a clean pass re-ratifies it, matching the existing Re-validation notes.",
       "acceptanceCriteria": [
         "The scenario carries a Resolution / note recording which KCB (and, if touched, KMI/KFT) spec version its pass gates, mirroring the existing scenarios' Re-validation sections.",
-        "On a clean pass the capability-versioning §-edits may return from candidate to ratified; the scenario states this and the affected spec changelog can cite it.",
+        "On a clean pass the capability-versioning \u00a7-edits may return from candidate to ratified; the scenario states this and the affected spec changelog can cite it.",
         "schemas/*.json still parse; the scenario is a behavior test and requires no schema-twin shape change."
       ],
       "passes": false,

@@ -1,8 +1,9 @@
 {
   "name": null,
   "project": "agora",
+  "category": "feature",
   "branchName": "chief/66-finetune-semantic-admission",
-  "description": "CROSS-REPO — owned and built in AGORA/LUGH (the F3 providers), not koine. Delivers the finetune-job SEMANTIC admission rules the schema cannot express: modality x method compatibility (FT-F), egress/license aggregation over {data union base} (FT-B), inline-header checks (FT-N..P) — pinned by the finetune scenarios (scenarios/e2e-finetune.md, e2e-producer-exhaust-finetune.md). koine holds the scenarios + finetune-job.schema.json; the semantic gate runtime is downstream (ADR-0001) and lives with the F3 providers (chief/57 general, chief/58 specialist). Tracked here as a koine ROADMAP Phase F5 marker ('agora/lugh chief/66-finetune-semantic-admission'). PARKED in koine: placeholder; move to the provider repos' tasks/chief/ to activate.",
+  "description": "CROSS-REPO \u2014 owned and built in AGORA/LUGH (the F3 providers), not koine. Delivers the finetune-job SEMANTIC admission rules the schema cannot express: modality x method compatibility (FT-F), egress/license aggregation over {data union base} (FT-B), inline-header checks (FT-N..P) \u2014 pinned by the finetune scenarios (scenarios/e2e-finetune.md, e2e-producer-exhaust-finetune.md). koine holds the scenarios + finetune-job.schema.json; the semantic gate runtime is downstream (ADR-0001) and lives with the F3 providers (chief/57 general, chief/58 specialist). Tracked here as a koine ROADMAP Phase F5 marker ('agora/lugh chief/66-finetune-semantic-admission'). PARKED in koine: placeholder; move to the provider repos' tasks/chief/ to activate.",
   "parked": true,
   "dependsOn": [
     "57-general-finetune-provider",
@@ -14,7 +15,7 @@
   ],
   "iters": 6,
   "warmup": [
-    "echo 'Cross-repo: implement in agora/lugh against koine specs/fine-tuning.md §3/§4 + the finetune scenarios (FT-F, FT-B, FT-N..P)'"
+    "echo 'Cross-repo: implement in agora/lugh against koine specs/fine-tuning.md \u00a73/\u00a74 + the finetune scenarios (FT-F, FT-B, FT-N..P)'"
   ],
   "userStories": [
     {
@@ -22,7 +23,7 @@
       "title": "Semantic admission rules the schema cannot express",
       "description": "In the F3 provider repos, implement the finetune-job semantic gate: modality x method compatibility, egress/license aggregation, inline-header checks. koine ROADMAP marker; downstream per ADR-0001.",
       "acceptanceCriteria": [
-        "Implemented in agora/lugh (not koine): the finetune-job gate enforces the SEMANTIC rules the KFT §3 schema cannot express — modality x method compatibility (FT-F, e.g. reject dpo on text-to-image), egress/license aggregation over {data union base} (FT-B), and the inline dataset-jsonl-header checks (FT-N..P) — before any compute, per fine-tuning.md §3/§4.",
+        "Implemented in agora/lugh (not koine): the finetune-job gate enforces the SEMANTIC rules the KFT \u00a73 schema cannot express \u2014 modality x method compatibility (FT-F, e.g. reject dpo on text-to-image), egress/license aggregation over {data union base} (FT-B), and the inline dataset-jsonl-header checks (FT-N..P) \u2014 before any compute, per fine-tuning.md \u00a73/\u00a74.",
         "The rules are pinned by koine's finetune scenarios (scenarios/e2e-finetune.md, scenarios/e2e-producer-exhaust-finetune.md); they layer on top of the syntactic validator (chief/60) and conform to koine's KFT contract by reference (ADR-0001).",
         "Runs under the provider repos' own gates; no koine file is edited by this tasklist."
       ],

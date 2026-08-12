@@ -1,8 +1,9 @@
 {
   "name": null,
   "project": "agora",
+  "category": "feature",
   "branchName": "chief/65-manifestless-pack-rejection",
-  "description": "CROSS-REPO — owned and built in AGORA (downstream validator obligations), not koine. Delivers a validator behavior the specs REQUIRE but koine deliberately does not hold (ADR-0001): a bare projection arriving WITHOUT its manifest is not a unit of transfer, so the validator must REFUSE it (schemas/README.md). koine holds the schema shape; the validator runtime is downstream. Tracked here as a koine ROADMAP Phase F5 marker ('agora chief/65-manifestless-pack-rejection'). PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.",
+  "description": "CROSS-REPO \u2014 owned and built in AGORA (downstream validator obligations), not koine. Delivers a validator behavior the specs REQUIRE but koine deliberately does not hold (ADR-0001): a bare projection arriving WITHOUT its manifest is not a unit of transfer, so the validator must REFUSE it (schemas/README.md). koine holds the schema shape; the validator runtime is downstream. Tracked here as a koine ROADMAP Phase F5 marker ('agora chief/65-manifestless-pack-rejection'). PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.",
   "parked": true,
   "dependsOn": [],
   "touches": [
@@ -18,7 +19,7 @@
       "title": "Reject a manifest-less pack (schemas/README.md)",
       "description": "In agora / the shared-validator repo, implement the rule that a bare projection without its manifest is not a unit of transfer and must be refused. koine ROADMAP marker; downstream per ADR-0001.",
       "acceptanceCriteria": [
-        "Implemented downstream (not koine): the validator refuses a bare projection that arrives without its manifest — a manifest-less pack is not a unit of transfer (schemas/README.md) — with a clear rejection, and accepts the same projection when accompanied by its manifest.",
+        "Implemented downstream (not koine): the validator refuses a bare projection that arrives without its manifest \u2014 a manifest-less pack is not a unit of transfer (schemas/README.md) \u2014 with a clear rejection, and accepts the same projection when accompanied by its manifest.",
         "The behavior conforms to koine's KGP contract and schema by reference (ADR-0001); koine holds the shape, agora holds the enforcing validator.",
         "Runs under agora's own gates; no koine file is edited by this tasklist."
       ],

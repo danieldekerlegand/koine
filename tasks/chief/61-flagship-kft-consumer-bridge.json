@@ -1,8 +1,9 @@
 {
   "name": null,
   "project": "consumer",
+  "category": "feature",
   "branchName": "chief/61-flagship-kft-consumer-bridge",
-  "description": "CROSS-REPO — owned and built in a downstream CONSUMER (a media/design participant such as formant/argos), not koine. Delivers KFT §9.1 follow-up: a flagship consumer realigning its generic 'finetune bridge' onto the real KFT contract, so a producing application's training exhaust flows through the ratified job manifest + egress gate rather than bespoke glue. Per ADR-0001 this is downstream runtime; koine holds only the contract. Tracked here as a koine ROADMAP Phase F3 marker ('consumer chief/61-flagship-kft-consumer-bridge'). PARKED in koine: placeholder; move to the consumer repo's tasks/chief/ to activate.",
+  "description": "CROSS-REPO \u2014 owned and built in a downstream CONSUMER (a media/design participant such as formant/argos), not koine. Delivers KFT \u00a79.1 follow-up: a flagship consumer realigning its generic 'finetune bridge' onto the real KFT contract, so a producing application's training exhaust flows through the ratified job manifest + egress gate rather than bespoke glue. Per ADR-0001 this is downstream runtime; koine holds only the contract. Tracked here as a koine ROADMAP Phase F3 marker ('consumer chief/61-flagship-kft-consumer-bridge'). PARKED in koine: placeholder; move to the consumer repo's tasks/chief/ to activate.",
   "parked": true,
   "dependsOn": [
     "59-finetune-kcb-client"
@@ -12,7 +13,7 @@
   ],
   "iters": 5,
   "warmup": [
-    "echo 'Cross-repo: implement in the consumer repo against koine specs/fine-tuning.md §9.1 + ADR-0008 fabric-producer adapter'"
+    "echo 'Cross-repo: implement in the consumer repo against koine specs/fine-tuning.md \u00a79.1 + ADR-0008 fabric-producer adapter'"
   ],
   "userStories": [
     {
@@ -20,7 +21,7 @@
       "title": "Realign a flagship consumer's finetune bridge onto the KFT contract",
       "description": "In the consumer repo, replace the generic finetune bridge with the real KFT contract via the ADR-0008 thin fabric-producer adapter. koine ROADMAP marker; work is the consumer's.",
       "acceptanceCriteria": [
-        "Implemented in the consumer repo (not koine): its bespoke 'finetune bridge' is realigned onto koine's KFT contract — emitting a KFT dataset by reference with a dataset-jsonl-header and consuming the finetune capability via the KCB client (chief/59), through the ADR-0008 thin fabric-producer adapter.",
+        "Implemented in the consumer repo (not koine): its bespoke 'finetune bridge' is realigned onto koine's KFT contract \u2014 emitting a KFT dataset by reference with a dataset-jsonl-header and consuming the finetune capability via the KCB client (chief/59), through the ADR-0008 thin fabric-producer adapter.",
         "Per-app bridge/projection code is superseded by the shared runtime (ADR-0008); conforms to koine's KFT + KGP + KMI + KINP contracts by reference (ADR-0001).",
         "Runs under the consumer repo's own gates; no koine file is edited by this tasklist."
       ],

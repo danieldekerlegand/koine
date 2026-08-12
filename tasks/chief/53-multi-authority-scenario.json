@@ -1,8 +1,9 @@
 {
   "name": null,
   "project": "koine",
+  "category": "feature",
   "branchName": "chief/53-multi-authority-scenario",
-  "description": "A new pressure-test scenario that hunts the break the shared federation pattern (chief/51 ADR, chief/52 §-edits) must survive: two authorities in one fabric, cross-authority same_as reconciliation plus registry peering plus per-project CAS replication on reference (ROADMAP.md Phase F1). koine promotes a spec only after a concrete pressure test fails to break it (CLAUDE.md conventions), so this scenario is the gate that lets the three federation §-edits re-ratify. Follows the existing scenarios/ convention (replayable, cross-plane assertions) as in scenarios/e2e-worlds-to-fabric.md and scenarios/e2e-media-transform.md. PARKED: gated on chief/51 + chief/52 and on a real >1-authority deployment target (ROADMAP.md: nothing built until a deployment needs more than one authority). Public-safe: bind roles, illustrative CURIEs use the KINP §3.4 placeholder namespaces.",
+  "description": "A new pressure-test scenario that hunts the break the shared federation pattern (chief/51 ADR, chief/52 \u00a7-edits) must survive: two authorities in one fabric, cross-authority same_as reconciliation plus registry peering plus per-project CAS replication on reference (ROADMAP.md Phase F1). koine promotes a spec only after a concrete pressure test fails to break it (CLAUDE.md conventions), so this scenario is the gate that lets the three federation \u00a7-edits re-ratify. Follows the existing scenarios/ convention (replayable, cross-plane assertions) as in scenarios/e2e-worlds-to-fabric.md and scenarios/e2e-media-transform.md. PARKED: gated on chief/51 + chief/52 and on a real >1-authority deployment target (ROADMAP.md: nothing built until a deployment needs more than one authority). Public-safe: bind roles, illustrative CURIEs use the KINP \u00a73.4 placeholder namespaces.",
   "parked": true,
   "dependsOn": [
     "51-federation-adr",
@@ -28,11 +29,11 @@
     {
       "id": "US-1",
       "title": "A two-authority pressure scenario hunting the shared-pattern break",
-      "description": "Author a scenarios/ pressure test with two identity authorities in one fabric, driving cross-authority same_as reconciliation, registry peering, and per-project CAS replication on reference — written to find a break, not to assert correctness (CLAUDE.md conventions).",
+      "description": "Author a scenarios/ pressure test with two identity authorities in one fabric, driving cross-authority same_as reconciliation, registry peering, and per-project CAS replication on reference \u2014 written to find a break, not to assert correctness (CLAUDE.md conventions).",
       "acceptanceCriteria": [
         "A new scenarios/ file (e.g. scenarios/e2e-multi-authority.md) defines a replayable pressure test with TWO authorities and exercises all three federation surfaces the ADR unified: cross-authority same_as reconciliation (KINP), peering discovery registries (KCB), and per-project CAS replicating on reference (KMI).",
-        "The scenario asserts the invariants the federation pattern must preserve — offline-first minting still works, content-addressed identity stays byte-stable across authorities/stores, and no query-time merge produces a false cross-authority identity — and is written adversarially (prefer finding a break).",
-        "It follows the scenarios/ convention (cross-plane assertion vocabulary, replayable steps) and, per scenarios/README.md, illustrative CURIEs use the KINP §3.4 placeholder namespaces; it names no deployment or product."
+        "The scenario asserts the invariants the federation pattern must preserve \u2014 offline-first minting still works, content-addressed identity stays byte-stable across authorities/stores, and no query-time merge produces a false cross-authority identity \u2014 and is written adversarially (prefer finding a break).",
+        "It follows the scenarios/ convention (cross-plane assertion vocabulary, replayable steps) and, per scenarios/README.md, illustrative CURIEs use the KINP \u00a73.4 placeholder namespaces; it names no deployment or product."
       ],
       "passes": false,
       "notes": ""
@@ -40,10 +41,10 @@
     {
       "id": "US-2",
       "title": "Record the re-ratification resolution across the three specs",
-      "description": "Wire the scenario back to the three federation §-edits so a clean pass re-ratifies them, matching how existing re-validations record a Resolution note.",
+      "description": "Wire the scenario back to the three federation \u00a7-edits so a clean pass re-ratifies them, matching how existing re-validations record a Resolution note.",
       "acceptanceCriteria": [
         "The scenario carries a Resolution / note recording which KINP/KCB/KMI spec versions its pass gates, mirroring the 'Re-validation' sections in the existing scenarios.",
-        "On a clean pass the three federation §-edits (chief/52) may return from candidate to ratified; the scenario states this explicitly and each affected spec's changelog can cite it.",
+        "On a clean pass the three federation \u00a7-edits (chief/52) may return from candidate to ratified; the scenario states this explicitly and each affected spec's changelog can cite it.",
         "schemas/*.json still parse; no schema twin changes are required by this scenario (it is a control/data-plane behavior test, not a shape change)."
       ],
       "passes": false,

@@ -1,8 +1,9 @@
 {
   "name": null,
   "project": "koine",
+  "category": "fix",
   "branchName": "chief/75-w3id-namespace-migration",
-  "description": "D15 defect 1 — VERIFIED, and it is squattable. `https://koine.dev` is UNREGISTERED: `curl https://koine.dev` fails with 'Could not resolve host' and DNS has no record. That hostname is not decoration — it is the KCB manifest EXTENSION URI (`https://koine.dev/kcb/manifest/0.3`), the stable key by which a conformant consumer identifies the KCB manifest entry inside an A2A AgentCard's `capabilities.extensions[]`. Anyone can register koine.dev today and thereby control the resolution target of koine's identifying URI; there is no recovery once implementations have shipped it. Move the namespace to a **w3id.org permanent identifier** — `https://w3id.org/koine/...` — which is exactly what w3id exists for: a community-run, redirect-only permanent-identifier service whose entries are added by pull request against perma-id/w3id.org, and which never depends on a private domain registration staying renewed. Scope: (1) open the w3id PR (a `koine/` directory with a `.htaccess` redirecting to koine's canonical documentation host) and record the PR reference; (2) change every occurrence of the koine.dev namespace in specs/, decisions/, schemas/, docs/, and ROADMAP.md to the w3id form; (3) specify the TRANSITION — the extension URI is a matching key, so a change is BREAKING for any consumer matching on the old string: state a dual-accept window (consumers MUST accept both, producers MUST emit the w3id form) with an explicit end condition. In-repo occurrences at time of authoring: specs/capability-bus.md (7), decisions/ADR-0007 (2), docs/self-describing-participant.md (1), docs/walkthrough-capability-bus.md (1), schemas/participant-self-description.schema.json (1), schemas/fixtures/participant-self-description.json (1), ROADMAP.md (1). tasks/chief/completed/30-*.json is a HISTORICAL record and MUST NOT be rewritten. Downstream is affected and is NOT this tasklist's work (ADR-0001): a runtime commons pins the same string in at least four places including a byte-for-byte conformance corpus — that migration is the cross-repo tasklist `agora:72-kcb-extension-uri-migration`, which depends on this one. Lifecycle: KCB is candidate (0.3.0); this changes the manifest's identifying URI, so it is a normative change — version bump + dated changelog + the transition clause, Status stays candidate. Agnostic: bind roles, no product names. ROADMAP.md Phase F7 (defect fix — schedule ahead of the rest of the phase).",
+  "description": "D15 defect 1 \u2014 VERIFIED, and it is squattable. `https://koine.dev` is UNREGISTERED: `curl https://koine.dev` fails with 'Could not resolve host' and DNS has no record. That hostname is not decoration \u2014 it is the KCB manifest EXTENSION URI (`https://koine.dev/kcb/manifest/0.3`), the stable key by which a conformant consumer identifies the KCB manifest entry inside an A2A AgentCard's `capabilities.extensions[]`. Anyone can register koine.dev today and thereby control the resolution target of koine's identifying URI; there is no recovery once implementations have shipped it. Move the namespace to a **w3id.org permanent identifier** \u2014 `https://w3id.org/koine/...` \u2014 which is exactly what w3id exists for: a community-run, redirect-only permanent-identifier service whose entries are added by pull request against perma-id/w3id.org, and which never depends on a private domain registration staying renewed. Scope: (1) open the w3id PR (a `koine/` directory with a `.htaccess` redirecting to koine's canonical documentation host) and record the PR reference; (2) change every occurrence of the koine.dev namespace in specs/, decisions/, schemas/, docs/, and ROADMAP.md to the w3id form; (3) specify the TRANSITION \u2014 the extension URI is a matching key, so a change is BREAKING for any consumer matching on the old string: state a dual-accept window (consumers MUST accept both, producers MUST emit the w3id form) with an explicit end condition. In-repo occurrences at time of authoring: specs/capability-bus.md (7), decisions/ADR-0007 (2), docs/self-describing-participant.md (1), docs/walkthrough-capability-bus.md (1), schemas/participant-self-description.schema.json (1), schemas/fixtures/participant-self-description.json (1), ROADMAP.md (1). tasks/chief/completed/30-*.json is a HISTORICAL record and MUST NOT be rewritten. Downstream is affected and is NOT this tasklist's work (ADR-0001): a runtime commons pins the same string in at least four places including a byte-for-byte conformance corpus \u2014 that migration is the cross-repo tasklist `agora:72-kcb-extension-uri-migration`, which depends on this one. Lifecycle: KCB is candidate (0.3.0); this changes the manifest's identifying URI, so it is a normative change \u2014 version bump + dated changelog + the transition clause, Status stays candidate. Agnostic: bind roles, no product names. ROADMAP.md Phase F7 (defect fix \u2014 schedule ahead of the rest of the phase).",
   "parked": false,
   "dependsOn": [],
   "touches": [
@@ -14,7 +15,7 @@
   "iters": 6,
   "warmup": [
     "grep -rn 'koine\\.dev' --exclude-dir=.git . | grep -v 'tasks/chief/completed'",
-    "curl -sS -m 8 -o /dev/null -w '%{http_code}\\n' https://koine.dev || echo 'unresolvable — defect confirmed'",
+    "curl -sS -m 8 -o /dev/null -w '%{http_code}\\n' https://koine.dev || echo 'unresolvable \u2014 defect confirmed'",
     "sed -n '50,80p' specs/capability-bus.md",
     "sed -n '70,80p' decisions/ADR-0007-self-describing-participant.md"
   ],
@@ -31,7 +32,7 @@
       "description": "Open the pull request that creates the permanent identifier, so the namespace koine is about to standardize on actually resolves and cannot be squatted. w3id.org is redirect-only and community-run: an entry is a directory plus an .htaccess, added by PR against perma-id/w3id.org.",
       "acceptanceCriteria": [
         "A pull request against perma-id/w3id.org adds a `koine/` entry whose .htaccess redirects `https://w3id.org/koine/...` to koine's canonical documentation host, with the redirect rules covering at minimum the `kcb/manifest/<version>` path family and a sensible catch-all.",
-        "The PR reference (URL or number) and its status are recorded in-repo — in decisions/ADR-0007 or docs/self-describing-participant.md — so a reader can verify the namespace's provenance without asking anyone.",
+        "The PR reference (URL or number) and its status are recorded in-repo \u2014 in decisions/ADR-0007 or docs/self-describing-participant.md \u2014 so a reader can verify the namespace's provenance without asking anyone.",
         "The record states plainly WHY the move happened: koine.dev was verified unregistered on 2026-08-11 (DNS could not resolve), and an unregistered hostname used as an identifying URI is squattable with no recovery path once implementations ship it.",
         "No dependency on any private/instance repo is introduced (CLAUDE.md rule), and the redirect target is a public documentation host."
       ],
@@ -44,7 +45,7 @@
       "description": "Replace the koine.dev namespace across the normative and reference surfaces, keeping the version segment convention intact.",
       "acceptanceCriteria": [
         "Every occurrence of the koine.dev namespace in specs/, decisions/, schemas/ (including schemas/fixtures/), docs/, and ROADMAP.md is replaced with the `https://w3id.org/koine/...` form, preserving the path and version segment (e.g. `.../kcb/manifest/0.3`); `grep -rn 'koine\\.dev'` over those trees returns nothing.",
-        "tasks/chief/completed/30-self-describing-participant.json is NOT modified — a completed record is history and describes what was true when it merged.",
+        "tasks/chief/completed/30-self-describing-participant.json is NOT modified \u2014 a completed record is history and describes what was true when it merged.",
         "schemas/participant-self-description.schema.json's description text and schemas/fixtures/participant-self-description.json both carry the new URI, every schema still parses, and the fixture still validates against its schema.",
         "The naming stays agnostic and role-scoped: the URI names koine the specification, not any product or deployment."
       ],
@@ -53,13 +54,13 @@
     },
     {
       "id": "US-3",
-      "title": "Specify the transition — the extension URI is a matching key",
+      "title": "Specify the transition \u2014 the extension URI is a matching key",
       "description": "A consumer identifies the KCB manifest by string-matching the extension URI. Changing it is therefore breaking, and the spec must say what a conformant participant does during the window rather than leaving each implementation to guess.",
       "acceptanceCriteria": [
-        "specs/capability-bus.md §2 states the transition normatively: during the window a consumer MUST accept BOTH the legacy koine.dev URI and the w3id URI as identifying the same KCB manifest extension, and a producer MUST emit the w3id form; the legacy form is deprecated on sight.",
-        "The clause names an explicit END CONDITION for the window (a KCB version, or a stated date) rather than leaving it open — the mistake KMI §4.4's edl+json deprecation already made by shipping a transition with no removal date.",
+        "specs/capability-bus.md \u00a72 states the transition normatively: during the window a consumer MUST accept BOTH the legacy koine.dev URI and the w3id URI as identifying the same KCB manifest extension, and a producer MUST emit the w3id form; the legacy form is deprecated on sight.",
+        "The clause names an explicit END CONDITION for the window (a KCB version, or a stated date) rather than leaving it open \u2014 the mistake KMI \u00a74.4's edl+json deprecation already made by shipping a transition with no removal date.",
         "capability-bus.md bumps its version with a dated changelog entry describing the namespace move, the reason (unregistered, squattable), and the dual-accept window; Status stays candidate and the existing KCB re-ratification gate is restated, not replaced.",
-        "The downstream obligation is named without being performed here: the spec or its changelog notes that implementations pinning the old string must migrate (ADR-0001 — runtime work is downstream), pointing at the cross-repo tasklist agora:72-kcb-extension-uri-migration, including the byte-for-byte conformance corpus that will need regenerating."
+        "The downstream obligation is named without being performed here: the spec or its changelog notes that implementations pinning the old string must migrate (ADR-0001 \u2014 runtime work is downstream), pointing at the cross-repo tasklist agora:72-kcb-extension-uri-migration, including the byte-for-byte conformance corpus that will need regenerating."
       ],
       "passes": false,
       "notes": ""

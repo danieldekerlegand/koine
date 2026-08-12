@@ -1,8 +1,9 @@
 {
   "name": null,
   "project": "koine",
+  "category": "fix",
   "branchName": "chief/72-kgp-findings-closure",
-  "description": "Close the two open KGP 0.5.0 projection findings with the NORMATIVE §4/§4.1 edits the re-validation pass prescribed — the spec-edit work chief/50-doc-sync-status-tables is explicitly barred from ('no normative spec clause changes'). scenarios/e2e-worlds-to-fabric.md (Re-validation — KGP 0.5.0, findings table) left KGP candidate on two minor findings: KGP-1 — which `confidence` a claim carrying several `prov` records projects to ProbLog is unstated (remedy: state in §4 that the projection emits one fact PER ADMITTED PROV RECORD after the §7 slice, and that folding several into one probability is the CONSUMER's aggregation policy, never KGP's) — and KGP-2 — §4.1 fixes the annotation STRUCTURE but names actual predicates only where PROV supplies them, so two conformant producers can emit structurally identical, mutually unreadable projections (remedy: name the annotation predicates in §4.1 — a koine-owned term namespace for claim-id / confidence / valid_time / embedding_model / license / egress / dialect, reusing an external term wherever one already exists). Also add the §4.1 reference to the still-missing downstream round-trip fixture (built downstream per ADR-0001 as the parked cross-repo marker 64-kgp-projection-roundtrip-fixture) so the remaining re-ratification gate is named in the spec, not implied. Lifecycle per specs/README.md: normative edits to a candidate spec — version bump + changelog, status stays candidate pending the scenario re-run. Agnostic: bind roles, no product names. ROADMAP.md Phase 1.",
+  "description": "Close the two open KGP 0.5.0 projection findings with the NORMATIVE \u00a74/\u00a74.1 edits the re-validation pass prescribed \u2014 the spec-edit work chief/50-doc-sync-status-tables is explicitly barred from ('no normative spec clause changes'). scenarios/e2e-worlds-to-fabric.md (Re-validation \u2014 KGP 0.5.0, findings table) left KGP candidate on two minor findings: KGP-1 \u2014 which `confidence` a claim carrying several `prov` records projects to ProbLog is unstated (remedy: state in \u00a74 that the projection emits one fact PER ADMITTED PROV RECORD after the \u00a77 slice, and that folding several into one probability is the CONSUMER's aggregation policy, never KGP's) \u2014 and KGP-2 \u2014 \u00a74.1 fixes the annotation STRUCTURE but names actual predicates only where PROV supplies them, so two conformant producers can emit structurally identical, mutually unreadable projections (remedy: name the annotation predicates in \u00a74.1 \u2014 a koine-owned term namespace for claim-id / confidence / valid_time / embedding_model / license / egress / dialect, reusing an external term wherever one already exists). Also add the \u00a74.1 reference to the still-missing downstream round-trip fixture (built downstream per ADR-0001 as the parked cross-repo marker 64-kgp-projection-roundtrip-fixture) so the remaining re-ratification gate is named in the spec, not implied. Lifecycle per specs/README.md: normative edits to a candidate spec \u2014 version bump + changelog, status stays candidate pending the scenario re-run. Agnostic: bind roles, no product names. ROADMAP.md Phase 1.",
   "parked": false,
   "dependsOn": [],
   "touches": [
@@ -24,24 +25,24 @@
   "userStories": [
     {
       "id": "US-1",
-      "title": "KGP-1 — state the multi-provenance -> ProbLog confidence rule in §4",
-      "description": "A claim carrying several admitted `prov` records has several confidences; a ProbLog fact has one probability. Encode the scenario's prescribed remedy as a normative §4 clause: one projected fact per admitted prov record (after the §7 confidence/license/egress slice), with aggregation into a single probability explicitly the consumer's policy, outside KGP.",
+      "title": "KGP-1 \u2014 state the multi-provenance -> ProbLog confidence rule in \u00a74",
+      "description": "A claim carrying several admitted `prov` records has several confidences; a ProbLog fact has one probability. Encode the scenario's prescribed remedy as a normative \u00a74 clause: one projected fact per admitted prov record (after the \u00a77 confidence/license/egress slice), with aggregation into a single probability explicitly the consumer's policy, outside KGP.",
       "acceptanceCriteria": [
-        "specs/grounding-pack.md §4's ProbLog row/clause normatively states the projection emits one fact per admitted prov record after the §7 slice, and that folding several records into one probability is consumer aggregation policy, not KGP's — matching the KGP-1 remedy in the scenario's findings table.",
-        "The clause preserves the round-trip guarantee's terms (lossless per record, §3.3 claim-id convergence untouched) and does not alter §3 normalization or §3.3 — claim identity is byte-unchanged.",
-        "The §4.1 'two minor findings are open' pressure-test note is updated to reflect KGP-1 closed."
+        "specs/grounding-pack.md \u00a74's ProbLog row/clause normatively states the projection emits one fact per admitted prov record after the \u00a77 slice, and that folding several records into one probability is consumer aggregation policy, not KGP's \u2014 matching the KGP-1 remedy in the scenario's findings table.",
+        "The clause preserves the round-trip guarantee's terms (lossless per record, \u00a73.3 claim-id convergence untouched) and does not alter \u00a73 normalization or \u00a73.3 \u2014 claim identity is byte-unchanged.",
+        "The \u00a74.1 'two minor findings are open' pressure-test note is updated to reflect KGP-1 closed."
       ],
       "passes": false,
       "notes": ""
     },
     {
       "id": "US-2",
-      "title": "KGP-2 — name the §4.1 annotation predicates",
-      "description": "§4.1 fixes which KGP construct becomes an annotation on the quoted triple but names concrete terms only for `prov` (PROV supplies them). Name the rest: a koine-owned annotation-term namespace for claim-id, confidence, valid_time, embedding_model, license, egress class, and dialect tier — reusing an established external vocabulary term wherever one already exists, minting a koine term only where none does.",
+      "title": "KGP-2 \u2014 name the \u00a74.1 annotation predicates",
+      "description": "\u00a74.1 fixes which KGP construct becomes an annotation on the quoted triple but names concrete terms only for `prov` (PROV supplies them). Name the rest: a koine-owned annotation-term namespace for claim-id, confidence, valid_time, embedding_model, license, egress class, and dialect tier \u2014 reusing an established external vocabulary term wherever one already exists, minting a koine term only where none does.",
       "acceptanceCriteria": [
-        "specs/grounding-pack.md §4.1 names a concrete, stable predicate/term (IRI) for every annotation its table carries — claim id, confidence, valid_time, embedding_model, license, egress class, dialect tier — each row stating whether the term is reused (and from where) or koine-minted, so two conformant producers now emit mutually READABLE projections.",
-        "The naming respects koine's immutability discipline: published terms are immutable once ratified (a change means a new term, never an in-place edit), and the terms are role-scoped/agnostic — no product name, KINP §3.4 placeholder namespaces in examples.",
-        "The KGP-2 remedy is satisfied exactly as the scenario's findings table prescribes, and the §4.1 pressure-test note no longer reports the predicates unnamed."
+        "specs/grounding-pack.md \u00a74.1 names a concrete, stable predicate/term (IRI) for every annotation its table carries \u2014 claim id, confidence, valid_time, embedding_model, license, egress class, dialect tier \u2014 each row stating whether the term is reused (and from where) or koine-minted, so two conformant producers now emit mutually READABLE projections.",
+        "The naming respects koine's immutability discipline: published terms are immutable once ratified (a change means a new term, never an in-place edit), and the terms are role-scoped/agnostic \u2014 no product name, KINP \u00a73.4 placeholder namespaces in examples.",
+        "The KGP-2 remedy is satisfied exactly as the scenario's findings table prescribes, and the \u00a74.1 pressure-test note no longer reports the predicates unnamed."
       ],
       "passes": false,
       "notes": ""
@@ -49,11 +50,11 @@
     {
       "id": "US-3",
       "title": "Round-trip fixture reference, scenario closure, and lifecycle discipline",
-      "description": "Name the remaining re-ratification gate in the spec: §4.1's exercised-by note references the downstream round-trip fixture (the parked cross-repo marker 64-kgp-projection-roundtrip-fixture, built downstream per ADR-0001) as what remains before KGP re-ratifies. Mark KGP-1/KGP-2 closed in the scenario's findings table, and land the whole edit under the spec lifecycle.",
+      "description": "Name the remaining re-ratification gate in the spec: \u00a74.1's exercised-by note references the downstream round-trip fixture (the parked cross-repo marker 64-kgp-projection-roundtrip-fixture, built downstream per ADR-0001) as what remains before KGP re-ratifies. Mark KGP-1/KGP-2 closed in the scenario's findings table, and land the whole edit under the spec lifecycle.",
       "acceptanceCriteria": [
-        "specs/grounding-pack.md's pressure-test/exercised-by note states that with KGP-1/KGP-2 closed, the remaining KGP 0.5.x re-ratification gate is the downstream RDF-star/PROV/JSON-LD round-trip fixture (cross-repo, ADR-0001 — referenced as the 64-kgp-projection-roundtrip-fixture work), without linking to any private repo (CLAUDE.md rule).",
+        "specs/grounding-pack.md's pressure-test/exercised-by note states that with KGP-1/KGP-2 closed, the remaining KGP 0.5.x re-ratification gate is the downstream RDF-star/PROV/JSON-LD round-trip fixture (cross-repo, ADR-0001 \u2014 referenced as the 64-kgp-projection-roundtrip-fixture work), without linking to any private repo (CLAUDE.md rule).",
         "scenarios/e2e-worlds-to-fabric.md's findings table marks KGP-1 and KGP-2 resolved with a pointer to the closing spec version/changelog entry, and the scenario's 'ratified is not claimed' note is updated to name only the fixture as outstanding; scenarios/README.md's open-findings line is synced.",
-        "Lifecycle: grounding-pack.md bumps its version (normative change to a candidate spec), Status stays candidate, a dated changelog entry records both closures + the fixture reference, and no schema in schemas/ changes shape (projections have no document schema — conformance is the round-trip); schemas/*.json still parse."
+        "Lifecycle: grounding-pack.md bumps its version (normative change to a candidate spec), Status stays candidate, a dated changelog entry records both closures + the fixture reference, and no schema in schemas/ changes shape (projections have no document schema \u2014 conformance is the round-trip); schemas/*.json still parse."
       ],
       "passes": false,
       "notes": ""

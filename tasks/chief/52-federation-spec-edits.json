@@ -1,8 +1,9 @@
 {
   "name": null,
   "project": "koine",
+  "category": "feature",
   "branchName": "chief/52-federation-spec-edits",
-  "description": "Apply the federation ADR (chief/51) into the three specs that each defer the single-authority question, turning three separate 'future option' notes into one consistent, ADR-backed clause per spec (ROADMAP.md Phase F1): KINP §11 (identity-authority role -> federated authorities, identity.md ~line 477), KCB §7.1 (single registry -> peering registries, capability-bus.md ~line 251), and KMI §9 (single CAS -> per-project stores replicating on reference, media-interchange.md ~line 380). Each edit is normative, so per koine's draft->candidate->ratified convention each touched spec bumps version and returns to candidate pending the multi-authority pressure test (chief/53). PARKED: gated on chief/51 and on a real >1-authority deployment target (ROADMAP.md: 'nothing is built until a deployment actually needs more than one authority'). Public-safe/agnostic: bind roles, names no deployment.",
+  "description": "Apply the federation ADR (chief/51) into the three specs that each defer the single-authority question, turning three separate 'future option' notes into one consistent, ADR-backed clause per spec (ROADMAP.md Phase F1): KINP \u00a711 (identity-authority role -> federated authorities, identity.md ~line 477), KCB \u00a77.1 (single registry -> peering registries, capability-bus.md ~line 251), and KMI \u00a79 (single CAS -> per-project stores replicating on reference, media-interchange.md ~line 380). Each edit is normative, so per koine's draft->candidate->ratified convention each touched spec bumps version and returns to candidate pending the multi-authority pressure test (chief/53). PARKED: gated on chief/51 and on a real >1-authority deployment target (ROADMAP.md: 'nothing is built until a deployment actually needs more than one authority'). Public-safe/agnostic: bind roles, names no deployment.",
   "parked": true,
   "dependsOn": [
     "51-federation-adr"
@@ -26,20 +27,20 @@
   "userStories": [
     {
       "id": "US-1",
-      "title": "KINP §11 — identity-authority role generalized to federated authorities",
-      "description": "Edit identity.md §11 (the resolver-authority fork, ~line 477) to apply the ADR: keep the single authority ROLE as the default, and specify the federated-authorities extension the ADR resolves, citing the ADR instead of restating a bespoke 'future option'.",
+      "title": "KINP \u00a711 \u2014 identity-authority role generalized to federated authorities",
+      "description": "Edit identity.md \u00a711 (the resolver-authority fork, ~line 477) to apply the ADR: keep the single authority ROLE as the default, and specify the federated-authorities extension the ADR resolves, citing the ADR instead of restating a bespoke 'future option'.",
       "acceptanceCriteria": [
-        "identity.md §11 references the federation ADR (chief/51) and specifies how the single identity-authority role generalizes to federated authorities, preserving the offline-first minting and authority-as-role invariants (§6, §11).",
-        "The KINP version header is bumped and Status set to candidate, with a changelog entry citing the ADR; cross-references to §11 elsewhere in the spec stay consistent.",
-        "The change is additive to the existing model — a single-authority deployment stays conformant unchanged."
+        "identity.md \u00a711 references the federation ADR (chief/51) and specifies how the single identity-authority role generalizes to federated authorities, preserving the offline-first minting and authority-as-role invariants (\u00a76, \u00a711).",
+        "The KINP version header is bumped and Status set to candidate, with a changelog entry citing the ADR; cross-references to \u00a711 elsewhere in the spec stay consistent.",
+        "The change is additive to the existing model \u2014 a single-authority deployment stays conformant unchanged."
       ],
       "passes": false,
       "notes": ""
     },
     {
       "id": "US-2",
-      "title": "KCB §7.1 — single registry generalized to peering registries",
-      "description": "Edit capability-bus.md §7 open question 1 (~line 251) to apply the ADR: the single host-provisioned discovery registry generalizes to per-org registries that peer, citing the ADR.",
+      "title": "KCB \u00a77.1 \u2014 single registry generalized to peering registries",
+      "description": "Edit capability-bus.md \u00a77 open question 1 (~line 251) to apply the ADR: the single host-provisioned discovery registry generalizes to per-org registries that peer, citing the ADR.",
       "acceptanceCriteria": [
         "capability-bus.md's registry-federation clause references the ADR and specifies the peering-registries extension, consistent with ADR-0001's route-by-lookup-not-proxy stance (the registry returns addresses; peers dial each other).",
         "The KCB version header is bumped and Status set to candidate, with a changelog entry citing the ADR.",
@@ -50,12 +51,12 @@
     },
     {
       "id": "US-3",
-      "title": "KMI §9 — single CAS generalized to per-project stores replicating on reference",
-      "description": "Edit media-interchange.md §9 open question 3 / the CAS operational model (~line 380) to apply the ADR: a single shared content-addressed store generalizes to per-project stores that replicate on reference.",
+      "title": "KMI \u00a79 \u2014 single CAS generalized to per-project stores replicating on reference",
+      "description": "Edit media-interchange.md \u00a79 open question 3 / the CAS operational model (~line 380) to apply the ADR: a single shared content-addressed store generalizes to per-project stores that replicate on reference.",
       "acceptanceCriteria": [
         "media-interchange.md's CAS clause references the ADR and specifies the per-project-store-replicating-on-reference model, keeping content-addressed asset identity byte-stable across stores.",
         "The KMI version header is bumped and Status set to candidate, with a changelog entry citing the ADR; the three edited specs read consistently with each other and all cite the one ADR.",
-        "The three §-edits leave every current single-authority deployment conformant (the fold is additive), and each names chief/53-multi-authority-scenario as the pressure test that must break-test the shared pattern before re-ratification."
+        "The three \u00a7-edits leave every current single-authority deployment conformant (the fold is additive), and each names chief/53-multi-authority-scenario as the pressure test that must break-test the shared pattern before re-ratification."
       ],
       "passes": false,
       "notes": ""

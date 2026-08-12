@@ -1,8 +1,9 @@
 {
   "name": null,
   "project": "koine",
+  "category": "replace",
   "branchName": "chief/74-kinp-kcs-prior-art-and-novelty",
-  "description": "D14 (identity + conformance halves): close koine's zero written engagement with DIDs / Verifiable Credentials (KINP) and Pact / consumer-driven contract testing (KCS), and write down two findings the prior-art sweep established. KINP: no standard does cross-authority MERGE — Agent Name Service v2 resolves a collision by REVOKING one side, the MCP Registry PREVENTS collisions via namespace ownership, and owl:sameAs is fifteen years into a documented failure mode (identity inflation; the 'sameAs is not always the same' critique). DIDs/VCs are resolution + signed attestation: a DID method resolves, it does not reconcile, and neither answers KINP's actual question ('two authorities minted identifiers for plausibly the same entity — what is the merged view, and what must never merge?'). Also record that IETF Web Bot Auth is NOT a competitor and say why precisely: the WG was chartered 2025-10-23, has ZERO draft-ietf-webbotauth-* documents, both milestones are missed, and its scope is bot-to-website authentication 'using existing identifiers' — orthogonal to cross-authority entity identity by construction, not merely by maturity. KCS: Pact is the mature name in contract testing and the comparison ARGUES FOR KCS — Pact is bilateral (one consumer, one provider, one pact) and mock-based (consumer expectations replayed against a stub, provider verified against a recorded pact, never against the live counterpart), where KCS is a declarative scenario driving N REAL participants over their actual MCP/A2A connections with cross-plane assertions (firewall_holds, claims_converge, cost_within_ceiling, always_completes) that no pact can express, plus spec-section traceability. The nearest agent-protocol equivalent is A2A's own test kit at 45 stars, declarative only in its participant matrix. Second, fix a positioning bug: KCS is the MOST DEFENSIBLE spec in the suite and the LEAST ADVERTISED — it is a ratified spec that specs/README.md and the root README describe more thinly than the specs with weaker claims. The prose is drafted in docs/positioning.md; this tasklist lands the per-spec half. Lifecycle per specs/README.md: KINP 0.2.1 is RATIFIED and KCS 0.2.0 is RATIFIED — these are prior-art / rationale additions and MUST NOT touch a normative clause; if any edit would, stop and split it out rather than dropping a ratified spec back to candidate. Agnostic: bind roles; competitor names appear only as clearly-marked informative prior-art references. ROADMAP.md Phase F7.",
+  "description": "D14 (identity + conformance halves): close koine's zero written engagement with DIDs / Verifiable Credentials (KINP) and Pact / consumer-driven contract testing (KCS), and write down two findings the prior-art sweep established. KINP: no standard does cross-authority MERGE \u2014 Agent Name Service v2 resolves a collision by REVOKING one side, the MCP Registry PREVENTS collisions via namespace ownership, and owl:sameAs is fifteen years into a documented failure mode (identity inflation; the 'sameAs is not always the same' critique). DIDs/VCs are resolution + signed attestation: a DID method resolves, it does not reconcile, and neither answers KINP's actual question ('two authorities minted identifiers for plausibly the same entity \u2014 what is the merged view, and what must never merge?'). Also record that IETF Web Bot Auth is NOT a competitor and say why precisely: the WG was chartered 2025-10-23, has ZERO draft-ietf-webbotauth-* documents, both milestones are missed, and its scope is bot-to-website authentication 'using existing identifiers' \u2014 orthogonal to cross-authority entity identity by construction, not merely by maturity. KCS: Pact is the mature name in contract testing and the comparison ARGUES FOR KCS \u2014 Pact is bilateral (one consumer, one provider, one pact) and mock-based (consumer expectations replayed against a stub, provider verified against a recorded pact, never against the live counterpart), where KCS is a declarative scenario driving N REAL participants over their actual MCP/A2A connections with cross-plane assertions (firewall_holds, claims_converge, cost_within_ceiling, always_completes) that no pact can express, plus spec-section traceability. The nearest agent-protocol equivalent is A2A's own test kit at 45 stars, declarative only in its participant matrix. Second, fix a positioning bug: KCS is the MOST DEFENSIBLE spec in the suite and the LEAST ADVERTISED \u2014 it is a ratified spec that specs/README.md and the root README describe more thinly than the specs with weaker claims. The prose is drafted in docs/positioning.md; this tasklist lands the per-spec half. Lifecycle per specs/README.md: KINP 0.2.1 is RATIFIED and KCS 0.2.0 is RATIFIED \u2014 these are prior-art / rationale additions and MUST NOT touch a normative clause; if any edit would, stop and split it out rather than dropping a ratified spec back to candidate. Agnostic: bind roles; competitor names appear only as clearly-marked informative prior-art references. ROADMAP.md Phase F7.",
   "parked": false,
   "dependsOn": [],
   "touches": [
@@ -11,7 +12,7 @@
   ],
   "iters": 6,
   "warmup": [
-    "grep -n 'prior art\\|Prior art\\|related work\\|not adopting\\|§9' specs/identity.md | head -20",
+    "grep -n 'prior art\\|Prior art\\|related work\\|not adopting\\|\u00a79' specs/identity.md | head -20",
     "grep -n 'merge\\|same_as\\|authority' specs/identity.md | head -30",
     "sed -n '1,60p' specs/conformance-scenario.md",
     "grep -n 'KCS' specs/README.md README.md"
@@ -26,10 +27,10 @@
   "userStories": [
     {
       "id": "US-1",
-      "title": "KINP — cite DIDs/VCs, and state that cross-authority merge is unserved",
+      "title": "KINP \u2014 cite DIDs/VCs, and state that cross-authority merge is unserved",
       "description": "Add an informative prior-art subsection to specs/identity.md engaging the identity standards KINP has never mentioned, and record the specific gap that justifies KINP's merge policy and the same_as / based_on firewall.",
       "acceptanceCriteria": [
-        "specs/identity.md cites DIDs and Verifiable Credentials and dismisses them for KINP's problem with the stated reason: they provide self-certifying identifiers with resolvable documents, and signed attestations about a subject — a DID method RESOLVES, it does not RECONCILE, and neither expresses a merged view across two minting authorities or a firewall against merges that must never happen.",
+        "specs/identity.md cites DIDs and Verifiable Credentials and dismisses them for KINP's problem with the stated reason: they provide self-certifying identifiers with resolvable documents, and signed attestations about a subject \u2014 a DID method RESOLVES, it does not RECONCILE, and neither expresses a merged view across two minting authorities or a firewall against merges that must never happen.",
         "The same subsection records that NO standard does cross-authority merge, with the three concrete instances: Agent Name Service v2 resolves a collision by REVOKING one side; the MCP Registry PREVENTS collisions by namespace ownership; owl:sameAs is fifteen years into a documented failure mode (identity inflation).",
         "It records that IETF Web Bot Auth is NOT a competitor, with the reason stated as scope rather than maturity: chartered 2025-10-23, zero draft-ietf-webbotauth-* documents, both milestones missed, and a scope of bot-to-website authentication 'using existing identifiers'.",
         "The addition is INFORMATIVE ONLY: KINP 0.2.1's Status stays ratified, no normative clause, identifier grammar, envelope, or resolution semantic changes, and the changelog entry says so explicitly."
@@ -39,11 +40,11 @@
     },
     {
       "id": "US-2",
-      "title": "KCS — cite Pact / consumer-driven contract testing, and name the two axes it differs on",
+      "title": "KCS \u2014 cite Pact / consumer-driven contract testing, and name the two axes it differs on",
       "description": "Add the equivalent informative prior-art subsection to specs/conformance-scenario.md. The comparison is the strongest argument for KCS and currently appears nowhere.",
       "acceptanceCriteria": [
         "specs/conformance-scenario.md cites Pact / consumer-driven contract testing and distinguishes KCS on both axes explicitly: Pact is BILATERAL (one consumer, one provider, one pact) and MOCK-BASED (consumer expectations replayed against a stub; provider verified against a recorded pact, never the live counterpart), where KCS drives N REAL participants over their actual MCP/A2A connections.",
-        "It names the capability no pact can express — the cross-plane assertion vocabulary (firewall_holds, claims_converge, cost_within_ceiling, always_completes), which spans planes and participants rather than a single request/response pair — plus spec-section traceability.",
+        "It names the capability no pact can express \u2014 the cross-plane assertion vocabulary (firewall_holds, claims_converge, cost_within_ceiling, always_completes), which spans planes and participants rather than a single request/response pair \u2014 plus spec-section traceability.",
         "It records the nearest agent-protocol equivalent honestly (A2A's own test kit: 45 stars, declarative only in its participant matrix) as an informative data point, dated, so the claim ages visibly.",
         "The addition is INFORMATIVE ONLY: KCS 0.2.0's Status stays ratified, the assertion vocabulary and document shape are unchanged, and the changelog entry says so."
       ],
@@ -52,13 +53,13 @@
     },
     {
       "id": "US-3",
-      "title": "Advertise KCS — fix the most-defensible / least-advertised asymmetry",
+      "title": "Advertise KCS \u2014 fix the most-defensible / least-advertised asymmetry",
       "description": "KCS is ratified, uncontested, and described more thinly than specs with weaker claims. Bring its index-level and positioning-level description up to the strength of its actual claim, without overclaiming.",
       "acceptanceCriteria": [
-        "specs/README.md's KCS row and the root README.md's KCS description state what KCS actually is in one line — declarative scenario data x N real participants x cross-plane assertions x spec traceability — rather than a generic 'conformance format' summary, and are consistent with each other.",
+        "specs/README.md's KCS row and the root README.md's KCS description state what KCS actually is in one line \u2014 declarative scenario data x N real participants x cross-plane assertions x spec traceability \u2014 rather than a generic 'conformance format' summary, and are consistent with each other.",
         "docs/positioning.md's KCS paragraph and the two READMEs agree; no claim appears in one place that the spec text does not support.",
-        "No status, version, or normative surface changes anywhere in this story — it is description only, and the diff shows that.",
-        "The five borrowable designs identified by the sweep are recorded as a forward note (not adopted here): connectrpc's capability-config-selects-cases + failure baselines, MCP's frozen per-revision requirement sets + not-scored reasons, OpenID's Condition/Sequence/TestModule/Plan composition, C2PA's YAML rubrics with JMESPath + specSection traceability, and Venom's executor abstraction — each named as a candidate for a future KCS revision under the normal lifecycle."
+        "No status, version, or normative surface changes anywhere in this story \u2014 it is description only, and the diff shows that.",
+        "The five borrowable designs identified by the sweep are recorded as a forward note (not adopted here): connectrpc's capability-config-selects-cases + failure baselines, MCP's frozen per-revision requirement sets + not-scored reasons, OpenID's Condition/Sequence/TestModule/Plan composition, C2PA's YAML rubrics with JMESPath + specSection traceability, and Venom's executor abstraction \u2014 each named as a candidate for a future KCS revision under the normal lifecycle."
       ],
       "passes": false,
       "notes": ""

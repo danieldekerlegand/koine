@@ -1,8 +1,9 @@
 {
   "name": null,
   "project": "agora",
+  "category": "feature",
   "branchName": "chief/62-encode-scenarios-as-kcs",
-  "description": "CROSS-REPO — owned and built in AGORA, not koine. The six scenarios/ pressure tests are hand-walked PROSE; the KCS payoff is to encode each as a machine-replayable KCS document. KCS §6 names this a downstream conformance-console tasklist, so per ADR-0001 it lives in agora, not koine (koine holds KCS conformance-scenario.md + the prose scenarios; agora holds the console runtime). Tracked here as a koine ROADMAP Phase F4 marker ('agora chief/62-encode-scenarios-as-kcs'). PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.",
+  "description": "CROSS-REPO \u2014 owned and built in AGORA, not koine. The six scenarios/ pressure tests are hand-walked PROSE; the KCS payoff is to encode each as a machine-replayable KCS document. KCS \u00a76 names this a downstream conformance-console tasklist, so per ADR-0001 it lives in agora, not koine (koine holds KCS conformance-scenario.md + the prose scenarios; agora holds the console runtime). Tracked here as a koine ROADMAP Phase F4 marker ('agora chief/62-encode-scenarios-as-kcs'). PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.",
   "parked": true,
   "dependsOn": [],
   "touches": [
@@ -10,7 +11,7 @@
   ],
   "iters": 6,
   "warmup": [
-    "echo 'Cross-repo: implement in agora against koine specs/conformance-scenario.md §6 + the six scenarios/*.md'"
+    "echo 'Cross-repo: implement in agora against koine specs/conformance-scenario.md \u00a76 + the six scenarios/*.md'"
   ],
   "userStories": [
     {
@@ -18,7 +19,7 @@
       "title": "Encode the six prose scenarios as machine-replayable KCS documents",
       "description": "In agora, encode scenarios/ as KCS documents (kcs:worlds-to-fabric, kcs:media-transform, the finetune passes, the format-stress). koine ROADMAP marker; work is agora's.",
       "acceptanceCriteria": [
-        "Implemented in agora (not koine): each of koine's six scenarios/*.md is encoded as a machine-replayable KCS document per conformance-scenario.md §6 (observation model §4, cross-plane assertion vocabulary §5), named e.g. kcs:worlds-to-fabric, kcs:media-transform, the finetune passes, and the format-stress.",
+        "Implemented in agora (not koine): each of koine's six scenarios/*.md is encoded as a machine-replayable KCS document per conformance-scenario.md \u00a76 (observation model \u00a74, cross-plane assertion vocabulary \u00a75), named e.g. kcs:worlds-to-fabric, kcs:media-transform, the finetune passes, and the format-stress.",
         "The encoded documents preserve each prose scenario's assertions (firewall, cost, world-scoping, egress/license gating) and conform to koine's ratified KCS 0.2.0 by reference (ADR-0001).",
         "Runs under agora's own gates; no koine file is edited by this tasklist (the prose scenarios in koine remain the source)."
       ],
