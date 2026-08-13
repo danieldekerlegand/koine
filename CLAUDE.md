@@ -71,8 +71,13 @@ vocabulary.
   every retiring surface (§7.3 — hence §2.2's standalone manifest is removed at **KCB 0.5.0**), an
   archival pin ≠ a live binding (§7.4), grants bind to `(capability, major)` and a `cost` change
   fails closed (§5). Additive; old open questions renumbered to §8. Two re-ratification gates now:
-  re-validation vs `scenarios/e2e-media-transform.md` **and** the §7.5 mutate-live-schema
-  break-test (`chief/56`).
+  re-validation vs `scenarios/e2e-media-transform.md` **and** a *clean* §7.5 mutate-live-schema
+  break-test. That break-test has **landed and been run** —
+  `scenarios/e2e-live-schema-mutation.md` — and is **not clean**: §7's model held under attack, its
+  perimeter did not, giving deltas **V-1…V-8** (blocking V-2 digest blind on knowledge ports, V-4 no
+  address for a second major, V-5 no version operand at invoke time, V-7 no signal reaches a live
+  `subscribe`). All folds are additive → KCB **0.5.0**, the same minor that removes §2.2's standalone
+  manifest. The scenario's *Re-ratification — what this pass gates* section is the note of record.
 - `specs/media-interchange.md` — KMI 0.3.1, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the

@@ -527,4 +527,63 @@ Cleanup: V-1. V-8 is evidence for a KCS open question and blocks nothing. None r
 V-4/V-5 add a transport binding and an invoke argument, V-7 adds a control frame, V-2 registers a
 name, V-3 extends a prefix rule, V-6 raises a floor, V-1 adds a quote. **KCB stays candidate.**
 
-> **Resolution:** — *pending; see the re-ratification note below.*
+> **Resolution:** — see *Re-ratification — what this pass gates*, below.
+
+---
+
+## Re-ratification — what this pass gates
+
+The earlier scenarios keep a **Resolution** note naming the spec version that folded their deltas
+([`e2e-media-transform.md`](e2e-media-transform.md) for F–L,
+[`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) for A–E and KGP-1/2). This pass is younger than
+its fold, so the note runs the other way: it records **which spec version this pass gates**, and what
+a clean re-run would license.
+
+### Which specs this pass gates
+
+| Spec | Version at the time of this pass | What this pass does to it |
+|---|---|---|
+| **KCB** ([`../specs/capability-bus.md`](../specs/capability-bus.md)) | 0.4.0, **Candidate** | **The gated spec.** §7 in full (§7.1 canonicalization, §7.2 compatibility, §7.3 deprecation, §7.4 archival pin), plus the §2/§2.1/§3/§4/§5 surfaces §7 was wired through. Eight deltas **V-1…V-8**; four blocking (**V-2, V-4, V-5, V-7**). **Not clean → KCB stays Candidate.** |
+| **KCS** ([`../specs/conformance-scenario.md`](../specs/conformance-scenario.md)) | 0.2.0, Ratified | **V-8 only, and as evidence, not a demand.** Four of this pass's ten assertions have no §5 predicate; that is input to KCS open question 1 (*fixed core + escape hatch*). No clause is contradicted and **no version moves**. |
+| **KMI** ([`../specs/media-interchange.md`](../specs/media-interchange.md)) | 0.3.1, Candidate | **Untouched.** The `score:audio` port is a KMI-typed port, but every assertion here is about the *version* on the capability that carries it, never about the asset envelope, lineage, or timeline. KMI's own gate rides with the media-transform extension re-run, not with this pass. |
+| **KFT** ([`../specs/fine-tuning.md`](../specs/fine-tuning.md)) | 0.4.0, Candidate | **Untouched — one confirmation.** §11.5's inheritance is an *informative pointer* to KCB §7.4, and Step 11 is the first thing to exercise it: the pinned `kft_version` survived three majors and a removal, and correctly refused to authorize a re-run. That vindicates the pointer; it changes no KFT clause and **no version moves**. |
+| **`../schemas/`** | — | **No shape change, by construction.** This is a behavior test. A `schema_id` is a digest *over* a KCB §2.1 port declaration (§7.1), and koine ships no machine-readable twin of the KCB card extension — the twins that exist (`provenance`, `media-timeline`, `finetune-job`) are data-plane document shapes and no step reads or writes one. Every `schemas/*.json` is byte-unchanged and still parses. |
+
+### What a clean pass would license
+
+On a **clean** re-run — Steps 1–11 all ✅, no delta reopened — the capability-versioning §-edits
+([ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md) → KCB §7, `chief/54` +
+`chief/55`) may return from **Candidate** to **Ratified**, and a KCB changelog entry may cite this
+document by name and section as the evidence, exactly as KCB's *Pressure test* § already cites
+[`e2e-media-transform.md`](e2e-media-transform.md) for F–L.
+
+Two conditions, and **neither is sufficient alone**:
+
+1. **This break-test re-runs clean.** Which means the four blocking deltas are folded first —
+   **V-5** (the invoke carries a version; the granted major travels in the token), **V-4** (a
+   per-major transport binding in `capabilities[]`), **V-7** (an in-band deprecation/removal control
+   frame on `subscribe`), **V-2** (a registered or digested payload shape on knowledge ports) — with
+   **V-3** and **V-6** in the same fold. All are additive, so that fold is a **minor**: KCB **0.5.0**,
+   which is already the version §7.3 schedules for removing §2.2's standalone manifest. Steps 5, 7, 8,
+   9 and 10 are the ones that must flip; Steps 2, 3, 4, 6 and 11 held and are the regression set.
+2. **KCB's other gate closes.** Re-running [`e2e-media-transform.md`](e2e-media-transform.md)
+   against the 0.3.0 AgentCard-extension manifest shape is an *independent* gate on the same
+   candidate ([KCB §7.5](../specs/capability-bus.md#75-pressure-test-for-this-section) and that
+   spec's *Pressure test* §). This pass never re-ran those discovery legs and makes no claim about
+   them.
+
+**What this pass does discharge** is §7.5's requirement that the break-test be *written and run* — the
+one that did not exist when 0.4.0 published. §7.5 asked for four assertions by name; all four were
+run, and **three of them broke** (the v1 binding survives a minor ✅ Step 2; a `schema_id` change
+under an unchanged `version` is caught 🔴 **V-2** on knowledge ports, ✅ on media ports; the v1 grant
+does not reach v2 🔴 **V-5**; a cost raise fails closed at the ceiling 🟡 **V-1** — it fails closed,
+but by refusal rather than by a named quote mismatch). That is the pass doing its job: §7's *model*
+is sound and its *perimeter* is not, and the perimeter is repairable additively.
+
+> **Resolution (2026-08-13):** recorded against **KCB 0.4.0**, whose §7 this pass break-tests at
+> §7.5's request. Deltas **V-1…V-8** are **open — none folded**, and V-2/V-4/V-5/V-7 are blocking, so
+> **KCB stays Candidate** on both of its gates. No other spec version moves: V-8 is evidence for a
+> KCS open question, KFT §11.5's archival-pin pointer is *confirmed* rather than changed, and KMI is
+> untouched. When a fold lands, amend this note to name the version that closed each delta — as
+> [`e2e-media-transform.md`](e2e-media-transform.md)'s Resolution does for F–L — after which this
+> document stands as the historical record of what the break-test found.

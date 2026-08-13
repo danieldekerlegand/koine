@@ -45,4 +45,8 @@ artifact per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md).
 layer holds, no delta reopened). Both **KCB 0.4.0** and **KMI 0.3.1** nonetheless remain
 **candidate** pending a re-run of the same scenario against KCB's AgentCard-extension manifest
 shape, which its discovery steps exercise; KCB carries a **second** gate on top of it — the §7.5
-break-test of its versioning section, still to be written.
+break-test of its versioning section, which has now **landed and been run**
+([`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md)) and did **not** pass clean: deltas
+**V-1…V-8**, blocking **V-2/V-4/V-5/V-7**, all additively foldable into a KCB **0.5.0** minor. See
+that scenario's *Re-ratification — what this pass gates* section for exactly what a clean re-run
+would license.

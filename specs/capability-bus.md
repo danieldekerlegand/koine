@@ -19,7 +19,10 @@ carries.
 > path, **both** legs: (i) re-run
 > [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) against the extension
 > shape (no delta F/G/J/K/L is reopened — see **Pressure test**), and (ii) break-test §7 with the
-> mutate-live-schema scenario `chief/56-live-schema-mutation-scenario` (§7.5).
+> mutate-live-schema scenario (§7.5). Leg (ii) has been **written and run** —
+> [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) — and did
+> **not** pass clean: deltas **V-1…V-8**, blocking V-2/V-4/V-5/V-7, all additively foldable into a
+> **0.5.0** minor. Both legs stay open.
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
 > capability bus moves *capability*: how a participant advertises what it can do, how orgs and
@@ -473,13 +476,27 @@ like any other — the pin explains what was trained; it does not authorize trai
 ### 7.5 Pressure test for this section
 
 §7 is normative text that has not yet been broken against, and an unexercised canonicalization
-(§7.1) rots. Before KCB re-ratifies, the **mutate-live-schema** scenario —
-`chief/56-live-schema-mutation-scenario`, to land in [`../scenarios/`](../scenarios/) — MUST
-break-test it: a provider ships a capability v2 while a v1 subscriber is live, and the scenario
-asserts that the v1 binding survives, that a `schema_id` change under an unchanged `version` is
-caught as a silent mutation (§7.2), that the v1 grant does not reach v2 (§5), and that a cost raise
-fails closed against the spend ceiling rather than overspending. Prefer finding the break to
-asserting correctness.
+(§7.1) rots. Before KCB re-ratifies, the **mutate-live-schema** scenario MUST break-test it: a
+provider ships a capability v2 while a v1 subscriber is live, and the scenario asserts that the v1
+binding survives, that a `schema_id` change under an unchanged `version` is caught as a silent
+mutation (§7.2), that the v1 grant does not reach v2 (§5), and that a cost raise fails closed
+against the spend ceiling rather than overspending. Prefer finding the break to asserting
+correctness.
+
+**That scenario has landed and been run:**
+[`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md). All four
+assertions above were exercised and **three broke**, along with four more the section had not
+anticipated — deltas **V-1…V-8**, of which **V-2, V-4, V-5 and V-7** are blocking. §7's *model* is
+not in question (semver for intent, digest for identity, successor-never-mutate-in-place all held,
+several under direct attack); its *perimeter* is: nothing carries a version at invoke time (V-5) and
+the second major has no address on the transport (V-4), so the dual-serving window §7.2 mandates
+cannot be operated; no §7 signal reaches a streaming subscriber (V-7); and the digest is blind on
+knowledge ports (V-2) and incomparable across a spec minor (V-3). Every proposed fold is additive.
+The scenario's *Re-ratification — what this pass gates* section states the condition precisely: this
+pass discharges §7.5's requirement that the break-test be **written and run**, and does **not**
+discharge the gate, because the run was not clean. **KCB stays Candidate** until those folds land
+(a minor — **0.5.0**, the version §7.3 already schedules for §2.2's removal) and the break-test
+re-runs clean.
 
 ---
 
@@ -522,10 +539,25 @@ and confirm each leg still resolves; nothing in the port contract needs to chang
 and the extension URI untouched, so the 0.3.0 re-check above still holds verbatim. But §7 states
 rules the media-transform scenario never exercises — a live subscriber across a version bump, a
 digest that moves without one, a grant meeting a new major, a cost raise meeting a ceiling — and it
-therefore has its own break-test, `chief/56-live-schema-mutation-scenario` (§7.5). **Re-ratifying
-KCB now needs both passes:** the extension-shape re-run *and* the mutate-live-schema pass.
+therefore has its own break-test:
+[`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) (§7.5).
+**Re-ratifying KCB needs both passes:** the extension-shape re-run *and* a clean mutate-live-schema
+pass. The break-test has now been **written and run**, and it is **not clean** — deltas **V-1…V-8**,
+blocking **V-2** (the digest is blind on knowledge ports), **V-4** (a second major is unaddressable
+on the transport), **V-5** (nothing carries a version at invoke time, so §5's grant rule has no
+operand) and **V-7** (no §7 signal reaches a live `subscribe`). All folds are additive; see §7.5 and
+that scenario's *Findings* and *Re-ratification* sections. The extension-shape re-run remains
+outstanding and independent.
 
 ## Changelog
+
+- **Editorial** (2026-08-13) — §7.5's break-test is no longer a forward reference: it names the
+  landed scenario [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md)
+  and records its outcome (deltas **V-1…V-8**, blocking V-2/V-4/V-5/V-7 — §7's model held, its
+  perimeter did not), as do the status note and the **Pressure test** §. No normative change: no
+  clause, field, canonicalization or version-range rule is touched, and the deltas are **not folded
+  here** — they land in a later minor (**0.5.0**), which is also where §7.3 already schedules §2.2's
+  removal. Version and status are unchanged: **0.4.0, Candidate**, still on both gates.
 
 - **0.4.0** (2026-08-13) — **Candidate.** Encoded the capability-versioning decision
   ([ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md)): the old §7 open question
