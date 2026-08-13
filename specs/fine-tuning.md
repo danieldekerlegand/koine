@@ -65,13 +65,20 @@ no new identifier kind, no new plane, and no new transport.
 
 ## 2. The `finetune` capability
 
-A training provider advertises `finetune` in its KCB capability manifest (KCB §2). Inputs and
+A training provider advertises `finetune` in its KCB capability manifest (KCB §2). At the pinned
+**KCB 0.4.x that manifest is one named extension of the provider's A2A AgentCard**, not a document
+of its own: the block below is an entry in `capabilities.extensions[].params.capabilities` on the
+card the provider already serves (KCB §2). The standalone `/.well-known/kcb-manifest.json` that
+KFT's earlier KCB 0.2.0 pin implied is deprecated, and KCB §7.3 fixes its removal at **KCB 0.5.0**
+(KCB §2.2 carries the field-by-field migration) — so a provider that advertises `finetune` only on
+the standalone file is conformant today and unreachable after that version. Inputs and
 outputs are **plane-typed ports** (KCB §2.1), so a single capability spans the entity, knowledge,
 and media planes — which is exactly what fine-tuning needs (data in one plane, model out in
 another):
 
 ```jsonc
 { "name": "finetune",
+  "version": "1.0.0",                                                                 // semver, NEVER in the name (KCB §7.1)
   "inputs": [
     { "plane": "entity",    "types": ["model"], "shape": "base-model" },              // KINP model entity
     { "plane": "knowledge", "dialect": "grounding-only", "shape": "training-set" },   // KGP data …
@@ -91,7 +98,15 @@ another):
 - A provider MAY advertise several `finetune` capabilities distinguished by the `modality` they
   accept (§3) — e.g. one whose media port takes `image/*` (text-to-image LoRA), one whose entity
   port takes text-generation base models. Path search (KCB §3) then routes a job to a provider
-  that accepts its modality.
+  that accepts its modality. They all share the **name** `finetune` and are told apart by their
+  *ports*: a specialized variant advertised as `finetune-image` would be invisible to a consumer
+  searching for `finetune`, which is exactly the fragmentation KCB §7.1 forbids.
+- **Versioning fields (KCB 0.4.x).** A capability is a `(name, semver version)` pair and every port
+  SHOULD carry a content-addressed `schema_id` over its declared shape (KCB §7.1); `cost` sits
+  outside that digest, so a re-price does not re-digest the contract. The `schema_id`s are elided
+  from the illustration above for brevity — that is abridgement, not a KFT exemption, and KFT
+  restates neither rule. §11.5 records the one consequence specific to fine-tuning: what a
+  finetuned model's pinned versions mean once the capability moves.
 - `cost.meter` is `gpu-seconds` (fine-tuning's natural unit); `est_units` lets the caller gate
   spend **before** invoking (§7). Fine-tuning is the highest-cost capability class on the bus, so
   the KCB cost/grant machinery is load-bearing here, not decorative.
@@ -244,6 +259,13 @@ set**." KFT operationalizes that sentence:
   the job (e.g. `local-only` video-diffusion data on a tier without the required GPU), the provider
   **MUST fail at admission with a report** — never hang, never silently cloud-place (a privacy
   breach), never silently downscope the data. An impossible-to-place gated job is a rejected job.
+- **The gate sits upstream of every encoding (KGP 0.5.x) — no clause added.** KGP §7.2 filters
+  `local-only` at pack construction and states that enforcement is **never delegated to a
+  serialization or projection**, so the RDF-star / PROV / JSON-LD projection KGP 0.5.x specifies
+  (KGP §4.1) carries the egress class only so a consumer can *re-check* it. A projected corpus is
+  therefore not a route around this gate: the rules above already bind the referenced pack, whatever
+  encoding it arrives in. The claim-identity surface KFT depends on (KGP §3/§3.3) is byte-unchanged
+  across 0.4.0 → 0.5.x, so no `kgp:pack:…` reference in a job manifest (§3) moved.
 
 This makes the local-vs-cloud placement decision **contract-governed**, not an operator setting:
 the same axis that keeps private knowledge out of cross-project packs keeps it off rented GPUs.
@@ -330,6 +352,12 @@ Quantizations are `variant_of` (same model, different byte encoding) exactly as 
 resolution variants of a video — so a host's GGUF/ONNX/CoreML/TFLite export surface
 falls out of the ratified media plane for free, with lineage, rather than as a new subsystem.
 
+**What the KMI 0.3.x pin changes here: nothing.** KFT uses only the asset envelope (KMI §2), the
+lineage graph (KMI §3), and byte transport (KMI §7) — the surfaces 0.3.x left untouched. It cites
+no clause of KMI §4, so neither the OTIO adoption nor the deprecation of
+`application/vnd.koine.edl+json` (KMI §4.4, removed at **KMI 0.4.0** under KCB §7.3) reaches a
+model artifact: weights and exports are plain assets, never timeline items.
+
 ### 5.4 Output egress & license inheritance (NORMATIVE, FT-A)
 
 The §4.2 gate governs where training *runs*; this rule governs what the *output* may do — without
@@ -387,6 +415,14 @@ published model would exfiltrate exactly what §4.2 protected).
   most expensive capability class, the ceiling is a hard admission gate: a run whose projected
   `cost` (§2, `gpu-seconds`) exceeds the ceiling is **rejected before it starts**, and placement
   (§4.2) selects a backend that respects both the ceiling and the egress class.
+- **What the grant is scoped to (KCB 0.4.x).** A grant binds to `(capability, major)` (KCB §5): an
+  `invoke:finetune` token issued while `finetune` was at major 1 authorizes every **1.x** and does
+  **not** authorize major 2, and the major never enters the grant name. Two consequences for a
+  training run, neither of them a KFT clause: a provider cannot widen an already-issued ceiling by
+  publishing a breaking `finetune`, and a **re-price** is a version bump the pinned caller can see
+  rather than a silent bill — the ceiling is evaluated at invoke against the *then-published* cost,
+  so a raise past the remaining ceiling fails at the gate (KCB §5). The per-job estimate below is
+  KFT's own addition on top of that machinery, not a replacement for it.
 - **Admission-time estimate (FT-E).** The manifest's static `cost.est_units` (§2) cannot gate a
   variable-size job whose data is `fetch`ed lazily (KMI §7). The provider therefore computes a
   **per-job estimate** at admission — after resolving dataset cardinality — and checks *that* against

@@ -42,7 +42,7 @@
         "No plane contract is re-specified in KFT — citations reference, never restate, per CLAUDE.md ('defined once ... and referenced — never redefined').",
         "If the pin decision was pin-to-ratified, the annotations note where 0.3.0/0.5.0 candidates will change the reading when the re-pin trigger fires, so the next editor inherits the delta list."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
