@@ -62,5 +62,6 @@
       "passes": true,
       "notes": "specs/grounding-pack.md §3.4 gains **The packaging prior art does not reach this layer either.** — Frictionless / Data Package cited and dismissed because it standardizes file packaging, resources and table schemas and discharges no clause of §3 (claim identity), §3.3 (convergence) or §7 (confidence / license / egress class); a producer may ship one alongside a pack, which renames a container without removing a normative obligation. Version bumped 0.5.1 → 0.5.2 (patch: rationale + prior art only) with a dated 2026-08-13 changelog entry naming the ADR-0006 2026-08-13 amendment, the nanopublication / Trusty-URI engagement and the Frictionless dismissal; Status stays **candidate** and the entry re-names the one outstanding gate (downstream round-trip fixture, ADR-0001). docs/positioning.md now declares itself informative and points at §3.4 + ADR-0006 as the record (three cross-pointers added; its stale \"the one ADR-0006 should lead with\" now reads \"as of the 2026-08-13 amendment ... leads with\"). Mirrors updated: README.md, specs/README.md (x2), ECOSYSTEM.md, ROADMAP.md, CLAUDE.md Current state. Byte-unchanged check: sha256 of lines 86-156 (§3 → §3.3) = 5e9e72fcfa5298e2fe77b5bce8e164d7684dd968f5f9780d9090b6fa01e087a5 before AND after — identical, no claim id moves. Verified: check-doc-integrity OK (392 links, 3 status tables, grounding-pack 0.5.2 candidate), check-tasklist-categories OK, schemas parse, all 4 PRD greps hit."
     }
-  ]
+  ],
+  "mergedToMain": "b5ff5b1"
 }
