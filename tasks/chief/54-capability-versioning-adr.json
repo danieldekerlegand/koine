@@ -44,7 +44,7 @@
         "No normative spec clause is edited in THIS tasklist (that is chief/55); this story lands only the ADR text and README row, so no spec version is bumped here.",
         "The ADR records what stays invariant so the follow-up §-edit is additive, not a breaking redefinition of the capability manifest (KCB §2 AgentCard extension)."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
