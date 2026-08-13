@@ -100,8 +100,8 @@
         },
         "manifest_extension_uri": {
           "type": "string",
-          "pattern": "^https://koine\\.dev/kcb/manifest/\\d+\\.\\d+$",
-          "description": "The stable KCB extension URI identifying the manifest entry in the card's capabilities.extensions[] — currently https://koine.dev/kcb/manifest/0.3 (KCB §2). There is no second well-known file: a 0.2.0-style standalone /.well-known/kcb-manifest.json is superseded (KCB §2.2)."
+          "pattern": "^https://w3id\\.org/koine/kcb/manifest/\\d+\\.\\d+$",
+          "description": "The stable KCB extension URI identifying the manifest entry in the card's capabilities.extensions[] — currently https://w3id.org/koine/kcb/manifest/0.3, a w3id.org permanent identifier (KCB §2). This field is what the participant declares it SERVES, so it takes the form a conformant producer MUST emit; a consumer's obligation to also match the superseded root during the transition window is KCB §2's clause, not this schema's (no schema here models the AgentCard extension entry itself). There is no second well-known file: a 0.2.0-style standalone /.well-known/kcb-manifest.json is superseded (KCB §2.2)."
         },
         "manifest_source": {
           "$ref": "#/$defs/location",

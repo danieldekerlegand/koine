@@ -310,7 +310,7 @@ of it would make the manifest the least stable surface on the bus. So the §-edi
 - **One extension entry on the card.** No second well-known file, no companion document, no new
   endpoint. The manifest's location, and ADR-0007's rule that a participant publishes its own
   self-description, are untouched; `version` and `schema_id` are fields inside `params`.
-- **The extension URI does not move for an additive change.** `https://koine.dev/kcb/manifest/0.3`
+- **The extension URI does not move for an additive change.** `https://w3id.org/koine/kcb/manifest/0.3`
   names the *payload-shape family*; the spec version is carried by `params.kcb_version`. Minting
   `…/manifest/0.4` for added optional fields would make every already-published card invisible to a
   crawler matching the old URI — `compose-v2`'s fragmentation (decision 1) at the document level.
@@ -457,3 +457,34 @@ This record decides; it edits no normative clause. Two follow-ups carry it (ROAD
 |---|---|---|
 | **The KCB §7.2 §-edit** | Encodes decisions 1–5 as normative KCB text (§2/§2.1/§3/§5), fixes the `schema_id` canonicalization bytes, notes the KFT §11.5 inheritance, **and sets the concrete removal version for KMI §4.4's `edl+json`** — plus KCB §2.2's standalone manifest location — under decision 7's deprecation policy, additively per decision 8. Bumps the affected spec versions; this record bumps none. | `chief/55-kcb-versioning-spec-edit` |
 | **The mutate-live-schema pressure test** — ✅ **landed, run, not clean** | A `scenarios/` scenario in which a provider ships a capability v2 while a v1 subscriber is live — asserting no silent break: the v1 binding survives, the digest catches an unbumped mutation, the v1 grant does not reach v2, and a cost raise fails closed against the spend ceiling. Prefer finding the break to asserting correctness. **Outcome:** nothing here argues for a different decision — semver-for-intent, digest-for-identity and successor-never-mutate-in-place all held under attack — but the *perimeter* is open in eight places (**V-1…V-8**; blocking V-2/V-4/V-5/V-7). All folds are additive, and land in KCB **0.5.0**. | [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) |
+
+---
+
+## Amendment log
+
+### 2026-08-13 — the extension-URI literal is restated under the current namespace
+
+**What changed.** One literal. Decision 8's *"the extension URI does not move for an additive
+change"* bullet quotes the manifest extension URI as its worked example; that URI's namespace root
+has moved to a **w3id.org permanent identifier**, so the bullet now quotes
+`https://w3id.org/koine/kcb/manifest/0.3` where it previously quoted the same path under the
+hostname that root replaced. The move itself is recorded once, in full — provenance, registration
+PR, and rationale — in
+[`ADR-0007-self-describing-participant.md`](ADR-0007-self-describing-participant.md)'s amendment
+log; this entry only keeps *this* record from quoting a retired string.
+
+**Why.** The extension URI is a **matching key**: implementations embed the literal. A record whose
+worked example prints a string no producer emits teaches the wrong string, which is the one failure
+mode a matching key has.
+
+**What did *not* change.** No decision. Decisions 1–8 stand as accepted **2026-08-13**, and decision
+8's bullet says exactly what it said before: the URI names the *payload-shape family*, the spec
+version rides in `params.kcb_version`, and the URI moves only on a **breaking** manifest
+redefinition — both URIs then served across a declared window (decision 7). That clause is in fact
+what governs the namespace move: it is a breaking change to a matching key, so KCB §2 states the
+dual-accept window, the fabric applying its own rule to its own surface.
+
+**Spec effect.** None from this entry. The normative landing is made in KCB itself, at **0.4.1**
+(2026-08-13): every occurrence moved, plus **§2.3**, the dual-accept window that retires the legacy
+root at **KCB 0.6.0** — a removal version measured in KCB's own minors, per §7.3b/c, which is this
+record's decision 7.

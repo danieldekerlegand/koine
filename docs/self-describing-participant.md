@@ -44,7 +44,7 @@ The rule behind the "where" column is **publish at the edge, index at the center
 
 - [ ] Serve an A2A AgentCard at your own `/.well-known/agent-card.json`.
 - [ ] Add **one** entry to its `capabilities.extensions[]` whose `uri` is
-      `https://koine.dev/kcb/manifest/0.3`, carrying the KCB manifest in its `params` (KCB §2).
+      `https://w3id.org/koine/kcb/manifest/0.3`, carrying the KCB manifest in its `params` (KCB §2).
       There is **no second well-known file** — the card is the whole served surface.
 - [ ] Type every port by the plane it speaks (`knowledge` / `media` / `entity`…), so a registry can
       chain you into a path across planes (KCB §2.1).

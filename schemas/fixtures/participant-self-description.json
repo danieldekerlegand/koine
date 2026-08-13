@@ -11,7 +11,7 @@
   },
   "capability": {
     "agent_card": { "url": "https://analyzer.example/.well-known/agent-card.json" },
-    "manifest_extension_uri": "https://koine.dev/kcb/manifest/0.3",
+    "manifest_extension_uri": "https://w3id.org/koine/kcb/manifest/0.3",
     "manifest_source": { "path": "config/kcb-manifest.yaml", "note": "The card's extension params are generated from this; the served card stays authoritative." },
     "mcp": { "url": "https://analyzer.example/mcp" }
   },

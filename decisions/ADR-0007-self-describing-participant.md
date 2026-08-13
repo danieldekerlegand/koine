@@ -72,9 +72,9 @@ The rule is *publish at the edge, index at the center*:
 
 - **Served, machine-readable, authoritative:** the capability facet is served by the participant at
   its own `/.well-known/agent-card.json`, as the named KCB **AgentCard extension** — the entry in
-  `capabilities.extensions[]` whose `uri` is the `https://koine.dev/kcb/manifest` family URI
-  (currently `https://koine.dev/kcb/manifest/0.3`), carrying the manifest payload in its `params`
-  (KCB §2). There is no second well-known file, and no copy of the card held elsewhere is
+  `capabilities.extensions[]` whose `uri` is the `https://w3id.org/koine/kcb/manifest` family URI
+  (currently `https://w3id.org/koine/kcb/manifest/0.3`), carrying the manifest payload in its
+  `params` (KCB §2). There is no second well-known file, and no copy of the card held elsewhere is
   authoritative.
 - **In the participant's own repository, under its own version control:** the identity, egress, and
   translation facets, plus the reviewed source form of whatever the participant serves. These are
@@ -217,3 +217,80 @@ having and the AgentCard extension stands alone.
   application of the egress facet, and reads the same under this record.
 - Which endpoints a particular deployment serves, what it mints, and what it marks `local-only` are
   deployment facts, recorded in that deployment's own integration repo — not here.
+
+---
+
+## Amendment log
+
+### 2026-08-13 — the manifest extension URI moves to a w3id.org permanent identifier
+
+**What changed.** The `uri` family that identifies the KCB manifest entry inside a participant's
+AgentCard `capabilities.extensions[]` array moves off a privately-registered hostname and onto a
+**w3id.org permanent identifier**:
+
+| | Extension URI family |
+|---|---|
+| Retired | `https://koine.dev/kcb/manifest/…` |
+| Current | `https://w3id.org/koine/kcb/manifest/…` |
+
+Only the namespace root moves. The path and version-segment convention is untouched, so
+`…/kcb/manifest/0.3` still names the same 0.3 manifest shape it always did.
+
+**Provenance of the new namespace.** `/koine/` was requested by pull request against the W3C
+Permanent Identifier Community Group's repository — the documented way an entry is created, since
+w3id is a community-run, redirect-only service whose entries are plain directories added by PR:
+
+- **PR:** [perma-id/w3id.org#6550](https://github.com/perma-id/w3id.org/pull/6550) — *Koine: add
+  /koine/ permanent identifier namespace*.
+- **Status:** **open**, awaiting maintainer merge (opened 2026-08-13). Until it merges the
+  identifier does not yet resolve; it is nonetheless the namespace the specifications name, because
+  what a matching key needs is a *reserved* name under a service pledged to keep resolving it, and
+  a redirect that lands later is recoverable in a way a squatted hostname is not.
+- **Contents:** a `koine/` directory holding `.htaccess` (the redirect rules) and `README.md`
+  (namespace scope plus maintainer contact, both required by that repository's conventions). The
+  rules cover the `kcb/manifest/<version>` path family explicitly, then one rule per specification
+  (`kinp` / `kgp` / `kcb` / `kmi` / `kcs` / `kft`), then a catch-all to the repository root — all
+  `302`.
+- **Redirect target:** the specifications' **public** documentation host,
+  <https://github.com/danieldekerlegand/koine>. Every target was checked to resolve `200` before
+  the PR was opened.
+
+Those two links are the whole provenance chain: a reader can confirm what was requested, of whom,
+and where it points, without asking anyone.
+
+**Why the move happened.** `koine.dev` — the hostname the extension URI had been minted under —
+was **verified unregistered on 2026-08-11**: DNS held no record for it and a request could not
+resolve the host at all. That is not a cosmetic defect. Under §2 of this record the extension URI
+is how a consumer *identifies* the KCB manifest: it string-matches the `uri` of an entry in the
+card's `capabilities.extensions[]`. The URI is therefore a **matching key**, not a fetch target —
+implementations embed the literal string, and that string was pointing at a name anyone could
+register. Whoever registered it would control the resolution target of the identifier the fabric
+uses to name itself, and once conformant implementations have shipped the literal there is no
+recovery path: you cannot recall a string that is already compiled into peers you do not operate.
+Registering the hostname ourselves would only have converted the exposure into a renewal that must
+never lapse for the life of the protocol. A w3id permanent identifier removes the class of failure
+instead of re-timing it, which is precisely the case that service exists for.
+
+**Why this introduces no private dependency.** w3id.org is a public, community-operated redirect
+service, and the redirect target is koine's own public specification repository. No spec, schema,
+registry, or policy file gains a link to any private or instance repository, and no participant is
+required to read one in order to resolve the identifier (CLAUDE.md's scope rule; decision 4 of this
+record — no participant reads another participant's repository — is likewise untouched).
+
+**What did *not* change.** No decision in this record. Decisions 1–7 stand as accepted
+**2026-08-02**: the capability facet is still served by the participant on its own AgentCard as one
+named extension entry, there is still no second well-known file, the registry still returns an
+address rather than a self-description, and the identity / egress / translation facets still live
+in the participant's own repository. The manifest *payload* shape is untouched. Only the string
+that names the entry moves.
+
+**Spec effect.** Normative, on a candidate spec: the extension URI is a matching key, so changing
+it is breaking for any consumer matching on the old literal. The KCB-side landing is made in
+[`../specs/capability-bus.md`](../specs/capability-bus.md) itself, at **KCB 0.4.1** (2026-08-13):
+every occurrence moved to the w3id form, plus **§2.3** — the normative dual-accept window, in which
+a consumer MUST accept both roots as naming the same extension and a producer MUST emit the w3id
+form — with an explicit end, the removal of the legacy root at **KCB 0.6.0** (a version, not a
+date, per KCB §7.3b), and a dated changelog entry. Status stays **Candidate** on its existing pair
+of re-ratification gates; this release neither adds one nor discharges one. Runtime implementations that
+pin the old literal migrate downstream, per
+[ADR-0001](ADR-0001-control-plane-topology.md); no runtime work is done here.
