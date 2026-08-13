@@ -240,11 +240,63 @@ wire form; none of the three is canonical, and none is authoritative on ingest.
 |---|---|
 | a claim's `world` (§3.1) | the **named graph**, identified by the world's KINP canonical IRI (KINP §3) |
 | a **binary** relation and its two arguments (§3.2) | the **triple** — predicate and identifier arguments as KINP canonical IRIs; literal arguments as typed RDF literals per §3.2's types |
-| `confidence`, `valid_time`, `embedding_model` | **annotations on the quoted triple** (RDF-star) |
-| `prov` (§2, §7) | **PROV terms** — the shape §2 already carries, named in the vocabulary it was shaped after |
-| the `claim` id (§3) | an **annotation on the quoted triple**, so an RDF consumer can round-trip back to the canonical and verify the hash |
-| `license` (§7.1), egress class (§7.2), dialect tier (§5) | record-level annotations, carried for filtering by the consumer |
+| `confidence`, `valid_time`, `embedding_model` | **annotations on the quoted triple** (RDF-star), under the terms named in the annotation vocabulary below |
+| `prov` (§2, §7) | **PROV-O terms** — the shape §2 already carries, named in the vocabulary it was shaped after (below) |
+| the `claim` id (§3) | an **annotation on the quoted triple** (`kgp:claimId`, below), so an RDF consumer can round-trip back to the canonical and verify the hash |
+| `license` (§7.1), egress class (§7.2), dialect tier (§5) | record-level annotations, carried for filtering by the consumer, under the terms named below |
 | a relation of arity > 2 (registry extension, §3.2) | **not projected as a bare triple.** The projection is defined only for the binary core; a higher-arity relation is emitted through whatever reification the consuming ecosystem uses, or omitted **with a report** — never silently dropped. |
+
+**Annotation vocabulary (NORMATIVE).** The table above fixes which KGP construct becomes an
+annotation; it is not interop until the annotations are *named*. Two producers that both follow the
+structure but mint their own predicates emit structurally identical, mutually unreadable graphs.
+The terms below are therefore **normative**: a producer that emits this projection MUST use them,
+and a consumer MUST read them.
+
+```
+kgp:      https://koine.ecosystem/ns/kgp#      koine-minted, defined by this section
+prov:     http://www.w3.org/ns/prov#           W3C PROV-O
+time:     http://www.w3.org/2006/time#         W3C OWL-Time
+dcterms:  http://purl.org/dc/terms/            DCMI Metadata Terms
+xsd:      http://www.w3.org/2001/XMLSchema#
+```
+
+| Annotation | Term | Value | Reused or minted |
+|---|---|---|---|
+| `claim` id (§3) | `kgp:claimId` | `xsd:string` — the algorithm-prefixed hash exactly as §3 emits it | **Minted.** No external term carries the obligation that makes this one work — that the id is *re-derivable* from the recovered canonical and MUST be checked against it (rule 2 below). `dcterms:identifier` names any identifier and would not distinguish a content address from an accession number. |
+| `confidence` | `kgp:confidence` | `xsd:decimal`, §3.2's shortest round-tripping form | **Minted.** Neither PROV nor any W3C vocabulary defines a statement-level confidence; the candidates in the wild are ad-hoc, which is precisely the interop gap this row closes. |
+| `valid_time` | `time:hasTime` → a `time:ProperInterval` bearing `time:hasBeginning` / `time:hasEnd`, each an instant with `time:inXSDDateTimeStamp` | `xsd:dateTimeStamp`, §3.2's fixed-precision UTC form | **Reused** — W3C OWL-Time. An open-ended interval omits the missing bound rather than encoding a sentinel. |
+| `embedding_model` | `kgp:embeddingModel` | the KINP canonical IRI of the model entity (KINP §3) | **Minted.** The value is an identity-plane reference, so no external metadata term fits; naming the model as an entity keeps it resolvable rather than a bare string. |
+| `license` (§7.1) | `dcterms:license` for the SPDX identifier, **and** `kgp:licenseClass` for its §7.1 class | `xsd:string` (SPDX id) / `xsd:string` (one of §7.1's six classes) | **Reused + minted.** The SPDX identifier goes under the established term; the *class* is koine's own admission enum and has no external equivalent. Both travel, because the class is what §7.1 filters on and the identifier is what a consumer re-classifies from. |
+| egress class (§7.2) | `kgp:egressClass` | `xsd:string` — `exportable` \| `local-only` | **Minted.** No external vocabulary models a boundary-crossing prohibition of this kind; carried for re-checking only (§7.2 — the filter itself ran at pack construction). |
+| dialect tier (§5) | `kgp:dialect` | `xsd:string` — `grounding-only` \| `horn-safe` \| `full-prolog` | **Minted.** A koine portability tier with no external counterpart. |
+| `prov` (§2, §7) | PROV-O as it stands — `prov:wasGeneratedBy` (the activity), `prov:wasAttributedTo` (the agent), `prov:generatedAtTime` | per PROV-O | **Reused** — W3C PROV. §2's `prov` shape was shaped after this vocabulary, so the projection names it rather than restating it. |
+
+- These terms are **immutable once ratified**, on the same discipline as a published relation
+  (§3.2): a change of meaning or value space is a **new term**, never an edit in place, because a
+  consumer reading an old graph has no way to tell which reading it was written under.
+- The `kgp:` namespace is reserved to this spec and holds annotation terms only. It is not a
+  domain vocabulary and never names relations — those live in the registry (§3.2) and reach the
+  projection as predicate IRIs, not as annotations.
+- An annotation a consumer does not recognise MUST be carried through the round-trip or reported,
+  never silently dropped — the same *complete or reported* obligation the projection carries for
+  everything else.
+
+Illustrative (KINP §3.4 placeholder namespaces; a claim `C` with one admitted `prov` record):
+
+```turtle
+GRAPH <https://id.koine.example/world/worldsim/alderforest> {
+  ex:npc-renaud reg:commands ex:army-of-ash .
+
+  << ex:npc-renaud reg:commands ex:army-of-ash >>
+      kgp:claimId       "sha256-4e91c7…" ;
+      kgp:confidence    "0.55"^^xsd:decimal ;
+      prov:wasGeneratedBy <https://id.koine.example/agent/analyzer/run-1a2b> ;
+      dcterms:license   "CC-BY-4.0" ;
+      kgp:licenseClass  "attribution" ;
+      kgp:egressClass   "exportable" ;
+      kgp:dialect       "grounding-only" .
+}
+```
 
 Rules:
 
@@ -264,12 +316,13 @@ Rules:
 Exercised by [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md)
 (*Re-validation — KGP 0.5.0*): under this mapping the round-trip holds, the §3.3 convergence result
 is byte-unchanged, and the §7 filters survive every encoding. That pass raised two **minor
-projection findings** against this section and §4, both of which close before KGP re-ratifies.
-**KGP-1** — which `confidence` a claim carrying several `prov` records projects to ProbLog — is
-**closed**: §4's ProbLog rule above now emits one fact per admitted `prov` record and leaves
-aggregation to the consumer. **KGP-2** remains open: the annotations above are fixed in
-*structure*, but outside PROV this section still leaves their predicates unnamed, so two
-conformant producers can emit structurally identical, mutually unreadable projections.
+projection findings** against this section and §4, and **both are now closed**. **KGP-1** — which
+`confidence` a claim carrying several `prov` records projects to ProbLog — is closed by §4's
+ProbLog rule above: one fact per admitted `prov` record, aggregation left to the consumer.
+**KGP-2** — the annotations were fixed in *structure* but named only where PROV supplied the
+terms, so two conformant producers could emit structurally identical, mutually unreadable
+projections — is closed by the annotation vocabulary above, which names a term for every
+annotation this section carries.
 
 ---
 
