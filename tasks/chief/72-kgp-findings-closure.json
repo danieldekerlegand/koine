@@ -44,7 +44,7 @@
         "The naming respects koine's immutability discipline: published terms are immutable once ratified (a change means a new term, never an in-place edit), and the terms are role-scoped/agnostic — no product name, KINP §3.4 placeholder namespaces in examples.",
         "The KGP-2 remedy is satisfied exactly as the scenario's findings table prescribes, and the §4.1 pressure-test note no longer reports the predicates unnamed."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
