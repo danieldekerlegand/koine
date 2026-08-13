@@ -21,7 +21,14 @@ vocabulary.
   Koine must not grow a dependency on it — no spec, schema, registry, or policy file may link there.
 
 ## Conventions
-- Each spec in `specs/` carries a version + status header and its own changelog.
+- Each spec in `specs/` carries a version + status header and **that header is the only
+  authority** on its version/status. Three tables mirror it for scanning — `README.md`,
+  `specs/README.md`, and `ECOSYSTEM.md` §2 — plus the prose under *Current state* below. Change a
+  header and you must update all four; on disagreement the header wins and the mirror is the bug.
+- Run `node scripts/check-doc-integrity.mjs` after touching any doc: it resolves every relative
+  Markdown link (file + `#anchor`) and diffs all three status tables against the spec headers.
+  Both failures are otherwise silent. `node scripts/check-tasklist-categories.mjs` guards
+  `tasks/chief/`.
 - Specs are validated by concrete pressure-test scenarios in `scenarios/` before ratification
   (status: `draft` → `candidate` → `ratified`). Prefer finding breaks over asserting correctness.
 - Identifiers, envelopes, and resolution semantics are defined once in `specs/identity.md`
@@ -108,7 +115,12 @@ vocabulary.
   thin shared commons; koine specifies, `agora` implements), ADR-0005 (adopt OpenTimelineIO as
   KMI's canonical timeline model), and ADR-0006 (KGP keeps its bespoke TSV + content-addressed-claim
   canonical; RDF-star / W3C PROV / JSON-LD become a specified, round-trip-tested **projection**, and
-  KINP §9's "not adopting RDF" narrows to *storage and identity*). The deployment-history ADRs (ADR-0002/0003/0004 — bridge
+  KINP §9's "not adopting RDF" narrows to *storage and identity*), ADR-0007 (a participant is
+  self-describing — namespace, KCB manifest, egress policy and bridge mappings are published by
+  that participant, and the registry returns an **address** to a self-description, never the
+  self-description), and ADR-0008 (an application joins as a producer through a thin **adapter**
+  that only translates; every generic data-plane bridge is built once in the runtime commons).
+  `decisions/README.md` carries the full table — keep this list and that table in step. The deployment-history ADRs (ADR-0002/0003/0004 — bridge
   reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
   integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently
   reserved**: new agnostic ADRs start at 0005 and go up.

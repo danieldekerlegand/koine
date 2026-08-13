@@ -228,7 +228,9 @@ note says "unless a pressure test forces it into the contract"). Grouped by spec
 
 ### Phase F7 — Prior-art closure, standards pins & governance — 🚧 in progress (scale: M, koine)
 
-The output of the **2026-08 prior-art sweep** (`ADOPT-DECIDE-REGISTER.md` D14 · D15 · D15b · D15c).
+The output of the **2026-08 prior-art sweep** (decisions D14 · D15 · D15b · D15c of the operator's
+adopt/decide/register log — that log is instance data and lives outside this repo; what it *decided*
+is restated below and in `docs/`, so nothing here depends on reading it).
 Its headline is that **the suite is KEPT** — four of six specs sit in a real gap and two are
 correctly-scoped profiles — but that koine had **zero written engagement** with six prior-art
 bodies, **no external-standard version pin anywhere**, and **one squattable identifier**. Nothing
