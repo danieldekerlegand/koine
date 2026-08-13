@@ -62,7 +62,7 @@ not as a top-level file of its own: the KCB-specific payload rides as one entry 
 A2A's `AgentCard.capabilities.extensions` field is a list of **`AgentExtension`** objects, each
 `{ uri, description, required?, params }` — the standard, in-band way to attach protocol-specific
 metadata to a card without forking the A2A schema. The KCB manifest is one such extension,
-identified by the stable extension URI **`https://koine.dev/kcb/manifest/0.3`**; its `params`
+identified by the stable extension URI **`https://w3id.org/koine/kcb/manifest/0.3`**; its `params`
 object carries the KCB payload:
 
 ```jsonc
@@ -74,7 +74,7 @@ object carries the KCB payload:
     "extensions": [
       // ── the KCB manifest, as ONE AgentExtension on the card ──
       {
-        "uri":         "https://koine.dev/kcb/manifest/0.3",
+        "uri":         "https://w3id.org/koine/kcb/manifest/0.3",
         "description": "Koine capability-bus manifest",
         "required":    false,
         "params": {
@@ -137,7 +137,7 @@ object carries the KCB payload:
 
 Ports, capabilities, and their `cost` all live **inside the KCB extension's `params`** (§2) — the
 `produces`, `consumes`, and `capabilities` arrays on `capabilities.extensions[]` whose `uri` is
-`https://koine.dev/kcb/manifest/0.3`. Collapsing the standalone manifest onto the AgentCard moves
+`https://w3id.org/koine/kcb/manifest/0.3`. Collapsing the standalone manifest onto the AgentCard moves
 *where* these fields are served (card extension, not a second file) but not *what* they carry: the
 plane-typed port model (F), `world_pattern` world-scoping (J), and capability `cost` (K) are all
 preserved verbatim as extension `params`, not dropped.
@@ -170,7 +170,7 @@ covers, and what it deliberately excludes (`description`, `cost`, the `version` 
 ### 2.2 Migration — 0.2.0 standalone manifest → 0.3.0 card extension
 
 0.2.0 served a standalone `/.well-known/kcb-manifest.json`; 0.3.0 folds that payload onto the peer's
-existing A2A AgentCard as the `https://koine.dev/kcb/manifest/0.3` extension (§2). Field-by-field:
+existing A2A AgentCard as the `https://w3id.org/koine/kcb/manifest/0.3` extension (§2). Field-by-field:
 
 | 0.2.0 standalone manifest field | 0.3.0 destination |
 |---|---|
@@ -210,7 +210,7 @@ findable.
 - **Population:** participants register their manifest (push), or the registry crawls known A2A
   agent-cards / MCP servers (pull) and **reads the KCB extension off each peer's
   `/.well-known/agent-card.json`** — it looks for the `capabilities.extensions[]` entry whose
-  `uri` is `https://koine.dev/kcb/manifest/0.3` and indexes that entry's `params` (ports,
+  `uri` is `https://w3id.org/koine/kcb/manifest/0.3` and indexes that entry's `params` (ports,
   capabilities, cost, and — where present — each capability's `version` and each port's
   `schema_id`, §7.1). There is no separate manifest file to crawl; a card without the extension
   simply advertises no KCB ports.
@@ -530,7 +530,7 @@ now matched off peers' card extensions (§3). G (`fetch` verb + `fetch:asset` gr
 (dangling-reference tolerance) live in §4/§5 and are untouched by the manifest collapse. Because no
 delta is reopened, the 0.3.0 **Candidate** has a clean re-ratification path: re-run
 [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) against the extension
-shape (discovery now crawls the `https://koine.dev/kcb/manifest/0.3` extension off
+shape (discovery now crawls the `https://w3id.org/koine/kcb/manifest/0.3` extension off
 `/.well-known/agent-card.json` rather than fetching a standalone `/.well-known/kcb-manifest.json`)
 and confirm each leg still resolves; nothing in the port contract needs to change to re-ratify.
 
@@ -575,7 +575,8 @@ outstanding and independent.
   standalone `/.well-known/kcb-manifest.json` gains the removal version its condition-bounded window
   lacked — **KCB 0.5.0**. Open questions renumbered into §8. **Additive** per ADR-0009 decision 8:
   fields added, none removed, nothing narrowed, extension URI unchanged at
-  `https://koine.dev/kcb/manifest/0.3`, `signing` shape-identical, no delta F/G/J/K/L reopened, and
+  `…/kcb/manifest/0.3` (that fold moved no URI; the namespace *root* moves later — §2),
+  `signing` shape-identical, no delta F/G/J/K/L reopened, and
   0.3.0 cards and already-issued grants still valid — hence a minor bump. Status stays **Candidate**,
   now gated on the 0.3.0 extension re-run **and** the §7.5 mutate-live-schema break-test
   (`chief/56-live-schema-mutation-scenario`).
@@ -589,7 +590,8 @@ outstanding and independent.
   envelopes, verbs, and every MUST/SHOULD clause are byte-identical in meaning.
 
 - **0.3.0** (2026-07-22) — **Candidate.** Redefined the §2 manifest as a named A2A **AgentCard
-  extension** (`capabilities.extensions[]`, uri `https://koine.dev/kcb/manifest/0.3`) instead of a
+  extension** (`capabilities.extensions[]`, uri `…/kcb/manifest/0.3`, under the namespace root
+  current at the time — the root has since moved, §2) instead of a
   standalone document. Collapsed the two well-known files into one: the KCB payload now rides on the
   peer's existing `/.well-known/agent-card.json`, so there is no separate
   `/.well-known/kcb-manifest.json`. Dropped the duplicated top-level `identity`/`endpoints` (now read

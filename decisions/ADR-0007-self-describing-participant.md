@@ -72,9 +72,9 @@ The rule is *publish at the edge, index at the center*:
 
 - **Served, machine-readable, authoritative:** the capability facet is served by the participant at
   its own `/.well-known/agent-card.json`, as the named KCB **AgentCard extension** — the entry in
-  `capabilities.extensions[]` whose `uri` is the `https://koine.dev/kcb/manifest` family URI
-  (currently `https://koine.dev/kcb/manifest/0.3`), carrying the manifest payload in its `params`
-  (KCB §2). There is no second well-known file, and no copy of the card held elsewhere is
+  `capabilities.extensions[]` whose `uri` is the `https://w3id.org/koine/kcb/manifest` family URI
+  (currently `https://w3id.org/koine/kcb/manifest/0.3`), carrying the manifest payload in its
+  `params` (KCB §2). There is no second well-known file, and no copy of the card held elsewhere is
   authoritative.
 - **In the participant's own repository, under its own version control:** the identity, egress, and
   translation facets, plus the reviewed source form of whatever the participant serves. These are

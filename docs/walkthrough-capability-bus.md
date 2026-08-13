@@ -31,7 +31,7 @@ provider to a single served document:
   "url":  "https://mediastore.example/a2a",          // where it actually answers
   "capabilities": {
     "extensions": [
-      { "uri": "https://koine.dev/kcb/manifest/0.3", // marks this entry as a KCB manifest
+      { "uri": "https://w3id.org/koine/kcb/manifest/0.3", // marks this entry as a KCB manifest
         "description": "Koine capability-bus manifest",
         "params": {
           "kcb_version": "0.3.0",
