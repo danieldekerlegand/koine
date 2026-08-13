@@ -39,7 +39,7 @@
         "The KCB manifest's own shape (the `capabilities.extensions[]` entry, its uri and params) is unchanged by this story \u2014 only the HOST card shape and the MCP method names move.",
         "capability-bus.md bumps its version with a dated changelog entry naming both corrections and the versions they align to; Status stays candidate."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
