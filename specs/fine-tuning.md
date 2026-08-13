@@ -596,11 +596,21 @@ withdrawn or changed in meaning. The stressors exercised across the three passes
   (ADR-0008), verifying that a corpus which is neither KGP claims nor image/video/audio bytes has a
   reference slot, an admission-time egress class, and a resolvable cardinality *before* any transfer.
 
+**What re-ratification is still waiting on.** One item: a re-run of the third pass's
+*Re-validation — KFT 0.4.0* section by the spec owner, which walks the corrected §3/§4.1 flow clean
+as written but has not been re-executed since. The **dependency pins are no longer part of that
+gate** — the `Depends on:` header tracks each plane's current published version under one stated
+rule, and every in-body cross-plane citation (§2 → KCB §2/§2.1 and §7.1, §4.2 → KGP §7/§7.2,
+§5.3 → KMI §2/§3/§7, §7 → KCB §5) has been re-read against those pins and annotated where the
+plane text moved, so the stale-pin loose end is closed rather than unstated. What survives is the
+standing obligation in the header's **re-check trigger**: a minor or major bump in a pinned plane
+obliges re-reading those same sections before KFT's next status transition.
+
 ---
 
 ## Changelog
 
-- **0.4.0 — dependency re-pin** (2026-08-13) — Header hygiene inside the still-open 0.4.0
+- **0.4.0 — dependency re-pin + citation reconciliation** (2026-08-13) — Header hygiene inside the still-open 0.4.0
   re-ratification; **version and status are unchanged (0.4.0, Candidate)** because no normative
   clause moved — only the `Depends on:` pins and how they are to be read. The KCB / KGP / KMI pins
   had read 0.2.0 / 0.4.0 / 0.2.0, which were each plane's **last-ratified** version, not a typo:
@@ -614,6 +624,17 @@ withdrawn or changed in meaning. The stressors exercised across the three passes
   pins, matching KINP's existing 0.2.x — with the patch position a wildcard and a **minor/major**
   bump in a pinned plane named as the re-check trigger (see the header note). KCS gains the
   explicit 0.2.x pin it had been missing.
+  The same edit reconciled the pins' **in-body consequences**, since a pin cannot be moved without
+  re-reading what it points at: §2 now states which manifest shape the KCB pin implies (one named
+  A2A AgentCard extension — the standalone manifest KFT's old 0.2.0 pin implied is deprecated and
+  removed at KCB 0.5.0 under KCB §7.3) and carries the capability's `(name, version)` /
+  `schema_id` fields; §4.2 records that KGP 0.5.x's projection is not a route around the egress
+  gate and that the claim-identity surface KFT references is byte-unchanged; §5.3 records that
+  KMI 0.3.x's OTIO adoption reaches no model artifact; §7 records that a grant binds to
+  `(capability, major)`. Each is a **citation, not a restatement** — no plane clause is
+  re-specified here — which is why §§2–8 are normatively untouched and neither the version nor the
+  status moves. With the pins and their citations closed, re-ratification is gated on the third
+  pass's *Re-validation — KFT 0.4.0* re-run alone (see *Pressure test*).
 - **0.4.0 — Candidate** (2026-08-06) — Folded third-pass deltas from
   [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md),
   which pressure-tests a producing application's **training exhaust** entering the fabric through the

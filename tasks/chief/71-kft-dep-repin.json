@@ -3,7 +3,7 @@
   "project": "koine",
   "category": "fix",
   "branchName": "chief/71-kft-dep-repin",
-  "description": "Re-pin — or explicitly justify — KFT's stale plane-version dependencies as part of the KFT 0.4.0 re-ratification. specs/fine-tuning.md's header 'Depends on:' pins KCB 0.2.0, KGP 0.4.0, and KMI 0.2.0 (KINP 0.2.x is current), but the planes have moved: KCB 0.3.0 (candidate — the §2 manifest is now a named A2A AgentCard extension, which changes the very manifest shape KFT §2's `finetune` capability is advertised in), KGP 0.5.0 (candidate — retained canonical + specified RDF projection), KMI 0.3.0 (candidate — OTIO canonical timeline). The stale pins happen to be the LAST-RATIFIED versions of each plane, so this is a real decision, not a typo fix: either (a) track-current — re-pin to 0.3.0/0.5.0/0.3.0 and accept that KFT cites candidate planes, or (b) pin-to-ratified — keep the pins with an explicit justification note naming the current versions and the re-pin trigger (each plane's re-ratification). Whichever way, the header must stop SILENTLY disagreeing with the current plane versions. Spec-edit + changelog discipline per specs/README.md ('How to read a spec': header first; status lifecycle draft->candidate->ratified; each spec carries its own changelog): KFT stays 0.4.0 candidate — this closes a re-ratification precondition, it does not itself ratify. Agnostic: bind roles, no product names. ROADMAP.md Phase 1.",
+  "description": "Re-pin \u2014 or explicitly justify \u2014 KFT's stale plane-version dependencies as part of the KFT 0.4.0 re-ratification. specs/fine-tuning.md's header 'Depends on:' pins KCB 0.2.0, KGP 0.4.0, and KMI 0.2.0 (KINP 0.2.x is current), but the planes have moved: KCB 0.3.0 (candidate \u2014 the \u00a72 manifest is now a named A2A AgentCard extension, which changes the very manifest shape KFT \u00a72's `finetune` capability is advertised in), KGP 0.5.0 (candidate \u2014 retained canonical + specified RDF projection), KMI 0.3.0 (candidate \u2014 OTIO canonical timeline). The stale pins happen to be the LAST-RATIFIED versions of each plane, so this is a real decision, not a typo fix: either (a) track-current \u2014 re-pin to 0.3.0/0.5.0/0.3.0 and accept that KFT cites candidate planes, or (b) pin-to-ratified \u2014 keep the pins with an explicit justification note naming the current versions and the re-pin trigger (each plane's re-ratification). Whichever way, the header must stop SILENTLY disagreeing with the current plane versions. Spec-edit + changelog discipline per specs/README.md ('How to read a spec': header first; status lifecycle draft->candidate->ratified; each spec carries its own changelog): KFT stays 0.4.0 candidate \u2014 this closes a re-ratification precondition, it does not itself ratify. Agnostic: bind roles, no product names. ROADMAP.md Phase 1.",
   "parked": false,
   "dependsOn": [],
   "touches": [
@@ -24,9 +24,9 @@
     {
       "id": "US-1",
       "title": "Decide the pin policy and apply it to all three stale pins consistently",
-      "description": "Choose track-current vs pin-to-ratified for the header 'Depends on:' pins (KCB 0.2.0 -> 0.3.0?, KGP 0.4.0 -> 0.5.0?, KMI 0.2.0 -> 0.3.0?) and apply the same policy to all three — a mixed header (one pin current, another last-ratified, with no stated rule) is exactly the silent disagreement this tasklist exists to end.",
+      "description": "Choose track-current vs pin-to-ratified for the header 'Depends on:' pins (KCB 0.2.0 -> 0.3.0?, KGP 0.4.0 -> 0.5.0?, KMI 0.2.0 -> 0.3.0?) and apply the same policy to all three \u2014 a mixed header (one pin current, another last-ratified, with no stated rule) is exactly the silent disagreement this tasklist exists to end.",
       "acceptanceCriteria": [
-        "specs/fine-tuning.md's header 'Depends on:' either pins KCB 0.3.0 / KGP 0.5.0 / KMI 0.3.0, or keeps the 0.2.0/0.4.0/0.2.0 pins accompanied by an explicit, in-header (or header-adjacent) justification that names the current versions, states the pin-to-ratified rule, and names the re-pin trigger (the pinned plane's re-ratification) — no pin is left silently stale either way.",
+        "specs/fine-tuning.md's header 'Depends on:' either pins KCB 0.3.0 / KGP 0.5.0 / KMI 0.3.0, or keeps the 0.2.0/0.4.0/0.2.0 pins accompanied by an explicit, in-header (or header-adjacent) justification that names the current versions, states the pin-to-ratified rule, and names the re-pin trigger (the pinned plane's re-ratification) \u2014 no pin is left silently stale either way.",
         "The KINP pin (0.2.x, current) is confirmed and left consistent with the chosen policy's spelling (exact-version vs minor-range pinning is stated, not mixed).",
         "The decision's rationale is recorded in the spec's changelog (specs/README.md changelog discipline), citing that the old pins were the last-ratified plane versions."
       ],
@@ -36,10 +36,10 @@
     {
       "id": "US-2",
       "title": "Reconcile KFT's in-body cross-plane citations with the decided pins",
-      "description": "The pins are load-bearing in the body: KFT §2 advertises `finetune` 'in its KCB capability manifest (KCB §2)' — a shape that changed between KCB 0.2.0 (two well-known files) and 0.3.0 (a named AgentCard extension); §4 leans on KGP §7/§7.2 (egress/license/trust); §5 on KMI assets/lineage. Verify each cited section still says what KFT relies on at the pinned version, and annotate where the planes' current candidates change the reading.",
+      "description": "The pins are load-bearing in the body: KFT \u00a72 advertises `finetune` 'in its KCB capability manifest (KCB \u00a72)' \u2014 a shape that changed between KCB 0.2.0 (two well-known files) and 0.3.0 (a named AgentCard extension); \u00a74 leans on KGP \u00a77/\u00a77.2 (egress/license/trust); \u00a75 on KMI assets/lineage. Verify each cited section still says what KFT relies on at the pinned version, and annotate where the planes' current candidates change the reading.",
       "acceptanceCriteria": [
-        "Every cross-plane §-citation in fine-tuning.md (at minimum §2's KCB §2 manifest shape, §4's KGP §7/§7.2 egress gate, §5's KMI asset/lineage conventions, §7's KCB §5 grants) is checked against the pinned plane version and corrected or annotated where the pinned text moved — in particular, §2 states which manifest shape (separate manifest vs AgentCard extension) the pin implies.",
-        "No plane contract is re-specified in KFT — citations reference, never restate, per CLAUDE.md ('defined once ... and referenced — never redefined').",
+        "Every cross-plane \u00a7-citation in fine-tuning.md (at minimum \u00a72's KCB \u00a72 manifest shape, \u00a74's KGP \u00a77/\u00a77.2 egress gate, \u00a75's KMI asset/lineage conventions, \u00a77's KCB \u00a75 grants) is checked against the pinned plane version and corrected or annotated where the pinned text moved \u2014 in particular, \u00a72 states which manifest shape (separate manifest vs AgentCard extension) the pin implies.",
+        "No plane contract is re-specified in KFT \u2014 citations reference, never restate, per CLAUDE.md ('defined once ... and referenced \u2014 never redefined').",
         "If the pin decision was pin-to-ratified, the annotations note where 0.3.0/0.5.0 candidates will change the reading when the re-pin trigger fires, so the next editor inherits the delta list."
       ],
       "passes": true,
@@ -50,11 +50,11 @@
       "title": "Changelog + lifecycle discipline for the re-ratification",
       "description": "Land the edit under koine's spec lifecycle: KFT remains 0.4.0 candidate (this is a dependency-hygiene edit inside the already-open re-ratification, not a new normative fold), the changelog records it, and the pressure-test note reflects that the dep-repin precondition is closed.",
       "acceptanceCriteria": [
-        "fine-tuning.md's version stays 0.4.0 and Status stays Candidate unless the edit changed a normative clause beyond the dependency pins/citations (in which case the version bumps per the lifecycle — the changelog states which case applied and why).",
+        "fine-tuning.md's version stays 0.4.0 and Status stays Candidate unless the edit changed a normative clause beyond the dependency pins/citations (in which case the version bumps per the lifecycle \u2014 the changelog states which case applied and why).",
         "A dated changelog entry describes the pin decision, the citations reconciled, and its place in the 0.4.0 re-ratification; the 'Last updated' header date moves.",
-        "The pressure-test section's re-ratification note (scenarios/e2e-producer-exhaust-finetune.md Re-validation — KFT 0.4.0) is referenced/updated so re-ratification is gated on the scenario re-run alone, with the dep pins no longer an unstated loose end; schemas/*.json still parse."
+        "The pressure-test section's re-ratification note (scenarios/e2e-producer-exhaust-finetune.md Re-validation \u2014 KFT 0.4.0) is referenced/updated so re-ratification is gated on the scenario re-run alone, with the dep pins no longer an unstated loose end; schemas/*.json still parse."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
