@@ -3,7 +3,7 @@
   "project": "koine",
   "category": "unblock",
   "branchName": "chief/79-conformance-gated-ratification",
-  "description": "Adopt MCP's **SEP-2484** governance pattern: *a spec cannot reach Final without a matching conformance scenario.* This directly fixes koine's ratification treadmill \u2014 the recurring, visible failure mode where a spec is pressure-tested by a hand-walked prose scenario, ratified, then dropped back to candidate the next time its model shape moves, with no machine-checkable artefact that a re-run either passes or fails. All four data/control planes are validated by PROSE scenarios today; the KCS payoff (a machine-replayable document run over real MCP/A2A links) is specified and unbuilt. The result is that 'ratified' is a claim about a walk somebody did, and re-ratification is a walk somebody has to do again. SEP-2484 breaks that loop by making the artefact a precondition of the status rather than a follow-up to it. The adoption has three parts. (1) The RULE, in specs/README.md's lifecycle: candidate \u2192 ratified requires a matching KCS conformance scenario that a conformant participant can actually run; no scenario, no ratification, regardless of how thorough the prose pass was. (2) The RETROACTIVE POSITION \u2014 KINP 0.2.1 and KCS 0.2.0 are already ratified under the OLD rule, so state explicitly whether they are grandfathered (with the encoding recorded as a debt) or must produce a scenario to KEEP the status; decide it, do not leave it ambiguous. (3) The COUPLING to the existing plan \u2014 Phase F4's cross-repo tasklists (62-encode-scenarios-as-kcs, 63-run-kcs-over-live-links) become the mechanism by which any spec can reach ratified, which promotes them from 'the unbuilt KCS payoff' to the critical path, and koine's Phase 2 'conformance-results intake' decision (where downstream results land, which gate consumes them) must be settled for the rule to be operable at all. Note the honest cost: this rule makes ratification HARDER and will leave specs at candidate longer. That is the point \u2014 a candidate that is honestly candidate is worth more than a ratified status that flips twice a year. Also record the governance pattern's source (MCP SEP-2484) so the borrow is attributed, per koine's standing practice of citing rather than claiming novelty. Lifecycle: this changes the LIFECYCLE ITSELF, not any spec's normative content \u2014 no spec version bumps in this tasklist, and no spec's status changes as a side effect of landing the rule (a status change is a separate, deliberate act). Agnostic: bind roles. ROADMAP.md Phase F7.",
+  "description": "Adopt MCP's **SEP-2484** governance pattern: *a spec cannot reach Final without a matching conformance scenario.* This directly fixes koine's ratification treadmill — the recurring, visible failure mode where a spec is pressure-tested by a hand-walked prose scenario, ratified, then dropped back to candidate the next time its model shape moves, with no machine-checkable artefact that a re-run either passes or fails. All four data/control planes are validated by PROSE scenarios today; the KCS payoff (a machine-replayable document run over real MCP/A2A links) is specified and unbuilt. The result is that 'ratified' is a claim about a walk somebody did, and re-ratification is a walk somebody has to do again. SEP-2484 breaks that loop by making the artefact a precondition of the status rather than a follow-up to it. The adoption has three parts. (1) The RULE, in specs/README.md's lifecycle: candidate → ratified requires a matching KCS conformance scenario that a conformant participant can actually run; no scenario, no ratification, regardless of how thorough the prose pass was. (2) The RETROACTIVE POSITION — KINP 0.2.1 and KCS 0.2.0 are already ratified under the OLD rule, so state explicitly whether they are grandfathered (with the encoding recorded as a debt) or must produce a scenario to KEEP the status; decide it, do not leave it ambiguous. (3) The COUPLING to the existing plan — Phase F4's cross-repo tasklists (62-encode-scenarios-as-kcs, 63-run-kcs-over-live-links) become the mechanism by which any spec can reach ratified, which promotes them from 'the unbuilt KCS payoff' to the critical path, and koine's Phase 2 'conformance-results intake' decision (where downstream results land, which gate consumes them) must be settled for the rule to be operable at all. Note the honest cost: this rule makes ratification HARDER and will leave specs at candidate longer. That is the point — a candidate that is honestly candidate is worth more than a ratified status that flips twice a year. Also record the governance pattern's source (MCP SEP-2484) so the borrow is attributed, per koine's standing practice of citing rather than claiming novelty. Lifecycle: this changes the LIFECYCLE ITSELF, not any spec's normative content — no spec version bumps in this tasklist, and no spec's status changes as a side effect of landing the rule (a status change is a separate, deliberate act). Agnostic: bind roles. ROADMAP.md Phase F7.",
   "parked": false,
   "dependsOn": [],
   "touches": [
@@ -29,27 +29,27 @@
     {
       "id": "US-1",
       "title": "Write the rule into the spec lifecycle",
-      "description": "Amend specs/README.md's draft \u2192 candidate \u2192 ratified lifecycle so ratification is gated on a runnable conformance artefact, and attribute the pattern to its source.",
+      "description": "Amend specs/README.md's draft → candidate → ratified lifecycle so ratification is gated on a runnable conformance artefact, and attribute the pattern to its source.",
       "acceptanceCriteria": [
-        "specs/README.md states normatively that a spec MUST NOT move from candidate to ratified without a matching KCS conformance scenario \u2014 a machine-replayable document a conformant participant can actually run \u2014 and that a prose pressure-test pass alone is necessary but no longer sufficient.",
+        "specs/README.md states normatively that a spec MUST NOT move from candidate to ratified without a matching KCS conformance scenario — a machine-replayable document a conformant participant can actually run — and that a prose pressure-test pass alone is necessary but no longer sufficient.",
         "The same section states the corollary that closes the treadmill: when a ratified spec's model shape changes and it returns to candidate, the scenario is what the re-ratification runs, so re-ratification stops being a fresh hand-walk each time.",
         "The pattern is attributed to MCP's SEP-2484 ('a spec cannot reach Final without a matching conformance scenario') as a borrowed governance design, consistent with koine's practice of citing prior art rather than claiming novelty.",
         "The honest cost is written down rather than glossed: this makes ratification harder and will hold specs at candidate longer, and that trade is stated as deliberate."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-2",
       "title": "Settle the retroactive position for the two already-ratified specs",
-      "description": "KINP 0.2.1 and KCS 0.2.0 were ratified under the previous rule. Ambiguity here would make the new rule unenforceable from day one \u2014 decide it explicitly.",
+      "description": "KINP 0.2.1 and KCS 0.2.0 were ratified under the previous rule. Ambiguity here would make the new rule unenforceable from day one — decide it explicitly.",
       "acceptanceCriteria": [
-        "specs/README.md records an explicit decision for the two specs ratified before the rule (KINP 0.2.1, KCS 0.2.0): either grandfathered with the missing KCS encoding recorded as a named, tracked debt, or required to produce a scenario to retain the status \u2014 one or the other, with the reasoning stated.",
+        "specs/README.md records an explicit decision for the two specs ratified before the rule (KINP 0.2.1, KCS 0.2.0): either grandfathered with the missing KCS encoding recorded as a named, tracked debt, or required to produce a scenario to retain the status — one or the other, with the reasoning stated.",
         "If grandfathered, the debt names WHERE it is tracked (the Phase F4 encoding tasklists) and what event would force it to be paid; if not grandfathered, the affected spec's status change is scheduled as a separate deliberate act, not performed silently inside this tasklist.",
         "The self-referential case is addressed: KCS is both a ratified spec and the format the rule depends on, so state how KCS itself satisfies the rule (its own format-stress scenario) without circularity.",
         "No spec file's version or Status header is edited by this story."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -57,12 +57,12 @@
       "title": "Couple the rule to the scenario program and the results-intake decision",
       "description": "The rule is only operable if there is a defined path from 'prose scenario' to 'runnable KCS document' and a defined place for the results to land. Both exist as plans; wire them to the rule.",
       "acceptanceCriteria": [
-        "scenarios/README.md records, per existing scenario, whether a KCS encoding exists, is planned, or is absent \u2014 making the gap between the six prose pressure tests and their machine-replayable encodings visible in the place a reader already looks.",
-        "The rule points at the Phase F4 cross-repo work (62-encode-scenarios-as-kcs, 63-run-kcs-over-live-links, built downstream per ADR-0001) as the mechanism by which a spec earns the artefact its ratification now requires \u2014 promoting that work from optional payoff to the ratification critical path.",
-        "koine's open Phase 2 decision on conformance-results intake is settled far enough for the rule to be operable: WHERE a downstream conformance result is recorded (proposed: a per-scenario 'Downstream results' section recording run date, participants-by-role, and pass/fail per assertion, instance-free and role-scoped) and WHICH gate consumes it \u2014 or, if it is deliberately left open, the rule states what a ratification does in the meantime.",
+        "scenarios/README.md records, per existing scenario, whether a KCS encoding exists, is planned, or is absent — making the gap between the six prose pressure tests and their machine-replayable encodings visible in the place a reader already looks.",
+        "The rule points at the Phase F4 cross-repo work (62-encode-scenarios-as-kcs, 63-run-kcs-over-live-links, built downstream per ADR-0001) as the mechanism by which a spec earns the artefact its ratification now requires — promoting that work from optional payoff to the ratification critical path.",
+        "koine's open Phase 2 decision on conformance-results intake is settled far enough for the rule to be operable: WHERE a downstream conformance result is recorded (proposed: a per-scenario 'Downstream results' section recording run date, participants-by-role, and pass/fail per assertion, instance-free and role-scoped) and WHICH gate consumes it — or, if it is deliberately left open, the rule states what a ratification does in the meantime.",
         "ROADMAP.md's Phase 1 and Phase F4 rows are updated to reflect that ratification is now scenario-gated, with no phase silently contradicting the new rule."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
