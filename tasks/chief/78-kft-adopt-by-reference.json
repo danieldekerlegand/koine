@@ -50,7 +50,7 @@
         "The §4 admission gate's BEHAVIOUR is unchanged: the same jobs are admitted and refused for the same reasons, and the FT-A…FT-Q findings folded by earlier passes all still hold. If any alignment edit would change an admission outcome, it is split out of this tasklist rather than landed.",
         "schemas/finetune-job.schema.json is updated in lockstep with §3 (references replacing restated fields), its golden fixture still validates, and every schema still parses."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
