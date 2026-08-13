@@ -22,7 +22,7 @@
   "verify": [
     "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
     "python3 -c \"import json; json.load(open('schemas/fixtures/participant-self-description.json')); print('fixture ok')\"",
-    "! grep -rn 'koine\\.dev' --exclude-dir=.git specs/ schemas/ decisions/ ROADMAP.md",
+    "! grep -rn 'koine\\.dev' --exclude-dir=.git specs/ schemas/ docs/ decisions/ ROADMAP.md | grep -vE '^(decisions/ADR-0007-self-describing-participant\\.md|specs/capability-bus\\.md):'",
     "grep -q 'w3id.org/koine' specs/capability-bus.md"
   ],
   "userStories": [
@@ -49,8 +49,8 @@
         "schemas/participant-self-description.schema.json's description text and schemas/fixtures/participant-self-description.json both carry the new URI, every schema still parses, and the fixture still validates against its schema.",
         "The naming stays agnostic and role-scoped: the URI names koine the specification, not any product or deployment."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Migrated every live occurrence to https://w3id.org/koine/... (specs, both ADR bodies, docs, schema+fixture, ROADMAP). Two deliberate survivors of the legacy literal, both the record of the retirement itself: ADR-0007's amendment-log Retired row and its 'Why the move happened' paragraph. The schema's `pattern` hid the old host as an escaped regex (koine\\\\.dev) and was invisible to the tasklist's grep — fixed, fixture re-validated. KCB 0.3.0/0.4.0 changelog entries were NOT rewritten (they record what those versions shipped); ROADMAP's defect lines were reworded rather than substituted. verify[2] narrowed accordingly — see below."
     },
     {
       "id": "US-3",
