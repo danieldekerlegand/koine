@@ -12,7 +12,7 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 | Spec | Protocol | Plane | Version · status |
 |---|---|---|---|
 | [`identity.md`](identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.2.1 · ✅ ratified |
-| [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.5.0 · 🚧 candidate |
+| [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.5.1 · 🚧 candidate |
 | [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.0 · 🚧 candidate |
 | [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.3.0 · 🚧 candidate |
 | [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — a replayable script that drives participants over their real connections | 0.2.0 · ✅ ratified |
@@ -35,7 +35,7 @@ header. KFT is not a fifth plane — it is a *profile* that composes KGP + KMI +
 - **Status is a lifecycle:** `draft → candidate → ratified`. A spec is promoted only after a
   concrete pressure-test scenario in [`../scenarios/`](../scenarios/) fails to break it. A spec is
   also demoted back to **candidate** when a later change touches its model shape. Four sit there
-  now — KGP 0.5.0, KMI 0.3.0, KCB 0.3.0, KFT 0.4.0 — each for its own reason; which re-validation
+  now — KGP 0.5.1, KMI 0.3.0, KCB 0.3.0, KFT 0.4.0 — each for its own reason; which re-validation
   is outstanding for which spec is tracked in [`../ROADMAP.md`](../ROADMAP.md).
 - **Clauses are §-numbered and normative.** MUST / SHOULD / MAY carry RFC-2119 weight; other specs
   and the schemas cite these section numbers (e.g. "KGP §7.2", "KINP §4.3"), so the numbering is a

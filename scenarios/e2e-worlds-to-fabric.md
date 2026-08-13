@@ -291,9 +291,9 @@ that arrives without its manifest. That is a downstream validator obligation
 | **JSON** | field-for-field twin of the rows | ✔ lossless |
 | **Prolog facts** | `commands(…,…) @world(alderforest)`; confidence/prov/license/egress ride the record, not the term | ✔ lossless, tier-gated (§5) |
 | **Datalog (`.dl`)** | ground facts only; the pack is `grounding-only`, so nothing is dropped | ✔ lossless |
-| **ProbLog** | `0.55::commands(…)` — the *record's* confidence becomes the fact probability | ✔ lossless per record — see 🟡 **KGP-1** |
+| **ProbLog** | `0.55::commands(…)` — the *record's* confidence becomes the fact probability | ✔ lossless per record — see **KGP-1** ✅ *resolved* |
 | **Neo4j** | entities→nodes, the claim→edge, prov/license/egress→edge props | ✔ lossless |
-| **RDF-star / PROV / JSON-LD** | worked below | ✔ lossless over the binary core — see 🟡 **KGP-2** |
+| **RDF-star / PROV / JSON-LD** | worked below | ✔ lossless over the binary core — see **KGP-2** ✅ *resolved* |
 
 **Worked round-trip of the new projection.** Per §4.1 the world becomes the named graph (by its KINP
 canonical IRI), the binary relation becomes the triple, and everything §3.1 excludes from identity
@@ -342,11 +342,11 @@ the arity constraint.
 
 | # | Severity | Gap | Direction |
 |---|---|---|---|
-| **KGP-1** | Minor | **Which confidence a merged claim projects to ProbLog is unstated.** A claim carrying two prov records (R1) has two confidences; a ProbLog fact has one probability. Round-trip and claim identity are unaffected — the ambiguity is *which records to project*, not whether the projection is lossless. Pre-existing — the §4 ProbLog row predates this decision — and surfaced only because R2 made a multi-prov merged claim explicit. | State in §4 that the projection emits one fact **per admitted prov record** after the §7 slice, and that folding several into one probability is the consumer's aggregation policy, not KGP's. |
-| **KGP-2** | Minor | **The projection's annotation vocabulary is unnamed.** §4.1 fixes the *structure* (which KGP construct becomes an annotation on the quoted triple) but names actual terms only for `prov`, where PROV supplies them. Two conformant producers can therefore emit structurally identical, mutually unreadable projections — an interop gap inside the feature whose whole purpose is interop. | Name the annotation predicates in §4.1 — a koine-owned term namespace for `claim-id` / `confidence` / `valid_time` / `embedding_model` / `license` / `egress` / `dialect`, reusing an external term wherever one already exists. |
+| **KGP-1** ✅ resolved | Minor | **Which confidence a merged claim projects to ProbLog is unstated.** A claim carrying two prov records (R1) has two confidences; a ProbLog fact has one probability. Round-trip and claim identity are unaffected — the ambiguity is *which records to project*, not whether the projection is lossless. Pre-existing — the §4 ProbLog row predates this decision — and surfaced only because R2 made a multi-prov merged claim explicit. | State in §4 that the projection emits one fact **per admitted prov record** after the §7 slice, and that folding several into one probability is the consumer's aggregation policy, not KGP's. **Closed** in [KGP 0.5.1](../specs/grounding-pack.md#changelog) (2026-08-13) — §4's normative *ProbLog — one fact per admitted prov record* rule, exactly as directed. |
+| **KGP-2** ✅ resolved | Minor | **The projection's annotation vocabulary is unnamed.** §4.1 fixes the *structure* (which KGP construct becomes an annotation on the quoted triple) but names actual terms only for `prov`, where PROV supplies them. Two conformant producers can therefore emit structurally identical, mutually unreadable projections — an interop gap inside the feature whose whole purpose is interop. | Name the annotation predicates in §4.1 — a koine-owned term namespace for `claim-id` / `confidence` / `valid_time` / `embedding_model` / `license` / `egress` / `dialect`, reusing an external term wherever one already exists. **Closed** in [KGP 0.5.1](../specs/grounding-pack.md#changelog) (2026-08-13) — §4.1's normative *annotation vocabulary*: one named term per annotation, reusing W3C PROV / OWL-Time / DCMI Terms where they exist and minting `kgp:` terms (immutable once ratified) where they do not. |
 
-Both are **projection-surface** findings. Neither touches §3, the §3.3 convergence result, or any
-already-minted claim id, and neither reopens deltas A–E — which is the load-bearing outcome of this
+Both are **projection-surface** findings, and both are now **closed** in KGP 0.5.1. Neither
+touches §3, the §3.3 convergence result, or any already-minted claim id, and neither reopens deltas A–E — which is the load-bearing outcome of this
 pass: the decision was made *around* the mechanism this scenario forced into the spec, not *through*
 it.
 
@@ -362,8 +362,13 @@ declined option would have broken the merge this scenario exists to protect.
 > §4.1 projection mapping) and its machine-readable twin
 > [`../schemas/grounding-pack.schema.json`](../schemas/grounding-pack.schema.json) +
 > [`../schemas/provenance.schema.json`](../schemas/provenance.schema.json). Promotion back to
-> **ratified** is *not* claimed here: **KGP-1** and **KGP-2** are open against §4/§4.1, and the
+> **ratified** was *not* claimed here: **KGP-1** and **KGP-2** were open against §4/§4.1, and the
 > projection's round-trip is desk-verified in prose here while ADR-0006 makes it a standing
 > obligation — a machine-checked round-trip fixture belongs to a downstream validator
-> ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)) and does not exist yet. KGP stays
-> **candidate** until both land.
+> ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)) and does not exist yet.
+>
+> **Update (2026-08-13):** both findings are **closed** in
+> [KGP 0.5.1](../specs/grounding-pack.md#changelog) — §4's ProbLog rule (KGP-1) and §4.1's
+> annotation vocabulary (KGP-2), each landed as directed above and neither touching §3, §3.3, or an
+> already-minted claim id. The **only** gate still outstanding is the downstream round-trip
+> fixture: KGP remains **candidate** until that fixture lands and this pass is re-run against it.

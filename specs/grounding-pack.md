@@ -1,8 +1,8 @@
 # Koine Grounding-Pack Protocol (KGP)
 
-**Spec version:** 0.5.0
+**Spec version:** 0.5.1
 **Status:** Candidate
-**Last updated:** 2026-08-02
+**Last updated:** 2026-08-13
 **Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
 and control-plane hosts that broker packs on behalf of agents.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
@@ -324,6 +324,16 @@ terms, so two conformant producers could emit structurally identical, mutually u
 projections — is closed by the annotation vocabulary above, which names a term for every
 annotation this section carries.
 
+With both closed, the one gate remaining before KGP 0.5.x returns to **ratified** is a
+**machine-checked round-trip fixture** for this projection: a fixture that takes a canonical pack,
+emits the RDF-star / PROV / JSON-LD projection, reads it back, and shows the recovered canonical
+re-derives the same `claim` ids (rule 2). The round-trip is desk-verified in prose in that scenario
+and made a standing obligation by ADR-0006, but the fixture itself is a **downstream validator**
+artifact per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) — conformance fixtures and
+validators live with the implementing runtime, not in koine — and is tracked cross-repo as
+`64-kgp-projection-roundtrip-fixture` (see `../tasks/chief/`). Until it lands, this spec stays
+**candidate**.
+
 ---
 
 ## 5. Dialect & portability tiers
@@ -481,6 +491,23 @@ Ratified 2026-07-17.
 
 ## Changelog
 
+- **0.5.1** (2026-08-13) — **Candidate** (normative change to a candidate spec; status unchanged).
+  Closes the two minor projection findings the *Re-validation — KGP 0.5.0* pass of
+  [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) left open.
+  **KGP-1**: §4 gains the normative **ProbLog rule** — the projection emits **one fact per
+  admitted `prov` record**, *admitted* being the records that survive the §7 slice applied at pack
+  construction; a producer MUST NOT fold several records into one probability, and choosing an
+  aggregation (noisy-or, max, trust-weighted) is the **consumer's** policy, not KGP's. **KGP-2**:
+  §4.1 gains the normative **annotation vocabulary** — a named term for every annotation the
+  projection carries, reusing an established vocabulary where one exists (W3C PROV for `prov`,
+  OWL-Time for `valid_time`, DCMI Terms for the SPDX licence id) and minting a `kgp:` term only
+  where none does (`claimId`, `confidence`, `embeddingModel`, `licenseClass`, `egressClass`,
+  `dialect`), with those terms **immutable once ratified** on the same discipline as a published
+  relation (§3.2). §4.1's exercised-by note now names the remaining re-ratification gate: the
+  downstream round-trip fixture (ADR-0001). Projection-surface only — §3 normalization, §3.1's
+  hashed set, and the §3.3 convergence result are untouched, so **no existing `claim` id changes**
+  and no `schemas/` document shape moves (a projection's conformance is the round-trip, not a
+  document shape).
 - **0.5.0** (2026-08-02) — **Candidate** (re-enters validation per `draft → candidate →
   ratified`). Decided KGP's relationship to RDF 1.2 / RDF-star, W3C PROV, and JSON-LD per
   [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md): the **bespoke canonical
