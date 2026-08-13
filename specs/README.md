@@ -113,6 +113,40 @@ work discharges KCS's debt as a by-product of discharging every other spec's: a 
 cannot express a scenario is a KCS defect, surfaced by the attempt to write it. KCS is the one spec
 whose conformance artefact is earned by **use** rather than by a run.
 
+**How a spec earns the artefact — Phase F4 is the mechanism.** The rule would be empty without a
+defined path from the prose pass a spec already has to the runnable document it now needs, and that
+path exists: [`../ROADMAP.md`](../ROADMAP.md) **Phase F4** — `agora chief/62-encode-scenarios-as-kcs`
+encodes each [`../scenarios/`](../scenarios/) pressure test as a machine-replayable KCS document, and
+`agora chief/63-run-kcs-over-live-links` runs the suite over real MCP/A2A connections (with delta-N
+`standin` fixtures for roles nobody has adopted yet). Both are built downstream, not here
+([`../decisions/ADR-0001-control-plane-topology.md`](../decisions/ADR-0001-control-plane-topology.md)):
+koine specifies the format and holds the prose; the console that replays a document is runtime. What
+this rule changes is that pair's standing. Encoding the scenarios used to be the KCS payoff — nice to
+have, scheduled behind everything with a delivery date. It is now the **only** route to `ratified`
+for every spec in the table above, which puts it on the critical path. The per-scenario state of that
+work is tracked where a reader already looks: the **KCS encoding** column of
+[`../scenarios/README.md`](../scenarios/README.md).
+
+**Where a run's result lands, and which gate consumes it.** A run is only evidence if it is recorded
+somewhere a gate reads, so: a downstream conformance result is recorded in the scenario it ran, as a
+**`## Downstream results`** section of that [`../scenarios/`](../scenarios/) document — run date,
+participants **by role**, pass/fail per assertion with the clause each assertion cites, and for a
+failure the finding it opens or the delta it reopens. It stays instance-free and role-scoped: koine
+records that *a* participant in a role passed or failed a clause-cited assertion, never whose
+deployment it was. The gate that consumes it is the **spec owner**'s: an owner proposing a promotion
+**MAY** cite a recorded pass as evidence alongside the hand-walked re-validation, and **MUST** reopen
+a finding that a recorded failure contradicts. A recorded result never promotes a spec by itself —
+promotion stays a deliberate act — but no spec may be promoted *past* a recorded failure without
+answering it.
+
+**What a ratification does in the meantime.** Nothing, and that is the intended reading. As of this
+writing no scenario has a KCS encoding, so no spec is currently promotable to `ratified` — the four
+at `candidate` stay there until Phase F4 delivers, and their outstanding prose re-validations
+(ROADMAP Phase 1) are now necessary-but-not-sufficient rather than the last step. There is no
+provisional status, no waiver, and no "ratified pending encoding": the rule has one exception, the
+grandfather clause above, and it is closed to new entrants. If that holds specs at `candidate` for a
+year, the roadmap is telling the truth about where this repo is.
+
 ## How to read a spec
 
 - **Header first.** Each spec opens with its **version**, **status**, `Applies to:` (the roles it

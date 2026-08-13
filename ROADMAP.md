@@ -6,7 +6,7 @@
 > *any two conformant AI systems interoperate on identity, knowledge, media, and capability
 > without a single point-to-point bridge.*
 
-**Status:** Contract layer complete — 2 of 6 specs ratified (KINP, KCS), 4 in candidate re-validation (KGP, KMI, KCB, KFT) · maintenance + ratification cadence, with a planned "second act" (Phases F1–F6 below) and an **in-progress prior-art/standards-hygiene pass (Phase F7)** · **Last updated:** 2026-08-11
+**Status:** Contract layer complete — 2 of 6 specs ratified (KINP, KCS), 4 in candidate re-validation (KGP, KMI, KCB, KFT) · maintenance + ratification cadence, with a planned "second act" (Phases F1–F6 below) and an **in-progress prior-art/standards-hygiene pass (Phase F7)**. Ratification is now **conformance-gated** — no spec reaches `ratified` without a machine-replayable KCS scenario ([`specs/README.md`](specs/README.md#the-ratification-gate), Phase F7 · `79`), which puts **Phase F4 on the critical path** · **Last updated:** 2026-08-13
 
 This is the single canonical roadmap for koine. koine has no prior ROADMAP; this file
 synthesizes the contract program from the spec headers, the ADRs, the pressure-test scenarios,
@@ -89,8 +89,11 @@ A `—` means the row is a spec-owner gate (re-run an existing scenario) or cont
 discrete tasklist. Existing tasklists occupy band `10`–`40`; every proposed one is numbered `50`+
 so it cannot collide. **Every F-phase proposal is now authored as a `tasks/chief/*.json` (`passes:false`, unrun)** — the koine-owned rows as live koine spec/ADR/scenario tasklists, the **cross-repo** rows only as *parked* markers whose runtime work is built downstream (agora / lugh / a consumer) per ADR-0001, moving to the sibling repo when actionable and never running under koine's gates.
 
-> **A spec is promoted only after a concrete pressure test fails to break it**; a change to a
-> *ratified* model's shape drops it back to **candidate** and re-enters validation. The per-row
+> **A spec is promoted only after a concrete pressure test fails to break it**, and since
+> 2026-08-13 **`candidate → ratified` additionally requires that test's machine-replayable KCS
+> encoding** ([the ratification gate](specs/README.md#the-ratification-gate)); a change to a
+> *ratified* model's shape drops it back to **candidate** and re-enters validation, where the
+> encoding is what the re-validation replays. The per-row
 > status is each spec's own header (authoritative) — where `specs/README.md` and the root
 > `README.md` index tables still show KGP/KFT ratified at older versions, those tables are the
 > doc-sync tail (Phase 1 below), not the truth.
@@ -118,17 +121,25 @@ the new shape — except the doc-sync (`chief/50`), the two discrete spec edits 
 (`chief/71` KFT dep re-pin, `chief/72` KGP findings closure), and the one missing fixture (which
 is Phase F5).
 
+⚠️ **Each of these four now carries a second gate.** Under the
+[ratification gate](specs/README.md#the-ratification-gate) a re-run of the prose scenario is
+**necessary but no longer sufficient**: `candidate → ratified` also requires that scenario's
+machine-replayable **KCS encoding**, and none of the four is grandfathered (only KINP 0.2.1 and
+KCS 0.2.0 are). So every row below reads *prose re-run **+** KCS artefact*, the artefact comes from
+**Phase F4** (`62` then `63`), and no row here promotes until it lands. Each row's per-spec blocker
+is unchanged; what changed is that clearing it no longer finishes the job.
+
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | **Re-ratify KCB 0.4.1** — **two** gates now (KCB pressure-test §): re-run the media-transform scenario against the 0.3.0 AgentCard-extension shape (`capabilities.extensions[]`, `https://w3id.org/koine/kcb/manifest/0.3`), **and** a *clean* §7.5 break-test. The second gate's scenario has landed and run (`scenarios/e2e-live-schema-mutation.md`) and is **not clean** — V-2/V-4/V-5/V-7 blocking — so re-ratification now waits on the KCB **0.5.0** fold (Phase F2) plus a re-run | re-run `scenarios/e2e-media-transform.md` + `scenarios/e2e-live-schema-mutation.md` · — |
-| 🚧 | **Re-ratify KMI 0.3.0** — OTIO half already re-validated clean; blocked only because the same scenario also gates KCB's manifest change (media-interchange.md pressure-test §) | rides with KCB re-run · — |
-| 🚧 | **Re-ratify KGP 0.5.2** — projection findings **KGP-1** (which confidence a multi-provenance merged claim projects to ProbLog) and **KGP-2** (name the §4.1 annotation predicates) are ✅ **closed** by the normative §4/§4.1 edits of `chief/72` (KGP 0.5.1, 2026-08-13), and 0.5.2 (2026-08-13) is rationale-only (§3.4 prior art + the ADR-0006 amendment); the one remaining gate is the missing round-trip fixture, Phase F5 | `scenarios/e2e-worlds-to-fabric.md` *(Re-validation — KGP 0.5.0)* · — |
-| 🚧 | **Re-ratify KFT 0.4.0** — owner re-ratification of the strictly-additive FT-M…FT-Q intake fold (already walked clean; fine-tuning.md pressure-test §); the header's stale plane-version pins are a named precondition, closed by `chief/71` (below) | `scenarios/e2e-producer-exhaust-finetune.md` *(Re-validation — KFT 0.4.0)* · — |
+| ⬜ | **Re-ratify KCB 0.4.1** — **two** gates now (KCB pressure-test §): re-run the media-transform scenario against the 0.3.0 AgentCard-extension shape (`capabilities.extensions[]`, `https://w3id.org/koine/kcb/manifest/0.3`), **and** a *clean* §7.5 break-test. The second gate's scenario has landed and run (`scenarios/e2e-live-schema-mutation.md`) and is **not clean** — V-2/V-4/V-5/V-7 blocking — so re-ratification now waits on the KCB **0.5.0** fold (Phase F2) plus a re-run — **and**, like every row here, on the KCS encodings of both scenarios (F4 · `62`/`63`) | re-run `scenarios/e2e-media-transform.md` + `scenarios/e2e-live-schema-mutation.md` · — |
+| 🚧 | **Re-ratify KMI 0.3.0** — OTIO half already re-validated clean; the prose half is blocked only because the same scenario also gates KCB's manifest change (media-interchange.md pressure-test §), and the promotion additionally needs `kcs:media-transform` (F4) | rides with KCB re-run · — |
+| 🚧 | **Re-ratify KGP 0.5.2** — projection findings **KGP-1** (which confidence a multi-provenance merged claim projects to ProbLog) and **KGP-2** (name the §4.1 annotation predicates) are ✅ **closed** by the normative §4/§4.1 edits of `chief/72` (KGP 0.5.1, 2026-08-13), and 0.5.2 (2026-08-13) is rationale-only (§3.4 prior art + the ADR-0006 amendment); the remaining gates are the missing round-trip fixture (Phase F5) and `kcs:worlds-to-fabric` (F4) | `scenarios/e2e-worlds-to-fabric.md` *(Re-validation — KGP 0.5.0)* · — |
+| 🚧 | **Re-ratify KFT 0.4.0** — owner re-ratification of the strictly-additive FT-M…FT-Q intake fold (already walked clean; fine-tuning.md pressure-test §); the header's stale plane-version pins are a named precondition, closed by `chief/71` (below); `kcs:producer-exhaust-finetune` (F4) is the second gate | `scenarios/e2e-producer-exhaust-finetune.md` *(Re-validation — KFT 0.4.0)* · — |
 | ⬜ | **Doc-sync the index tables** — bring `specs/README.md` + root `README.md` status columns in line with the spec headers (KGP 0.5.0, KFT 0.4.0, KMI/KCB 0.3.0 all candidate). *Its ECOSYSTEM.md story context is already resolved* — the file exists since `2e228c6` (see Loose wishlist ✅), so `50`'s remaining scope is the index tables + link integrity · S | `chief/50-doc-sync-status-tables` *(proposed, koine)* |
 | ⬜ | **KFT dependency re-pin** — re-pin or explicitly justify KFT §1/header's plane-version pins (KGP 0.4.0 / KMI 0.2.0 / KCB 0.2.0 — the last-ratified versions — vs current 0.5.0 / 0.3.0 / 0.3.0 candidates) as part of the 0.4.0 re-ratification; reconcile the in-body cross-plane citations (esp. §2's KCB manifest shape) · S | `chief/71-kft-dep-repin` *(proposed, koine)* |
 | ⬜ | **KGP findings closure** — the normative §4/§4.1 spec edits closing KGP-1 (one ProbLog fact per admitted prov record; aggregation is consumer policy) and KGP-2 (name the annotation predicates: a koine-owned term namespace, reusing external terms where they exist) + the §4.1 reference to the downstream round-trip fixture — the spec-edit work `chief/50` is barred from · S | `chief/72-kgp-findings-closure` *(proposed, koine)* |
 
-*Depends on:* nothing external; all are re-runs of existing `scenarios/`. KMI re-ratifies the moment KCB's re-run passes.
+*Depends on:* **Phase F4** — every row needs the KCS encoding of the scenario it re-runs (`agora chief/62`, then `63`), which is the one hard external dependency this phase has; the prose re-runs themselves need nothing external. KMI's *prose* half clears the moment KCB's re-run passes; both still wait on F4.
 
 ### Phase 2 — Downstream adoption (tracked, built in siblings) — 🚧 rolling
 
@@ -142,7 +153,7 @@ build programs are Phases F3–F5 below. Real conformance results feed back into
 | 🚧 | **Fabric producers** — worlds / knowledge / media / audio join as producers (KINP + KGP + KMI + KCB, KFT by reference) | insimul · pinakes · argos · formant |
 | 🚧 | **Memory substrate** — joins as a KCB provider (KINP + KCB) | tessera |
 | 🚧 | **Fine-tuning providers** — general + specialized (local-only) trainers, registry-routed (KFT) | agora (general) · lugh (specialist) |
-| ⬜ | **D: conformance-results intake** — the koine-side half of "real conformance results feed back into the ratification gates" is undefined and needs a decision, not code: **where downstream results land** (proposed: a per-scenario *Downstream results* section in the relevant `scenarios/*.md`, recording run date, participants-by-role, and pass/fail per assertion — instance-free, role-scoped) and **which gate consumes them** (proposed: the Phase 1 spec-owner re-ratification rows, which MAY cite a recorded downstream pass as evidence alongside the hand-walked re-validation, and MUST reopen a finding a downstream failure contradicts). Until decided, the feedback loop has a defined downstream half (agora's console emits KCS reports) and an undefined koine half | — |
+| ✅ | **D: conformance-results intake** — **settled 2026-08-13** by `chief/79` (the rule needed it to be operable). **Where results land:** a per-scenario `## Downstream results` section in the relevant `scenarios/*.md`, recording run date, participants **by role**, and pass/fail per assertion with the clause each cites — instance-free and role-scoped, so a deployment's hosts/endpoints stay in the private integration repo ([`scenarios/README.md`](scenarios/README.md)). **Which gate consumes them:** the Phase 1 spec-owner ratification gate — an owner **MAY** cite a recorded pass as evidence alongside the hand-walked re-validation and **MUST** reopen a finding a recorded failure contradicts; a result never promotes a spec by itself. Both halves of the feedback loop are now defined (agora's console emits KCS reports; koine records and consumes them) | `chief/79-conformance-gated-ratification` |
 
 ### Phase F1 — Cross-spec federation — ⬜ planned (scale: L)
 
@@ -193,19 +204,25 @@ client's live end-to-end run is externally blocked until **≥1 real provider** 
 
 *Depends on:* the client (`59`) live-run is blocked until `57` **or** `58` ships a real provider. The semantic admission rules the validator (`60`) can't express are Phase F5. Source: fine-tuning.md §9.1.
 
-### Phase F4 — Conformance console (the unbuilt KCS payoff) — ⬜ planned (scale: L, cross-repo)
+### Phase F4 — Conformance console (the ratification critical path) — ⬜ planned (scale: L, cross-repo)
 
-All six scenarios are hand-walked **prose**. The KCS payoff is to encode each as a
-machine-replayable KCS document and run it over real MCP/A2A links (KCS §6 names this a downstream
-conformance-console tasklist). Partly blocked because the media producer is still a *planned* KCB
-provider — bridged by the KCS **delta-N stand-in** already in the format.
+⚠️ **This phase is no longer optional payoff — it is the gate every other spec promotion waits
+behind.** All seven scenarios are hand-walked **prose**, and under the
+[ratification gate](specs/README.md#the-ratification-gate) a prose pass no longer promotes anything
+to `ratified`. Encoding each scenario as a machine-replayable KCS document and running it over real
+MCP/A2A links (KCS §6 names this a downstream conformance-console tasklist) is therefore the **only**
+route by which any spec earns `ratified` — it gates all four Phase 1 re-ratifications, and it is what
+settles the grandfathered debt KINP 0.2.1 and KCS 0.2.0 carry. Partly blocked because the media
+producer is still a *planned* KCB provider — bridged by the KCS **delta-N stand-in** already in the
+format. Per-scenario state lives in the **KCS encoding** column of
+[`scenarios/README.md`](scenarios/README.md); today it reads `planned` seven times and `exists` zero.
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | Encode the six `scenarios/` as machine-replayable **KCS documents** (`kcs:worlds-to-fabric`, `kcs:media-transform`, the finetune passes, the format-stress) · L | agora `chief/62-encode-scenarios-as-kcs` *(proposed, cross-repo)* |
-| ⬜ | Run the KCS suite over **real MCP/A2A connections**, using **delta-N `standin`** fixtures for not-yet-adopted providers (the still-*planned* media KCB provider) · L | agora `chief/63-run-kcs-over-live-links` *(proposed, cross-repo)* |
+| ⬜ | Encode the seven `scenarios/` as machine-replayable **KCS documents** (`kcs:worlds-to-fabric`, `kcs:media-transform`, the three finetune passes, `kcs:live-schema-mutation`, the format-stress) — **the artefact `candidate → ratified` now requires**; each one that lands flips its row in `scenarios/README.md` from `planned` to `exists` · L | agora `chief/62-encode-scenarios-as-kcs` *(proposed, cross-repo)* |
+| ⬜ | Run the KCS suite over **real MCP/A2A connections**, using **delta-N `standin`** fixtures for not-yet-adopted providers (the still-*planned* media KCB provider); each run is recorded back into its scenario's `## Downstream results` section (Phase 2 row D), which is what a ratification gate reads · L | agora `chief/63-run-kcs-over-live-links` *(proposed, cross-repo)* |
 
-*Depends on:* Phase 2 adoption (real participants to drive) and Phase F3 for the finetune legs; KCS 0.2.0 (ratified, delta N folded) already expresses the stand-ins. Source: conformance-scenario.md §6, scenarios/kcs-format-stress.md (delta N).
+*Depends on:* Phase 2 adoption (real participants to drive) and Phase F3 for the finetune legs; KCS 0.2.0 (ratified, delta N folded) already expresses the stand-ins. **Depended on by:** all four Phase 1 re-ratifications and every future promotion to `ratified`. Source: conformance-scenario.md §6, scenarios/kcs-format-stress.md (delta N), specs/README.md (the ratification gate).
 
 ### Phase F5 — Downstream validator obligations (explicit, un-owned) — ⬜ planned (scale: M, cross-repo)
 
@@ -214,7 +231,7 @@ today un-owned. One of them (the KGP round-trip fixture) also unblocks Phase 1's
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | The missing **RDF-star / PROV / JSON-LD round-trip fixture** for KGP §4 — proves a projection is lossless back to the canonical pack; also closes the last KGP 0.5.0 re-ratification blocker · M | agora `chief/64-kgp-projection-roundtrip-fixture` *(proposed, cross-repo)* |
+| ⬜ | The missing **RDF-star / PROV / JSON-LD round-trip fixture** for KGP §4 — proves a projection is lossless back to the canonical pack; also closes the last *contract-side* KGP 0.5.0 re-ratification blocker, leaving only the F4 encoding · M | agora `chief/64-kgp-projection-roundtrip-fixture` *(proposed, cross-repo)* |
 | ⬜ | **Rejection of a manifest-less pack** — a bare projection arriving without its manifest is not a unit of transfer; the validator must refuse it (schemas/README.md) · S | agora `chief/65-manifestless-pack-rejection` *(proposed, cross-repo)* |
 | ⬜ | The **finetune-job SEMANTIC admission rules** the schema can't express — `modality × method` compatibility (FT-F), egress/license aggregation over `{data ∪ base}` (FT-B), inline-header checks (FT-N…P); pinned by the finetune scenarios · M | agora/lugh `chief/66-finetune-semantic-admission` *(proposed, cross-repo)* |
 
@@ -257,7 +274,7 @@ below are the **normative** half.
 | ⬜ | **KINP + KCS prior art and novelty** — cite DIDs/VCs and Pact/consumer-driven contract testing; record that **no standard does cross-authority MERGE** (ANS v2 *revokes*, MCP Registry *prevents*, `owl:sameAs` is 15 years into documented failure) and that **Web Bot Auth is not a competitor** (zero `draft-ietf-webbotauth-*` documents; scope is bot→website authn "using existing identifiers"); fix the positioning bug that **KCS is the most defensible spec and the least advertised** (Pact is bilateral + mock-based; A2A's own TCK is 45★) · M | `chief/74-kinp-kcs-prior-art-and-novelty` *(proposed, koine)* |
 | ⬜ | **KMI narrows to a BRIDGE** — **C2PA** already ships a *signed* derivation chain (`c2pa.ingredient` · `parentOf`/`componentOf`/`inputTo`, 159 certified products) and **MovieLabs OMC v2.8** a *richer* vocabulary (Revision/Variant/Derivation/Representation/Alternative), so KMI defines **projections onto both** instead of being a third vocabulary; what stays KMI's is the **analysis→knowledge bridge** + world-scoping. Plus the ADR-0005 caveat: **OTIO is not 1.0** (1.0 milestone due 2026-04-10, ~4 months late) and `target_url` is under-specified enough that **Premiere Beta 26.1 and DaVinci Resolve 20.2 break against each other** (#1985) · L | `chief/77-kmi-lineage-bridge-projections` *(proposed, koine)* |
 | ⬜ | **KFT keeps the gate, adopts the rest** — by reference: **Croissant v1.1** (datasets), **ModelPack/KitOps** (weights; `model.parts[].type` already contemplates LoRA), **HF `base_model`** (lineage), **Kubeflow TrainJob** `initializer.{dataset,model}.storageUri` (structural precedent). Defensible and kept: the **objective × adaptation taxonomy**, **egress-gated placement**, **graded refusal routing**, and **cross-provider job portability** — nothing converts between Axolotl/LLaMA-Factory/torchtune/TRL/OpenAI despite 190k+ combined stars, which makes portability arguably KFT's most valuable deliverable · L | `chief/78-kft-adopt-by-reference` *(proposed, koine)* |
-| ⬜ | **Conformance-gated ratification** — adopt MCP's **SEP-2484**: *a spec cannot reach Final without a matching conformance scenario.* Directly fixes the ratification treadmill (four specs are back at candidate on model-shape changes, and all six scenarios are hand-walked prose). Promotes Phase F4 from "the unbuilt KCS payoff" to the **ratification critical path**, and forces the Phase 2 conformance-results-intake decision · M | `chief/79-conformance-gated-ratification` *(proposed, koine)* |
+| ✅ | **Conformance-gated ratification** — **landed 2026-08-13** ([`specs/README.md` — the ratification gate](specs/README.md#the-ratification-gate)): `candidate → ratified` **MUST NOT** happen without a matching KCS scenario; KINP 0.2.1 + KCS 0.2.0 grandfathered with the debt named and its forcing event stated; Phase F4 named as the mechanism and Phase 2 row D settled. Adopted from MCP's **SEP-2484**: *a spec cannot reach Final without a matching conformance scenario.* Directly fixes the ratification treadmill (four specs are back at candidate on model-shape changes, and all six scenarios are hand-walked prose). Promotes Phase F4 from "the unbuilt KCS payoff" to the **ratification critical path**, and forces the Phase 2 conformance-results-intake decision · M | `chief/79-conformance-gated-ratification` *(proposed, koine)* |
 
 *Depends on:* `76` depends on `75` (the pin corrections rewrite the same example card the namespace
 move touches). `77` fills the OTIO/C2PA/OMC rows of the pin table and `78` the KFT rows, so both
@@ -273,7 +290,7 @@ same extension URI in at least four places including a byte-for-byte conformance
 | Status | Milestone | Tasklist |
 |---|---|---|
 | 🚧 | **Spec stewardship** — new agnostic ADRs (numbered ≥ 0009 after F1/F2; 0002–0004 permanently reserved to the downstream sequence), registry growth by *new* namespaced relation names (never in-place edits), `schemas/` kept in lockstep with spec versions | — |
-| 🚧 | **Track downstream adoption** — as agora and the sibling producers implement the contracts, feed real conformance results back into the ratification gates | — |
+| 🚧 | **Track downstream adoption** — as agora and the sibling producers implement the contracts, feed real conformance results back into the ratification gates: each run is recorded in its scenario's `## Downstream results` section (role-scoped, instance-free) and read by the spec-owner gate, which MAY cite a pass and MUST reopen a finding a failure contradicts | — |
 
 ### Loose wishlist — ⬜ not yet phased
 
@@ -295,7 +312,7 @@ Smaller open threads noted across the specs/registry, not big enough to anchor a
 - **Phase F7 (`73`–`79`) is decided work, not a proposal shelf.** It comes from the 2026-08 prior-art sweep and includes the two **verified defects** — the KCB extension URI minted under an unregistered hostname (`75`) and the total absence of external-standard pins (`76`) — which are the highest-value rows on this roadmap by cost-to-fix. One row of `75` is cross-repo (`agora:72-kcb-extension-uri-migration`).
 
 The four candidate **re-ratifications** are spec-owner gates driven by re-running existing
-scenarios, not Chief tasklists; the koine-own contract edits are the F1/F2/F6 spec/ADR/scenario
+scenarios plus, since `79`, that scenario's KCS encoding from Phase F4 — not Chief tasklists; the koine-own contract edits are the F1/F2/F6 spec/ADR/scenario
 stems and the Phase-1 stems — the doc-sync (`chief/50`) plus the two ratification-tail spec edits
 (`chief/71-kft-dep-repin`, `chief/72-kgp-findings-closure`). Everything F-banded is a
 **proposal only**.
