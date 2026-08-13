@@ -22,8 +22,9 @@
   "verify": [
     "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
     "python3 -c \"import json; json.load(open('schemas/fixtures/participant-self-description.json')); print('fixture ok')\"",
-    "! grep -rn 'koine\\.dev' --exclude-dir=.git specs/ schemas/ docs/ decisions/ ROADMAP.md | grep -vE '^(decisions/ADR-0007-self-describing-participant\\.md|specs/capability-bus\\.md):'",
-    "grep -q 'w3id.org/koine' specs/capability-bus.md"
+    "! grep -rn 'koine[\\\\]*[.]dev' --exclude-dir=.git specs/ schemas/ docs/ decisions/ ROADMAP.md | grep -vE '^(decisions/ADR-0007-self-describing-participant\\.md|specs/capability-bus\\.md):' && [ \"$(grep -c 'koine[.]dev' specs/capability-bus.md)\" = 2 ] && [ \"$(grep -c 'koine[.]dev' decisions/ADR-0007-self-describing-participant.md)\" = 2 ]",
+    "grep -q 'w3id.org/koine' specs/capability-bus.md",
+    "grep -q 'KCB 0.6.0' specs/capability-bus.md"
   ],
   "userStories": [
     {

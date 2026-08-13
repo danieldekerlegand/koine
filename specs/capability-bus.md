@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.4.0
+**Spec version:** 0.4.1
 **Status:** Candidate
 **Last updated:** 2026-08-13
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -9,7 +9,8 @@ capability consumers (most participants are both provider and consumer).
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
-> **Status note (0.4.0):** stays **Candidate**, now on two counts. 0.3.0 changed the *shape* of the
+> **Status note (0.4.1):** stays **Candidate**, on the same two counts as 0.4.0 — 0.4.1 adds a
+> transition clause (§2.3), not a gate. 0.3.0 changed the *shape* of the
 > manifest — it is now an A2A AgentCard extension (§2), not a standalone
 > `/.well-known/kcb-manifest.json` — and that re-validation is still outstanding. 0.4.0 adds the
 > capability-versioning surface (§7, wired through §2/§2.1/§3/§5) per
@@ -22,7 +23,9 @@ carries.
 > mutate-live-schema scenario (§7.5). Leg (ii) has been **written and run** —
 > [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) — and did
 > **not** pass clean: deltas **V-1…V-8**, blocking V-2/V-4/V-5/V-7, all additively foldable into a
-> **0.5.0** minor. Both legs stay open.
+> **0.5.0** minor. Both legs stay open. 0.4.1 moves the §2 extension URI's namespace root and
+> opens the dual-accept window that retires the legacy root at **KCB 0.6.0** (§2.3); it neither
+> adds a gate nor discharges one, and the two legs above are restated unchanged.
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
 > capability bus moves *capability*: how a participant advertises what it can do, how orgs and
@@ -63,7 +66,9 @@ A2A's `AgentCard.capabilities.extensions` field is a list of **`AgentExtension`*
 `{ uri, description, required?, params }` — the standard, in-band way to attach protocol-specific
 metadata to a card without forking the A2A schema. The KCB manifest is one such extension,
 identified by the stable extension URI **`https://w3id.org/koine/kcb/manifest/0.3`**; its `params`
-object carries the KCB payload:
+object carries the KCB payload. That URI's namespace **root** moved at 0.4.1, and it is a matching
+key — until **KCB 0.6.0** a consumer MUST also accept the legacy root as naming this same
+extension (§2.3):
 
 ```jsonc
 {
@@ -196,6 +201,71 @@ existing A2A AgentCard as the `https://w3id.org/koine/kcb/manifest/0.3` extensio
   `manifest.signing = {key_id, alg}` the *shared* signing shape between the KCB manifest and KGP
   packs; the collapse moves `signing` into `params` but MUST NOT change its shape, so provenance
   attribution (KINP §7) stays cryptographically valid across the migration.
+
+### 2.3 Transition — the extension URI's namespace root moved (0.4.1)
+
+The extension URI is a **matching key**, not a fetch target: a consumer identifies the KCB manifest
+by string-comparing the `uri` of each entry in the card's `capabilities.extensions[]`. Changing that
+string is therefore breaking for any consumer that matches on the old literal, and this section
+states what a conformant participant does about it rather than leaving each implementation to guess.
+
+**What moved.** Only the namespace *root*. The path and version segment are byte-unchanged, so the
+two URIs name the same manifest-payload family and the same `0.3` shape:
+
+| | Extension URI |
+|---|---|
+| **Legacy** — deprecated at 0.4.1, removed at **KCB 0.6.0** | `https://koine.dev/kcb/manifest/0.3` |
+| **Current** — the form a producer emits | `https://w3id.org/koine/kcb/manifest/0.3` |
+
+The root moved because the legacy hostname was **verified unregistered on 2026-08-11** — DNS held no
+record for it and the host could not be resolved at all. An unregistered hostname standing as an
+identifying URI is squattable, and there is no recovery once conformant implementations have shipped
+the literal: a string already compiled into peers you do not operate cannot be recalled. `w3id.org`
+is a community-run, redirect-only permanent-identifier service, so the identifier no longer depends
+on any private domain registration staying renewed. Registration provenance (the PR that created the
+entry) and the full rationale are recorded in
+[ADR-0007](../decisions/ADR-0007-self-describing-participant.md)'s amendment log.
+
+**The dual-accept window.** For the whole window — from 0.4.1 up to, but not including, **KCB
+0.6.0**:
+
+- **a. A consumer MUST accept both.** A consumer matching manifest extensions MUST treat an entry
+  whose `uri` carries the legacy root and an entry whose `uri` carries the current root as
+  identifying the **same** KCB manifest extension, and MUST read `params` identically from either. A
+  consumer that matches only one of the two is non-conformant for the duration of the window.
+- **b. A producer MUST emit the current form.** Every manifest a producer publishes MUST carry the
+  `https://w3id.org/koine/…` URI on its KCB extension entry; a producer MUST NOT publish the legacy
+  form alone.
+- **c. Serving both is permitted; the current form is authoritative.** Per §7.3d a producer MAY
+  *additionally* publish a second extension entry bearing the legacy URI with **byte-identical**
+  `params`, so that a consumer written before this window still discovers it. Where both entries are
+  present the current-root entry is authoritative, and a consumer MUST NOT count the legacy mirror
+  as a second, distinct manifest.
+- **d. The legacy form is deprecated on sight.** Discovery (§3) MUST keep returning a peer whose card
+  carries only the legacy entry — marked deprecated, carrying the **0.6.0** removal version, and
+  ranked below any peer that satisfies the same query with the current root (§7.3d).
+- **e. At KCB 0.6.0 the obligation ends, not the readability.** Past 0.6.0 a producer MUST NOT emit
+  the legacy URI and a consumer is no longer obliged to accept it. Nothing already published is
+  invalidated (§7.3f) — an archival record naming the legacy URI stays resolvable (§7.4) — and the
+  removal version MAY be moved later, never earlier (§7.3e).
+
+**Why 0.6.0 rather than 0.5.0.** §7.3c requires at least one full minor between declaring and
+removing, which 0.5.0 satisfies arithmetically; but 0.5.0 already carries §2.2's standalone-manifest
+removal, and stacking two retirements in one release leaves a subscriber that first meets this
+deprecation at 0.5.0 no version in which to act on it. 0.6.0 spends the whole 0.5.0 cycle as the
+window. Per §7.3b that window is measured in KCB's own minor versions, never in wall-clock dates.
+
+**Downstream obligation — named here, performed elsewhere.** Any implementation that pins the legacy
+literal must migrate. A runtime commons carries the string in several places, including a
+**byte-for-byte conformance corpus**: a corpus compared by bytes does not accept a substituted
+string, so its fixtures must be re-emitted and re-hashed, not edited in place. Per
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) runtime work is not done in koine —
+that migration is the cross-repo tasklist `agora:72-kcb-extension-uri-migration`, which depends on
+this one. No schema in this repository models the AgentCard extension entry, so nothing here rejects
+a legacy peer's card; clause **a** is prose, and prose is where a consumer's obligation lives. The
+one schema that does name the URI — `participant-self-description.schema.json`'s
+`manifest_extension_uri`, what a participant *declares it serves* — is the twin of clause **b** and
+so admits the current form only.
 
 ---
 
@@ -453,8 +523,9 @@ media type, a manifest location (§2.2), an extension URI.
   record naming a retired contract version stays resolvable (§7.4). Retirement is a statement about
   the **live** contract only.
 
-Two surfaces are mid-window under this policy today: KCB's own standalone
-`/.well-known/kcb-manifest.json`, removed at **KCB 0.5.0** (§2.2), and KMI's deprecated
+Three surfaces are mid-window under this policy today: KCB's own standalone
+`/.well-known/kcb-manifest.json`, removed at **KCB 0.5.0** (§2.2); the **legacy namespace root**
+of the §2 manifest extension URI, removed at **KCB 0.6.0** (§2.3); and KMI's deprecated
 `application/vnd.koine.edl+json`, removed at **KMI 0.4.0**
 ([`media-interchange.md`](media-interchange.md) §4.4).
 
@@ -550,6 +621,39 @@ that scenario's *Findings* and *Re-ratification* sections. The extension-shape r
 outstanding and independent.
 
 ## Changelog
+
+- **0.4.1** (2026-08-13) — **Candidate.** Moved the §2 manifest extension URI's namespace **root** to
+  a `w3id.org` permanent identifier — `https://koine.dev/kcb/manifest/0.3` →
+  `https://w3id.org/koine/kcb/manifest/0.3` — and opened the transition window that retires the
+  legacy root (**§2.3**, new). *Reason:* the legacy hostname was **verified unregistered on
+  2026-08-11** (DNS held no record; the host would not resolve), so the identifier the fabric names
+  itself by was squattable, with no recovery once conformant implementations had shipped the literal;
+  registering it ourselves would only have converted the exposure into a renewal that must never
+  lapse. Provenance of the w3id entry and the full rationale:
+  [ADR-0007](../decisions/ADR-0007-self-describing-participant.md)'s amendment log. *The window:* the
+  URI is a **matching key**, so from 0.4.1 up to but not including **KCB 0.6.0** a consumer MUST
+  accept **both** roots as identifying the same extension, a producer MUST emit the w3id form (and
+  MAY additionally serve a byte-identical legacy mirror entry, §7.3d), discovery marks the legacy
+  form deprecated and ranks it below (§7.3d), and at 0.6.0 the obligation — never the readability
+  (§7.3f/§7.4) — ends. 0.6.0 rather than 0.5.0 because §7.3c's one-minor minimum would otherwise land
+  the removal in the same release as §2.2's, leaving a subscriber that first meets this deprecation
+  no version in which to act (§2.3). *Classification:* **patch**, not minor — nothing is removed and
+  nothing narrows during the window (the read side *broadens* to two accepted roots, and §7.3c
+  forbids declaring and removing in one publication, as KMI 0.3.1 did for `edl+json`); the narrowing
+  is the 0.6.0 removal, and that is the minor. The manifest payload shape, the `…/kcb/manifest/0.3`
+  path and version segment, the verbs, `signing`, §7's versioning surface, and every other MUST/SHOULD
+  are unchanged. In-repo occurrences moved with it (both ADR bodies, docs, `ROADMAP.md`, and
+  `schemas/participant-self-description.schema.json` + its fixture, whose `manifest_extension_uri`
+  pattern is the twin of the producer clause and so admits the w3id form only); the 0.3.0/0.4.0
+  entries below are **not** rewritten — they record the root current when those versions shipped.
+  *Downstream, not done here:* implementations pinning the legacy literal migrate under
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) — the cross-repo tasklist
+  `agora:72-kcb-extension-uri-migration`, which depends on this one and whose **byte-for-byte
+  conformance corpus** must be re-emitted and re-hashed rather than string-substituted. Status stays
+  **Candidate** on the *unchanged* pair of gates: the 0.3.0 extension-shape re-run of
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) **and** a clean §7.5
+  mutate-live-schema pass ([`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md),
+  still carrying blocking V-2/V-4/V-5/V-7). This release neither adds a gate nor discharges one.
 
 - **Editorial** (2026-08-13) — §7.5's break-test is no longer a forward reference: it names the
   landed scenario [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md)

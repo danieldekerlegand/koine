@@ -60,7 +60,7 @@ vocabulary.
   byte-unchanged, so no claim id moves. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.4.0, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.4.1, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -78,6 +78,13 @@ vocabulary.
   address for a second major, V-5 no version operand at invoke time, V-7 no signal reaches a live
   `subscribe`). All folds are additive → KCB **0.5.0**, the same minor that removes §2.2's standalone
   manifest. The scenario's *Re-ratification — what this pass gates* section is the note of record.
+  0.4.1 (patch) moves the §2 extension URI's namespace **root** to a w3id.org permanent identifier
+  (`https://w3id.org/koine/kcb/manifest/0.3`) — the old private hostname was verified unregistered
+  and therefore squattable — and adds **§2.3**, the dual-accept window: until **KCB 0.6.0** a
+  consumer MUST accept both roots, a producer MUST emit the w3id form. Path/version segment,
+  payload shape and every other clause unchanged; both re-ratification gates restated, neither
+  moved. Provenance in ADR-0007's amendment log; implementations pinning the old literal migrate
+  downstream (ADR-0001).
 - `specs/media-interchange.md` — KMI 0.3.1, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the

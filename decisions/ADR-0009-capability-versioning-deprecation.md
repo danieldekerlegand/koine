@@ -484,5 +484,7 @@ redefinition — both URIs then served across a declared window (decision 7). Th
 what governs the namespace move: it is a breaking change to a matching key, so KCB §2 states the
 dual-accept window, the fabric applying its own rule to its own surface.
 
-**Spec effect.** None from this entry. The normative landing — every occurrence moved, plus §2's
-transition clause and a dated changelog entry — is made in KCB itself.
+**Spec effect.** None from this entry. The normative landing is made in KCB itself, at **0.4.1**
+(2026-08-13): every occurrence moved, plus **§2.3**, the dual-accept window that retires the legacy
+root at **KCB 0.6.0** — a removal version measured in KCB's own minors, per §7.3b/c, which is this
+record's decision 7.

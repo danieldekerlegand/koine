@@ -285,9 +285,12 @@ in the participant's own repository. The manifest *payload* shape is untouched. 
 that names the entry moves.
 
 **Spec effect.** Normative, on a candidate spec: the extension URI is a matching key, so changing
-it is breaking for any consumer matching on the old literal. The KCB-side landing — every
-occurrence moved to the w3id form, plus a normative transition clause in §2 stating what a
-conformant consumer and producer each do during the window, and a dated changelog entry — is made
-in [`../specs/capability-bus.md`](../specs/capability-bus.md) itself. Runtime implementations that
+it is breaking for any consumer matching on the old literal. The KCB-side landing is made in
+[`../specs/capability-bus.md`](../specs/capability-bus.md) itself, at **KCB 0.4.1** (2026-08-13):
+every occurrence moved to the w3id form, plus **§2.3** — the normative dual-accept window, in which
+a consumer MUST accept both roots as naming the same extension and a producer MUST emit the w3id
+form — with an explicit end, the removal of the legacy root at **KCB 0.6.0** (a version, not a
+date, per KCB §7.3b), and a dated changelog entry. Status stays **Candidate** on its existing pair
+of re-ratification gates; this release neither adds one nor discharges one. Runtime implementations that
 pin the old literal migrate downstream, per
 [ADR-0001](ADR-0001-control-plane-topology.md); no runtime work is done here.
