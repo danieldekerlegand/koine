@@ -56,7 +56,7 @@
         "scenarios/e2e-worlds-to-fabric.md's findings table marks KGP-1 and KGP-2 resolved with a pointer to the closing spec version/changelog entry, and the scenario's 'ratified is not claimed' note is updated to name only the fixture as outstanding; scenarios/README.md's open-findings line is synced.",
         "Lifecycle: grounding-pack.md bumps its version (normative change to a candidate spec), Status stays candidate, a dated changelog entry records both closures + the fixture reference, and no schema in schemas/ changes shape (projections have no document schema — conformance is the round-trip); schemas/*.json still parse."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
