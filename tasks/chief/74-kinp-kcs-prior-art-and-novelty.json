@@ -35,7 +35,7 @@
         "It records that IETF Web Bot Auth is NOT a competitor, with the reason stated as scope rather than maturity: chartered 2025-10-23, zero draft-ietf-webbotauth-* documents, both milestones missed, and a scope of bot-to-website authentication 'using existing identifiers'.",
         "The addition is INFORMATIVE ONLY: KINP 0.2.1's Status stays ratified, no normative clause, identifier grammar, envelope, or resolution semantic changes, and the changelog entry says so explicitly."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
