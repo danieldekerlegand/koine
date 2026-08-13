@@ -112,3 +112,11 @@ vocabulary.
   reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
   integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently
   reserved**: new agnostic ADRs start at 0005 and go up.
+- `ECOSYSTEM.md` — the root-level **living topology**, informative and shape-level: the ADR-0001
+  topology principles, the six planes with their version + status (a mirror of the spec headers —
+  the header always wins), an informative "known implementations" role map, and the cross-repo
+  conventions. It binds no clause, and no spec, schema, registry, or policy file depends on it.
+  Keep it *shape only*: the instance topology — real hosts/endpoints, bridge/predicate mappings, a
+  deployment's node/edge ontology, the adoption program map — stays in the private integration
+  repo (its §7). A pointer to that repo may appear here or in a README-level doc, never in a spec,
+  schema, registry, or policy file.
