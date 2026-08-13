@@ -35,7 +35,7 @@
         "It records that IETF Web Bot Auth is NOT a competitor, with the reason stated as scope rather than maturity: chartered 2025-10-23, zero draft-ietf-webbotauth-* documents, both milestones missed, and a scope of bot-to-website authentication 'using existing identifiers'.",
         "The addition is INFORMATIVE ONLY: KINP 0.2.1's Status stays ratified, no normative clause, identifier grammar, envelope, or resolution semantic changes, and the changelog entry says so explicitly."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -48,7 +48,7 @@
         "It records the nearest agent-protocol equivalent honestly (A2A's own test kit: 45 stars, declarative only in its participant matrix) as an informative data point, dated, so the claim ages visibly.",
         "The addition is INFORMATIVE ONLY: KCS 0.2.0's Status stays ratified, the assertion vocabulary and document shape are unchanged, and the changelog entry says so."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -61,7 +61,7 @@
         "No status, version, or normative surface changes anywhere in this story \u2014 it is description only, and the diff shows that.",
         "The five borrowable designs identified by the sweep are recorded as a forward note (not adopted here): connectrpc's capability-config-selects-cases + failure baselines, MCP's frozen per-revision requirement sets + not-scored reasons, OpenID's Condition/Sequence/TestModule/Plan composition, C2PA's YAML rubrics with JMESPath + specSection traceability, and Venom's executor abstraction \u2014 each named as a candidate for a future KCS revision under the normal lifecycle."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]

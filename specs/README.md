@@ -15,7 +15,7 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 | [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.5.2 · 🚧 candidate |
 | [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.1 · 🚧 candidate |
 | [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.4.0 · 🚧 candidate |
-| [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — a replayable script that drives participants over their real connections | 0.2.0 · ✅ ratified |
+| [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data that drives **N real** participants over their actual MCP/A2A connections, asserting cross-plane properties, each cited to the clause it checks | 0.2.0 · ✅ ratified |
 | [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.4.0 · 🚧 candidate |
 
 **The table is a convenience mirror.** Each spec's own version + status header is the source of

@@ -451,6 +451,60 @@ fixed in KGP §4.1. The design rule is unchanged: adopt the interface or the sha
 runtime. Identifiers, envelopes, and resolution semantics are untouched; IRI-compatibility (§3) is
 what makes that projection mechanical.
 
+### 9.1 Identity standards considered, and the gap they leave (rationale, INFORMATIVE)
+
+The table above records what KINP borrows. This subsection records the identity standards KINP
+does **not** borrow from, and the specific question each one leaves unanswered. It is
+**informative**: it binds no clause, and the identifier grammar (§3), the envelopes (§7), and the
+resolution semantics (§4, §8) are unchanged by it. Dated data points come from a prior-art sweep of
+**2026-08** and are stated with their dates so the claim ages visibly; the narrative version lives
+in [`../docs/positioning.md`](../docs/positioning.md) and, where the two disagree, this spec wins.
+
+**DIDs and Verifiable Credentials.** W3C **Decentralized Identifiers** give a self-certifying
+identifier that resolves — by a registered DID method — to a DID document; **Verifiable
+Credentials** give cryptographically signed attestations *about* a subject. Both are mature and
+widely implemented, and both solve real problems KINP does not attempt: an identifier no registry
+can revoke out from under its controller, and a claim whose signer is checkable. Neither is adopted
+here, and the reason is the **question**, not the quality. KINP's question is not *"who signed
+this?"* but **"two authorities each minted an identifier for what is plausibly the same entity —
+what is the merged view, and what must never merge?"** A DID method **resolves**; it does not
+**reconcile**. Nothing in the DID data model expresses a merged view across two *minting
+authorities* — resolution is per-identifier by construction — and nothing in either data model
+expresses the inverse obligation, a **firewall** against merges that must never happen, which is
+what §4.3 draws between `same_as` and `based_on`. A signed attestation that two identifiers denote
+the same thing is still an assertion needing §4.2's confidence, world scope, and review gate (§11
+decision 2); signing it does not discharge them. The layers therefore compose rather than compete:
+a participant may mint DIDs and present VCs and still need §4's equivalence layer, unchanged, above
+them. A deployment wanting DID-backed identifiers registers a namespace for them under §3.4 and
+anchors to them under §4.4, like any other external authority.
+
+**No standard does cross-authority merge.** That is the load-bearing observation behind §4.1
+(local IDs, never a hard merge) and §11 decision 2 (hybrid merge policy), and the sweep found no
+counter-example. The three nearest attempts each answer a *different* question:
+
+| Prior art | What it does when two authorities collide | Why that is not §4 |
+|---|---|---|
+| **Agent Name Service v2** | **Revokes** one side of the collision | Revocation picks a winner and destroys the loser. §4 needs both identifiers to survive, each keeping its own authority's provenance, with the merge as a query-time view (§4.2) that can later be withdrawn. |
+| **MCP Registry** | **Prevents** the collision, via namespace ownership | Prevention is a governance answer, and KINP already has it — §3.4 gives one authority per prefix. It is orthogonal to the case that remains: two **independently governed** authorities that each legitimately minted an identifier for the same entity. That case is why §4 exists. |
+| **`owl:sameAs`** | Asserts global, symmetric, **transitive** identity | Fifteen years of deployment experience document the failure mode: **identity inflation**, and the now-canonical *"`sameAs` is not always the same"* critique — unqualified transitive sameness propagates a single bad link across an entire graph. §9's table borrows the *concept* and this spec refuses the semantics: `same_as` is confidence-scored, world-scoped, provenance-carrying, and routed to review above an impact threshold (§4.2, §11 decision 2), and `based_on` exists precisely so lineage is never stated as identity (§4.3). |
+
+**IETF Web Bot Auth is not a competitor, and the reason is scope rather than maturity.** A reader
+tracking agent-identity work will meet the IETF **Web Bot Auth** effort and reasonably ask whether
+it supersedes §3. It does not. The maturity facts are the *weaker* half of the answer: as of the
+2026-08 sweep the working group, chartered **2025-10-23**, has **zero `draft-ietf-webbotauth-*`
+documents** and has missed **both** of its charter milestones. Those facts can age — a working
+group can ship. The half that does not age is the **scope**: Web Bot Auth authenticates a **bot to
+a website**, explicitly *"using existing identifiers."* Taking the identifiers as given is the one
+premise KINP does not get to make, because supplying and reconciling them across authorities is its
+entire subject. So the orthogonality is by construction: were Web Bot Auth to ship every milestone
+tomorrow, a participant would authenticate its bot with it and still have to answer §4's question
+about the two identifiers underneath. The two compose; neither retires the other.
+
+KINP therefore claims a **narrow** gap, and states it that way: not identifier issuance, not
+resolution, not attestation — all three are occupied by better-resourced work KINP is happy to
+anchor to (§4.4) — but the **merged view across independently governed minting authorities, and
+the firewall against merges that must not happen**.
+
 ---
 
 ## 10. Adoption map (by role)
@@ -496,6 +550,21 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
 
 ## Changelog
 
+- **Editorial** (2026-08-13) — Added **§9.1**, an informative prior-art subsection recording the
+  identity standards KINP had never engaged in writing and the gap they leave: **DIDs / Verifiable
+  Credentials** are cited and dismissed *for this problem* (a DID method resolves, it does not
+  reconcile; neither data model expresses a merged view across two minting authorities, nor the
+  §4.3 firewall against merges that must not happen), **no standard does cross-authority merge**
+  (Agent Name Service v2 revokes one side, the MCP Registry prevents the collision by namespace
+  ownership, `owl:sameAs` is fifteen years into the documented identity-inflation failure mode),
+  and **IETF Web Bot Auth is not a competitor** for reasons of scope rather than maturity
+  (chartered 2025-10-23, zero `draft-ietf-webbotauth-*` documents, both milestones missed, and a
+  scope of bot-to-website authentication *"using existing identifiers"*). **Rationale and prior art
+  only — no normative change:** no clause, identifier grammar (§3), envelope (§7), or resolution
+  semantic (§4, §8) is added, removed, or altered in meaning, no `same_as`/`based_on` rule moves,
+  and KINP stays **0.2.1 Ratified**. The narrative version is
+  [`../docs/positioning.md`](../docs/positioning.md) *Prior art considered*; where the two differ,
+  this spec wins.
 - **Editorial** (2026-08-02) — §9's "not adopting" row is **narrowed, not reversed**, per
   [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) decision 5: what is not
   adopted is the RDF stack *as storage and identity* (no mandated triplestore, no SPARQL query
