@@ -117,7 +117,7 @@ is Phase F5).
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | **Re-ratify KCB 0.4.0** — **two** gates now (KCB pressure-test §): re-run the media-transform scenario against the 0.3.0 AgentCard-extension shape (`capabilities.extensions[]`, `https://koine.dev/kcb/manifest/0.3`), **and** break-test 0.4.0's versioning section (KCB §7.5) with the F2 mutate-live-schema scenario | re-run `scenarios/e2e-media-transform.md` + `chief/56` · — |
+| ⬜ | **Re-ratify KCB 0.4.0** — **two** gates now (KCB pressure-test §): re-run the media-transform scenario against the 0.3.0 AgentCard-extension shape (`capabilities.extensions[]`, `https://koine.dev/kcb/manifest/0.3`), **and** a *clean* §7.5 break-test. The second gate's scenario has landed and run (`scenarios/e2e-live-schema-mutation.md`) and is **not clean** — V-2/V-4/V-5/V-7 blocking — so re-ratification now waits on the KCB **0.5.0** fold (Phase F2) plus a re-run | re-run `scenarios/e2e-media-transform.md` + `scenarios/e2e-live-schema-mutation.md` · — |
 | 🚧 | **Re-ratify KMI 0.3.0** — OTIO half already re-validated clean; blocked only because the same scenario also gates KCB's manifest change (media-interchange.md pressure-test §) | rides with KCB re-run · — |
 | 🚧 | **Re-ratify KGP 0.5.2** — projection findings **KGP-1** (which confidence a multi-provenance merged claim projects to ProbLog) and **KGP-2** (name the §4.1 annotation predicates) are ✅ **closed** by the normative §4/§4.1 edits of `chief/72` (KGP 0.5.1, 2026-08-13), and 0.5.2 (2026-08-13) is rationale-only (§3.4 prior art + the ADR-0006 amendment); the one remaining gate is the missing round-trip fixture, Phase F5 | `scenarios/e2e-worlds-to-fabric.md` *(Re-validation — KGP 0.5.0)* · — |
 | 🚧 | **Re-ratify KFT 0.4.0** — owner re-ratification of the strictly-additive FT-M…FT-Q intake fold (already walked clean; fine-tuning.md pressure-test §); the header's stale plane-version pins are a named precondition, closed by `chief/71` (below) | `scenarios/e2e-producer-exhaust-finetune.md` *(Re-validation — KFT 0.4.0)* · — |
@@ -161,14 +161,17 @@ How a provider evolves a capability's schema without breaking subscribers — **
 [ADR-0009](decisions/ADR-0009-capability-versioning-deprecation.md) and normative at KCB §7, which
 KFT §11.5 now inherits by reference (a finetuned model's pinned `kft_version` is an archival pin,
 KCB §7.4). KMI's unfinished deprecation is closed with it: the `edl+json` transition window (§4.4)
-names its removal — **KMI 0.4.0** — under the one deprecation policy at KCB §7.3. What remains is
-the break-test.
+names its removal — **KMI 0.4.0** — under the one deprecation policy at KCB §7.3. The break-test has
+now been written and run, and it **found the perimeter open** — so what remains is the fold it
+demands (KCB **0.5.0**: V-2/V-4/V-5/V-7 blocking, V-3/V-6 should-fix, all additive) and a clean
+re-run.
 
 | Status | Milestone | Tasklist |
 |---|---|---|
 | ✅ | A **versioning ADR** — both options were adopted at different layers: semver `(name, version)` carries *compatibility*, a content-addressed `schema_id` makes a silent mutation detectable; ADR-0009 | `chief/54-capability-versioning-adr` |
 | ✅ | KCB §7 §-edit encoding the decision (KCB → 0.4.0) + the KMI §4.4 `edl+json` removal version (KMI → 0.3.1, removed at 0.4.0) + the KFT §11.5 inheritance resolved as an informative pointer | `chief/55-kcb-versioning-spec-edit` |
-| ⬜ | A **mutate-live-schema scenario** — a provider ships a capability v2 while a v1 subscriber is live; assert no silent break. Required by KCB §7.5 before KCB can re-ratify · M | `chief/56-live-schema-mutation-scenario` *(proposed, koine `scenarios/`)* |
+| ✅ | A **mutate-live-schema scenario** — a provider widens, re-prices, mutates without bumping, ships v2 beside v1 and retires v1, all under a live subscriber. Required by KCB §7.5 before KCB can re-ratify; **run, not clean** — deltas **V-1…V-8**, blocking V-2/V-4/V-5/V-7 (see the scenario's *Re-ratification* §) | `chief/56-live-schema-mutation-scenario` → `scenarios/e2e-live-schema-mutation.md` |
+| ⬜ | **KCB 0.5.0 — fold V-1…V-8** — additive: a version operand on `invoke` + the granted major in the token (V-5), a per-major transport binding in `capabilities[]` (V-4), an in-band deprecation/removal control frame on `subscribe` (V-7), a digested payload shape on knowledge ports (V-2), a versioned canonicalization prefix (V-3), a removal floor (V-6), a quoted cost (V-1); then re-run the break-test. Same minor already carries §2.2's removal (KCB §7.3) · M | *(proposed, koine)* |
 
 *Depends on:* none hard; naturally pairs with F1 (both are "how the fabric evolves"). Source: capability-bus.md §7 (was §7.2), fine-tuning.md §11.5, media-interchange.md §4.4.
 
