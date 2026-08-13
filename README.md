@@ -61,7 +61,7 @@ ratified only after passing a concrete pressure test.
 | [Grounding-Pack](specs/grounding-pack.md) (KGP) | How knowledge (facts, relationships, graphs) is exchanged | 0.5.2 | 🚧 candidate |
 | [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | 0.3.1 | 🚧 candidate |
 | [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.4.0 | 🚧 candidate |
-| [Conformance-Scenario](specs/conformance-scenario.md) (KCS) | A test format for proving an implementation is correct | 0.2.0 | ✅ ratified |
+| [Conformance-Scenario](specs/conformance-scenario.md) (KCS) | A declarative scenario — data, not code — that drives several **real** participants over their actual connections at once, and checks properties spanning all four planes, each tied to the clause it tests | 0.2.0 | ✅ ratified |
 | [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 0.4.0 | 🚧 candidate |
 
 Each spec's header is the authority for its current version and status. The path from

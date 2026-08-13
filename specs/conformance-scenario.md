@@ -184,6 +184,27 @@ is the better tool there, and KCS neither replaces nor competes with it — but 
 replayable scenario over **N real participants** whose assertions are **cross-plane**, which is the
 only shape in which the four planes' interaction can be observed at all.
 
+### 8.1 Designs worth borrowing later (forward note — NOT adopted)
+
+The same 2026-08 sweep read five running conformance programs whose *machinery* is ahead of §2–§5,
+even though none of them answers KCS's question. They are recorded here so the option is not lost.
+**None of this is adopted.** Nothing below changes §2's document shape, §3's step vocabulary, §4's
+execution model, or §5's assertions; each is a candidate for a **future KCS revision under the
+normal lifecycle** (`draft` → `candidate` → `ratified`, gated by a pressure-test scenario), and a
+candidate becomes a clause only by going through it.
+
+| Design | Where it comes from | What it would touch, if taken up |
+|---|---|---|
+| A participant's declared capability config **selects which cases run**, plus **known-failure baselines** so an expected red is not a new red | connectrpc's conformance runner | §2 — scenario selection against a participant's KCB manifest (§4.1 already resolves it); the baseline half also bears on §7.2's determinism question |
+| **Frozen per-revision requirement sets**, and an explicit **reason a requirement was not scored** | MCP's conformance work | §6 and the report — a scenario would pin the spec revision it was written against, and a skipped assertion would say why rather than vanish |
+| Composition primitives — **Condition / Sequence / TestModule / Plan** — so scenarios are assembled from reusable parts | the OpenID conformance suite | §3 — today a scenario is a flat step list with `after`; reuse across scenarios has no vocabulary |
+| **YAML rubrics with JMESPath expressions** over the observed artifact, each carrying a `specSection` | C2PA's conformance program | §5 and §7.1 — this is the concrete shape the "small predicate DSL over the observation log" escape hatch could take, and the machine-readable form of the traceability §8 says the format does not have today |
+| An **executor abstraction** — one interface, many protocol executors | Venom | §4 — MCP and A2A are the only transports §4.1 names; a third would otherwise be a spec change rather than a plug-in |
+
+Two of the five map onto open questions already on the record (§7.1 assertion extensibility, §7.2
+determinism); the other three are new surface. Taking any of them up is a normal minor revision of
+this spec, not an editorial one.
+
 ## Pressure test
 
 Exercised by [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md) (encoding
@@ -193,6 +214,19 @@ participants, §2), **P** (`timeout_ms`, §2/§3/§4). Ratified.
 
 ## Changelog
 
+- **Editorial** (2026-08-13) — Added **§8.1**, a forward note recording five conformance-program
+  designs the 2026-08 sweep found worth borrowing — capability-config-selected cases plus
+  known-failure baselines (connectrpc), frozen per-revision requirement sets plus explicit
+  not-scored reasons (MCP), Condition/Sequence/TestModule/Plan composition (the OpenID conformance
+  suite), YAML rubrics with JMESPath expressions carrying a `specSection` (C2PA), and an executor
+  abstraction (Venom) — each named with the section it would touch. **None is adopted**, and the
+  note says so: taking any of them up is a normal minor revision gated by a pressure test, not an
+  editorial change. **Rationale and prior art only — no normative change:** §2's document shape,
+  §3's step vocabulary, §4's execution/observation model, §5's assertions and §7's open questions
+  are unchanged, and KCS stays **0.2.0 Ratified**. The index descriptions in
+  [`../README.md`](../README.md), [`../specs/README.md`](../specs/README.md) and
+  [`../ECOSYSTEM.md`](../ECOSYSTEM.md) were restated in the same pass to say what KCS is; they are
+  mirrors of this spec and carry no clause.
 - **Editorial** (2026-08-13) — Added **§8**, an informative prior-art section recording the
   contract-testing prior art KCS had never engaged in writing: **Pact / consumer-driven contract
   testing** is cited and distinguished on both axes — Pact is **bilateral** (one consumer, one

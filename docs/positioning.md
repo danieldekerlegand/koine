@@ -188,11 +188,21 @@ verified against a recorded pact, never against the live counterpart. KCS is the
 axes: a **declarative scenario driving N real participants over their actual MCP/A2A connections**,
 with **cross-plane assertions** (`firewall_holds`, `claims_converge`, `cost_within_ceiling`,
 `always_completes`) that no pact can express because they span planes and participants rather than
-a single request/response pair, plus **spec-section traceability**.
+a single request/response pair, plus **traceability to the clauses under test** — every step and
+assertion is cited to a named clause of the four plane specs. (Traceability is by construction of
+the vocabulary; a machine-readable per-assertion spec-section *field* is not part of the format
+today — see [KCS](../specs/conformance-scenario.md) §8.)
 
-The nearest thing in the agent-protocol world is A2A's own test kit — a **45★** project, and
-declarative only in its participant matrix. **KCS is the most defensible spec in the suite and the
-least advertised**; that asymmetry is a positioning bug, not a design one.
+The nearest thing in the agent-protocol world is A2A's own test kit — a **45★** project as of the
+2026-08 sweep, and declarative only in its participant matrix. **KCS is the most defensible spec in
+the suite**, and it was for a long time also the least advertised — a positioning bug, not a design
+one. It is fixed as of 2026-08-13: the index descriptions in [`../README.md`](../README.md),
+[`../specs/README.md`](../specs/README.md) and [`../ECOSYSTEM.md`](../ECOSYSTEM.md) now state what
+KCS is (declarative scenario data × N real participants × cross-plane assertions × traceability to
+the clauses under test) rather than summarizing it as a generic conformance format. The landed
+comparison is [`../specs/conformance-scenario.md`](../specs/conformance-scenario.md) §8, which also
+records the conformance-program designs KCS could borrow from in a later revision — a forward note,
+none of them adopted.
 
 ### DIDs and Verifiable Credentials — dismissed for the problem KINP actually solves
 
