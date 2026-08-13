@@ -65,7 +65,7 @@
         "The drift check is adopted as a stated cadence — at every ratification or re-ratification, and at minimum quarterly — with the review date recorded in the file header even when nothing moved, and with the rule that a difference opens a FINDING rather than a silent prose update.",
         "Each spec that carries an external reference points at the table rather than duplicating the version, so there is exactly one place a pin can be wrong."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
