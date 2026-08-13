@@ -377,7 +377,7 @@ Assets are large; envelopes and timelines are small. KMI is a **reference-by-id*
 2. **Profile vocabulary granularity** — how fine constraints get (e.g. "H.264 High@L4.1")
    before path-finding becomes brittle; likely a coarse core + optional constraints.
 3. **CAS operational model** — single shared store vs. per-project stores that replicate on
-   reference (mirrors KINP §11 authority fork and KCB §7 registry federation).
+   reference (mirrors KINP §11 authority fork and KCB §8 registry federation).
 4. **Perceptual-hash choice** — which pHash/audio-fingerprint/embedding backs
    `media:perceptual_match`, and recording it (like KGP `embedding_model`) so scores are
    comparable.

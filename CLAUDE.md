@@ -55,11 +55,19 @@ vocabulary.
   §3.1's hashed set, and §3.3 are untouched, so no claim id changes. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.3.0, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.4.0, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
-  card; back to candidate pending re-validation vs `scenarios/e2e-media-transform.md`.
+  card. 0.4.0 folds ADR-0009 into a normative **§7** (the old open question 2): a capability is
+  `(name, semver version)`, every port carries a content-addressed `schema_id` with a fixed
+  canonicalization (§7.1), the subscriber-compatibility table + ignore-unknown-fields +
+  digest-without-a-bump-is-a-defect are normative (§7.2), the deprecation policy is stated once for
+  every retiring surface (§7.3 — hence §2.2's standalone manifest is removed at **KCB 0.5.0**), an
+  archival pin ≠ a live binding (§7.4), grants bind to `(capability, major)` and a `cost` change
+  fails closed (§5). Additive; old open questions renumbered to §8. Two re-ratification gates now:
+  re-validation vs `scenarios/e2e-media-transform.md` **and** the §7.5 mutate-live-schema
+  break-test (`chief/56`).
 - `specs/media-interchange.md` — KMI 0.3.0, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the

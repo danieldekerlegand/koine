@@ -60,7 +60,7 @@ ratified only after passing a concrete pressure test.
 | [Identity & Namespace](specs/identity.md) (KINP) | How every entity gets a stable, shared name — the keystone the rest build on | 0.2.1 | ✅ ratified |
 | [Grounding-Pack](specs/grounding-pack.md) (KGP) | How knowledge (facts, relationships, graphs) is exchanged | 0.5.1 | 🚧 candidate |
 | [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | 0.3.0 | 🚧 candidate |
-| [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.3.0 | 🚧 candidate |
+| [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.4.0 | 🚧 candidate |
 | [Conformance-Scenario](specs/conformance-scenario.md) (KCS) | A test format for proving an implementation is correct | 0.2.0 | ✅ ratified |
 | [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 0.4.0 | 🚧 candidate |
 
