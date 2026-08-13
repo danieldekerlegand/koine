@@ -57,7 +57,7 @@
         "The verify link-resolution check passes: no remaining reference to a non-existent ECOSYSTEM.md anywhere in README.md, CLAUDE.md, specs/*.md, or decisions/*.md unless the file now exists.",
         "schemas/*.json still parse (broad smoke) and no spec header, changelog, or normative clause was altered by this tasklist beyond the version/status index tables and the informative ECOSYSTEM references."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
