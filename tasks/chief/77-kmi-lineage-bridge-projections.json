@@ -62,7 +62,7 @@
         "The adoption decision itself is unchanged and explicitly reaffirmed; the amendment is dated and marked as an amendment, not a rewrite.",
         "docs/upstream-standards.md's OTIO row is filled with the v0.18.1 pin and its caveat, and its C2PA and OMC rows are filled with the revisions the projections in US-2 were written against; media-interchange.md bumps its version with a dated changelog entry covering all three stories, Status stays candidate, and schemas/*.json still parse."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
