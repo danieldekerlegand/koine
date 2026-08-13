@@ -55,22 +55,32 @@ vocabulary.
   §3.1's hashed set, and §3.3 are untouched, so no claim id changes. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.3.0, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.4.0, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
-  card; back to candidate pending re-validation vs `scenarios/e2e-media-transform.md`.
-- `specs/media-interchange.md` — KMI 0.3.0, **candidate**. Media data plane; asset envelope +
+  card. 0.4.0 folds ADR-0009 into a normative **§7** (the old open question 2): a capability is
+  `(name, semver version)`, every port carries a content-addressed `schema_id` with a fixed
+  canonicalization (§7.1), the subscriber-compatibility table + ignore-unknown-fields +
+  digest-without-a-bump-is-a-defect are normative (§7.2), the deprecation policy is stated once for
+  every retiring surface (§7.3 — hence §2.2's standalone manifest is removed at **KCB 0.5.0**), an
+  archival pin ≠ a live binding (§7.4), grants bind to `(capability, major)` and a `cost` change
+  fails closed (§5). Additive; old open questions renumbered to §8. Two re-ratification gates now:
+  re-validation vs `scenarios/e2e-media-transform.md` **and** the §7.5 mutate-live-schema
+  break-test (`chief/56`).
+- `specs/media-interchange.md` — KMI 0.3.1, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
   reference, via OTIO's namespaced `metadata`), lineage, and the knowledge bridge; NLE
   interchange goes through OTIO's own adapters (media map, delta I, retained). The bespoke
-  `application/vnd.koine.edl+json` EDL is deprecated (§4.4). Machine-readable twin
+  `application/vnd.koine.edl+json` EDL is deprecated (§4.4) and, as of 0.3.1, names its removal —
+  **KMI 0.4.0** — under the one fabric-wide deprecation policy at KCB §7.3 (ADR-0009); patch, not
+  minor, because §7.3c forbids declaring and removing in the same publication. Machine-readable twin
   `schemas/media-timeline.schema.json` — a *profile over* an OTIO document, not a timeline model:
   OTIO's structure stays open, the schema checks only the additive layer. The OTIO side is
   **re-validated clean** vs `scenarios/e2e-media-transform.md` (its *Re-validation* section);
-  still candidate because the same scenario also gates KCB 0.3.0's manifest change.
+  still candidate because the same scenario also gates KCB 0.4.0's manifest change.
 - `specs/conformance-scenario.md` — KCS 0.2.0, **ratified**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
 - `specs/fine-tuning.md` — KFT 0.4.0, **candidate** (ratified 2026-07-23 on two pressure passes:
@@ -90,7 +100,10 @@ vocabulary.
   models-as-KINP-entities + weights/exports-as-KMI-lineage (§5), training-telemetry metric
   stream (§6). Machine-readable twin `schemas/finetune-job.schema.json` lives here; validators
   live downstream (ADR-0001). Runtime work (trainers, provider adapters, bus clients) is
-  recorded as downstream follow-ups (§9), not built in koine.
+  recorded as downstream follow-ups (§9), not built in koine. §11.5's capability-versioning
+  inheritance is **resolved** by ADR-0009 / KCB §7 and is now an informative pointer — a finetuned
+  model's pinned `kft_version` is an *archival pin* (KCB §7.4), so no KFT clause changed and the
+  version does not move.
 - `registry/` — shared **agnostic** vocabularies only: `relations.tsv` (core, **binary** relations
   only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
   `relations/social.tsv` (soc:), plus `entity-types.tsv`, `media-types.tsv`, and `enums/`.

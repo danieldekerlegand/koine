@@ -39,8 +39,9 @@ hold). Its two minor projection findings, **KGP-1/KGP-2**, are **closed** in **K
 ProbLog rule and §4.1's annotation vocabulary); KGP nonetheless stays **candidate** on the one
 remaining gate — the downstream RDF-star / PROV / JSON-LD **round-trip fixture**, a validator
 artifact per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md).
-**KMI 0.3.0**'s OTIO adoption has been re-validated against
+**KMI**'s OTIO adoption has been re-validated against
 [`e2e-media-transform.md`](e2e-media-transform.md) (see its *Re-validation* section — the additive
-layer holds, no delta reopened). Both KCB 0.3.0 and KMI 0.3.0 nonetheless remain **candidate**
-pending a re-run of the same scenario against KCB's new AgentCard-extension manifest shape, which
-its discovery steps exercise.
+layer holds, no delta reopened). Both **KCB 0.4.0** and **KMI 0.3.1** nonetheless remain
+**candidate** pending a re-run of the same scenario against KCB's AgentCard-extension manifest
+shape, which its discovery steps exercise; KCB carries a **second** gate on top of it — the §7.5
+break-test of its versioning section, still to be written.

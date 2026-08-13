@@ -117,7 +117,7 @@ is Phase F5).
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | **Re-ratify KCB 0.3.0** — the §2 manifest is now a named A2A **AgentCard extension** (`capabilities.extensions[]`, `https://koine.dev/kcb/manifest/0.3`); re-run the media-transform scenario against the extension shape. The single outstanding gate (KCB §7 pressure-test note) | re-run `scenarios/e2e-media-transform.md` · — |
+| ⬜ | **Re-ratify KCB 0.4.0** — **two** gates now (KCB pressure-test §): re-run the media-transform scenario against the 0.3.0 AgentCard-extension shape (`capabilities.extensions[]`, `https://koine.dev/kcb/manifest/0.3`), **and** break-test 0.4.0's versioning section (KCB §7.5) with the F2 mutate-live-schema scenario | re-run `scenarios/e2e-media-transform.md` + `chief/56` · — |
 | 🚧 | **Re-ratify KMI 0.3.0** — OTIO half already re-validated clean; blocked only because the same scenario also gates KCB's manifest change (media-interchange.md pressure-test §) | rides with KCB re-run · — |
 | 🚧 | **Re-ratify KGP 0.5.1** — projection findings **KGP-1** (which confidence a multi-provenance merged claim projects to ProbLog) and **KGP-2** (name the §4.1 annotation predicates) are ✅ **closed** by the normative §4/§4.1 edits of `chief/72` (KGP 0.5.1, 2026-08-13); the one remaining gate is the missing round-trip fixture, Phase F5 | `scenarios/e2e-worlds-to-fabric.md` *(Re-validation — KGP 0.5.0)* · — |
 | 🚧 | **Re-ratify KFT 0.4.0** — owner re-ratification of the strictly-additive FT-M…FT-Q intake fold (already walked clean; fine-tuning.md pressure-test §); the header's stale plane-version pins are a named precondition, closed by `chief/71` (below) | `scenarios/e2e-producer-exhaust-finetune.md` *(Re-validation — KFT 0.4.0)* · — |
@@ -150,24 +150,27 @@ deployment. *Nothing is built until a deployment actually needs more than one au
 | Status | Milestone | Tasklist |
 |---|---|---|
 | ⬜ | A **federation ADR (≥0009)** resolving the shared single-authority-role → federated-peers pattern once, so KINP/KCB/KMI stop deferring it three separate ways · L | `chief/51-federation-adr` *(proposed, koine)* |
-| ⬜ | Per-spec §-edits applying the ADR — KINP §11.1 (identity-authority role → federated authorities), KCB §7.1 (single registry → peering registries), KMI §9.3 (single CAS → per-project stores replicating on reference) · M | `chief/52-federation-spec-edits` *(proposed, koine)* |
+| ⬜ | Per-spec §-edits applying the ADR — KINP §11.1 (identity-authority role → federated authorities), KCB §8.1 (single registry → peering registries), KMI §9.3 (single CAS → per-project stores replicating on reference) · M | `chief/52-federation-spec-edits` *(proposed, koine)* |
 | ⬜ | A **multi-authority pressure scenario** — two authorities, cross-authority `same_as` reconciliation + registry peering, hunting the break the shared pattern must survive · M | `chief/53-multi-authority-scenario` *(proposed, koine `scenarios/`)* |
 
-*Depends on:* a real >1-authority deployment target to justify starting; ADR (`51`) gates the §-edits (`52`) and the scenario (`53`). Source: identity.md §11.1, capability-bus.md §7.1, media-interchange.md §9.3.
+*Depends on:* a real >1-authority deployment target to justify starting; ADR (`51`) gates the §-edits (`52`) and the scenario (`53`). Source: identity.md §11.1, capability-bus.md §8.1, media-interchange.md §9.3.
 
-### Phase F2 — Capability versioning & deprecation — ⬜ planned (scale: M)
+### Phase F2 — Capability versioning & deprecation — 🚧 in progress (scale: M)
 
-How a provider evolves a capability's schema without breaking subscribers — KCB §7.2, explicitly
-inherited by KFT §11.5 (a finetuned model pins its `kft_version`). Folds in KMI's unfinished
-deprecation: the deprecated `edl+json` transition window (§4.4) has **no removal date**.
+How a provider evolves a capability's schema without breaking subscribers — **decided** in
+[ADR-0009](decisions/ADR-0009-capability-versioning-deprecation.md) and normative at KCB §7, which
+KFT §11.5 now inherits by reference (a finetuned model's pinned `kft_version` is an archival pin,
+KCB §7.4). KMI's unfinished deprecation is closed with it: the `edl+json` transition window (§4.4)
+names its removal — **KMI 0.4.0** — under the one deprecation policy at KCB §7.3. What remains is
+the break-test.
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | A **versioning ADR** — semver on capability names vs content-addressed schemas; the subscriber-compatibility contract · M | `chief/54-capability-versioning-adr` *(proposed, koine)* |
-| ⬜ | KCB §7.2 §-edit encoding the decision (+ set the KMI §4.4 `edl+json` removal date; note the KFT §11.5 inheritance) · S | `chief/55-kcb-versioning-spec-edit` *(proposed, koine)* |
-| ⬜ | A **mutate-live-schema scenario** — a provider ships a capability v2 while a v1 subscriber is live; assert no silent break · M | `chief/56-live-schema-mutation-scenario` *(proposed, koine `scenarios/`)* |
+| ✅ | A **versioning ADR** — both options were adopted at different layers: semver `(name, version)` carries *compatibility*, a content-addressed `schema_id` makes a silent mutation detectable; ADR-0009 | `chief/54-capability-versioning-adr` |
+| ✅ | KCB §7 §-edit encoding the decision (KCB → 0.4.0) + the KMI §4.4 `edl+json` removal version (KMI → 0.3.1, removed at 0.4.0) + the KFT §11.5 inheritance resolved as an informative pointer | `chief/55-kcb-versioning-spec-edit` |
+| ⬜ | A **mutate-live-schema scenario** — a provider ships a capability v2 while a v1 subscriber is live; assert no silent break. Required by KCB §7.5 before KCB can re-ratify · M | `chief/56-live-schema-mutation-scenario` *(proposed, koine `scenarios/`)* |
 
-*Depends on:* none hard; naturally pairs with F1 (both are "how the fabric evolves"). Source: capability-bus.md §7.2, fine-tuning.md §11.5, media-interchange.md §4.4.
+*Depends on:* none hard; naturally pairs with F1 (both are "how the fabric evolves"). Source: capability-bus.md §7 (was §7.2), fine-tuning.md §11.5, media-interchange.md §4.4.
 
 ### Phase F3 — KFT downstream runtime program — ⬜ planned (scale: L, cross-repo)
 
@@ -222,9 +225,9 @@ note says "unless a pressure test forces it into the contract"). Grouped by spec
 | ⬜ | **KMI §9** — OTIO schema-version pinning, profile-vocabulary granularity, perceptual-hash backend for `media:perceptual_match`, id re-attach after a third-party OTIO round-trip drops `metadata.koine` · M | `chief/67-kmi-open-questions` *(proposed, koine)* |
 | ⬜ | **KCS §7** — assertion extensibility (fixed vocab vs predicate DSL), determinism strictness (assert structure/invariants, not generated content), observation-log fidelity · S | `chief/68-kcs-open-questions` *(proposed, koine)* |
 | ⬜ | **KFT §11** — adapter-selection hint, distributed-run metering + checkpoint lineage, resume-checkpoint ref, eval-as-reward KCS profile for `method: dpo` · M | `chief/69-kft-open-questions` *(proposed, koine)* |
-| ⬜ | **KCB §7.3** — subscription firehose backpressure / flow-control for high-volume-world subscriptions · S | `chief/70-kcb-subscription-backpressure` *(proposed, koine)* |
+| ⬜ | **KCB §8.2** — subscription firehose backpressure / flow-control for high-volume-world subscriptions · S | `chief/70-kcb-subscription-backpressure` *(proposed, koine)* |
 
-*Depends on:* a new pressure-test leg for each before it folds — these are intentionally reactive. Source: media-interchange.md §9, conformance-scenario.md §7, fine-tuning.md §11, capability-bus.md §7.3.
+*Depends on:* a new pressure-test leg for each before it folds — these are intentionally reactive. Source: media-interchange.md §9, conformance-scenario.md §7, fine-tuning.md §11, capability-bus.md §8.2.
 
 ### Phase F7 — Prior-art closure, standards pins & governance — 🚧 in progress (scale: M, koine)
 

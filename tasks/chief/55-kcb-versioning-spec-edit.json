@@ -3,7 +3,7 @@
   "project": "koine",
   "category": "feature",
   "branchName": "chief/55-kcb-versioning-spec-edit",
-  "description": "Apply the capability-versioning ADR (chief/54) into the specs: encode the subscriber-compatibility decision at KCB \u00a77.2 (capability-bus.md ~line 254), set the concrete removal date for the deprecated application/vnd.koine.edl+json media type at KMI \u00a74.4 (media-interchange.md ~line 253, which currently has no removal date), and note the KFT \u00a711.5 inheritance (a finetuned model pins its kft_version). Normative edits, so per koine's draft->candidate->ratified convention the touched specs bump version and return to candidate pending the mutate-live-schema pressure test (chief/56). ROADMAP.md Phase F2. Agnostic: bind roles, no deployment names.",
+  "description": "Apply the capability-versioning ADR (chief/54) into the specs: encode the subscriber-compatibility decision at KCB §7.2 (capability-bus.md ~line 254), set the concrete removal date for the deprecated application/vnd.koine.edl+json media type at KMI §4.4 (media-interchange.md ~line 253, which currently has no removal date), and note the KFT §11.5 inheritance (a finetuned model pins its kft_version). Normative edits, so per koine's draft->candidate->ratified convention the touched specs bump version and return to candidate pending the mutate-live-schema pressure test (chief/56). ROADMAP.md Phase F2. Agnostic: bind roles, no deployment names.",
   "parked": false,
   "dependsOn": [
     "54-capability-versioning-adr"
@@ -27,26 +27,26 @@
   "userStories": [
     {
       "id": "US-1",
-      "title": "KCB \u00a77.2 \u2014 encode the versioning decision",
-      "description": "Promote KCB \u00a77 open question 2 into a normative clause implementing the ADR's subscriber-compatibility contract (semver-on-names vs content-addressed-schemas, per the ADR's decision).",
+      "title": "KCB §7.2 — encode the versioning decision",
+      "description": "Promote KCB §7 open question 2 into a normative clause implementing the ADR's subscriber-compatibility contract (semver-on-names vs content-addressed-schemas, per the ADR's decision).",
       "acceptanceCriteria": [
-        "capability-bus.md \u00a77.2 (or the appropriate normative \u00a7) states the versioning/subscriber-compatibility rule the ADR (chief/54) decided, referencing the ADR, and is consistent with the KCB \u00a72 AgentCard-extension manifest and the capability cost + grant-spend model (\u00a72.1/\u00a75).",
+        "capability-bus.md §7.2 (or the appropriate normative §) states the versioning/subscriber-compatibility rule the ADR (chief/54) decided, referencing the ADR, and is consistent with the KCB §2 AgentCard-extension manifest and the capability cost + grant-spend model (§2.1/§5).",
         "The KCB version header is bumped and Status set to candidate, with a changelog entry citing the ADR.",
         "The clause names chief/56-live-schema-mutation-scenario as the pressure test that must break-test it before re-ratification."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
       "id": "US-2",
-      "title": "KMI \u00a74.4 \u2014 set the edl+json removal date; note the KFT \u00a711.5 inheritance",
-      "description": "Apply the deprecation half: give the deprecated application/vnd.koine.edl+json media type a concrete removal version at KMI \u00a74.4 under the ADR's deprecation policy, and note in KFT \u00a711.5 that the capability-versioning decision is the one it inherits.",
+      "title": "KMI §4.4 — set the edl+json removal date; note the KFT §11.5 inheritance",
+      "description": "Apply the deprecation half: give the deprecated application/vnd.koine.edl+json media type a concrete removal version at KMI §4.4 under the ADR's deprecation policy, and note in KFT §11.5 that the capability-versioning decision is the one it inherits.",
       "acceptanceCriteria": [
-        "media-interchange.md \u00a74.4 gives application/vnd.koine.edl+json a concrete removal version consistent with the ADR's deprecation-window policy (it currently states removal 'no earlier than the next minor version' with no date); the KMI version header is bumped and Status set to candidate with a changelog entry.",
-        "fine-tuning.md \u00a711.5's inheritance note is updated to point at the resolved ADR/\u00a77.2 decision (a finetuned model pins its kft_version), as an informative reference; whether KFT's version bumps depends on whether its normative surface changed \u2014 keep it informative-only if unchanged.",
+        "media-interchange.md §4.4 gives application/vnd.koine.edl+json a concrete removal version consistent with the ADR's deprecation-window policy (it currently states removal 'no earlier than the next minor version' with no date); the KMI version header is bumped and Status set to candidate with a changelog entry.",
+        "fine-tuning.md §11.5's inheritance note is updated to point at the resolved ADR/§7.2 decision (a finetuned model pins its kft_version), as an informative reference; whether KFT's version bumps depends on whether its normative surface changed — keep it informative-only if unchanged.",
         "The three edited specs read consistently and all cite the one ADR (chief/54); schemas/*.json still parse."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
