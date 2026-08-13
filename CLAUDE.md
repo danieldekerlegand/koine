@@ -61,7 +61,7 @@ vocabulary.
   byte-unchanged, so no claim id moves. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.4.2, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.4.3, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -91,7 +91,17 @@ vocabulary.
   `"url"`) along with the prose and §2.2 row that read the endpoint off it, and §4's MCP methods are
   `tools/list` / `tools/call`. The **KCB manifest shape is byte-unchanged** — extension entry, `uri`
   and every `params` field — so only the host card and the method names move; both gates restated,
-  neither moved.
+  neither moved. 0.4.3 (patch) adds the **MCP** row to §1.1 — **revision 2026-07-28**, a *breaking*
+  change with a **stateless core** (no `initialize` handshake, no session id, per-request `_meta`)
+  plus a mandatory `server/discover` — and a new **§4.1** auditing which wire each verb assumes.
+  Result: **no KCB clause requires the handshake or a session id** (`params.mcp` is an address; the
+  §3 crawl and §4 `describe`/`invoke` are request/response; `fetch` is not an MCP call); the one
+  session-shaped clause is §4 **`subscribe`**, whose stream rides **A2A streaming** under the pinned
+  revision, with "MCP notifications" named as the *pre-2026-07-28* wire — free, because KGP §6 deltas
+  are ordering-independent and content-addressed. No field added or removed, no participant required
+  to declare its revision; patch, and 0.5.0 is anyway spoken for by §2.2's removal. `KCS 0.2.0` stays
+  **ratified** and gains only an INFORMATIVE §4 note that a run must record which MCP revision each
+  participant speaks. Both gates restated, neither moved.
 - `specs/media-interchange.md` — KMI 0.3.2, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
