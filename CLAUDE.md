@@ -27,8 +27,9 @@ vocabulary.
   header and you must update all four; on disagreement the header wins and the mirror is the bug.
 - Run `node scripts/check-doc-integrity.mjs` after touching any doc: it resolves every relative
   Markdown link (file + `#anchor`) and diffs all three status tables against the spec headers.
-  Both failures are otherwise silent. `node scripts/check-tasklist-categories.mjs` guards
-  `tasks/chief/`.
+  Both failures are otherwise silent. It checks **three of the four mirrors** — the *Current
+  state* prose below is **not** checked, so a stale version there passes CI; update that line by
+  hand and read it back. `node scripts/check-tasklist-categories.mjs` guards `tasks/chief/`.
 - Specs are validated by concrete pressure-test scenarios in `scenarios/` before ratification
   (status: `draft` → `candidate` → `ratified`). Prefer finding breaks over asserting correctness.
 - Identifiers, envelopes, and resolution semantics are defined once in `specs/identity.md`
@@ -85,7 +86,7 @@ vocabulary.
   payload shape and every other clause unchanged; both re-ratification gates restated, neither
   moved. Provenance in ADR-0007's amendment log; implementations pinning the old literal migrate
   downstream (ADR-0001).
-- `specs/media-interchange.md` — KMI 0.3.1, **candidate**. Media data plane; asset envelope +
+- `specs/media-interchange.md` — KMI 0.3.2, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
@@ -98,6 +99,22 @@ vocabulary.
   OTIO's structure stays open, the schema checks only the additive layer. The OTIO side is
   **re-validated clean** vs `scenarios/e2e-media-transform.md` (its *Re-validation* section);
   still candidate because the same scenario also gates KCB 0.4.0's manifest change.
+  0.3.2 narrows the **lineage claim from a vocabulary to a BRIDGE** (ADR-0010) with §3's relation
+  set unchanged: §3.1 engages the prior art KMI had never named — **C2PA**'s *signed* derivation
+  chain (`c2pa.ingredient` · `parentOf`/`componentOf`/`inputTo` + hash hard bindings, 159 certified
+  products observed 2026-08-13) and **MovieLabs OMC v2.8**'s *richer* vocabulary (Revision /
+  Variant / Derivation / Representation / Alternative) — so the lineage graph is no longer claimed
+  as unoccupied ground; what KMI claims is the **analysis→knowledge bridge** (§5) + world-scoping.
+  §3.2/§3.3 specify the projections onto each with their lossy edges named (`perceptual_match` never
+  projected; KMI `prov` ≠ the C2PA signer; a KINP asset id ≠ a hard binding; OMC's Revision has no
+  KMI source), and §3.4 fixes conformance as *complete or reported*, not lossless — the round-trip
+  **is** the criterion, so no `schemas/` document shape and the fixture is a downstream follow-up
+  (ADR-0001), **not** a new gate. Same version pins OTIO in §4.1 at **v0.18.1 — not 1.0** (1.0
+  milestone due 2026-04-10, ~4 months overdue) with `target_url` under-specified enough that
+  **Premiere Beta 26.1 and DaVinci Resolve 20.2 break against each other** (OTIO **#1985**);
+  recorded as a *risk* in ADR-0005's dated amendment log with the adoption **reaffirmed**, since
+  #1985 is the citable case for the asset-id envelope. Patch, not minor: nothing that conformed at
+  0.3.1 stops conforming, and §4.4 has already spent **0.4.0** on the EDL removal.
 - `specs/conformance-scenario.md` — KCS 0.2.0, **ratified**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
 - `specs/fine-tuning.md` — KFT 0.4.0, **candidate** (ratified 2026-07-23 on two pressure passes:
@@ -147,13 +164,18 @@ vocabulary.
   downstream (ADR-0001), **not** here.
 - `decisions/` — the **agnostic** ADRs only: ADR-0001 (control-plane stance — direct-dial peers,
   thin shared commons; koine specifies, `agora` implements), ADR-0005 (adopt OpenTimelineIO as
-  KMI's canonical timeline model), and ADR-0006 (KGP keeps its bespoke TSV + content-addressed-claim
+  KMI's canonical timeline model — **amended 2026-08-13**: risks now record that OTIO is pre-1.0
+  and that `target_url` breaks between shipping NLEs (#1985); adoption reaffirmed unchanged), and ADR-0006 (KGP keeps its bespoke TSV + content-addressed-claim
   canonical; RDF-star / W3C PROV / JSON-LD become a specified, round-trip-tested **projection**, and
   KINP §9's "not adopting RDF" narrows to *storage and identity*), ADR-0007 (a participant is
   self-describing — namespace, KCB manifest, egress policy and bridge mappings are published by
   that participant, and the registry returns an **address** to a self-description, never the
-  self-description), and ADR-0008 (an application joins as a producer through a thin **adapter**
-  that only translates; every generic data-plane bridge is built once in the runtime commons).
+  self-description), ADR-0008 (an application joins as a producer through a thin **adapter**
+  that only translates; every generic data-plane bridge is built once in the runtime commons),
+  ADR-0009 (semver states intent, a content digest establishes identity — capability versioning
+  plus the one fabric-wide deprecation policy), and ADR-0010 (KMI is a **bridge** between C2PA and
+  MovieLabs OMC, not a third lineage vocabulary — §3's relations are retained as the fabric-internal
+  form and projected onto both, explicitly *not* losslessly).
   `decisions/README.md` carries the full table — keep this list and that table in step. The deployment-history ADRs (ADR-0002/0003/0004 — bridge
   reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
   integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently

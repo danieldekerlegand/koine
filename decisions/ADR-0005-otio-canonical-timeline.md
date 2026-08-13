@@ -1,6 +1,9 @@
 # ADR-0005 — Adopt OpenTimelineIO as KMI's canonical timeline model
 
 **Status:** Accepted (2026-08-02)
+**Amended:** 2026-08-13 — the *risks* now record OTIO's real maturity (v0.18.1, pre-1.0) and the
+concrete `target_url` interop hazard it produces; the **adoption decision, its date, and its status
+are unchanged and reaffirmed**. See [*Amendment log*](#amendment-log).
 **Deciders:** ecosystem owner
 **Refines:** [`../specs/media-interchange.md`](../specs/media-interchange.md) (KMI) §2, §4, §8, §9
 **Applies to:** media authorities (producer/authority for assets + timelines), media producers of
@@ -139,6 +142,22 @@ analysis. The normative field-level shape is KMI §4's to fix (see *Relationship
   dependency is on a *serialization format*, not a library — koine remains contracts-only
   ("dumb pipes, smart endpoints"), and the KMI spec pins which OTIO schema version(s) a conformant
   timeline may declare.
+- **The adopted standard is not 1.0, and its interchange surface has a known break** (recorded
+  2026-08-13; see the [amendment log](#amendment-log)). OTIO is at **v0.18.1**, tagged a
+  *prerelease*: its **"1.0 Release" milestone was due 2026-04-10** and is roughly **four months
+  overdue**, with about **a third of its issues still open**. The concrete consequence for
+  interchange is that **`target_url` is under-specified** — under-specified enough that
+  **Adobe Premiere Beta 26.1 and DaVinci Resolve 20.2 do not round-trip against each other**
+  (OTIO issue **[#1985](https://github.com/AcademySoftwareFoundation/OpenTimelineIO/issues/1985)**).
+  So the "media offline" fragility decision 4 and decision 5 were written against is not a
+  hypothetical koine invented to justify its own layer: it is an **acknowledged, open, cited defect
+  in the adopted standard**, reproduced between two of the most widely deployed NLEs. Mitigation is
+  already in the decision, not new work — the KINP asset id on the clip's media reference
+  (decision 5) is the identity `target_url` does not carry, and the asset-id ↔ resolved-path media
+  map (decision 4) is what relinks it on the far side. The residual cost is the pin itself: koine
+  is pinned to a pre-1.0 upstream whose schema may still move, tracked as a row in
+  [`../docs/upstream-standards.md`](../docs/upstream-standards.md) and as KMI §9.1
+  (which OTIO core schema versions a conformant timeline may declare).
 - Consumers must read OTIO rather than a small purpose-built JSON. The model is larger and the
   floor for a minimal consumer rises.
 - Additive data lives in namespaced metadata, which a naïve non-koine round-trip through a
@@ -170,6 +189,74 @@ analysis. The normative field-level shape is KMI §4's to fix (see *Relationship
 - **Extend OTIO's schema with koine-specific classes (a fork).** Rejected in favor of namespaced
   metadata (decision 6): a fork breaks compatibility with every stock OTIO reader, which is the
   entire benefit being bought.
+
+## Amendment log
+
+### 2026-08-13 — OTIO's pre-1.0 maturity and the `target_url` break are recorded; the adoption stands
+
+**What changed.** *Consequences → Negative / costs* gains one bullet stating what this record had
+left implicit: the standard it adopts is **not 1.0**. As observed **2026-08-13**, OTIO is at
+**v0.18.1**, tagged a *prerelease*; its **"1.0 Release" milestone was due 2026-04-10** and is about
+**four months overdue**, with roughly **a third of its issues open**. And the part of OTIO koine
+leans on hardest for interchange — how a clip addresses its media — is the part that is
+under-specified: **`target_url` is loose enough that Adobe Premiere Beta 26.1 and DaVinci Resolve
+20.2 break against each other**, filed upstream as **OTIO issue #1985**. The observation is dated
+so it ages visibly, per [`../docs/upstream-standards.md`](../docs/upstream-standards.md) rule 2 (a
+pin is a claim about what koine was validated against, not a claim the upstream is frozen).
+
+**What did *not* change.** The decision: **OTIO is KMI's canonical timeline / composition model**,
+accepted **2026-08-02**, status **Accepted**, and **reaffirmed here**. Decisions 1–7 are unedited
+in substance; the bespoke `application/vnd.koine.edl+json` EDL stays demoted and deprecated, NLE
+interchange still goes through OTIO's adapters, and the additive layer of decision 5 is unchanged.
+Nothing here supersedes, reverses, or re-opens the adoption. This is an amendment to the
+**risks**, not a new decision — and no alternative rejected above becomes more attractive because
+of it: every one of them was rejected for reasons (reinvention, tool-shaping, dual-truth, forking)
+that a pre-1.0 upstream does not touch.
+
+**Why the adoption survives its own risk — and is in fact strengthened.** The natural reading of
+"the standard is pre-1.0 and two flagship NLEs break against each other" is *do not adopt it*. That
+reading gets the layering backwards. Read it against what koine actually took from OTIO and what it
+kept for itself:
+
+- What koine adopted from OTIO is the **composition model** — tracks, clips, rational time,
+  transitions, effects, nesting. That surface is mature, is what the adapters exercise, and is not
+  what #1985 is about.
+- What koine explicitly **did not** delegate to OTIO is **identity** (decision 5, and the
+  counter-pressure paragraph in *Context*: "OTIO deliberately has no identity model … its media
+  references are URLs/paths — exactly the 'media offline' fragility"). #1985 is precisely a defect
+  in address-by-path. It is the failure mode the additive layer was designed against, now with a
+  reproduction and an issue number attached.
+
+Before this amendment, "OTIO's `target_url` is a location, not an identity" read as a design
+preference a reader could reasonably weigh differently. It is not a preference: two of the most
+widely deployed NLEs in the industry currently disagree about what a `target_url` means, in an
+open upstream issue. That converts the justification for koine's explicit asset-id envelope from a
+hand-wave into a **citation**. The adoption is *more* defensible after recording the risk than
+before, because the record now shows koine adopted the mature half and retained the half that is
+demonstrably not settled.
+
+**The honest cost, stated plainly.** Depending on a pre-1.0 upstream means the schema may still
+move under koine, and a 1.0 that is four months late may be later still. Two things bound it: the
+dependency is on a *serialization format*, not a library (koine holds no runtime — ADR-0001), and
+the pin is reviewed on the cadence in [`../docs/upstream-standards.md`](../docs/upstream-standards.md)
+rather than on hope. The open question that would tighten it further — which OTIO core schema
+versions a conformant timeline may declare — is already KMI §9.1 and stays open; this amendment
+records the maturity picture that makes answering it matter, and does not answer it.
+
+**Re-open test.** This record should be revisited if either fact reverses in a way that changes the
+layering rather than the schedule: if OTIO **specifies `target_url` resolution** normatively enough
+that a content-addressed id adds nothing (which would make decision 5's identity row a candidate
+for retirement, not the adoption), or if OTIO's pre-1.0 churn produces a **breaking composition-model
+change** koine's additive layer cannot ride over. A 1.0 that merely lands late is neither: it is the
+schedule slipping, which the pin already tracks.
+
+**Spec effect.** Risks and rationale only. **No clause of KMI changes because of this amendment** —
+§4's OTIO conformance rules, §4.2's additive layer, and §4.3's media map are untouched, and KMI's
+re-ratification path is still the outstanding re-run of
+[`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) shared with KCB. The
+KMI-side landing is the §4.1 upstream-pin note plus a dated changelog entry; the pin table's OTIO
+row in [`../docs/upstream-standards.md`](../docs/upstream-standards.md) is the record of the
+observation.
 
 ## Relationship to the specs
 
