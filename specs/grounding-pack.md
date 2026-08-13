@@ -174,6 +174,25 @@ natively, which is also the test to re-apply if any of them changes:
 | **Minting without a resolvable context** | JSON-LD term expansion depends on a context document; a content-addressed id must not depend on a document that can change. §3 depends only on the immutable relation registry (§3.2, §9 decision 1). |
 | **A canonical reviewable as a line diff** | Structural for TSV (§4); not a property any of the three standards offers. |
 
+**The nearest prior art, and the inversion it makes explicit.** The closest ancestor of §3 is not
+any of the three standards above but the **nanopublication**, which identifies an assertion together
+with its provenance and publication info by a **Trusty URI** — a content hash folded into the
+identifier, the same instinct as the content-addressed `claim` id. The difference is *what gets
+hashed*, and it is decisive. **A Trusty URI hashes all four graphs — head, assertion, provenance,
+and pubinfo** — so two producers asserting the **identical** triple mint **different** identifiers,
+because their provenance and publication info differ: the identifier fingerprints a **publication
+event**. KGP inverts that. §3 normalization is defined over the claim's subject, relation, object,
+and world **only**; provenance travels *beside* the claim as a repeated `prov` record and never
+enters claim identity (§3.1). Two independent producers therefore **converge on one claim id**, and
+their provenance records merge onto it (§3.3) — the property cross-producer merge requires, and the
+one a Trusty URI cannot provide by construction. This is a difference of **unit of interest**, not a
+quality claim: where the unit of interest is the *publication*, nanopublications are the better
+model and a producer whose problem is publication attestation should use them; KGP's unit of
+interest is the **claim**, so its identity had to invert. The same reasoning is why a
+*dataset*- or *publication*-granular canonicalization is the wrong thing to delegate identity to —
+the first row of the table above, arrived at from the other direction — and it holds independently
+of what the W3C canonicalization stack later covers.
+
 Two consequences follow, and both are normative elsewhere in this spec rather than here:
 
 - The conformance floor stays where §5 puts it — minting a conformant claim id requires a hash

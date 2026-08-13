@@ -41,6 +41,24 @@ both annotations retained. That is KGP §3.3's worked example, arrived at from t
 So the choice is not "standard vs. not-invented-here"; it is which layer owns claim identity, and
 what a conformant producer must carry to compute it.
 
+**The nearest prior art at the identity layer is not on that list.** Nanopublications identify an
+assertion together with its provenance and publication info by a **Trusty URI** — a content hash
+folded into the identifier. That is the same instinct as §3's content-addressed `claim` id, and it
+is the closest ancestor KGP has. The difference is *what gets hashed*, and it decides the shape of
+this record. **A Trusty URI hashes all four graphs — head, assertion, provenance, and pubinfo** — so
+two producers asserting the **identical** triple mint **different** identifiers, because their
+provenance and publication info differ: the identifier fingerprints a **publication event**. KGP
+hashes the **claim alone**. §3 normalization is defined over the claim's subject, relation, object,
+and world only; provenance travels *beside* the claim as a repeated record and never enters its
+identity (§3.1 excludes `confidence`, `embedding`, `valid_time`, and all of `prov`). Two independent
+producers therefore **converge on one claim id** and their provenance records merge onto it (§3.3) —
+which is exactly what cross-producer merge requires, and exactly what a Trusty URI cannot provide by
+construction. This is a difference of **unit of interest**, not of quality: where the unit of
+interest is the publication, nanopublications are the better model; KGP's unit of interest is the
+**claim**, so its identity had to invert. The comparison is load-bearing below — it is the concrete
+reason the *granularity* of a dataset-or-publication canonicalization is wrong for KGP, and it holds
+whatever RDFC-1.0's scope later becomes.
+
 Precedent cuts both ways. [ADR-0005](ADR-0005-otio-canonical-timeline.md) adopted an external
 standard as canonical the moment that standard *covered the concern* — koine's bespoke timeline was
 reinvention, and what remained after adoption (identity, lineage, the knowledge bridge) was
@@ -289,6 +307,14 @@ Group's charter, which runs to 2027** — instead of opening with the layering-a
 Point 2's requirement table gains that absence as its **first** row, and the re-open condition now
 names the concrete upstream event (a chartered, published canonicalization defined over RDF 1.2
 triple terms) rather than a general "if RDF gains…".
+
+The same amendment adds the **nanopublication / Trusty URI** comparison to *Context*, which the
+record had never engaged. It is the nearest prior art to §3 and the sharpest statement of what
+KGP's identity mechanism is: a Trusty URI hashes all four graphs (head, assertion, provenance,
+pubinfo) and so fingerprints a *publication event*, while KGP hashes the *claim alone* and so lets
+independent producers converge on one claim id with provenance merging onto it. Added as context
+and comparison — it changes no decision, and states a scope difference rather than a quality
+judgment. The KGP-side landing is in §3.4.
 
 **What did *not* change.** The decision itself: **option (b)**, accepted **2026-08-02**, status
 **Accepted** — TSV remains canonical, §3 remains the identity mechanism, the §3.3 convergence
