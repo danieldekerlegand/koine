@@ -61,7 +61,7 @@ vocabulary.
   byte-unchanged, so no claim id moves. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.4.1, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.4.2, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -85,7 +85,13 @@ vocabulary.
   consumer MUST accept both roots, a producer MUST emit the w3id form. Path/version segment,
   payload shape and every other clause unchanged; both re-ratification gates restated, neither
   moved. Provenance in ADR-0007's amendment log; implementations pinning the old literal migrate
-  downstream (ADR-0001).
+  downstream (ADR-0001). 0.4.2 (patch) corrects two **upstream** references that had drifted and pins
+  both in a new **§1.1**: the §2 example AgentCard now shows the **A2A v1.0** shape
+  (`supported_interfaces[]` of `AgentInterface{url, protocol_binding}`, replacing v0.x's top-level
+  `"url"`) along with the prose and §2.2 row that read the endpoint off it, and §4's MCP methods are
+  `tools/list` / `tools/call`. The **KCB manifest shape is byte-unchanged** — extension entry, `uri`
+  and every `params` field — so only the host card and the method names move; both gates restated,
+  neither moved.
 - `specs/media-interchange.md` — KMI 0.3.2, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the

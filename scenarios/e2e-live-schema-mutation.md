@@ -269,7 +269,7 @@ and the deprecated entry is still returned, marked and carrying its removal vers
 
 🔴 **BROKE (V-4, high — structural).** Two majors are now published under one name — and the bus has
 nowhere to put the second one. §4 binds `invoke` to *"MCP tool call / A2A task"*, and an MCP tool
-namespace is **flat and keyed by name**: `list_tools` cannot return two tools called `compose`. So
+namespace is **flat and keyed by name**: `tools/list` cannot return two tools called `compose`. So
 the dual-serving window §7.2 mandates is **unrepresentable on the transport KCB chose**, and the
 provider's only escapes are the two the spec forbids or does not define:
 

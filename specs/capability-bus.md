@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.4.1
+**Spec version:** 0.4.2
 **Status:** Candidate
 **Last updated:** 2026-08-13
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -9,8 +9,8 @@ capability consumers (most participants are both provider and consumer).
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
-> **Status note (0.4.1):** stays **Candidate**, on the same two counts as 0.4.0 — 0.4.1 adds a
-> transition clause (§2.3), not a gate. 0.3.0 changed the *shape* of the
+> **Status note (0.4.2):** stays **Candidate**, on the same two counts as 0.4.0 — 0.4.1 added a
+> transition clause (§2.3) and 0.4.2 corrects two upstream references (§1.1), neither a gate. 0.3.0 changed the *shape* of the
 > manifest — it is now an A2A AgentCard extension (§2), not a standalone
 > `/.well-known/kcb-manifest.json` — and that re-validation is still outstanding. 0.4.0 adds the
 > capability-versioning surface (§7, wired through §2/§2.1/§3/§5) per
@@ -25,7 +25,10 @@ carries.
 > **not** pass clean: deltas **V-1…V-8**, blocking V-2/V-4/V-5/V-7, all additively foldable into a
 > **0.5.0** minor. Both legs stay open. 0.4.1 moves the §2 extension URI's namespace root and
 > opens the dual-accept window that retires the legacy root at **KCB 0.6.0** (§2.3); it neither
-> adds a gate nor discharges one, and the two legs above are restated unchanged.
+> adds a gate nor discharges one, and the two legs above are restated unchanged. 0.4.2 realigns the
+> §2 example card with **A2A v1.0** and corrects the §4 MCP method names, and pins both upstreams in
+> **§1.1**; it changes no KCB clause, field, or manifest shape, so the two legs are again restated
+> unchanged.
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
 > capability bus moves *capability*: how a participant advertises what it can do, how orgs and
@@ -51,6 +54,21 @@ KCB defines:
 KCB does **not** define payload formats (KGP / media-interchange do), agent reasoning, or
 infra provisioning (host-local concerns).
 
+### 1.1 Upstream pins
+
+KCB is a convention over two external standards, so every clause below is written against a
+**named version**, not against "A2A" or "MCP" in the abstract. A bare reference would be
+unimplementable: both standards have shipped breaking changes to surfaces this spec maps onto.
+
+| Upstream | Pinned | Where it bites |
+|---|---|---|
+| **A2A** | **v1.0** | The host document of the §2 manifest. v1.0 replaced the v0.x top-level `"url"` with **`supported_interfaces[]`** (`AgentInterface{ url, protocol_binding }`) — see §2. |
+
+The pin of record is this table; [`../docs/upstream-standards.md`](../docs/upstream-standards.md)
+is the fabric-wide index of every such pin and carries the drift-check cadence. A pin states what
+KCB was **validated against**, not that the upstream is frozen — moving one is a spec change under
+[`README.md`](README.md)'s lifecycle.
+
 ---
 
 ## 2. The capability manifest
@@ -61,6 +79,15 @@ AgentCard** (the standard `/.well-known/agent-card.json`), which carries its ide
 service endpoints. The KCB manifest is therefore defined as a **named extension of that card**,
 not as a top-level file of its own: the KCB-specific payload rides as one entry under the card's
 `capabilities.extensions[]` array.
+
+The host card is an **A2A v1.0** card (§1.1). In v1.0 a card does **not** carry a
+top-level `"url"`: an agent's addresses are the entries of **`supported_interfaces[]`**, each an
+**`AgentInterface{ url, protocol_binding }`**, so one card may advertise the same agent over
+several bindings (e.g. `JSONRPC` and `GRPC`). KCB reads the A2A endpoint off that array rather than
+off a single field — everywhere this spec says "the card's own service URL" it means *an
+`AgentInterface.url` from `supported_interfaces[]`*. Nothing in the KCB extension itself is affected
+by this: the extension entry, its `uri`, and its `params` are the same under either card version
+(§2.3 governs the extension `uri`, not the card).
 
 A2A's `AgentCard.capabilities.extensions` field is a list of **`AgentExtension`** objects, each
 `{ uri, description, required?, params }` — the standard, in-band way to attach protocol-specific
@@ -74,7 +101,9 @@ extension (§2.3):
 {
   // ── standard A2A AgentCard fields (abridged) ──
   "name":     "orchestrator:agent:composer",     // card identity — the KINP agent/entity id
-  "url":      "https://…/a2a",                    // A2A service endpoint (the card's own)
+  "supported_interfaces": [                       // A2A v1.0 — replaces v0.x's top-level "url"
+    { "url": "https://…/a2a", "protocol_binding": "JSONRPC" }   // one AgentInterface; MAY be several
+  ],
   "capabilities": {
     "extensions": [
       // ── the KCB manifest, as ONE AgentExtension on the card ──
@@ -116,7 +145,9 @@ extension (§2.3):
   §7), `auth`, and `signing`. It
   **drops** the old top-level `identity` and `endpoints` blocks: those duplicated fields the
   AgentCard already carries and are now **read off the card itself** — `identity` from the card's
-  own agent id (`name`), and the A2A endpoint from the card's own service URL. Any non-A2A
+  own agent id (`name`), and the A2A endpoint from the card's own
+  `supported_interfaces[]` (an `AgentInterface.url`; where the card advertises several bindings, the
+  consumer selects one it speaks). Any non-A2A
   endpoint the extension still needs (e.g. the MCP tools URL) is a plain field in `params`.
 - **A capability is `(name, version)`; a port carries a `schema_id`** (§7,
   [ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md)). Each entry in
@@ -180,7 +211,7 @@ existing A2A AgentCard as the `https://w3id.org/koine/kcb/manifest/0.3` extensio
 | 0.2.0 standalone manifest field | 0.3.0 destination |
 |---|---|
 | `identity` (top-level) | **dropped** — read off the AgentCard's own agent id (`name`) |
-| `endpoints.a2a` (self-reference to the card) | **dropped** — the A2A endpoint is the card's own `url` |
+| `endpoints.a2a` (self-reference to the card) | **dropped** — the A2A endpoint is the card's own `supported_interfaces[]` (A2A v1.0 `AgentInterface.url`) |
 | `endpoints.mcp` (and any other non-A2A endpoint) | extension `params.mcp` (a plain `params` field) |
 | `produces` | extension `params.produces` |
 | `consumes` | extension `params.consumes` |
@@ -317,8 +348,8 @@ findable.
 | Verb | Transport | Meaning |
 |---|---|---|
 | **discover** | registry query (§3) | find providers by capability / interchange type / world |
-| **describe** | one A2A agent-card fetch (`/.well-known/agent-card.json`) + MCP `list_tools` for tool schemas | fetch the provider's AgentCard **including its KCB extension** (`capabilities.extensions[]`, §2) in a single fetch — there is no second `/.well-known/kcb-manifest.json` to retrieve |
-| **invoke** | MCP tool call / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference |
+| **describe** | one A2A agent-card fetch (`/.well-known/agent-card.json`) + MCP `tools/list` for tool schemas | fetch the provider's AgentCard **including its KCB extension** (`capabilities.extensions[]`, §2) in a single fetch — there is no second `/.well-known/kcb-manifest.json` to retrieve |
+| **invoke** | MCP `tools/call` / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference |
 | **subscribe** | A2A streaming / MCP notifications | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur |
 | **fetch** | CAS GET by `asset` id | retrieve asset bytes by their KINP id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant (§5). |
 
@@ -621,6 +652,28 @@ that scenario's *Findings* and *Re-ratification* sections. The extension-shape r
 outstanding and independent.
 
 ## Changelog
+
+- **0.4.2** (2026-08-13) — **Candidate.** Corrected two references that had drifted behind the
+  standards KCB rides on, and pinned both in a new **§1.1**. *(i) A2A.* The §2 example AgentCard
+  showed the **v0.x** top-level `"url"`; **A2A v1.0** replaced it with **`supported_interfaces[]`**,
+  each entry an **`AgentInterface{ url, protocol_binding }`**. The example, the §2 prose that reads
+  the A2A endpoint "off the card's own service URL", and §2.2's migration row now all describe the
+  v1.0 shape — so koine's canonical illustration of the document its manifest rides inside is no
+  longer a major version behind it. *(ii) MCP.* §4's `describe` row named the pre-JSON-RPC-namespacing method for
+  listing tools; under the pinned revision the method is **`tools/list`**. The `invoke` row's prose "MCP tool call" is likewise now the method,
+  **`tools/call`**. *Scope — what did not move:* the **KCB manifest's own shape is unchanged**. The
+  `capabilities.extensions[]` entry, its `uri` (`https://w3id.org/koine/kcb/manifest/0.3`, §2.3), and
+  every `params` field — `kcb_version`, `mcp`, `produces`, `consumes`, `capabilities`, `auth`,
+  `signing` — are byte-identical; only the *host card* around it and the *method names* KCB calls
+  move. §7's versioning surface, the verbs themselves, the grant model and every MUST/SHOULD are
+  untouched. *Classification:* **patch** — nothing is added to or removed from a KCB surface and
+  nothing narrows; a manifest that conformed at 0.4.1 conforms unchanged at 0.4.2, and a consumer
+  already speaking A2A v1.0 and current MCP was always the intended reader. The corrections make the
+  spec match what a conformant implementation must already do. Status stays **Candidate** on the
+  *unchanged* pair of gates restated at 0.4.1 — the 0.3.0 extension-shape re-run of
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) and a clean §7.5
+  mutate-live-schema pass ([`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md),
+  still carrying blocking V-2/V-4/V-5/V-7). This release neither adds a gate nor discharges one.
 
 - **0.4.1** (2026-08-13) — **Candidate.** Moved the §2 manifest extension URI's namespace **root** to
   a `w3id.org` permanent identifier — `https://koine.dev/kcb/manifest/0.3` →
