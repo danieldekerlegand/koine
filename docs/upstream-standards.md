@@ -1,7 +1,7 @@
 # Upstream standards — what koine pins, and the drift check
 
 **Status:** informative (this file is not normative; the pin of record is each spec's own header).
-**Last reviewed:** 2026-08-11.
+**Last reviewed:** 2026-08-13.
 
 Koine's design rule is *adopt the interface or shape, not the runtime* — which means every spec
 depends on external standards that version independently of us. **Until 2026-08-11 no koine spec
@@ -26,9 +26,9 @@ Legend: **✅ pinned** in the spec · **🚧 drift found, correction pending** �
 |---|---|---|---|---|
 | **A2A** | **v1.0** | KCB §2 (AgentCard extension), §6 | 🚧 | v1.0 replaces the v0.x top-level `"url"` with **`supported_interfaces[]`**, each entry an **`AgentInterface{url, protocol_binding}`**. KCB's example card still shows the v0.x shape. |
 | **MCP** | **revision 2026-07-28** | KCB §6 (tool-call mapping), KCS §3 | 🚧 | Two corrections: the method is **`tools/list`**, not `list_tools` (KCB §6); and the 2026-07-28 revision is a **breaking change** — stateless core (no `initialize` handshake, no session id, per-request `_meta`) plus a **mandatory `server/discover`**. Any spec clause assuming a session must say which revision it assumes. |
-| **OpenTimelineIO** | **v0.18.1** (pre-1.0) | KMI §4, ADR-0005 | 🚧 | **OTIO is not 1.0.** Its "1.0 Release" milestone was due **2026-04-10** and is ~4 months late with about a third of its issues open. Worse for interchange: `target_url` is under-specified enough that **Premiere Beta 26.1 and DaVinci Resolve 20.2 break against each other** (OTIO issue **#1985**) — which is the concrete justification for KMI's explicit asset-id envelope, and belongs in ADR-0005. |
-| **C2PA** | ⬜ to pin | KMI lineage projection | ⬜ | New projection target — pin the conformance-program spec revision when the projection lands. |
-| **MovieLabs OMC** | **v2.8** | KMI lineage projection | ⬜ | Richer derivation vocabulary (Revision / Variant / Derivation / Representation / Alternative); KMI projects onto it rather than restating it. |
+| **OpenTimelineIO** | **v0.18.1** (pre-1.0) | KMI §4.1, ADR-0005 | ✅ | **OTIO is not 1.0.** As observed **2026-08-13**: v0.18.1 is tagged a *prerelease*, the "1.0 Release" milestone was due **2026-04-10** and is ~4 months late with about a third of its issues open. Worse for interchange: `target_url` is under-specified enough that **Premiere Beta 26.1 and DaVinci Resolve 20.2 break against each other** (OTIO issue **#1985**) — the concrete justification for KMI's explicit asset-id envelope. **Recorded 2026-08-13** in ADR-0005's [amendment log](../decisions/ADR-0005-otio-canonical-timeline.md#amendment-log) (risks only — the adoption is reaffirmed) and pinned in KMI §4.1. Residual: *which* OTIO core schema versions a conformant timeline may declare is still open (KMI §9.1), so this pins the revision KMI was written against, not a conformance range. |
+| **C2PA** | **Specification 2.1** — ingredient assertion **`c2pa.ingredient.v3`** | KMI §3.2, ADR-0010 | ✅ | The projection target's `relationship` value space (`parentOf` / `componentOf` / `inputTo`) is what KMI §3.2 maps onto, so the pin is the assertion label, not just the document revision. Adoption evidence behind the choice — a conformance program with **159 certified products** (Google ~35 entries, OpenAI, Amazon Bedrock, Getty, Qualcomm silicon, Sony) — is recorded **as observed 2026-08-13** in KMI §3.1; that figure is a moving count and ages, the pin does not. |
+| **MovieLabs OMC** | **v2.8** | KMI §3.3, ADR-0010 | ✅ | Richer derivation vocabulary (Revision / Variant / Derivation / Representation / Alternative); KMI projects onto it rather than restating it. **Revision has no KMI source** — §3 does not model versioning of a work — so the projection is lossy in that direction by construction, not by omission (KMI §3.3). |
 | **W3C PROV** (PROV-JSON-LD) | 2024-08-25 submission | KGP §4.1 projection, KINP provenance shape | ⬜ | Already cited in `positioning.md`; not yet pinned in the spec text. |
 | **RDF / RDFC** | RDF **1.1** (RDFC-1.0's only defined input) | ADR-0006 | ✅ | Recorded as a *reason*, not a dependency: **RDFC-1.0 has no defined behaviour for RDF 1.2 triple terms**, and revising it is out of the RDF/SPARQL WG charter (runs to **2027**). KGP therefore cannot delegate canonicalization upstream. |
 | **SPDX license list** | ⬜ to pin | KGP §7, `policy/` | ⬜ | Pin the list release the license classes were validated against. |
@@ -61,6 +61,7 @@ outside world*.
 ## Related
 
 - [`positioning.md`](positioning.md) — what koine adopts, bridges, or dismisses, and why.
-- [`../decisions/ADR-0005-otio-canonical-timeline.md`](../decisions/ADR-0005-otio-canonical-timeline.md) — OTIO adoption (the pre-1.0 caveat above belongs in its risks).
+- [`../decisions/ADR-0005-otio-canonical-timeline.md`](../decisions/ADR-0005-otio-canonical-timeline.md) — OTIO adoption; the pre-1.0 caveat above is recorded in its [amendment log](../decisions/ADR-0005-otio-canonical-timeline.md#amendment-log) (2026-08-13), adoption reaffirmed.
+- [`../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md`](../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md) — why the C2PA and OMC rows exist: KMI bridges both rather than being a third lineage vocabulary.
 - [`../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md`](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) — why KGP keeps its own canonical form.
 - [`../specs/README.md`](../specs/README.md) — the spec lifecycle a pin move runs through.

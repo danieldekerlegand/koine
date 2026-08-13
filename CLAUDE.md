@@ -98,6 +98,22 @@ vocabulary.
   OTIO's structure stays open, the schema checks only the additive layer. The OTIO side is
   **re-validated clean** vs `scenarios/e2e-media-transform.md` (its *Re-validation* section);
   still candidate because the same scenario also gates KCB 0.4.0's manifest change.
+  0.3.2 narrows the **lineage claim from a vocabulary to a BRIDGE** (ADR-0010) with §3's relation
+  set unchanged: §3.1 engages the prior art KMI had never named — **C2PA**'s *signed* derivation
+  chain (`c2pa.ingredient` · `parentOf`/`componentOf`/`inputTo` + hash hard bindings, 159 certified
+  products observed 2026-08-13) and **MovieLabs OMC v2.8**'s *richer* vocabulary (Revision /
+  Variant / Derivation / Representation / Alternative) — so the lineage graph is no longer claimed
+  as unoccupied ground; what KMI claims is the **analysis→knowledge bridge** (§5) + world-scoping.
+  §3.2/§3.3 specify the projections onto each with their lossy edges named (`perceptual_match` never
+  projected; KMI `prov` ≠ the C2PA signer; a KINP asset id ≠ a hard binding; OMC's Revision has no
+  KMI source), and §3.4 fixes conformance as *complete or reported*, not lossless — the round-trip
+  **is** the criterion, so no `schemas/` document shape and the fixture is a downstream follow-up
+  (ADR-0001), **not** a new gate. Same version pins OTIO in §4.1 at **v0.18.1 — not 1.0** (1.0
+  milestone due 2026-04-10, ~4 months overdue) with `target_url` under-specified enough that
+  **Premiere Beta 26.1 and DaVinci Resolve 20.2 break against each other** (OTIO **#1985**);
+  recorded as a *risk* in ADR-0005's dated amendment log with the adoption **reaffirmed**, since
+  #1985 is the citable case for the asset-id envelope. Patch, not minor: nothing that conformed at
+  0.3.1 stops conforming, and §4.4 has already spent **0.4.0** on the EDL removal.
 - `specs/conformance-scenario.md` — KCS 0.2.0, **ratified**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
 - `specs/fine-tuning.md` — KFT 0.4.0, **candidate** (ratified 2026-07-23 on two pressure passes:
@@ -147,7 +163,8 @@ vocabulary.
   downstream (ADR-0001), **not** here.
 - `decisions/` — the **agnostic** ADRs only: ADR-0001 (control-plane stance — direct-dial peers,
   thin shared commons; koine specifies, `agora` implements), ADR-0005 (adopt OpenTimelineIO as
-  KMI's canonical timeline model), and ADR-0006 (KGP keeps its bespoke TSV + content-addressed-claim
+  KMI's canonical timeline model — **amended 2026-08-13**: risks now record that OTIO is pre-1.0
+  and that `target_url` breaks between shipping NLEs (#1985); adoption reaffirmed unchanged), and ADR-0006 (KGP keeps its bespoke TSV + content-addressed-claim
   canonical; RDF-star / W3C PROV / JSON-LD become a specified, round-trip-tested **projection**, and
   KINP §9's "not adopting RDF" narrows to *storage and identity*), ADR-0007 (a participant is
   self-describing — namespace, KCB manifest, egress policy and bridge mappings are published by

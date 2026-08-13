@@ -1,6 +1,6 @@
 # Koine Media-Interchange Protocol (KMI)
 
-**Spec version:** 0.3.1
+**Spec version:** 0.3.2
 **Status:** Candidate
 **Last updated:** 2026-08-13
 **Applies to:** media authorities (producer/authority for assets + timelines), media producers of
@@ -24,6 +24,22 @@ composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline
 > ([ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md)). Patch-level and
 > additive: it closes a declared window rather than changing the model shape, so no delta is
 > reopened and the re-ratification path above is unchanged.
+
+> **Status note (0.3.2):** narrows what KMI *claims* about lineage and makes the narrowing
+> operational. §3's relation set is unchanged; what changes is that §3 is now explicitly a
+> **bridge** between two occupied vocabularies rather than a third one — §3.1 engages **C2PA**'s
+> signed derivation chain and **MovieLabs OMC v2.8**'s richer derivation vocabulary, §3.2/§3.3
+> specify the projections onto each with their lossy edges named, and §3.4 fixes the shared
+> conformance obligation ([ADR-0010](../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md)).
+> §4.1 gains the OTIO **upstream pin** (v0.18.1, pre-1.0) whose risks
+> [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline.md) now records.
+> **Patch rather than minor**, for two independent reasons: nothing that conformed at 0.3.1 stops
+> conforming — emitting a projection is OPTIONAL and no existing clause, relation, envelope, or
+> timeline shape changes meaning — and §4.4 has already declared **0.4.0** as the removal version
+> for `application/vnd.koine.edl+json`, whose removal is gated on the outstanding pressure-test
+> re-run, so publishing this content as 0.4.0 would either break that declaration or force a
+> removal its gate has not cleared. No delta is reopened and the re-ratification path above is
+> unchanged.
 
 > The **media data plane** — the fourth and final plane. Where KGP moves *facts*, KMI moves
 > *bytes and the edits over them*: assets, their technical metadata, the asset-lineage graph
@@ -381,6 +397,19 @@ the media-map obligation in §4.3.
   opens a koine timeline unchanged; a koine consumer additionally resolves ids, lineage, and
   analysis.
 
+**Upstream pin (INFORMATIVE).** This section is written against **OpenTimelineIO v0.18.1**,
+recorded in [`../docs/upstream-standards.md`](../docs/upstream-standards.md) and reviewed on that
+file's cadence. Two facts about that pin are stated rather than left implicit, as observed
+**2026-08-13**: OTIO is **not 1.0** (v0.18.1 is tagged a prerelease; the "1.0 Release" milestone was
+due 2026-04-10 and is ~4 months overdue, with about a third of its issues open), and its
+`target_url` is under-specified enough that **Premiere Beta 26.1 and DaVinci Resolve 20.2 break
+against each other** (OTIO issue **#1985**). Neither reverses the adoption — see the 2026-08-13
+amendment log in [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline.md) — and the second is
+the concrete, cited case for §4.2's **asset-id envelope** and §4.3's **media map**: a KINP asset id
+is an identity where `target_url` is only a location. Which OTIO **core schema versions** a
+conformant timeline may declare remains open (§9.1); this note pins the revision KMI was written
+against, not a conformance range.
+
 ### 4.2 koine's additive layer over OTIO
 
 OTIO addresses media by **location** (`ExternalReference.target_url`) and has no identity model,
@@ -638,6 +667,48 @@ manifest→AgentCard-extension change its discovery steps exercise and which has
 Promotion of both follows that pass.
 
 ## Changelog
+
+- **0.3.2** (2026-08-13) — **Candidate.** **KMI's lineage claim is narrowed from "a vocabulary" to
+  "a bridge."** Three additions under §3, none of which touch §3's relation set:
+  - **§3.1 (informative) engages the prior art KMI had never named.** **C2PA** already ships a
+    *cryptographically signed* derivation chain — the `c2pa.ingredient` assertion with
+    `parentOf` / `componentOf` / `inputTo` relationships and hash-based **hard bindings** — behind a
+    conformance program with **159 certified products as observed 2026-08-13** (Google ~35 entries,
+    OpenAI, Amazon Bedrock, Getty, Qualcomm silicon, Sony). **MovieLabs OMC v2.8** ships a *richer*
+    derivation vocabulary than either: **Revision / Variant / Derivation / Representation /
+    Alternative**. So the asset-lineage graph is **no longer claimed as unoccupied ground**. What
+    KMI claims is what neither occupies: the **analysis → knowledge bridge** (§5) — nothing in
+    OTIO, C2PA, OMC, or IPTC connects media-analysis output to a knowledge graph — plus
+    **world-scoping** (§2, §5). §3.1 states the re-open test that would retire the claim.
+  - **§3.2 and §3.3 make the bridge operational**, on the discipline
+    [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) established for KGP:
+    koine's canonical form is retained and each external target gets a *specified* mapping. §3.2
+    projects §3's relations onto C2PA ingredient relationships (pinned: **C2PA Specification 2.1**,
+    `c2pa.ingredient.v3`); §3.3 projects them onto **OMC v2.8**'s derivation vocabulary. Both name
+    what does **not** survive rather than implying losslessness — including that
+    `media:perceptual_match` is not projected at all, that KMI `prov` is not the C2PA signer, that a
+    KINP asset id is not a C2PA hard binding, and that OMC's **Revision has no KMI source**.
+  - **§3.4 fixes the conformance obligation** as *complete or reported*, not lossless: round-trip
+    over the projected subset **is** the criterion, so **no `schemas/` document shape is added** for
+    a projection. The machine-checked fixture is a **downstream** validator per
+    [ADR-0001](../decisions/ADR-0001-control-plane-topology.md), named as a follow-up and explicitly
+    **not** a new ratification gate.
+
+  Recorded in [ADR-0010](../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md) (bridge, not a
+  third vocabulary — with *ship a third vocabulary* / *adopt C2PA wholesale* / *adopt OMC wholesale*
+  weighed and rejected). Separately, **§4.1 gains the OTIO upstream pin**: **v0.18.1**, **not 1.0**
+  (prerelease; the 1.0 milestone was due 2026-04-10 and is ~4 months overdue, about a third of
+  issues open), and `target_url` is under-specified enough that **Premiere Beta 26.1 and DaVinci
+  Resolve 20.2 break against each other** (OTIO issue **#1985**) — recorded in
+  [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline.md)'s dated **amendment log** as a
+  *risk*, with the OTIO adoption **reaffirmed unchanged**, because #1985 is the concrete, citable
+  case for §4.2's asset-id envelope and §4.3's media map. All three pins take rows in
+  [`../docs/upstream-standards.md`](../docs/upstream-standards.md). **Unchanged in meaning:** the
+  asset envelope (§2) including `source_world`, the §3 relation set and its semantics, §4's OTIO
+  model and additive layer, the analysis→KGP bridge (§5), transform typing (§6), and byte transport
+  (§7). Patch rather than minor — see the 0.3.2 status note. No delta is reopened; the
+  re-ratification path is still the outstanding re-run of
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md), shared with KCB.
 
 - **0.3.1** (2026-08-13) — **Candidate.** Names the removal version that 0.3.0's deprecation of
   `application/vnd.koine.edl+json` left open: the type is **removed at KMI 0.4.0** (§4.4), under
