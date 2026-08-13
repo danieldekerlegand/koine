@@ -152,8 +152,12 @@ vocabulary.
   KINP §9's "not adopting RDF" narrows to *storage and identity*), ADR-0007 (a participant is
   self-describing — namespace, KCB manifest, egress policy and bridge mappings are published by
   that participant, and the registry returns an **address** to a self-description, never the
-  self-description), and ADR-0008 (an application joins as a producer through a thin **adapter**
-  that only translates; every generic data-plane bridge is built once in the runtime commons).
+  self-description), ADR-0008 (an application joins as a producer through a thin **adapter**
+  that only translates; every generic data-plane bridge is built once in the runtime commons),
+  ADR-0009 (semver states intent, a content digest establishes identity — capability versioning
+  plus the one fabric-wide deprecation policy), and ADR-0010 (KMI is a **bridge** between C2PA and
+  MovieLabs OMC, not a third lineage vocabulary — §3's relations are retained as the fabric-internal
+  form and projected onto both, explicitly *not* losslessly).
   `decisions/README.md` carries the full table — keep this list and that table in step. The deployment-history ADRs (ADR-0002/0003/0004 — bridge
   reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
   integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently

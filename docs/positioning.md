@@ -141,8 +141,11 @@ landing is [`../specs/grounding-pack.md`](../specs/grounding-pack.md) §3.4.
 
 ### C2PA and MovieLabs OMC — KMI narrows to a bridge
 
-*Landed in the contracts: [`../specs/media-interchange.md`](../specs/media-interchange.md) §3.1 is
-the record; this is the narrative pointing at it.*
+*Landed in the contracts: [`../specs/media-interchange.md`](../specs/media-interchange.md) §3.1
+(the prior art and the narrowed claim), §3.2 / §3.3 (the two projections) and §3.4 (their shared
+conformance obligation) are the record, decided by
+[ADR-0010](../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md); this is the narrative
+pointing at them.*
 
 **C2PA already ships a cryptographically signed derivation chain**: `c2pa.ingredient` with
 `parentOf` / `componentOf` / `inputTo` relationships and hash-based "hard bindings," backed by a
@@ -157,7 +160,9 @@ deployed standard. **KMI's answer is to be the bridge, not a third vocabulary**:
 projections onto C2PA's ingredient relationships and onto OMC's derivation vocabulary — canonical
 form retained, mapping specified, lossy edges named, conformance tested as a round-trip, the same
 discipline [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) applies to KGP —
-and hold only the part neither occupies. That is a deliberate position rather than a retreat: a
+and hold only the part neither occupies. Unlike KGP's projection, neither of these is **lossless**,
+and the spec says so: C2PA is coarser than KMI's relation set and collapses it, OMC is finer and
+KMI cannot fill it, so the obligation is *complete or reported* rather than total. That is a deliberate position rather than a retreat: a
 producer whose problem is attestable published provenance should emit C2PA and a producer whose
 problem is production-domain modelling should speak OMC, and KMI's job is to carry derivation
 between them and into a plane neither reaches.

@@ -49,8 +49,9 @@ ground neither occupies — the analysis→knowledge bridge (§5) and world-scop
 KMI defines:
 - the **asset envelope** — technical metadata over the KINP `asset` id (§2),
 - the **asset-lineage graph** — `derived_from` / `variant_of` / `excerpt_of` /
-  `perceptual_match` (§3) — and what that graph does and does **not** claim relative to the
-  standards that already model derivation (§3.1),
+  `perceptual_match` (§3) — what that graph does and does **not** claim relative to the
+  standards that already model derivation (§3.1), and its specified **projections** onto C2PA
+  (§3.2) and MovieLabs OMC (§3.3) with their conformance obligation (§3.4),
 - the **timeline / composition** model — the adopted OTIO model, koine's additive layer over it,
   and NLE interchange through OTIO's adapters (§4),
 - the **analysis → knowledge bridge** into KGP (§5),
@@ -178,10 +179,11 @@ certified, widely deployed one **and** against a richer domain one would be a lo
 own terms, and this spec does not make it. **§3 is a bridge, not a claim to that ground:** its
 relations exist because a fabric-internal asset graph has to be expressible in the KGP envelope
 (confidence, provenance, world) that the rest of koine already speaks, and they are **projected**
-onto C2PA and OMC — canonical form retained, mapping specified, lossy edges named, conformance
-tested as a round-trip — which is the same discipline
+onto C2PA (§3.2) and OMC (§3.3) — canonical form retained, mapping specified, lossy edges named,
+conformance tested as a round-trip (§3.4) — which is the same discipline
 [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) applies to KGP against
-RDF-star / PROV / JSON-LD.
+RDF-star / PROV / JSON-LD, and is recorded for KMI in
+[ADR-0010](../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md).
 
 **Being the bridge is the deliberate position, not a retreat from a larger one.** Neither C2PA nor
 OMC nor OTIO is a competitor to be beaten here; each occupies a layer KMI needs and would otherwise
@@ -216,6 +218,133 @@ scoping construct that separates depicted-world facts from consensus-reality fac
 above is occupied and KMI should adopt rather than bridge — the same re-open test KGP §3.4 states
 for its own canonical.
 
+---
+
+### 3.2 Projection — KMI lineage → C2PA ingredient relationships
+
+Per [ADR-0010](../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md), the mapping from §3's
+relation set onto C2PA is **specified here rather than left to implementers**, so that the bridge
+§3.1 claims is testable instead of asserted. C2PA is **not** canonical for KMI lineage and is never
+authoritative on ingest; §3's relations remain the fabric-internal form, because they are what the
+KGP envelope (confidence, provenance, world) can carry.
+
+**Pinned revision.** This projection is written against the **C2PA Specification 2.1** ingredient
+assertion (`c2pa.ingredient.v3`) and its `relationship` value space, as recorded in
+[`../docs/upstream-standards.md`](../docs/upstream-standards.md). Per that file's rule 2 a pin is a
+claim about what koine was validated against, not a claim the upstream is frozen; moving it is a
+spec change under the drift check.
+
+**Anchoring.** C2PA's derivation record is **per-asset and manifest-anchored**: the manifest
+describes the asset it travels with, and its ingredients are that asset's inputs. A KMI edge
+`subject R object` therefore projects into the **subject's** manifest as an ingredient naming the
+**object**. This is a structural narrowing before any relation is mapped — §3's graph is global and
+traversable in both directions, a manifest is a local inbound view — and it is the first entry in
+the *does not survive* list below.
+
+| KMI relation (§3) | C2PA `relationship` | Notes |
+|---|---|---|
+| `media:derived_from` | **`parentOf`** when the subject has exactly one such inbound edge; **`componentOf`** for every additional one | C2PA admits at most one `parentOf` per manifest. Where a composite has several derivation parents, the producer MUST **designate** which is the parent; absent a designation all of them project as `componentOf`. The projection MUST NOT pick one arbitrarily. |
+| `media:variant_of` | **`parentOf`** (or `componentOf` under the same one-parent rule) | C2PA has no rendition relationship. `derived_from` and `variant_of` therefore land on the **same** value and are indistinguishable in the projection alone (see below). |
+| `media:excerpt_of` | **`parentOf`** (or `componentOf` under the same one-parent rule) | The cut range on the excerpt asset's envelope (§2 `excerpt`) has **no ingredient field**; it does not survive. |
+| `media:perceptual_match` | **not projected** | Every C2PA relationship asserts a *directed derivation or consumption* that was observed. `perceptual_match` is a **symmetric, probabilistic similarity signal and never identity** (§3, KINP delta E); emitting it as an ingredient would assert a derivation nobody observed, inside a signed document. Reported, never projected. |
+| a KMI relation whose `confidence` < 1.0 | **not projected** | A C2PA manifest is signed: everything in it is attested, and the format carries no per-ingredient confidence. Projecting an uncertain edge would launder a probabilistic assertion into an attestation. Reported. |
+
+**Carrying what C2PA does not model.** So that the round-trip below can close, a producer emitting
+this projection MUST carry the KMI-side facts C2PA has no field for in a **koine-namespaced custom
+assertion** on the same manifest — at minimum the projected edge's §3 relation name, the subject
+and object **KINP asset ids**, and the edge's `world`. A consumer that does not understand the
+assertion still reads a valid C2PA manifest; a consumer that does recovers the KMI edge exactly.
+
+**What does NOT survive the projection.** Stated positively, because §3.1's claim depends on this
+being honest rather than on the mapping looking total:
+
+- **The graph's global shape.** Only the subject's inbound edges appear in its manifest. Outbound
+  edges (what was derived *from* this asset) are not recoverable from that manifest alone.
+- **The `derived_from` / `variant_of` distinction**, which collapses onto one C2PA value.
+- **The excerpt range** (§2 `excerpt`) — C2PA has no sub-range operand on an ingredient.
+- **`perceptual_match` entirely**, and with it every probabilistic lineage edge.
+- **Per-edge confidence** — there is no field for it, by design.
+- **`source_world`** and the §5 analysis→knowledge assertions, which C2PA does not model at all
+  (§3.1 — this is the ground KMI claims, not ground C2PA declines).
+- **KMI `prov`.** A KMI edge's `prov` names the **agent that asserted the edge**, with no credential
+  claim attached. C2PA's signer is a **credentialed actor attesting the whole manifest**. The two
+  MUST NOT be conflated: projecting `prov` onto the signer would upgrade an unsigned assertion into
+  an attestation. Whoever signs the manifest signs it on their own authority.
+- **The identity hash is not the hard binding.** A KINP `asset` id is the algorithm-prefixed hash of
+  the whole byte stream (§2, KINP §2/§6). A C2PA hard binding is computed with **exclusion ranges**
+  for the embedded manifest store, so for any asset carrying an embedded manifest the two values are
+  **not equal** and neither substitutes for the other. A producer MUST NOT publish a KINP asset id
+  as a hard binding, or read one back as an asset id; the asset id travels in the custom assertion
+  above.
+
+---
+
+### 3.3 Projection — KMI lineage → MovieLabs OMC derivation
+
+The same discipline, onto the other target. **MovieLabs OMC v2.8** (pinned in
+[`../docs/upstream-standards.md`](../docs/upstream-standards.md)) distinguishes **Revision**,
+**Variant**, **Derivation**, **Representation**, and **Alternative** — a vocabulary richer than §3's
+(§3.1). Here the loss runs in the **opposite direction from §3.2**: C2PA is coarser than §3 and
+collapses it; OMC is finer than §3 and §3 cannot fill it.
+
+| KMI relation (§3) | OMC v2.8 relation | Notes |
+|---|---|---|
+| `media:derived_from` | **Derivation** | The general "this came from that" relation; the mapping is direct. |
+| `media:variant_of` | **Representation** (default) | §3's definition — *a rendition of A at a different resolution / format / bitrate* — is literally OMC's Representation. A producer with the domain knowledge to tell a **Variant** (an intentionally different version) or an **Alternative** (a functionally substitutable one) MAY project to those instead; it MUST NOT guess, and absent that knowledge the default stands. |
+| `media:excerpt_of` | **Derivation** | OMC's derivation vocabulary carries no sub-range operand, so the §2 `excerpt` range does not travel on the relation. A producer whose OMC profile models the portion elsewhere MAY place it there; otherwise the range is reported as unprojected. |
+| `media:perceptual_match` | **not projected** | All five OMC relations are asserted production relationships; none is probabilistic. Same rule, same reason, as §3.2. |
+| **Revision** | **no KMI source** | §3 does not model versioning of a *work* — that a new asset is the next revision of the same thing rather than a derivative of it. An OMC **Revision** read into KMI degrades to `media:derived_from`, losing exactly the distinction OMC exists to draw. This is the sharpest single argument for bridging rather than restating (ADR-0010). |
+
+**What does NOT survive the projection.**
+
+- **Round-tripping OMC → KMI → OMC is lossy on the fine axis:** Representation, Variant, and
+  Alternative all read back as `media:variant_of`, and Revision reads back as `media:derived_from`.
+  A producer that received an OMC-side distinction and needs it preserved MUST carry it beside the
+  KMI edge; §3 will not hold it.
+- **The excerpt range**, as above.
+- **`perceptual_match` and per-edge confidence** — OMC, like C2PA, has no place for a probabilistic
+  derivation edge.
+- **`source_world` and the §5 bridge.** OMC comes closest of any standard on this page: it models
+  **narrative objects** (Character, Narrative Scene, and their kin) as first-class production data,
+  which is the nearest counterpart to world-scoping in the prior art and is named here rather than
+  elided. It is still a different object. OMC's narrative entities describe *what a production is
+  about*; `source_world` is a **per-asset scope on extracted assertions** that engages the KINP §4.3
+  firewall, and OMC binds no analysis output to those entities with per-assertion confidence and
+  provenance. §3.1's re-open test is stated against exactly that gap, and OMC is the standard most
+  likely to close it.
+
+---
+
+### 3.4 Conformance of the §3.2 / §3.3 projections
+
+Both projections carry the same obligations, and they are **weaker than KGP's on purpose**:
+
+- **Neither projection is lossless**, and neither claims to be — unlike KGP §4.1's, which round-trips
+  losslessly over its binary core. Both targets are asymmetric to §3 (one coarser, one finer), so
+  the obligation is **complete or reported**: every edge a producer declines to project MUST appear
+  in the projection's report, never be silently dropped.
+- **Over the subset it does project, a projection MUST round-trip**: reading the emitted document
+  back MUST recover the same §3 edges — same relation, same subject and object asset ids, same
+  world — for every edge it projected. That round-trip, not a document shape, **is** the conformance
+  criterion, which is why no schema in [`../schemas/`](../schemas/) gains a projection document
+  shape (ADR-0006's rule, applied here).
+- **Emitting a projection is OPTIONAL** for a conformant producer. A producer that emits one MUST
+  emit it per this mapping — a private mapping is the interop failure these sections exist to close.
+- **Ingest is unaffected.** Neither target is authoritative on ingest; a C2PA manifest or an OMC
+  record arriving from outside is *evidence* that mints §3 edges under the producer's normal
+  provenance and confidence rules, not a substitute for them.
+- **A relation added to §3 later MUST land in both tables above, or be explicitly declared
+  unprojected**, with the reason. A relation that is simply absent from them is a defect.
+
+**The follow-up.** The machine-checked round-trip fixture for these two projections — take a KMI
+asset-lineage graph, emit each projection, read it back, and show the recovered edges and the report
+together account for every input edge — is a **downstream validator artifact** per
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md): conformance fixtures and validators
+live with the implementing runtime, not in koine. It is **named here as a follow-up and not built
+here**, tracked cross-repo alongside KGP's equivalent projection fixture (see `../tasks/chief/`).
+Because emitting a projection is optional, this fixture gates the **projections'** conformance and
+**not** KMI's own re-ratification: that path is unchanged and remains the outstanding re-run of
+[`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) (see **Pressure test**).
 ---
 
 ## 4. The timeline / composition model (OpenTimelineIO)
