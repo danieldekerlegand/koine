@@ -48,7 +48,7 @@
         "It records the nearest agent-protocol equivalent honestly (A2A's own test kit: 45 stars, declarative only in its participant matrix) as an informative data point, dated, so the claim ages visibly.",
         "The addition is INFORMATIVE ONLY: KCS 0.2.0's Status stays ratified, the assertion vocabulary and document shape are unchanged, and the changelog entry says so."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
