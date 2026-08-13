@@ -61,6 +61,16 @@ KFT does **not** define: payload formats (KGP/KMI own them), engine/adapter inte
 provisioning (provider- and host-local behavior — §9), or reasoning semantics. It adds
 no new identifier kind, no new plane, and no new transport.
 
+It also does not define three things a maintained external standard already holds, which KFT
+**adopts by reference** rather than restating: **dataset description** (MLCommons Croissant,
+§4.1.1), **weights packaging** (KitOps / ModelPack, §5.3.1), and **published model lineage** (the
+Hugging Face `base_model` convention, §5.1.1). Each of those sections states the **seam** — what the
+external standard covers, what KFT adds on top, and what a producer must supply that the standard
+cannot express — so an implementer can tell which document to read for which field. The rule behind
+all three: *where something is already standardized and adopted, KFT cites it and holds only the
+fields it has no place for.* The pins are recorded in
+[`../docs/upstream-standards.md`](../docs/upstream-standards.md).
+
 ---
 
 ## 2. The `finetune` capability
@@ -123,14 +133,15 @@ The `invoke` payload. All data is referenced by KINP/KGP/KMI id — nothing is i
 {
   "kft_version": "0.1.0",
   "job":        "orchestrator:activity:ft-run/9f2a",       // KINP activity id — this run (PROV, §5)
-  "base_model": "hf:model:Qwen/Qwen2.5-3B-Instruct",       // KINP model-entity ref
+  "base_model": "refkb:model:qwen2.5-3b-instruct",         // KINP model-entity ref, externally anchored (§5.1)
   "modality":   "text-generation",                         // §3.1
   "method":     "qlora",                                   // sft | lora | qlora | full | dpo
   "dataset": {                                             // data-plane refs (§4), never inline
     "knowledge": ["kgp:pack:sha256-7b1e…"],                // KGP GroundingPack ids
     "media":     ["analyzer:asset:blake3-a1b2…"],          // KMI asset ids (multimodal)
     "records":   ["mediastore:asset:blake3-e9d7…"],        // training-record JSONL, as KMI assets (§4.1, FT-M)
-    "header":    [ { /* dataset-jsonl-header — one per records[] entry (§4.1, FT-O) */ } ]
+    "header":    [ { /* dataset-jsonl-header — one per records[] entry (§4.1, FT-O) */ } ],
+    "descriptor":["refkb:asset:blake3-cr0a…"]              // Croissant v1.1 description(s), by reference (§4.1.1)
   },
   "hyperparams": { "epochs": 3, "lr": 2e-4, "max_seq_len": 2048,
                    "lora": { "r": 16, "alpha": 32, "dropout": 0.05,
@@ -148,6 +159,13 @@ The machine-readable twin is [`../schemas/finetune-job.schema.json`](../schemas/
 [`../schemas/provenance.schema.json`](../schemas/provenance.schema.json), and is validated **downstream** per
 [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) (koine specifies, implementers
 validate) — **not** in koine.
+
+**Three of this manifest's surfaces are references, not descriptions.** `dataset.descriptor[]`
+names a **Croissant** document (§4.1.1), `base_model` names a KINP entity whose external anchor is
+the base's Hub coordinate (§5.1/§5.1.1), and `export[]` names output variants whose *packaging* is
+KitOps / ModelPack's (§5.3.1). §3 carries the reference and the fields those standards have no place
+for — it never restates them, and a proposal to add a field that duplicates one of theirs is a
+defect rather than an extension.
 
 ### 3.1 Modality vocabulary
 
@@ -219,12 +237,64 @@ first line of the file, describing the training-record layout and carrying the l
   rows after the header. A producer **MUST NOT** emit a file whose header understates any row —
   the same producer-filters-at-construction discipline KGP §7.2 applies to a pack. A producer whose
   rows differ in class splits the file rather than widening the header.
+- **Dataset description (`dataset.descriptor[]`)** is not a fourth corpus slot — it is the
+  *description* of the three above, and it is **Croissant's, not KFT's** (§4.1.1). The slot holds
+  KMI asset ids of Croissant v1.1 documents; it is optional, additive, and **never read by the
+  admission gate**.
 - **Paired multimodal samples (FT-I).** `dataset.knowledge[]` and `dataset.media[]` name the
   *referenced corpora*, not the training samples. The **per-sample pairing** — which image goes with
   which caption, the basic shape of every image/video-text-to-text (and the caption side of
   text-to-image) finetune — rides the **`dataset.records[]` training records**: a row references both
   a KMI `asset` id *and* its text. Alignment thus travels with the same records that already carry
   license + trust tier; the corpus arrays are the fetch/egress manifest, the records are the join.
+
+#### 4.1.1 Dataset description — MLCommons Croissant, adopted by reference
+
+**KFT does not describe datasets; Croissant does.** MLCommons **Croissant v1.1** is the ML-dataset
+description format — a schema.org `Dataset` vocabulary in JSON-LD, with `distribution`
+(`FileObject` / `FileSet`) for the files and `recordSet` / `field` for the records, their fields,
+their data types, and their splits — and it is the one with real adoption: **Hugging Face, Kaggle,
+and OpenML** publish it for their datasets. A KFT job therefore **points at a Croissant-described
+dataset**. It does not re-express what Croissant already says, and the fields it holds instead are
+exactly the ones Croissant has no place for.
+
+- `dataset.descriptor[]` is a set of **KMI asset ids**, each naming a Croissant v1.1 document
+  carrying the IANA type `application/ld+json`. **koine mints no media type for it** — that is the
+  point of adopting rather than restating — and the document is fetched with the same `fetch:asset`
+  verb and grant as any other asset (§4.1), so by-reference discipline is unchanged.
+- The array is **not positional**: one descriptor MAY cover any subset of `knowledge[]` /
+  `media[]` / `records[]`, and a job MAY carry several. (Contrast `dataset.header`, which *is*
+  positional — one per `records[]` entry, FT-O — because it is an admission input and every record
+  file needs its own.)
+- The slot is **OPTIONAL**. A producer whose corpus has a published Croissant description
+  **SHOULD** reference it; a job without one is exactly as conformant as it was at KFT 0.4.0.
+- KFT **MUST NOT** grow a field that restates a Croissant one. Field layout, data types, splits,
+  file organization, citation, and the human-facing dataset description belong to Croissant; adding
+  any of them to §3 is a defect, not an extension.
+
+**The seam.**
+
+| | Held by | Covers |
+|---|---|---|
+| **What Croissant covers** | Croissant v1.1 | dataset name / description / citation; `distribution` file layout; `recordSet` / `field` structure, data types and splits; the descriptive `license` string or URL |
+| **What KFT adds on top** | KFT §3 / §4.1 | a **fabric-resolvable reference** to that document (a content-addressed KMI asset, fetched under a `fetch:asset` grant) and the join to the KGP pack / KMI asset ids the run actually trains on — Croissant describes a dataset, KFT names *which fabric objects* a *particular run* consumed |
+| **What a producer must still supply** | `dataset-jsonl-header` (§4.1) + the referenced packs/assets | the **license class** (§4.3, KGP §7.1), the **egress class** (§4.2, FT-N), the **provenance trust tier** (§4.3), and **`recordCount`** (§7, FT-P). Croissant has no egress and no trust-tier concept at all; its `license` is a descriptive string, not koine's *enforcing* class; and any count it carries is documentation, not an admission input |
+
+**The gate does not read Croissant (NORMATIVE).** A descriptor is descriptive metadata and **never
+an admission input**. §4.2's egress gate, §4.3's license/trust lineage, and §7's spend estimate read
+the `dataset-jsonl-header` and the referenced packs/assets — exactly as they did at 0.4.0. A
+provider **MUST NOT** derive an egress class, license class, trust tier, or record count from a
+Croissant document, and **MUST NOT** admit or refuse a job on its contents. Where a descriptor
+disagrees with a header, **the header wins and the descriptor is the bug** — the same
+the-inline-copy-is-a-claim discipline §4.1 already applies to the header itself. This is what makes
+the adoption safe: it adds a document an implementer may read, not a rule the gate must run.
+
+**The re-open test.** If Croissant later specifies an *enforcing* egress/redistribution class and a
+provenance trust tier with the semantics KGP §7 gives them, the third row above is occupied and KFT
+should carry the header's axes as a Croissant extension rather than beside it — the same re-open
+discipline KGP §3.4 and KMI §3.1 state for their own claims.
+
+---
 
 ### 4.2 The egress gate (NORMATIVE)
 
@@ -306,6 +376,51 @@ based_on(orchestrator:model:qwen2.5-3b-worldsim-slm, refkb:model:qwen2.5-3b-inst
 derived_from(orchestrator:model:qwen2.5-3b-worldsim-slm, refkb:model:qwen2.5-3b-instruct).
 ```
 
+#### 5.1.1 Published lineage — the Hugging Face `base_model` convention, adopted by reference
+
+The fabric-internal answer to "what was this trained from" is the KINP relation pair above
+(`based_on` / `derived_from`), because that is what the KGP envelope — confidence, provenance,
+world — can carry. The **published** answer already has a convention, and KFT reuses it rather than
+minting a parallel field: the Hugging Face Hub's model-card metadata key **`base_model`**, carried
+by millions of repos and **validated and linked by the Hub itself**, alongside
+**`base_model_relation`** (`adapter` / `quantized` / `finetune` / `merge`). Minting a koine
+"trained-from" key to sit beside a working, validated, universally-emitted one would compete with it
+and lose; there is nothing KFT could put in such a field that `base_model` does not already say.
+
+- When a producer **publishes** a weight or export asset (§5.3) to the Hub, it **MUST** populate
+  `base_model` from the base entity's **external anchor** — the `same_as ext:hf:…` link §5.1
+  already requires (FT-G) — and **SHOULD** populate `base_model_relation` from the job's `method`
+  and artifact kind:
+
+  | KFT artifact | `method` | `base_model_relation` |
+  |---|---|---|
+  | LoRA / QLoRA adapter | `lora`, `qlora` | `adapter` |
+  | full or preference-tuned weights | `sft`, `full`, `dpo` | `finetune` |
+  | merged fp16 weights | any (merge step, §5.3) | `merge` |
+  | GGUF / ONNX / CoreML / TFLite export | any (quantize/convert, §5.3) | `quantized` |
+
+- **When the base has no Hub coordinate.** A locally-trained base, a licensed vendor checkpoint, or
+  an earlier finetune of the fabric's own has no `ext:hf:…` anchor. The producer **MUST NOT** invent,
+  guess, or approximate one: an unresolvable `base_model` value is strictly worse than an absent one,
+  because the Hub validates and links the key and a dangling coordinate misattributes lineage to
+  whatever repo it happens to name. Instead, `base_model` is **omitted**, and the base's **KINP
+  entity id** is recorded in the model-card body and in the run's PROV `used` (§5.2), which is where
+  the authoritative answer lives anyway. Nothing fabric-internal changes: `based_on` / `derived_from`
+  are present in **every** case, Hub coordinate or not.
+- `base_model` is therefore a **projection** of §5.1's relations onto the Hub, not their canonical
+  form — and it is a projection that may be unavailable by design, since a model inheriting
+  `local-only` (§5.4) is never pushed to the Hub at all.
+
+**The seam.**
+
+| | Held by | Covers |
+|---|---|---|
+| **What the HF convention covers** | Hub model-card metadata | the published `base_model` coordinate and `base_model_relation` kind, validated and back-linked by the Hub, for models that live on the Hub |
+| **What KFT adds on top** | KFT §5.1 / §5.2 | lineage for bases and models that are **not** on the Hub; the run **activity** that produced the edge (`seed`, `config_hash`, pinned input ids — FT-C); and the same edge expressed as a first-class fabric claim, so "what derives from this base?" is answerable by query rather than by crawling model cards |
+| **What a producer must still supply** | KFT / KINP | the `same_as` external anchor (§5.1), the `retrains` / `supersedes` edge on a re-train (§5.2), and the §5.4 egress + union-license inheritance that decides whether the model may be published to the Hub **at all** — none of which the Hub convention expresses |
+
+---
+
 ### 5.2 The run is a PROV activity
 
 The `job` id (§3) is a KINP PROV **activity** (KINP §7.1). Its provenance record makes the run
@@ -316,7 +431,7 @@ derives from this base?"):
 { "activity": "orchestrator:activity:ft-run/9f2a",
   "agent":    "provider:org:trainer",              // signed (§7); the training provider
   "used":     ["kgp:pack:sha256-7b1e…", "analyzer:asset:blake3-a1b2…",
-               "hf:model:Qwen/Qwen2.5-3B-Instruct"],
+               "refkb:model:qwen2.5-3b-instruct"],        // the base entity, not a raw hf:… string (FT-G)
   "generated":["orchestrator:model:qwen2.5-3b-worldsim-slm",
                "orchestrator:asset:blake3-w0…"],    // the weight asset(s), §5.3
   "seed": 42, "config_hash": "sha256-cfg…",         // reproducibility anchor lives on the RUN (FT-C)
@@ -357,6 +472,42 @@ lineage graph (KMI §3), and byte transport (KMI §7) — the surfaces 0.3.x lef
 no clause of KMI §4, so neither the OTIO adoption nor the deprecation of
 `application/vnd.koine.edl+json` (KMI §4.4, removed at **KMI 0.4.0** under KCB §7.3) reaches a
 model artifact: weights and exports are plain assets, never timeline items.
+
+#### 5.3.1 Weights packaging — KitOps / ModelPack, adopted by reference
+
+The table above types weight and export artifacts as KMI assets and fixes their **lineage**. How the
+bytes are *laid out inside a package* is a different question, and it is already answered:
+**KitOps / ModelPack** packages a model as an **OCI artifact** described by a `Kitfile`, whose
+**`model.parts[]` entries each carry a `type`** — a vocabulary that already contemplates the **LoRA
+adapter** case, which is precisely KFT's `method: lora | qlora` output. Adapter, base, config,
+docs, and datasets travel as typed parts of one package with registry push/pull semantics and
+tooling behind them.
+
+- KFT **specifies no weights layout, part-type vocabulary, or package manifest**, and **MUST NOT**
+  mint one. A producer MAY package weights and exports as a ModelPack/KitOps ModelKit; where it
+  does, the packaging is that standard's and the §5.3 table still types the assets and their
+  lineage. A producer that ships bare `safetensors`/`gguf` assets is equally conformant — KFT's
+  obligations are about identity and lineage, not containers.
+- A ModelKit's parts and a KFT export matrix are **not** in competition: a part is a file in a
+  package, an export is a node in the lineage graph. One ModelKit MAY carry several KMI assets, and
+  one KMI asset MAY appear in several ModelKits.
+
+**The seam.**
+
+| | Held by | Covers |
+|---|---|---|
+| **What KitOps / ModelPack covers** | the `Kitfile` + OCI artifact | package layout; `model.parts[]` and their `type` (including the LoRA/adapter case); co-packaged config, docs, and datasets; distribution through an OCI registry with digest addressing and push/pull semantics |
+| **What KFT adds on top** | KFT §5.2 / §5.3 | a **KINP/KMI asset identity** per artifact and the **lineage graph** between them — which adapter derives from which base weights, which GGUF is a `variant_of` which merge — expressed in the KGP envelope so model artifacts are queryable beside knowledge, plus the **run activity** (§5.2) that generated them |
+| **What a producer must still supply** | KFT §5.4 / KMI §2 | the **egress class** and **union license** the artifacts inherit (§5.4) — a ModelKit expresses neither, and *an OCI registry push is exactly the cross-boundary publication §5.4 forbids for a `local-only`-inheriting model* — plus the KMI asset envelope (byte-hash id, `source_world`) and the `job` activity id |
+
+**Which KMI lineage obligations remain KFT's.** All of them: the §5.3 table's `media:derived_from` /
+`media:variant_of` edges, their registration in
+[`../registry/relations/media.tsv`](../registry/relations/media.tsv), the model media types in
+[`../registry/media-types.tsv`](../registry/media-types.tsv), and the §5.4 inheritance are unchanged
+by this adoption. Packaging is orthogonal to lineage, and adopting a package format discharges no
+lineage clause.
+
+---
 
 ### 5.4 Output egress & license inheritance (NORMATIVE, FT-A)
 

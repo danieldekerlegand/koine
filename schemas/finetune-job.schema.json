@@ -53,6 +53,11 @@
           "items": { "$ref": "#/$defs/kinpId" },
           "description": "KMI asset ids of the training-record JSONL file(s) — a producing application's training exhaust, and the FT-I per-sample join surface. Each carries media type application/vnd.koine.dataset+jsonl (registry/media-types.tsv) and opens with a dataset-jsonl-header (KFT §4.1, FT-M)."
         },
+        "descriptor": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/kinpId" },
+          "description": "KMI asset ids of MLCommons Croissant v1.1 dataset descriptions (application/ld+json), adopted by reference — KFT describes no dataset itself (KFT §4.1.1). Not positional: one descriptor may cover any subset of knowledge/media/records. Optional and descriptive: the §4.2 egress gate, §4.3 license/trust lineage, and §7 estimate MUST NOT read it; on disagreement the dataset-jsonl-header wins."
+        },
         "header": {
           "description": "The dataset-jsonl-header(s) copied inline — carries tier + license + egress + recordCount + provenance so the §4.2 gate and §7 estimate run before any fetch. An array, positionally one per records[] entry (FT-O); a bare object is the degenerate one-file form. Verified against the file's actual first record on fetch; a disagreement rejects the job (KFT §4.1).",
           "oneOf": [
