@@ -155,19 +155,22 @@ deployment. *Nothing is built until a deployment actually needs more than one au
 
 *Depends on:* a real >1-authority deployment target to justify starting; ADR (`51`) gates the §-edits (`52`) and the scenario (`53`). Source: identity.md §11.1, capability-bus.md §8.1, media-interchange.md §9.3.
 
-### Phase F2 — Capability versioning & deprecation — ⬜ planned (scale: M)
+### Phase F2 — Capability versioning & deprecation — 🚧 in progress (scale: M)
 
-How a provider evolves a capability's schema without breaking subscribers — KCB §7.2, explicitly
-inherited by KFT §11.5 (a finetuned model pins its `kft_version`). Folds in KMI's unfinished
-deprecation: the deprecated `edl+json` transition window (§4.4) has **no removal date**.
+How a provider evolves a capability's schema without breaking subscribers — **decided** in
+[ADR-0009](decisions/ADR-0009-capability-versioning-deprecation.md) and normative at KCB §7, which
+KFT §11.5 now inherits by reference (a finetuned model's pinned `kft_version` is an archival pin,
+KCB §7.4). KMI's unfinished deprecation is closed with it: the `edl+json` transition window (§4.4)
+names its removal — **KMI 0.4.0** — under the one deprecation policy at KCB §7.3. What remains is
+the break-test.
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | A **versioning ADR** — semver on capability names vs content-addressed schemas; the subscriber-compatibility contract · M | `chief/54-capability-versioning-adr` *(proposed, koine)* |
-| ⬜ | KCB §7.2 §-edit encoding the decision (+ set the KMI §4.4 `edl+json` removal date; note the KFT §11.5 inheritance) · S | `chief/55-kcb-versioning-spec-edit` *(proposed, koine)* |
-| ⬜ | A **mutate-live-schema scenario** — a provider ships a capability v2 while a v1 subscriber is live; assert no silent break · M | `chief/56-live-schema-mutation-scenario` *(proposed, koine `scenarios/`)* |
+| ✅ | A **versioning ADR** — both options were adopted at different layers: semver `(name, version)` carries *compatibility*, a content-addressed `schema_id` makes a silent mutation detectable; ADR-0009 | `chief/54-capability-versioning-adr` |
+| ✅ | KCB §7 §-edit encoding the decision (KCB → 0.4.0) + the KMI §4.4 `edl+json` removal version (KMI → 0.3.1, removed at 0.4.0) + the KFT §11.5 inheritance resolved as an informative pointer | `chief/55-kcb-versioning-spec-edit` |
+| ⬜ | A **mutate-live-schema scenario** — a provider ships a capability v2 while a v1 subscriber is live; assert no silent break. Required by KCB §7.5 before KCB can re-ratify · M | `chief/56-live-schema-mutation-scenario` *(proposed, koine `scenarios/`)* |
 
-*Depends on:* none hard; naturally pairs with F1 (both are "how the fabric evolves"). Source: capability-bus.md §7.2, fine-tuning.md §11.5, media-interchange.md §4.4.
+*Depends on:* none hard; naturally pairs with F1 (both are "how the fabric evolves"). Source: capability-bus.md §7 (was §7.2), fine-tuning.md §11.5, media-interchange.md §4.4.
 
 ### Phase F3 — KFT downstream runtime program — ⬜ planned (scale: L, cross-repo)
 

@@ -452,7 +452,8 @@ media type, a manifest location (§2.2), an extension URI.
 
 Two surfaces are mid-window under this policy today: KCB's own standalone
 `/.well-known/kcb-manifest.json`, removed at **KCB 0.5.0** (§2.2), and KMI's deprecated
-`application/vnd.koine.edl+json` ([`media-interchange.md`](media-interchange.md) §4.4).
+`application/vnd.koine.edl+json`, removed at **KMI 0.4.0**
+([`media-interchange.md`](media-interchange.md) §4.4).
 
 ### 7.4 An archival pin is not a live binding
 

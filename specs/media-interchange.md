@@ -1,8 +1,8 @@
 # Koine Media-Interchange Protocol (KMI)
 
-**Spec version:** 0.3.0
+**Spec version:** 0.3.1
 **Status:** Candidate
-**Last updated:** 2026-08-02
+**Last updated:** 2026-08-13
 **Applies to:** media authorities (producer/authority for assets + timelines), media producers of
 any modality, and media consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP) for the `asset` id, `source_world`, and
@@ -17,6 +17,13 @@ composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline
 > koine draft→candidate→ratified convention. Re-ratification path: re-run
 > [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) against the OTIO
 > model (no delta F/H/I is reopened — see **Pressure test**).
+
+> **Status note (0.3.1):** names the removal version the 0.3.0 deprecation left open —
+> `application/vnd.koine.edl+json` is removed at **KMI 0.4.0** (§4.4), under the fabric-wide
+> deprecation policy stated once in [`capability-bus.md`](capability-bus.md) §7.3
+> ([ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md)). Patch-level and
+> additive: it closes a declared window rather than changing the model shape, so no delta is
+> reopened and the re-ratification path above is unchanged.
 
 > The **media data plane** — the fourth and final plane. Where KGP moves *facts*, KMI moves
 > *bytes and the edits over them*: assets, their technical metadata, the asset-lineage graph
@@ -260,8 +267,19 @@ normative, and no longer the source of truth (ADR-0005).
   to serve the legacy form alongside the OTIO form for already-published edits.
 - A consumer SHOULD accept both while the transition window is open, and MUST treat the **OTIO
   form as authoritative** when both are offered for the same edit.
-- The type is removed from this spec no earlier than the next **minor** version, and removal ends
-  the obligation to emit or accept it — not the ability to read archived assets.
+- **The type is removed at KMI 0.4.0.** From that version a producer MUST NOT emit
+  `application/vnd.koine.edl+json` and a consumer is no longer obliged to accept it. Removal ends
+  the *obligation* to emit or accept — never the ability to read archived assets, which stay valid,
+  fetchable, and resolvable at their original content-addressed ids.
+- That window is declared under the fabric-wide deprecation policy, stated once for every retiring
+  surface in [`capability-bus.md`](capability-bus.md) §7.3
+  ([ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md)): a deprecation names its
+  own end (§7.3a); the end is a **version of this spec**, not a calendar date, because a version is
+  a deadline a consumer can read off the contract while a date is a deployment fact (§7.3b); it is
+  at least one full minor after the 0.3.0 that declared the deprecation, so declaring and removing
+  are never the same publication (§7.3c); both forms stay served and functional for the whole window
+  (§7.3d); and **0.4.0 may move later, never earlier** — pulling it in would break every consumer
+  that planned against it (§7.3e).
 
 Every legacy construct maps totally onto OTIO, so no existing edit is orphaned:
 
@@ -404,11 +422,24 @@ KINP id, and the asset-id ↔ path media map (I), which OTIO's `target_url`-base
 is reopened; one non-blocking exposure is noted (namespaced metadata can be dropped by a
 third-party round-trip — §9.5).
 
-KMI nonetheless stays at **candidate**: the same scenario also gates **KCB 0.3.0**, whose §2
+KMI nonetheless stays at **candidate**: the same scenario also gates **KCB 0.4.0**, whose §2
 manifest→AgentCard-extension change its discovery steps exercise and which has not been re-run.
 Promotion of both follows that pass.
 
 ## Changelog
+
+- **0.3.1** (2026-08-13) — **Candidate.** Names the removal version that 0.3.0's deprecation of
+  `application/vnd.koine.edl+json` left open: the type is **removed at KMI 0.4.0** (§4.4), under
+  the fabric-wide deprecation policy [`capability-bus.md`](capability-bus.md) §7.3 states once for
+  every retiring surface, per
+  [ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md). Patch rather than minor
+  **by that policy**: §7.3c requires the declared removal to be at least one full minor after the
+  version that declared the deprecation (0.3.0), so publishing this clause as 0.4.0 would make the
+  declaration and the removal the same release. Nothing else changes — the asset envelope, the
+  lineage graph, §4's OTIO model and its additive layer, the analysis→KGP bridge, transform typing,
+  and every other MUST/SHOULD clause are unchanged in meaning, no delta is reopened, and the
+  re-ratification path is still the outstanding re-run of
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md).
 
 - **0.3.0** (2026-08-02) — **Candidate.** Adopted **OpenTimelineIO** as the canonical timeline /
   composition model per

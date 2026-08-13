@@ -490,8 +490,22 @@ configuration, not a dedicated wiring program.
    checkpoint ref cleanly.
 4. **Eval-as-reward coupling** — how tightly `method: dpo` binds to a KCS scenario as its reward
    (§6.1); whether reward scenarios need a distinct KCS profile.
-5. **Capability versioning** — inherits KCB open question 2 (schema evolution of a capability without
-   breaking subscribers); a finetuned model pins the `kft_version` it was trained under.
+5. **Capability versioning** — **resolved** (2026-08-13), and resolved once for the whole fabric
+   rather than twice: KCB's open question 2 is now normative
+   [`capability-bus.md`](capability-bus.md) §7 per
+   [ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md), so a `finetune`
+   capability evolves like any other — it is a `(name, semver version)` whose every port carries a
+   content-addressed `schema_id` (KCB §7.1), subscriber compatibility is the §7.2 rule, and a
+   retiring surface names its removal version under §7.3. The fact this section added is the
+   resolution's own case: **a finetuned model pins the `kft_version` it was trained under** — and
+   under KCB §7.4 that pin is an *archival record on an immutable artifact*, not a live binding.
+   It must stay **resolvable**, not protected from change, so a model does not break when its
+   producing capability reaches a new major; it still reproduces, audits, and compares against the
+   contract it names, while a **re-run** is a fresh `invoke` governed by §7's grant rule (KCB §5)
+   like any other. Three distinct pins are worth recording on the model (§5.1/§5.2): the **spec**
+   versions (`kft_version`, `kcb_version`), the **manifest-shape** version (the KCB §2 extension
+   URI), and the **capability** version. Informative here — this section states no clause of its
+   own, and §§2–8 are unchanged by the resolution.
 
 ---
 
