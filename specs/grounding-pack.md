@@ -195,13 +195,38 @@ discipline); the others are derived and MUST round-trip losslessly back to it.
 | **JSON** | Ergonomic API transfer (§2 shape) | Lossless twin of TSV. |
 | **Prolog facts** | For a consumer with a native Prolog / SWI core | `id/3` terms, `@world(W)` context arg (KINP §5). Tier-gated (§5). |
 | **Datalog (Soufflé `.dl`)** | Bulk deductive queries | grounding-only tier. |
-| **ProbLog** | Probabilistic reasoning | confidence → fact probability. |
+| **ProbLog** | Probabilistic reasoning | A record's confidence → that fact's probability; **one fact per admitted `prov` record** — see the ProbLog rule below. |
 | **Neo4j property graph** | Visualization / graph queries | entities→nodes, assertions→edges, provenance→edge props; round-trips losslessly. |
 | **RDF-star / W3C PROV / JSON-LD** | Consumers on the RDF stack (triplestores, SPARQL endpoints, JSON-LD readers) | Worlds→named graphs, claims→quoted triples, claim metadata→statement annotations, `prov`→PROV terms. Mapping fixed in §4.1; round-trips losslessly over the binary core, with anything it declines to project reported rather than dropped. |
 
 Projection is **one-directional from the canonical pack**; consumers never treat a Neo4j,
 ProbLog, or RDF projection as authoritative. The relation registry (§3.2) is the shared
 vocabulary all projections agree on.
+
+**ProbLog — one fact per admitted prov record (NORMATIVE).** A claim's provenance is not
+single-valued: a merge preserves **all** `prov` records for a shared `claim` id (§7), each
+carrying its own `confidence`, while a ProbLog fact carries exactly one probability. The
+projection therefore MUST emit **one fact per admitted `prov` record**, where *admitted* means the
+records that survive the §7 slice — provenance agent, `confidence` threshold, licence class
+(§7.1), egress class (§7.2) — applied at pack construction, before any encoding is emitted. A
+claim admitted with two records projects to two facts; a claim all of whose records the slice
+rejects projects to none.
+
+- A producer MUST NOT fold several records into a single probability. Choosing an aggregation —
+  noisy-or, max, a trust-weighted mixture, or refusing to combine at all — is the **consumer's**
+  reasoning policy, made against its own trust model; KGP does not make it, because fixing one
+  aggregation here would bake a single probabilistic semantics into an interchange contract that
+  has to serve every reasoner.
+- Per-record emission is what keeps this projection **lossless per record**, on the same terms as
+  the Neo4j / Datalog / RDF-star projections: nothing is averaged away, and the round-trip back to
+  the canonical recovers the original multi-record claim. So that the recombination is
+  mechanical, each emitted fact's `claim` id and originating `prov` record MUST be recoverable
+  from the record channel that already carries confidence, licence, and egress class alongside the
+  term — never as extra arguments of the term itself, whose arity is the relation's (§3.2).
+- Which records are admitted, and hence how many facts a claim projects to, is a **§7 filtering**
+  question, not an identity one: `confidence` and `prov` are excluded from the claim hash (§3.1),
+  so no admission outcome changes a `claim` id and the §3.3 convergence result is byte-unchanged
+  under every slice.
 
 ### 4.1 RDF-star / PROV / JSON-LD projection
 
@@ -238,10 +263,13 @@ Rules:
 
 Exercised by [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md)
 (*Re-validation — KGP 0.5.0*): under this mapping the round-trip holds, the §3.3 convergence result
-is byte-unchanged, and the §7 filters survive every encoding. Two **minor findings** are open there
-against this section and §4 and close before KGP re-ratifies — **KGP-1**, which `confidence` a claim
-carrying several `prov` records projects to ProbLog, and **KGP-2**, that the annotations above are
-fixed in *structure* but their predicates are not *named* outside PROV.
+is byte-unchanged, and the §7 filters survive every encoding. That pass raised two **minor
+projection findings** against this section and §4, both of which close before KGP re-ratifies.
+**KGP-1** — which `confidence` a claim carrying several `prov` records projects to ProbLog — is
+**closed**: §4's ProbLog rule above now emits one fact per admitted `prov` record and leaves
+aggregation to the consumer. **KGP-2** remains open: the annotations above are fixed in
+*structure*, but outside PROV this section still leaves their predicates unnamed, so two
+conformant producers can emit structurally identical, mutually unreadable projections.
 
 ---
 
