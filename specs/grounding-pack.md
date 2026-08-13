@@ -1,8 +1,8 @@
 # Koine Grounding-Pack Protocol (KGP)
 
-**Spec version:** 0.5.0
+**Spec version:** 0.5.1
 **Status:** Candidate
-**Last updated:** 2026-08-02
+**Last updated:** 2026-08-13
 **Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
 and control-plane hosts that broker packs on behalf of agents.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
@@ -195,13 +195,38 @@ discipline); the others are derived and MUST round-trip losslessly back to it.
 | **JSON** | Ergonomic API transfer (§2 shape) | Lossless twin of TSV. |
 | **Prolog facts** | For a consumer with a native Prolog / SWI core | `id/3` terms, `@world(W)` context arg (KINP §5). Tier-gated (§5). |
 | **Datalog (Soufflé `.dl`)** | Bulk deductive queries | grounding-only tier. |
-| **ProbLog** | Probabilistic reasoning | confidence → fact probability. |
+| **ProbLog** | Probabilistic reasoning | A record's confidence → that fact's probability; **one fact per admitted `prov` record** — see the ProbLog rule below. |
 | **Neo4j property graph** | Visualization / graph queries | entities→nodes, assertions→edges, provenance→edge props; round-trips losslessly. |
 | **RDF-star / W3C PROV / JSON-LD** | Consumers on the RDF stack (triplestores, SPARQL endpoints, JSON-LD readers) | Worlds→named graphs, claims→quoted triples, claim metadata→statement annotations, `prov`→PROV terms. Mapping fixed in §4.1; round-trips losslessly over the binary core, with anything it declines to project reported rather than dropped. |
 
 Projection is **one-directional from the canonical pack**; consumers never treat a Neo4j,
 ProbLog, or RDF projection as authoritative. The relation registry (§3.2) is the shared
 vocabulary all projections agree on.
+
+**ProbLog — one fact per admitted prov record (NORMATIVE).** A claim's provenance is not
+single-valued: a merge preserves **all** `prov` records for a shared `claim` id (§7), each
+carrying its own `confidence`, while a ProbLog fact carries exactly one probability. The
+projection therefore MUST emit **one fact per admitted `prov` record**, where *admitted* means the
+records that survive the §7 slice — provenance agent, `confidence` threshold, licence class
+(§7.1), egress class (§7.2) — applied at pack construction, before any encoding is emitted. A
+claim admitted with two records projects to two facts; a claim all of whose records the slice
+rejects projects to none.
+
+- A producer MUST NOT fold several records into a single probability. Choosing an aggregation —
+  noisy-or, max, a trust-weighted mixture, or refusing to combine at all — is the **consumer's**
+  reasoning policy, made against its own trust model; KGP does not make it, because fixing one
+  aggregation here would bake a single probabilistic semantics into an interchange contract that
+  has to serve every reasoner.
+- Per-record emission is what keeps this projection **lossless per record**, on the same terms as
+  the Neo4j / Datalog / RDF-star projections: nothing is averaged away, and the round-trip back to
+  the canonical recovers the original multi-record claim. So that the recombination is
+  mechanical, each emitted fact's `claim` id and originating `prov` record MUST be recoverable
+  from the record channel that already carries confidence, licence, and egress class alongside the
+  term — never as extra arguments of the term itself, whose arity is the relation's (§3.2).
+- Which records are admitted, and hence how many facts a claim projects to, is a **§7 filtering**
+  question, not an identity one: `confidence` and `prov` are excluded from the claim hash (§3.1),
+  so no admission outcome changes a `claim` id and the §3.3 convergence result is byte-unchanged
+  under every slice.
 
 ### 4.1 RDF-star / PROV / JSON-LD projection
 
@@ -215,11 +240,63 @@ wire form; none of the three is canonical, and none is authoritative on ingest.
 |---|---|
 | a claim's `world` (§3.1) | the **named graph**, identified by the world's KINP canonical IRI (KINP §3) |
 | a **binary** relation and its two arguments (§3.2) | the **triple** — predicate and identifier arguments as KINP canonical IRIs; literal arguments as typed RDF literals per §3.2's types |
-| `confidence`, `valid_time`, `embedding_model` | **annotations on the quoted triple** (RDF-star) |
-| `prov` (§2, §7) | **PROV terms** — the shape §2 already carries, named in the vocabulary it was shaped after |
-| the `claim` id (§3) | an **annotation on the quoted triple**, so an RDF consumer can round-trip back to the canonical and verify the hash |
-| `license` (§7.1), egress class (§7.2), dialect tier (§5) | record-level annotations, carried for filtering by the consumer |
+| `confidence`, `valid_time`, `embedding_model` | **annotations on the quoted triple** (RDF-star), under the terms named in the annotation vocabulary below |
+| `prov` (§2, §7) | **PROV-O terms** — the shape §2 already carries, named in the vocabulary it was shaped after (below) |
+| the `claim` id (§3) | an **annotation on the quoted triple** (`kgp:claimId`, below), so an RDF consumer can round-trip back to the canonical and verify the hash |
+| `license` (§7.1), egress class (§7.2), dialect tier (§5) | record-level annotations, carried for filtering by the consumer, under the terms named below |
 | a relation of arity > 2 (registry extension, §3.2) | **not projected as a bare triple.** The projection is defined only for the binary core; a higher-arity relation is emitted through whatever reification the consuming ecosystem uses, or omitted **with a report** — never silently dropped. |
+
+**Annotation vocabulary (NORMATIVE).** The table above fixes which KGP construct becomes an
+annotation; it is not interop until the annotations are *named*. Two producers that both follow the
+structure but mint their own predicates emit structurally identical, mutually unreadable graphs.
+The terms below are therefore **normative**: a producer that emits this projection MUST use them,
+and a consumer MUST read them.
+
+```
+kgp:      https://koine.ecosystem/ns/kgp#      koine-minted, defined by this section
+prov:     http://www.w3.org/ns/prov#           W3C PROV-O
+time:     http://www.w3.org/2006/time#         W3C OWL-Time
+dcterms:  http://purl.org/dc/terms/            DCMI Metadata Terms
+xsd:      http://www.w3.org/2001/XMLSchema#
+```
+
+| Annotation | Term | Value | Reused or minted |
+|---|---|---|---|
+| `claim` id (§3) | `kgp:claimId` | `xsd:string` — the algorithm-prefixed hash exactly as §3 emits it | **Minted.** No external term carries the obligation that makes this one work — that the id is *re-derivable* from the recovered canonical and MUST be checked against it (rule 2 below). `dcterms:identifier` names any identifier and would not distinguish a content address from an accession number. |
+| `confidence` | `kgp:confidence` | `xsd:decimal`, §3.2's shortest round-tripping form | **Minted.** Neither PROV nor any W3C vocabulary defines a statement-level confidence; the candidates in the wild are ad-hoc, which is precisely the interop gap this row closes. |
+| `valid_time` | `time:hasTime` → a `time:ProperInterval` bearing `time:hasBeginning` / `time:hasEnd`, each an instant with `time:inXSDDateTimeStamp` | `xsd:dateTimeStamp`, §3.2's fixed-precision UTC form | **Reused** — W3C OWL-Time. An open-ended interval omits the missing bound rather than encoding a sentinel. |
+| `embedding_model` | `kgp:embeddingModel` | the KINP canonical IRI of the model entity (KINP §3) | **Minted.** The value is an identity-plane reference, so no external metadata term fits; naming the model as an entity keeps it resolvable rather than a bare string. |
+| `license` (§7.1) | `dcterms:license` for the SPDX identifier, **and** `kgp:licenseClass` for its §7.1 class | `xsd:string` (SPDX id) / `xsd:string` (one of §7.1's six classes) | **Reused + minted.** The SPDX identifier goes under the established term; the *class* is koine's own admission enum and has no external equivalent. Both travel, because the class is what §7.1 filters on and the identifier is what a consumer re-classifies from. |
+| egress class (§7.2) | `kgp:egressClass` | `xsd:string` — `exportable` \| `local-only` | **Minted.** No external vocabulary models a boundary-crossing prohibition of this kind; carried for re-checking only (§7.2 — the filter itself ran at pack construction). |
+| dialect tier (§5) | `kgp:dialect` | `xsd:string` — `grounding-only` \| `horn-safe` \| `full-prolog` | **Minted.** A koine portability tier with no external counterpart. |
+| `prov` (§2, §7) | PROV-O as it stands — `prov:wasGeneratedBy` (the activity), `prov:wasAttributedTo` (the agent), `prov:generatedAtTime` | per PROV-O | **Reused** — W3C PROV. §2's `prov` shape was shaped after this vocabulary, so the projection names it rather than restating it. |
+
+- These terms are **immutable once ratified**, on the same discipline as a published relation
+  (§3.2): a change of meaning or value space is a **new term**, never an edit in place, because a
+  consumer reading an old graph has no way to tell which reading it was written under.
+- The `kgp:` namespace is reserved to this spec and holds annotation terms only. It is not a
+  domain vocabulary and never names relations — those live in the registry (§3.2) and reach the
+  projection as predicate IRIs, not as annotations.
+- An annotation a consumer does not recognise MUST be carried through the round-trip or reported,
+  never silently dropped — the same *complete or reported* obligation the projection carries for
+  everything else.
+
+Illustrative (KINP §3.4 placeholder namespaces; a claim `C` with one admitted `prov` record):
+
+```turtle
+GRAPH <https://id.koine.example/world/worldsim/alderforest> {
+  ex:npc-renaud reg:commands ex:army-of-ash .
+
+  << ex:npc-renaud reg:commands ex:army-of-ash >>
+      kgp:claimId       "sha256-4e91c7…" ;
+      kgp:confidence    "0.55"^^xsd:decimal ;
+      prov:wasGeneratedBy <https://id.koine.example/agent/analyzer/run-1a2b> ;
+      dcterms:license   "CC-BY-4.0" ;
+      kgp:licenseClass  "attribution" ;
+      kgp:egressClass   "exportable" ;
+      kgp:dialect       "grounding-only" .
+}
+```
 
 Rules:
 
@@ -238,10 +315,24 @@ Rules:
 
 Exercised by [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md)
 (*Re-validation — KGP 0.5.0*): under this mapping the round-trip holds, the §3.3 convergence result
-is byte-unchanged, and the §7 filters survive every encoding. Two **minor findings** are open there
-against this section and §4 and close before KGP re-ratifies — **KGP-1**, which `confidence` a claim
-carrying several `prov` records projects to ProbLog, and **KGP-2**, that the annotations above are
-fixed in *structure* but their predicates are not *named* outside PROV.
+is byte-unchanged, and the §7 filters survive every encoding. That pass raised two **minor
+projection findings** against this section and §4, and **both are now closed**. **KGP-1** — which
+`confidence` a claim carrying several `prov` records projects to ProbLog — is closed by §4's
+ProbLog rule above: one fact per admitted `prov` record, aggregation left to the consumer.
+**KGP-2** — the annotations were fixed in *structure* but named only where PROV supplied the
+terms, so two conformant producers could emit structurally identical, mutually unreadable
+projections — is closed by the annotation vocabulary above, which names a term for every
+annotation this section carries.
+
+With both closed, the one gate remaining before KGP 0.5.x returns to **ratified** is a
+**machine-checked round-trip fixture** for this projection: a fixture that takes a canonical pack,
+emits the RDF-star / PROV / JSON-LD projection, reads it back, and shows the recovered canonical
+re-derives the same `claim` ids (rule 2). The round-trip is desk-verified in prose in that scenario
+and made a standing obligation by ADR-0006, but the fixture itself is a **downstream validator**
+artifact per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) — conformance fixtures and
+validators live with the implementing runtime, not in koine — and is tracked cross-repo as
+`64-kgp-projection-roundtrip-fixture` (see `../tasks/chief/`). Until it lands, this spec stays
+**candidate**.
 
 ---
 
@@ -400,6 +491,23 @@ Ratified 2026-07-17.
 
 ## Changelog
 
+- **0.5.1** (2026-08-13) — **Candidate** (normative change to a candidate spec; status unchanged).
+  Closes the two minor projection findings the *Re-validation — KGP 0.5.0* pass of
+  [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) left open.
+  **KGP-1**: §4 gains the normative **ProbLog rule** — the projection emits **one fact per
+  admitted `prov` record**, *admitted* being the records that survive the §7 slice applied at pack
+  construction; a producer MUST NOT fold several records into one probability, and choosing an
+  aggregation (noisy-or, max, trust-weighted) is the **consumer's** policy, not KGP's. **KGP-2**:
+  §4.1 gains the normative **annotation vocabulary** — a named term for every annotation the
+  projection carries, reusing an established vocabulary where one exists (W3C PROV for `prov`,
+  OWL-Time for `valid_time`, DCMI Terms for the SPDX licence id) and minting a `kgp:` term only
+  where none does (`claimId`, `confidence`, `embeddingModel`, `licenseClass`, `egressClass`,
+  `dialect`), with those terms **immutable once ratified** on the same discipline as a published
+  relation (§3.2). §4.1's exercised-by note now names the remaining re-ratification gate: the
+  downstream round-trip fixture (ADR-0001). Projection-surface only — §3 normalization, §3.1's
+  hashed set, and the §3.3 convergence result are untouched, so **no existing `claim` id changes**
+  and no `schemas/` document shape moves (a projection's conformance is the round-trip, not a
+  document shape).
 - **0.5.0** (2026-08-02) — **Candidate** (re-enters validation per `draft → candidate →
   ratified`). Decided KGP's relationship to RDF 1.2 / RDF-star, W3C PROV, and JSON-LD per
   [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md): the **bespoke canonical

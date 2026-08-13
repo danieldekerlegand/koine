@@ -40,17 +40,21 @@ vocabulary.
 - `specs/identity.md` — KINP 0.2.1, **ratified**. Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
-- `specs/grounding-pack.md` — KGP 0.5.0, **candidate**. Knowledge data plane; normative §3
+- `specs/grounding-pack.md` — KGP 0.5.1, **candidate**. Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
   **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
   the requirements RDF-star / PROV / JSON-LD do not meet natively plus the re-open test, and §4.1
   fixes the lossless RDF-star/PROV/JSON-LD **projection** mapping. **Re-validated** against
   `scenarios/e2e-worlds-to-fabric.md` (its *Re-validation — KGP 0.5.0* section): §3.3 claim-id
   convergence is byte-unchanged, the §7 confidence/license/`local-only` filters survive every
-  encoding, and all §4 projections round-trip. Stays candidate on two **minor projection findings**
-  — KGP-1 (which confidence a multi-prov merged claim projects to ProbLog) and KGP-2 (§4.1 fixes the
-  annotation *structure* but never names the annotation predicates) — plus the still-missing
-  downstream round-trip fixture.
+  encoding, and all §4 projections round-trip. That pass's two **minor projection findings** are
+  **closed in 0.5.1** — KGP-1 by §4's normative *ProbLog — one fact per admitted prov record* rule
+  (aggregation is the consumer's policy, never KGP's), KGP-2 by §4.1's normative **annotation
+  vocabulary** (a named term per annotation; PROV / OWL-Time / DCMI Terms reused where they exist,
+  `kgp:` terms minted where they do not and immutable once ratified). Projection surface only — §3,
+  §3.1's hashed set, and §3.3 are untouched, so no claim id changes. Stays candidate on the one
+  remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
+  ADR-0001, tracked cross-repo).
 - `specs/capability-bus.md` — KCB 0.3.0, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
@@ -102,7 +106,7 @@ vocabulary.
   outstanding, and both stay candidate until it lands.
 - `schemas/` — the machine-readable twin of the prose specs (JSON Schema draft-2020-12):
   `provenance.schema.json` shared `$defs` + grounding-pack / entity-grounding-snapshot /
-  canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.5.0
+  canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.5.x
   (grounding-pack = the §4 **JSON** encoding, not a JSON-LD document; no schema models a §4
   projection — a projection's conformance is the round-trip, not a document shape);
   `media-timeline` (KMI §4) + `finetune-job` (KFT §3), each with one golden-positive fixture.
