@@ -46,7 +46,7 @@
         "fine-tuning.md §11.5's inheritance note is updated to point at the resolved ADR/§7.2 decision (a finetuned model pins its kft_version), as an informative reference; whether KFT's version bumps depends on whether its normative surface changed — keep it informative-only if unchanged.",
         "The three edited specs read consistently and all cite the one ADR (chief/54); schemas/*.json still parse."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
