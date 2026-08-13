@@ -85,7 +85,7 @@ vocabulary.
   payload shape and every other clause unchanged; both re-ratification gates restated, neither
   moved. Provenance in ADR-0007's amendment log; implementations pinning the old literal migrate
   downstream (ADR-0001).
-- `specs/media-interchange.md` — KMI 0.3.1, **candidate**. Media data plane; asset envelope +
+- `specs/media-interchange.md` — KMI 0.3.2, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
