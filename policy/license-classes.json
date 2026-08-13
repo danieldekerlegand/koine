@@ -1,8 +1,8 @@
 {
-  "policyVersion": "0.1.0",
+  "policyVersion": "0.1.1",
   "description": "License classes for per-record SPDX labeling and partitioned packaging. 'license' fields hold an SPDX id or one of the pseudo-ids below.",
   "classes": {
-    "public-domain": { "spdx": ["CC0-1.0", "PDM-1.0"], "obligations": "none" },
+    "public-domain": { "spdx": ["CC0-1.0", "CC-PDM-1.0"], "obligations": "none" },
     "attribution": { "spdx": ["CC-BY-3.0", "CC-BY-4.0", "Apache-2.0", "MIT"], "obligations": "attribution manifests in releases" },
     "share-alike": { "spdx": ["CC-BY-SA-3.0", "CC-BY-SA-4.0", "ODbL-1.0", "GFDL-1.3-only"], "obligations": "viral per record: ships only in share-alike-labeled partitions; derived open datasets inherit" },
     "proprietary": { "pseudoIds": ["PROPRIETARY"], "obligations": "owner-scoped use only (e.g. a world producer's generated-world exports); never in open releases" },

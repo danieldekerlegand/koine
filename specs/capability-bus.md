@@ -68,9 +68,14 @@ unimplementable: both standards have shipped breaking changes to surfaces this s
 | **A2A** | **v1.0** | The host document of the §2 manifest. v1.0 replaced the v0.x top-level `"url"` with **`supported_interfaces[]`** (`AgentInterface{ url, protocol_binding }`) — see §2. |
 | **MCP** | **revision 2026-07-28** | The transport of the §4 verbs. That revision made the core **stateless** and is a **breaking change** against its predecessor — see §4.1 for the per-clause audit. |
 
-The pin of record is this table; [`../docs/upstream-standards.md`](../docs/upstream-standards.md)
-is the fabric-wide index of every such pin and carries the drift-check cadence. A pin states what
-KCB was **validated against**, not that the upstream is frozen — moving one is a spec change under
+**The table of record is [`../docs/upstream-standards.md`](../docs/upstream-standards.md)**, which
+holds every pin in the fabric and the drift-check cadence that keeps them honest; the two rows above
+are restated here so this spec reads standalone, and if they ever disagree with that file **the file
+wins and this section is the defect**. That direction is deliberate and is the reverse of how a
+spec's own version works: an upstream revision is a shared fact — the pinned MCP revision is the
+*same* fact for KCB and for KCS — so it is recorded once where one sweep can check it
+([`README.md`](README.md) § *External standards — the pin rule*). A pin states what KCB was
+**validated against**, not that the upstream is frozen; moving one is a spec change under
 [`README.md`](README.md)'s lifecycle.
 
 **What the pinned MCP revision has that its predecessor did not.** The 2026-07-28 revision replaced
@@ -696,6 +701,18 @@ outstanding and independent.
 
 ## Changelog
 
+- **Editorial** (2026-08-13) — Fixed the **direction of authority** on §1.1's pin table. It read
+  *"the pin of record is this table"*, which conflicted with KMI §4.1, KFT §3.2 and §4.1.1, and
+  [`../docs/upstream-standards.md`](../docs/upstream-standards.md) itself, all of which treat that
+  file as the record — leaving two documents each claiming to be the one place a pin could be wrong.
+  §1.1 now states that the file wins and that §1.1 is a standalone-readability restatement, with the
+  reason the direction is the reverse of a spec's own version/status mirrors: an upstream revision is
+  a shared fact across specs, so it is recorded once where a single drift sweep can check it, whereas
+  a spec's own version is a property of that spec and its header wins. **No pin value changed** —
+  A2A **v1.0** and MCP **revision 2026-07-28** are the same two rows — and **no clause changed**: §2
+  and its extension entry, §2.3's dual-accept window, §3, §4's verbs, §4.1's per-verb wire audit,
+  §5's grants and §7's versioning surface are byte-unchanged, so a manifest conformant at 0.4.3 is
+  conformant unchanged. Stays **0.4.3 Candidate** on the same two restated gates.
 - **0.4.3** (2026-08-13) — **Candidate.** Pinned the **MCP revision** KCB maps onto — **2026-07-28**
   — in the **§1.1** table beside the A2A pin, and added **§4.1**, a per-clause audit of which MCP
   wire each verb assumes. *Why a pin was required here and not merely tidy:* that revision is a

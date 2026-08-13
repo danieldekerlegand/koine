@@ -13,7 +13,11 @@ name, and consumers load them to decide what a record is allowed to do. Each fil
   `share-alike` / `proprietary` / `personal` — to their SPDX ids (or pseudo-ids `PROPRIETARY` /
   `PERSONAL`) and each class's **obligations** (attribution manifests, share-alike partitioning,
   owner-scoping). `Apache-2.0` — koine's own [`../LICENSE`](../LICENSE) — classes under
-  **attribution**.
+  **attribution**. The identifiers are **SPDX** ids, and the SPDX license list release they are
+  resolved against is pinned in [`../docs/upstream-standards.md`](../docs/upstream-standards.md) —
+  re-resolving them against that release is part of the drift check, and is what surfaced finding
+  **F-1** (`PDM-1.0`, an id no SPDX release has ever defined, corrected to **`CC-PDM-1.0`** at
+  `policyVersion` 0.1.1).
 - [`trust-tiers.json`](trust-tiers.json) — the provenance **trust tier** enum backing the `tier`
   field (KGP §7): `curated` / `acquired` / `synthetic` / `personal`, each with whether it
   `mayEnterOpenReleases` and its **containment** rules (synthetic and personal never mix into

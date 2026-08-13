@@ -30,6 +30,13 @@ vocabulary.
   Both failures are otherwise silent. It checks **three of the four mirrors** — the *Current
   state* prose below is **not** checked, so a stale version there passes CI; update that line by
   hand and read it back. `node scripts/check-tasklist-categories.mjs` guards `tasks/chief/`.
+- **Every normative reference to an external standard names a version or dated revision** — a bare
+  reference is a defect. `docs/upstream-standards.md` is the **table of record** for those pins (the
+  reverse of the version/status mirrors above: an upstream version is a shared fact, so it lives in
+  one place and the specs cite it). A spec may restate a pin for standalone readability but must
+  cite that file, and on disagreement the file wins. Moving a pin is a spec change; a difference
+  found on the drift check opens a **finding**, never a silent prose update. Rule stated for authors
+  in `specs/README.md` § *External standards — the pin rule*.
 - Specs are validated by concrete pressure-test scenarios in `scenarios/` before ratification
   (status: `draft` → `candidate` → `ratified`). Prefer finding breaks over asserting correctness.
 - Identifiers, envelopes, and resolution semantics are defined once in `specs/identity.md`
