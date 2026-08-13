@@ -45,7 +45,7 @@
         "On a clean pass the capability-versioning \u00a7-edits may return from candidate to ratified; the scenario states this and the affected spec changelog can cite it.",
         "schemas/*.json still parse; the scenario is a behavior test and requires no schema-twin shape change."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
