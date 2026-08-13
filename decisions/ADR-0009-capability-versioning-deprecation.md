@@ -194,7 +194,7 @@ signature** is immutable once published because changing it changes every depend
 and retiring the predecessor on a declared schedule*, never by mutating a published surface.
 
 The window's length and the mechanics of retirement — the **deprecation half** of this decision —
-are the other thing KMI §4.4's dateless window is waiting on.
+are fixed by **decision 7**, which is also what KMI §4.4's dateless window is waiting on.
 
 ### 5. Grants bind to a major; cost changes fail closed, never silently
 
@@ -243,6 +243,99 @@ two behave differently on purpose:
 A model whose provenance cannot name the contract version it was trained under is not reproducible,
 which is why the pin is required rather than advisory.
 
+### 7. The deprecation window: declared at deprecation, measured in versions
+
+Decision 4 retires a predecessor across "a transition window." This is that window — the
+**deprecation half** of the same rule — and it binds every retiring surface the fabric has, not just
+capabilities: a capability major, a media type, a manifest location, an extension URI.
+
+**a. A deprecation is a declaration, and it names its own end.** To deprecate a surface is to
+publish, in the same release: (i) the successor, (ii) an explicit deprecated marking on the
+predecessor, and (iii) a **removal version** — the version at which the obligation to emit or accept
+the predecessor ends. A deprecation that names no removal is not a deprecation; it is an unbounded
+promise a subscriber cannot plan against, and it is what KMI §4.4 is today.
+
+**b. The window is measured in the retiring surface's own versions, never in wall-clock dates.** For
+a capability, that axis is decision 1's semver: removal is declared as a capability version. For a
+surface with no version of its own — a media type, a manifest location, an extension URI — it is the
+**minor version of the spec that defines it**. Dates are rejected on two grounds: koine's surfaces
+move on publication, not on a calendar, so a date is enforceable by nothing a consumer can read off
+the contract; and any real calendar is a *deployment* fact, which belongs to that operator's private
+integration repo rather than to an agnostic record.
+
+**c. Never in the same release: at least one full minor.** The declared removal MUST be at least one
+minor after the version that declared the deprecation, so declaring and removing are never the same
+publication and a consumer one version behind still meets the deprecation before the removal. KMI
+§4.4's "no earlier than the next **minor**" is exactly this floor — but a floor is not a policy. The
+policy is that the concrete version is *named*.
+
+**d. Both forms are served, and the predecessor stays functional, for the whole window.** This is
+decision 4's dual-serve, which KCB §2.2 already applies to the manifest location and KMI §4.4 to the
+legacy media type: deprecated means *superseded*, not *degraded*. Where both are offered for the
+same thing the **successor is authoritative** (§4.4's rule, generalized). Discovery (§3) MUST keep
+returning a deprecated entry — marked, and carrying its removal version — while ranking it below any
+non-deprecated entry that satisfies the same query, so a subscriber meets the deprecation at
+discovery or `describe` time and never at invoke.
+
+**e. A declared removal moves later, never earlier.** Extending a window is a fresh declaration and
+is compatible with everyone. **Shortening** one — pulling a removal version in — breaks every
+subscriber that planned against it and MUST NOT be done; if a predecessor must go sooner than
+declared, the move is a new major under decision 4, not a re-dated retirement.
+
+**f. Removal ends the obligation, never the readability.** Past the removal version a producer MUST
+NOT emit the retired form and a consumer is no longer obliged to accept it. Nothing already produced
+is invalidated: content-addressed artifacts stay valid and fetchable, and the archival pins that
+name a retired contract version (decision 6) stay resolvable. Retirement is a statement about the
+**live** contract only — the same line KMI §4.4 already draws for archived EDL assets.
+
+**g. The two surfaces mid-window today.** Both are governed by (a)–(f), and in both cases the clause
+that names the version is the §-edit's to write — this record decides the policy and edits no
+normative text:
+
+- **KMI §4.4** deprecated `application/vnd.koine.edl+json` in KMI 0.3.0 and states only the floor
+  ("no earlier than the next minor"), so it names no removal version. Under this policy it MUST name
+  one, and the earliest conformant value is **KMI 0.4.0**. Setting it is `chief/55`'s job, not this
+  record's; no spec version is bumped here.
+- **KCB §2.2**'s standalone `/.well-known/kcb-manifest.json` is the same gap in the other spec: it
+  is dual-served "until all consumers crawl the extension," which is a *condition*, not a version.
+  The same §-edit names its removal version under the same policy.
+
+### 8. What stays invariant, so the §-edit is additive
+
+Decisions 1–7 reach KCB through a §-edit (`chief/55`). That edit **adds fields**; it MUST NOT
+redefine the manifest. §2 was already redefined once — 0.2.0's standalone document became 0.3.0's
+AgentCard extension (§2.2), a change still awaiting re-validation — and a second redefinition on top
+of it would make the manifest the least stable surface on the bus. So the §-edit preserves:
+
+- **One extension entry on the card.** No second well-known file, no companion document, no new
+  endpoint. The manifest's location, and ADR-0007's rule that a participant publishes its own
+  self-description, are untouched; `version` and `schema_id` are fields inside `params`.
+- **The extension URI does not move for an additive change.** `https://koine.dev/kcb/manifest/0.3`
+  names the *payload-shape family*; the spec version is carried by `params.kcb_version`. Minting
+  `…/manifest/0.4` for added optional fields would make every already-published card invisible to a
+  crawler matching the old URI — `compose-v2`'s fragmentation (decision 1) at the document level.
+  The URI moves only on a **breaking** manifest redefinition, and then both URIs are served across a
+  declared window (decision 7): the fabric applying its own rule to its own surface.
+- **Existing `params` fields keep their names and shapes** — `kcb_version`, `mcp`, `produces`,
+  `consumes`, `capabilities`, `auth`, `signing`. `signing` in particular MUST stay shape-identical,
+  because §2.2 fixes it as the **shared** signing shape with KGP `manifest.signing`, and KINP §7
+  provenance attribution depends on that.
+- **The new fields are optional on read.** A conformant 0.3.0 card carrying neither `version` nor
+  `schema_id` stays valid: decision 1 reads a missing `version` as `0.0.0`-unknown, and a missing
+  `schema_id` means "no cross-check available", not "invalid manifest". With decision 3's
+  ignore-unknown-fields obligation, old and new readers interoperate in both directions.
+- **The port model is unchanged.** §2.1's plane vocabularies, `world_pattern`, and `cost` are not
+  re-typed — `schema_id` is a field *on* a port. Deltas F / G / J / K / L stay unreopened, so KCB
+  §7's *0.3.0 re-check* remains true and the outstanding re-validation against
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) is not invalidated by
+  this record.
+- **Existing grants stay valid.** Decision 5 binds a grant to `(capability, major)`; the grant's
+  `invoke:<capability>` form (§5) does not change — the major it was issued against travels with the
+  issuance rather than being encoded into a new grant name.
+
+Judged by the table it is encoding, the §-edit is therefore a **minor** bump of KCB: fields added,
+none removed, nothing narrowed, no live subscriber broken.
+
 ---
 
 ## Invariant regardless of which option had been decided
@@ -256,6 +349,8 @@ even if a later re-open changes the mechanism:
 - **A subscriber never learns of a break by failing.** Whatever signals a break must be visible at
   discovery or describe time (§3/§4), before invoke.
 - **Authorization and spend fail closed** across any version change (§5).
+- **A deprecation names its own end.** A retiring surface declares the version at which it is
+  removed, at the moment it is deprecated; an unbounded window is not a deprecation (decision 7).
 - **Retirement removes obligation, never readability.** Archived artifacts and the records that pin
   them stay resolvable past a removal.
 
@@ -272,6 +367,9 @@ even if a later re-open changes the mechanism:
   gap in §5: previously nothing said whether `invoke:compose` followed `compose` through a rewrite.
 - The control plane now matches the discipline the registry and the data planes already enforce, so
   "how does this evolve?" has one answer across koine rather than three.
+- KMI §4.4's dateless deprecation stops being an open loop, and it closes as an *instance* rather
+  than a one-off: the retirement policy is stated once (decision 7) and applies to a capability
+  major, a media type, and a manifest location alike, so no future spec re-invents it.
 - The scheme is testable, which is what makes the follow-up pressure test meaningful.
 
 **Negative / costs**
@@ -284,6 +382,11 @@ even if a later re-open changes the mechanism:
   applies — an unexercised canonicalization rots.
 - Consumers that today reject unknown manifest fields must be relaxed before the minor tier is
   usable; that is a real (if small) migration for existing implementations.
+- Measuring windows in versions rather than dates means a slow-publishing surface holds its
+  deprecated forms longer than a calendar would. The trade is deliberate: a version is a deadline a
+  consumer can read off the contract, and a date is one only the operator can see.
+- Naming a removal version at deprecation time forces the call before the migration's cost is fully
+  known, and decision 7e makes it one-way — extendable, never pullable-in.
 
 **Neutral**
 - No change to the port model (§2.1), the verbs (§4), the registry's route-by-lookup stance
@@ -324,14 +427,19 @@ even if a later re-open changes the mechanism:
 - **KCB** §7.2 stops being an open question and becomes normative text: `version` on capability
   entries (§2), `schema_id` on ports (§2.1), version-range matching and successor ranking in the
   registry (§3), grant-binds-to-major and the cost-change rule (§5), plus the compatibility table.
-  That §-edit is a follow-up, **not** part of this record.
+  That §-edit is a follow-up, **not** part of this record. Decision 8 fixes what it MUST NOT touch —
+  the extension URI, the existing `params` field names, `signing`'s shared shape, the port model — so
+  it lands as an **additive minor** rather than a second redefinition of the manifest; §2.2's own
+  standalone-manifest window gets its named removal version there too (decision 7g).
 - **KFT** §11.5 resolves to decision 6 by inheritance; the `kft_version` field (§3) and the model
   entity + PROV activity (§5.1/§5.2) already carry what the pin needs, so the expected change is
   clarifying rather than structural.
 - **KMI** §4.4's deprecated `application/vnd.koine.edl+json` is the outstanding instance of decision
-  4's retirement half — it declares a transition window with no removal version. It is governed by
-  decision 4's retirement rule and this record's deprecation-window policy; the concrete removal
-  version is set by the §-edit.
+  4's retirement half — it declares a transition window with no removal version. Decision 7 supplies
+  the policy it was missing: a deprecation names a concrete removal version, measured in the defining
+  spec's minors and at least one minor out, dual-serving until then and staying readable after. The
+  earliest conformant value for §4.4 is therefore **KMI 0.4.0** — but the clause that names it is the
+  §-edit's (`chief/55`). This record edits no normative clause and bumps no spec version.
 - **[`../schemas/`](../schemas/)** — no schema in this repo models the KCB manifest (it is defined by
   KCB §2 and served on the AgentCard; `participant-self-description.schema.json` deliberately holds
   it **by reference only**), so decisions 1–2 add no schema here.
@@ -347,5 +455,5 @@ This record decides; it edits no normative clause. Two follow-ups carry it (ROAD
 
 | Follow-up | What it does | Tasklist |
 |---|---|---|
-| **The KCB §7.2 §-edit** | Encodes decisions 1–5 as normative KCB text (§2/§2.1/§3/§5), fixes the `schema_id` canonicalization bytes, notes the KFT §11.5 inheritance, **and sets the concrete removal version for KMI §4.4's `edl+json`** under the deprecation policy. Bumps the affected spec versions; this record bumps none. | `chief/55-kcb-versioning-spec-edit` |
+| **The KCB §7.2 §-edit** | Encodes decisions 1–5 as normative KCB text (§2/§2.1/§3/§5), fixes the `schema_id` canonicalization bytes, notes the KFT §11.5 inheritance, **and sets the concrete removal version for KMI §4.4's `edl+json`** — plus KCB §2.2's standalone manifest location — under decision 7's deprecation policy, additively per decision 8. Bumps the affected spec versions; this record bumps none. | `chief/55-kcb-versioning-spec-edit` |
 | **The mutate-live-schema pressure test** | A `scenarios/` scenario in which a provider ships a capability v2 while a v1 subscriber is live — asserting no silent break: the v1 binding survives, the digest catches an unbumped mutation, the v1 grant does not reach v2, and a cost raise fails closed against the spend ceiling. Prefer finding the break to asserting correctness. | `chief/56-live-schema-mutation-scenario` |
