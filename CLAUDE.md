@@ -27,8 +27,9 @@ vocabulary.
   header and you must update all four; on disagreement the header wins and the mirror is the bug.
 - Run `node scripts/check-doc-integrity.mjs` after touching any doc: it resolves every relative
   Markdown link (file + `#anchor`) and diffs all three status tables against the spec headers.
-  Both failures are otherwise silent. `node scripts/check-tasklist-categories.mjs` guards
-  `tasks/chief/`.
+  Both failures are otherwise silent. It checks **three of the four mirrors** — the *Current
+  state* prose below is **not** checked, so a stale version there passes CI; update that line by
+  hand and read it back. `node scripts/check-tasklist-categories.mjs` guards `tasks/chief/`.
 - Specs are validated by concrete pressure-test scenarios in `scenarios/` before ratification
   (status: `draft` → `candidate` → `ratified`). Prefer finding breaks over asserting correctness.
 - Identifiers, envelopes, and resolution semantics are defined once in `specs/identity.md`
