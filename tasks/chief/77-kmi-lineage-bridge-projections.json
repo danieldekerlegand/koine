@@ -49,7 +49,7 @@
         "A new agnostic ADR (the next free number at or above 0009 — 0002–0004 are permanently reserved; check decisions/ for what chief/51's federation ADR may have taken) records the decision: KMI is a BRIDGE between C2PA and OMC rather than a third lineage vocabulary, with the alternatives considered (ship a third vocabulary; adopt C2PA wholesale; adopt OMC wholesale) and why each was rejected.",
         "The projections' conformance obligation is stated the way KGP's is — a round-trip test, built downstream per ADR-0001, named as a follow-up rather than built here — and no schema in schemas/ gains a projection document shape."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
