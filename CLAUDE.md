@@ -117,7 +117,7 @@ vocabulary.
   0.3.1 stops conforming, and §4.4 has already spent **0.4.0** on the EDL removal.
 - `specs/conformance-scenario.md` — KCS 0.2.0, **ratified**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
-- `specs/fine-tuning.md` — KFT 0.4.0, **candidate** (ratified 2026-07-23 on two pressure passes:
+- `specs/fine-tuning.md` — KFT 0.5.0, **candidate** (ratified 2026-07-23 on two pressure passes:
   `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L; a **third**
   pass, `scenarios/e2e-producer-exhaust-finetune.md`, then pressure-tested a *producing application's*
   training exhaust arriving via ADR-0008 and found the §4 **intake** incomplete — FT-M `dataset.records[]`
@@ -138,6 +138,37 @@ vocabulary.
   inheritance is **resolved** by ADR-0009 / KCB §7 and is now an informative pointer — a finetuned
   model's pinned `kft_version` is an *archival pin* (KCB §7.4), so no KFT clause changed and the
   version does not move.
+  0.5.0 **stops restating what is already standardized** and says louder what is left, additively and
+  with **§4's admission behavior byte-unchanged** (FT-A…FT-Q untouched, 0.4.0 manifests still
+  conformant). Three adoptions **by reference**, each with a three-row seam table: **MLCommons
+  Croissant v1.1** for dataset description (§4.1.1, reached by the optional `dataset.descriptor[]`),
+  **KitOps / ModelPack** for weights packaging (§5.3.1 — `model.parts[].type` already covers LoRA, so
+  KFT mints no layout and every KMI lineage obligation stays KFT's), and the Hugging Face
+  **`base_model` / `base_model_relation`** convention for published lineage (§5.1.1 — a *projection*
+  of §5.1's KINP relations, with *omit, never invent* when the base has no Hub coordinate). A fourth
+  standard is **resembled, not adopted**: §3.2 records **Kubeflow `TrainJob`**
+  (`trainer.kubeflow.org/v1alpha1`) as the dataset-and-model-by-reference precedent with a field-by-field
+  correspondence, plus the optional `base_model_descriptor[]` and the NORMATIVE *a descriptor is never
+  an admission input* rule — a **shape, not a scope**, since TrainJob has no license, egress,
+  trust-tier or budget field anywhere. §1.1 collects the **four defensible claims** (objective ×
+  adaptation taxonomy, egress-gated placement, graded refusal routing, cross-provider portability),
+  each with the reason nothing else holds it; its `method` decomposition exposes one enum carrying both
+  axes, recorded as §11.6 (fix is an additive optional field, never a change to `method` or FT-F).
+  The fourth claim becomes an **artefact**: NORMATIVE **§3.3** maps a job onto **Axolotl,
+  LLaMA-Factory, TRL and the OpenAI FT API** — three dispositions per field (mapped / carried out of
+  band / **refused**), an exhaustive gating set that MUST be refused rather than silently dropped, a
+  required conversion record on the PROV activity, and four normative consequences (no `local-only`
+  job to a managed cloud target; an unexpressible adaptation axis is a refusal, not a substitution; a
+  KCS `eval[]` is never demoted to a validation file; a target's silence is never `exportable`).
+  **torchtune** is import-only legacy (wound down, v0.6.1 2025-04-07) — never an emit target or an
+  engine-ladder backend. **§8.1** grades refusals (`invalid`/`incompatible`/`out-of-envelope`/
+  `unsatisfiable-here`/`refused-policy`/`over-budget`) with a SHOULD-level `route_to[]` of resolvable
+  addresses that MUST NOT breach the gate just enforced. Conversion conformance is the **round-trip**
+  (§3.3.4) so no schema is minted; fixtures are a §9.1 downstream follow-up (ADR-0001). The four
+  KFT rows of `docs/upstream-standards.md` plus five §3.3 target rows are pinned. Status stays
+  candidate on the same restated gate — the owner's re-run of `e2e-producer-exhaust-finetune.md`'s
+  *Re-validation — KFT 0.4.0* — with §3.3/§8.1 recorded as new normative surface no pass has
+  exercised, not as a second gate.
 - `registry/` — shared **agnostic** vocabularies only: `relations.tsv` (core, **binary** relations
   only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
   `relations/social.tsv` (soc:), plus `entity-types.tsv`, `media-types.tsv`, and `enums/`.

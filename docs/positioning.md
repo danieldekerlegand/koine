@@ -188,6 +188,14 @@ models only the objective axis; Kubeflow buries adaptation in argv), **egress-ga
 Axolotl, LLaMA-Factory, torchtune, TRL, and OpenAI despite 190k+ combined stars. That last is
 arguably the most valuable thing KFT can deliver.
 
+All of this landed in [`../specs/fine-tuning.md`](../specs/fine-tuning.md) at **0.5.0**: the three
+adoptions in §4.1.1 / §5.3.1 / §5.1.1 (each with its seam stated), the borrowed TrainJob shape in
+§3.2, the four claims collected in §1.1 — and the fourth of them turned into a **specified artefact**
+rather than a claim, as the NORMATIVE §3.3 conversion mapping (mapped / carried out of band /
+**refused**, with a gating set that must be refused rather than silently dropped). torchtune appears
+there as an **import-only legacy source**, wound down (last release v0.6.1, 2025-04-07), never a
+recommended backend.
+
 ### Frictionless / Data Package — dismissed
 
 Data Package standardizes how *files* are packaged and typed: resources, dialects, table schemas.

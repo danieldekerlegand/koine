@@ -1,6 +1,6 @@
 # Koine Fine-Tuning Protocol (KFT)
 
-**Spec version:** 0.4.0
+**Spec version:** 0.5.0
 **Status:** Candidate
 **Last updated:** 2026-08-13
 **Applies to:** `finetune` capability providers (general and specialized), the control-plane host
@@ -77,6 +77,80 @@ dataset-and-model-**by-reference** job shape, so §3's manifest follows that str
 diverging from it (§3.2). Nothing in KFT delegates to TrainJob, no KFT field is defined by it, and a
 producer never fetches it — what is borrowed is a **shape, not a scope**. TrainJob carries no
 license, egress, trust-tier, or budget field anywhere in its API, which is exactly the seam §4 fills.
+
+### 1.1 What KFT holds — the four defensible claims
+
+Once the three adoptions above are subtracted and the fourth standard's shape is borrowed, **four**
+things are left that no maintained standard holds. They are collected here, in one place, so an
+implementer can see what KFT is *for* rather than inferring it from the sections it is spread across —
+and each is stated with the reason nothing else covers it, because a claim without that reason is
+marketing. Everything else in this document is either composition of the four ratified planes or a
+reference to somebody else's standard.
+
+**1. The `objective × adaptation` taxonomy (§3, §3.1).** Fine-tuning varies along **two independent
+axes** — *what is being optimized* (supervised, preference, continued pre-training) and *how the
+weights are reached* (full-weight, LoRA, QLoRA, adapter-then-merge). KFT types the pair as a
+first-class, closed vocabulary and **validates the combination at admission** (FT-F), before compute
+is committed. Nothing else expresses the space:
+
+- the **OpenAI fine-tuning API** models only the objective axis — `method.type` is
+  `supervised` / `dpo` / `reinforcement` — and treats adaptation as an unexposed platform decision, so
+  a caller cannot ask for (or be refused) a specific adaptation;
+- **Kubeflow `TrainJob`** buries adaptation entirely in `spec.trainer.{command,args}` (§3.2) — argv,
+  which no consumer can read, route on, validate, or refuse. A method that is a string inside an
+  argument array is not part of a contract, it is a comment.
+
+Read against the two axes, §3's `method` vocabulary decomposes like this:
+
+| `method` | objective axis | adaptation axis |
+|---|---|---|
+| `sft` | supervised | unpinned — full-weight unless a `hyperparams.lora` block narrows it |
+| `full` | supervised | full-weight, pinned |
+| `lora` | supervised | low-rank adapter |
+| `qlora` | supervised | low-rank adapter over a quantized base |
+| `dpo` | preference | unpinned |
+
+That decomposition is **informative and reading-only** — it renames no field and moves no
+admission outcome — and it exposes an honest gap the claim would otherwise paper over: one enum is
+carrying both axes, so `sft`/`full` overlap on the objective axis and the common real combination
+*preference objective + low-rank adaptation* (`dpo` + LoRA) is expressible only by the presence of
+a `hyperparams.lora` block rather than by the method token. §11.6 records that as an open question;
+closing it is an **additive optional field**, never a change to `method`'s value space or to FT-F.
+
+**2. Egress-gated placement (§4.2).** The class of the *data* decides where the *compute* may run:
+a corpus (or base) that is `local-only` under KGP §7.2 pins the run to local / in-tier compute, and a
+job asking for a cross-boundary backend is refused at admission, never downgraded and never silently
+placed. §4.2 is the operationalization of KGP §7.2's "hard-gated out of … any export or **training
+set**" clause — the sentence that would otherwise be unenforceable, because the moment a corpus is
+handed to a trainer it is the *trainer's* placement, not the pack's filter, that decides whether it
+leaves the boundary. Nothing else holds it: **no** trainer job format in §3.3's matrix — and no field
+anywhere in TrainJob (§3.2) — carries a license class, a redistribution/egress class, a provenance
+trust tier, or a spend ceiling. Kubernetes admission control governs *cluster* resources via RBAC and
+quota; Croissant's `license` is a descriptive string, not an enforcing class (§4.1.1). The data-policy
+axis simply is not present in the layer where placement is decided, and KFT puts it there.
+
+**3. Graded refusal routing (§8.1).** A registry routes on a *match*; KFT also routes on a
+**refusal**. Everywhere else, a job outside a runner's envelope terminates the interaction — a stack
+trace, an HTTP 400, a quota rejection — and the caller is left to re-discover on its own. Under §8.1
+a refusal is graded (is this job *invalid*, or merely *not for me*?) and, when the grade says another
+provider could take it, the report **names that provider's resolvable address** (§8, §2). Multi-provider
+fine-tuning (FT-K) is the reason this is load-bearing rather than a nicety: a specialized local-only
+provider refusing an out-of-envelope job is the *normal* path, not an error path, and the refusal is
+the routing signal that keeps it one hop instead of a re-search.
+
+**4. Cross-provider job portability (§3.3).** Nothing converts a fine-tuning job between the trainers
+the field actually uses — **Axolotl, LLaMA-Factory, TRL, and the OpenAI fine-tuning API** (190k+
+combined GitHub stars, as observed 2026-08-13) — so a training job today is written against one runner
+and rewritten by hand for the next; the objective, the adaptation, the hyperparameters and the data
+binding are re-expressed in four incompatible vocabularies that agree on the semantics and disagree on
+every key. The four planes already make the *data* portable by reference; §3.3 makes the **job**
+portable, as a normative mapping with named lossy edges and a refuse-rather-than-drop rule. This is
+plausibly the single most valuable thing KFT delivers, which is why it is a **specified artefact**
+(§3.3) and not an aspiration recorded here.
+
+Claims 1–3 are stated normatively where they live (§3.1/FT-F, §4.2, §8.1); claim 4 is specified in
+§3.3. This subsection **binds no clause of its own** — it is the index to the four, and if it ever
+disagrees with them, they win.
 
 ---
 
@@ -264,6 +338,154 @@ never landed as a side effect of resembling TrainJob.
 **On the pin.** `trainer.kubeflow.org/v1alpha1` is an **alpha** API and may break; that costs KFT
 nothing beyond a citation, since §3 depends on TrainJob for **no clause** — it names a precedent, not
 a dependency. The pin of record is [`../docs/upstream-standards.md`](../docs/upstream-standards.md).
+
+### 3.3 Cross-provider job portability — the trainer mapping (NORMATIVE)
+
+A job manifest only one runner can execute is a config file, not a contract. The four planes already
+make the *data* portable by reference; this section makes the **job** portable, and it is the fourth
+defensible claim of §1.1 discharged as a specified artefact rather than asserted as a property.
+
+**What a conversion is.** A **conversion** transforms a §3 manifest into the job description of an
+external trainer (**emit**), or an external trainer's job description into a §3 manifest (**import**).
+A conversion is performed by a capability provider (§9) or by tooling downstream of one; KFT specifies
+the mapping and its failure modes, not the converter. The trainer surfaces mapped here are pinned by
+dated observation in [`../docs/upstream-standards.md`](../docs/upstream-standards.md) — a mapping to an
+unversioned moving target is unfalsifiable, which is the whole point of that table.
+
+**Conversion is downstream of admission and can only narrow it (NORMATIVE).** §4's gate runs on the
+**KFT manifest**, before any conversion, on exactly the inputs §4 already names. A converter therefore
+**MUST NOT** admit anything §4 refused, and a conversion failure is an *additional* refusal on an
+already-admitted job — never a second, softer gate. Nothing in this section is an admission input, and
+no clause here changes which jobs §4 admits.
+
+#### 3.3.1 The three dispositions
+
+Every §3 field has exactly one disposition per target. A converter **MUST** classify each field, and
+**MUST NOT** leave a field unclassified:
+
+- **Mapped** — the target has a field with the same meaning. The converter writes it.
+- **Carried out of band** — the target has no field for it, but nothing gating depends on the target
+  knowing it. The converter **MUST** record it in the **conversion record** (below) and MAY omit it
+  from the emitted config. Silent omission is a defect; recorded omission is conformant.
+- **Refused** — the target has no field for it **and** something gating does depend on it. The
+  converter **MUST fail the conversion with a report** (§8.1) and **MUST NOT** emit a config. It
+  **MUST NOT** substitute a nearest-neighbour value, and **MUST NOT** downgrade the field to
+  out-of-band to make the conversion succeed.
+
+**The gating set (NORMATIVE).** A field is *gating* if §4.2, §4.3, §5.4, or §7 reads it, or if
+changing it changes what the run is. Exhaustively: the **effective egress class** (§4.2), the **union
+license class** and **provenance trust tier** (§4.3, §5.4), the **budget ceiling** (§7), the
+**adaptation axis** of `method` (§1.1, §3.1) when the job pins one, and the `modality × method`
+compatibility FT-F validates. Dropping any of these silently is the failure mode this section exists
+to forbid: every one of them is invisible in the emitted config, so the loss is undetectable at the
+far end and shows up only as a policy breach or a differently-trained model.
+
+**Safely droppable.** `dataset.descriptor[]` and `base_model_descriptor[]` are the *only* fields a
+converter may drop without recording them, and only because §3.2's *a descriptor is never an admission
+input* rule already guarantees nothing depends on them. Everything else is mapped, recorded, or
+refused.
+
+**The conversion record.** A conversion **MUST** produce a record naming: the target and its pinned
+revision, the KFT `job` activity id (§5.2), every out-of-band field with its value, and every field the
+target expresses **more weakly** than KFT does. The record is a KMI asset attached to the run's PROV
+activity (§5.2), so "this run was executed through a converted job, and here is what the target never
+saw" is answerable from lineage rather than from a runbook. A run executed through a conversion whose
+record is absent is **not** conformant.
+
+#### 3.3.2 The mapping matrix
+
+Targets, as observed **2026-08-13**: **Axolotl** (YAML config), **LLaMA-Factory** (YAML / CLI args over
+a registered `dataset_info.json`), **TRL** (Python config objects — `SFTConfig` / `DPOConfig` +
+`peft.LoraConfig`; *not* a declarative job file, see below), and the **OpenAI fine-tuning API**
+(`POST /v1/fine_tuning/jobs`). `—` means the target has no counterpart.
+
+| KFT §3 field | Axolotl | LLaMA-Factory | TRL | OpenAI FT API | Disposition when `—` |
+|---|---|---|---|---|---|
+| `base_model` (via its `ext:hf:…` anchor, §5.1) | `base_model` | `model_name_or_path` | model id argument to the trainer | `model` (allow-listed bases only) | n/a |
+| `dataset.{knowledge,media,records}[]` | `datasets[].path` | `dataset` (name registered in `dataset_info.json`) | a `datasets.Dataset` | `training_file` (an uploaded file id) | n/a |
+| `dataset.header[]` (license · trust · **egress** · `recordCount`) | — | — | — | — | **out of band, and its egress axis gates** (below) |
+| `dataset.descriptor[]` (Croissant, §4.1.1) | — | — | — | — | droppable |
+| `base_model_descriptor[]` (§3.2) | — | — | — | — | droppable |
+| `modality` (§3.1) | implied by base + config | `template` / task | implied by trainer class | implied by `model` | n/a |
+| `method` — **objective axis** | `rl: dpo`; absent = supervised | `stage: sft \| dpo \| pt \| rm \| ppo` | trainer class (`SFTTrainer` / `DPOTrainer`) | `method.type` (`supervised` / `dpo` / `reinforcement`) | n/a |
+| `method` — **adaptation axis** | `adapter: lora \| qlora` | `finetuning_type` (+ `quantization_bit`) | `peft.LoraConfig` (+ quantized load) | **—** | **REFUSE if pinned** |
+| `hyperparams.{epochs,lr,max_seq_len}` | `num_epochs`, `learning_rate`, `sequence_len` | `num_train_epochs`, `learning_rate`, `cutoff_len` | `SFTConfig` / `TrainingArguments` | `method.*.hyperparameters.{n_epochs, learning_rate_multiplier}`; **no sequence-length control** | out of band (`max_seq_len`) |
+| `hyperparams.lora.{r,alpha,dropout,target_modules}` | `lora_r`, `lora_alpha`, `lora_dropout`, `lora_target_modules` | `lora_rank`, `lora_alpha`, `lora_dropout`, `lora_target` | `LoraConfig(r, lora_alpha, lora_dropout, target_modules)` | — | **REFUSE** (with the adaptation axis) |
+| `export[]` (§5.3) | `output_dir` + a post-hoc merge / convert step | `export_dir` / the export CLI | `save_pretrained` + external conversion | — (the platform retains the weights) | **REFUSE** if an export variant is requested |
+| `compute.class` | accelerate / DeepSpeed config | accelerate / DeepSpeed config | accelerate config | — (managed placement) | out of band |
+| `compute.egress` + the **effective egress class** (§4.2) | — | — | — | — **and structurally cross-boundary** | **REFUSE** — see below |
+| license class · trust tier (§4.3) | — | — | — | — | out of band + §5.4 re-asserted on return |
+| budget ceiling / `spent_units` (§7) | — | — | — | — (account billing, not a per-job ceiling) | out of band |
+| `job`, `config_hash`, `signing` (§5.2, §7) | — | — | — | `metadata` (free-form, unverified) | out of band |
+| `seed` | `seed` | `seed` | `TrainingArguments.seed` | `seed` | n/a |
+| `eval[]` — KCS scenarios (§6.1) | — | — | — | — | out of band — **never** mapped onto `eval_dataset` / `validation_file` |
+
+Four consequences are normative:
+
+- **A `local-only` job MUST NOT be converted to a managed cloud target.** The OpenAI fine-tuning API
+  executes on the provider's infrastructure by construction, so converting a run whose effective
+  egress class (§4.2) is `local-only` **is** the boundary crossing §4.2 forbids. The converter
+  **MUST refuse**; there is no configuration of the target that makes it conformant. The same test
+  applies to any self-hosted target: a conversion is admissible only where the *execution* stays
+  in-tier, which is a property of the deployment, not of the format.
+- **An unexpressible adaptation axis is a refusal, not a substitution.** A job pinning `lora`,
+  `qlora`, or `full` converted to a target that cannot express adaptation **MUST** be refused. Mapping
+  `qlora` onto a bare `method.type: supervised` silently trains a different model than the one the
+  manifest describes, at a different cost, with a different artifact kind on the far side (§5.1.1's
+  `base_model_relation` would be wrong too). If the job leaves the adaptation axis unpinned (`sft`,
+  `dpo` with no `hyperparams.lora` block), the conversion proceeds and the record notes that the
+  target chose.
+- **An eval binding is never demoted to a validation file.** `eval[]` names **KCS scenarios** run
+  against the finetuned model *as a capability* (§6.1). A held-out file is not that, and mapping one
+  onto the other converts a conformance gate into a loss number. It is carried out of band and the
+  scenarios run on the fabric after the run returns.
+- **License, trust tier and egress are re-asserted on the way back.** No target returns them, so the
+  artifacts a conversion brings home carry **only** what §5.4 derives from the KFT-side inputs. A
+  converter **MUST NOT** treat a target's silence as `exportable` or as an absent restriction.
+
+**On TRL specifically.** TRL has no declarative job document — its "job format" is the construction of
+`SFTConfig` / `DPOConfig` and an optional `peft.LoraConfig` in Python. The mapping above is therefore
+a mapping onto **config-object fields**, and an emitting converter produces code or an argument vector
+rather than a file. That is a real asymmetry and not a modelling shortcut: TRL is the one target where
+the round-trip conformance criterion below must be evaluated against constructed objects.
+
+#### 3.3.3 Import, and the legacy sources
+
+**Import is lossy in the direction that matters, and MUST NOT be papered over (NORMATIVE).** No
+target in the matrix carries an egress class, a license class, a trust tier, or a record count, so a
+manifest produced by importing one is **incomplete by construction**. An importer:
+
+- **MUST NOT** synthesize a `dataset-jsonl-header` or any of its axes. It emits the job with the
+  `dataset.header[]` slot **unfilled** — absent, not defaulted — so §4.1's one-header-per-record-file
+  requirement is unmet and §4 refuses the job until a producer supplies the axes. An absent header is
+  *not* the `exportable` default of §4.1: that default applies to a header that omits `egress`, never
+  to a manifest with no header at all.
+- **MUST NOT** infer an egress class from where the source job was running, and **MUST NOT** infer a
+  license class from the base model's or dataset's name.
+- **MUST** record the source format and its pinned revision in the conversion record, so an imported
+  job is distinguishable from an authored one.
+
+**torchtune — a legacy source format only.** torchtune's YAML recipe configs are accepted as an
+**import** source and appear in this section for that reason alone. The project is **officially wound
+down** — its README carries the wind-down notice and its last release is **v0.6.1, 2025-04-07** (as
+observed 2026-08-13). It is therefore **NOT** a live emit target, **NOT** a recommended backend, and
+**MUST NOT** appear in a provider's engine ladder (§9) as a supported runner. A converter MAY read a
+torchtune recipe; it **MUST NOT** emit one. Note that torchtune expresses the adaptation axis in the
+**recipe name** (`lora_finetune_single_device` and siblings) rather than in a field — an importer
+recovers `method` from the recipe identifier, and where it cannot, leaves `method` unset rather than
+guessing, which fails admission under FT-F exactly as it should.
+
+#### 3.3.4 Conformance
+
+Conformance for a conversion is the **round-trip**, not a document shape — the same criterion KMI
+§3.4 fixes for its lineage projections. A converter is conformant when, for every job it emits:
+(a) every mapped field appears in the target with the same meaning, (b) every unmapped non-droppable
+field appears in the conversion record, (c) every gating field that is unmappable produced a refusal
+instead of a config, and (d) re-importing the emitted job yields a manifest that differs from the
+original **only** in fields the record already names. KFT therefore mints no schema for a converted
+job — the target owns its own format — and the conversion **fixtures** are a downstream follow-up
+under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) (koine specifies, implementers
+validate), added to the §9.1 handoff list rather than built here.
 
 ---
 
@@ -692,6 +914,54 @@ disambiguates by preferring the more **specialized** matching provider, then low
 job MAY name a target provider explicitly; an unbroken tie is **surfaced to the caller**, not resolved
 silently.
 
+### 8.1 Graded refusal routing (NORMATIVE)
+
+Discovery routes a job on a **match** (§8). This section routes it on a **refusal** — the third
+defensible claim of §1.1. Under FT-K a job may reach a provider that cannot take it while another
+provider can, and in a multi-provider fabric that is the ordinary path, not an error path: a
+specialized, containment-bound provider refusing an out-of-envelope job is exactly what it is *for*.
+Everywhere else in the field that refusal is terminal — a stack trace, an HTTP 400, a quota rejection —
+and the caller re-discovers from scratch. Here it is a routing signal.
+
+KFT already specifies every point at which a job is refused: `modality × method` incompatibility
+(§3.1, FT-F), the egress gate and an unsatisfiable egress pin (§4.2, FT-J), a header that disagrees
+with its file or a `recordCount` overrun (§4.1, §7), a projected cost over the grant ceiling (§7), and
+a conversion that would drop a gating field (§3.3). Each of those says *"refused with a report"*.
+**This section fixes what that report carries; it does not change which jobs are refused.**
+
+- A refusal report **MUST** carry a `code` from this graded vocabulary, and the grade **MUST**
+  distinguish *no provider can take this* from *I cannot take this*:
+
+  | `code` | Meaning | Another provider may take it |
+  |---|---|---|
+  | `invalid` | The manifest is malformed, self-contradictory, or names an unresolvable id | No |
+  | `incompatible` | The requested `modality × method` (or base architecture) is not a coherent job (FT-F) | No |
+  | `out-of-envelope` | Coherent, but outside *this* provider's advertised ports, modality, or scale | **Yes** |
+  | `unsatisfiable-here` | Coherent and in-envelope, but this provider's in-tier compute cannot run it under the job's egress pin (FT-J) | **Yes**, in-tier |
+  | `refused-policy` | A normative gate refused it here — egress (§4.2), license (§4.3), or ceiling (§7) | **Only** where the same gate would pass |
+  | `over-budget` | The admission-time estimate exceeds the grant ceiling (§7, FT-E) | Yes, under a different grant or a cheaper provider |
+
+- When the grade admits a re-route — `out-of-envelope`, `unsatisfiable-here`, and the qualified
+  `refused-policy` / `over-budget` cases — the report **SHOULD** carry **`route_to[]`**: resolvable
+  registry addresses (§8, KINP §8) of providers whose advertised `finetune` ports accept this job's
+  modality and method. It is an **address**, never a product name — the same
+  registry-returns-an-address discipline [ADR-0007](../decisions/ADR-0007-self-describing-participant.md)
+  states for self-descriptions — and it is a **hint**, not a delegation: the refusing provider does not
+  forward the job, re-issue the grant, or speak for the named provider's admission, which runs again
+  from scratch on arrival.
+- **A route MUST NOT breach the gate it just enforced (NORMATIVE).** A `refused-policy` refusal over
+  the §4.2 egress gate **MUST NOT** name a provider that would cross the same boundary — routing a
+  `local-only` job to a cloud-capable trainer converts a correct refusal into the exact privacy breach
+  §4.2 exists to prevent. Where no in-tier candidate exists, `route_to[]` is **empty or absent**; an
+  empty route is a truthful answer and a wrong one is worse than none.
+- A report **SHOULD** carry the offending field path and the class or value that failed, so a caller
+  can repair rather than re-guess; it **MUST NOT** disclose the *contents* of a `local-only` corpus in
+  doing so (naming the class is enough).
+- **The gate does not move (NORMATIVE).** This section adds no admission input and no admission
+  outcome. Every job admitted at KFT 0.4.0 is still admitted, every job refused is still refused for
+  the same reason and from the same inputs, and FT-A…FT-Q are untouched. What changes is the shape of
+  a refusal that was already going to happen.
+
 ---
 
 ## 9. Execution runtime (informative)
@@ -740,6 +1010,9 @@ Two further handoffs follow from the three above:
   syntactic gate, landing wherever the shared validators live (ADR-0001: downstream, not in koine).
   The **semantic** admission rules (modality×method, egress aggregation) stay in the providers
   (a) / (b).
+- **A job-conversion suite for §3.3** — emit/import converters for the Axolotl, LLaMA-Factory, TRL and
+  OpenAI targets, plus the **round-trip fixtures** §3.3.4 makes the conformance criterion (and the
+  torchtune *import-only* reader). Downstream per ADR-0001, alongside the schema validator above.
 - **A flagship consumer bridge** — a media or design participant realigning its generic "finetune
   bridge" onto the real KFT contract.
 
@@ -790,6 +1063,16 @@ configuration, not a dedicated wiring program.
    versions (`kft_version`, `kcb_version`), the **manifest-shape** version (the KCB §2 extension
    URI), and the **capability** version. Informative here — this section states no clause of its
    own, and §§2–8 are unchanged by the resolution.
+6. **One enum, two axes** — §1.1's taxonomy claim is KFT's, and §1.1's own decomposition table shows
+   `method` carrying **both** axes in a single token: `sft` and `full` overlap on the objective axis,
+   and *preference objective + low-rank adaptation* (`dpo` + LoRA — a common real configuration) is
+   expressible only by the presence of a `hyperparams.lora` block rather than by the method token.
+   Every target in §3.3's matrix separates the two (Axolotl `rl:` + `adapter:`, LLaMA-Factory `stage:`
+   + `finetuning_type:`, TRL trainer-class + `LoraConfig`), so the conversion is where the conflation
+   bites first. The fix is an **additive optional** `objective` field with `method` retained and
+   unchanged in value space — never a redefinition of `method`, which would move FT-F's admission
+   check and break every 0.4.0 manifest. Deferred to a pressure pass rather than guessed at: the
+   question is whether an unpinned axis should be a provider default or an admission refusal.
 
 ---
 
@@ -825,9 +1108,19 @@ withdrawn or changed in meaning. The stressors exercised across the three passes
   (ADR-0008), verifying that a corpus which is neither KGP claims nor image/video/audio bytes has a
   reference slot, an admission-time egress class, and a resolvable cardinality *before* any transfer.
 
-**What re-ratification is still waiting on.** One item: a re-run of the third pass's
-*Re-validation — KFT 0.4.0* section by the spec owner, which walks the corrected §3/§4.1 flow clean
-as written but has not been re-executed since. The **dependency pins are no longer part of that
+**What re-ratification is still waiting on — restated at 0.5.0, not replaced.** The gate is the
+same one 0.4.0 opened and it has not moved: a re-run of the third pass's
+*Re-validation — KFT 0.4.0* section in
+[`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md) by the
+spec owner, which walks the corrected §3/§4.1 flow clean as written but has not been re-executed
+since. 0.5.0 neither discharges nor widens it: §4's admission inputs, outcomes and reasons are
+byte-unchanged (§3.2, §4.1.1 and §8.1 each say so normatively), so that re-run reads the same flow
+against the same clauses. Two surfaces 0.5.0 adds are **not** exercised by any of the three passes and
+the owner should read them as new normative text rather than as re-validated text: the §3.3 conversion
+mapping and the §8.1 refusal vocabulary. Neither is on the *data* path — §3.3 acts strictly downstream
+of admission and §8.1 shapes a refusal that had already been decided — and §3.3.4 fixes conversion
+conformance as a **round-trip tested downstream** (ADR-0001, §9.1), which is why they are recorded here
+as unexercised surface rather than as a second scenario gate. The **dependency pins are no longer part of that
 gate** — the `Depends on:` header tracks each plane's current published version under one stated
 rule, and every in-body cross-plane citation (§2 → KCB §2/§2.1 and §7.1, §4.2 → KGP §7/§7.2,
 §5.3 → KMI §2/§3/§7, §7 → KCB §5) has been re-read against those pins and annotated where the
@@ -839,6 +1132,69 @@ obliges re-reading those same sections before KFT's next status transition.
 
 ## Changelog
 
+- **0.5.0 — adopt by reference, resemble the precedent, name what is left** (2026-08-13) — Roughly
+  half of KFT's manifest surface was already standardized elsewhere and restated here; 0.5.0 replaces
+  the restatement with citation, aligns the job's *shape* to the established precedent, and states
+  plainly the four things that are left. **Additive throughout** — every 0.4.0 manifest and header
+  remains conformant, no field changed type, name, or meaning, and **§4's admission behaviour is
+  unchanged**: the same jobs are admitted and refused, for the same reasons, from the same inputs, with
+  FT-A…FT-Q untouched. Status stays **Candidate**.
+  - **Three adoptions by reference**, each with its seam stated as a three-row table (what the external
+    standard covers / what KFT adds on top / what a producer must still supply): **MLCommons Croissant
+    v1.1** for dataset description (new §4.1.1, reached from the optional `dataset.descriptor[]` slot),
+    **KitOps / ModelPack** for weights packaging (new §5.3.1 — `model.parts[].type` already covers the
+    LoRA/adapter case, so KFT mints no layout and *all* KMI lineage obligations stay KFT's), and the
+    **Hugging Face `base_model` / `base_model_relation`** convention for published lineage (new §5.1.1,
+    a *projection* of §5.1's KINP relations, with the no-Hub-coordinate rule: omit, never invent).
+    §1 states the rule behind all three — *where something is already standardized and adopted, KFT
+    cites it and holds only the fields it has no place for* — and §3's example is corrected to name the
+    base by its KINP entity id rather than a raw `hf:` string (§5.1/FT-G).
+  - **One shape borrowed, not adopted:** new **§3.2** records **Kubeflow `TrainJob`**
+    (`trainer.kubeflow.org/v1alpha1`, observed 2026-08-13) as the structural precedent for
+    dataset-and-model-**by-reference**, with a seven-row field correspondence, a NORMATIVE
+    *reference-plus-describing-standard* rule, the optional `base_model_descriptor[]` slot (the model-side
+    twin of `dataset.descriptor[]`), and the generalized NORMATIVE clause that **a descriptor is never
+    an admission input**. §3.2 also records what TrainJob does *not* have — no license, egress,
+    trust-tier or budget field anywhere in its API — so the alignment reads as adopting a **shape, not a
+    scope**, and names §4.2/§4.3/§5.4/§7 as the seam that fills it.
+  - **The four defensible claims, stated in one place:** new **§1.1** — the `objective × adaptation`
+    taxonomy (OpenAI's API models only the objective axis; TrainJob buries adaptation in argv),
+    egress-gated placement (§4.2 over KGP §7.2), graded refusal routing, and cross-provider job
+    portability — each with the reason nothing else holds it. Its `method` decomposition table is
+    informative and exposes an honest gap now recorded as **§11.6** (one enum carrying both axes;
+    the fix is an additive optional field, never a change to `method`'s value space or to FT-F).
+  - **Portability becomes an artefact:** new NORMATIVE **§3.3** specifies the conversion between a §3
+    manifest and the job formats of **Axolotl, LLaMA-Factory, TRL, and the OpenAI fine-tuning API** —
+    three dispositions per field (**mapped / carried out of band / refused**), an exhaustive **gating
+    set** that must be refused rather than silently dropped, a required **conversion record** on the
+    run's PROV activity, and a field-by-field matrix. Four consequences are normative: a `local-only`
+    job MUST NOT be converted to a managed cloud target, an unexpressible adaptation axis is a refusal
+    rather than a substitution, a KCS `eval[]` binding is never demoted to a validation file, and a
+    target's silence is never read as `exportable`. Import is incomplete by construction — an importer
+    MUST NOT synthesize a `dataset-jsonl-header` or its axes. **torchtune** appears as an
+    **import-only legacy source** with its wind-down recorded (README notice; last release **v0.6.1,
+    2025-04-07**) and is explicitly not a live emit target or a recommended backend. Conformance is the
+    **round-trip** (§3.3.4), so no schema is minted and the fixtures are a downstream follow-up
+    (ADR-0001), added to §9.1 rather than built here.
+  - **Refusals are graded and routable:** new NORMATIVE **§8.1** fixes what the reports KFT already
+    required actually carry — a six-value `code` vocabulary separating *no provider can take this* from
+    *I cannot take this*, and a SHOULD-level `route_to[]` of **resolvable registry addresses** (never
+    product names) when another provider could. A route MUST NOT breach the gate it just enforced: a
+    §4.2 refusal never names a cross-boundary provider, and an empty route is a truthful answer.
+  - **Schema, in lockstep:** [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json)
+    gains the optional `dataset.descriptor[]` and `base_model_descriptor[]` arrays (KINP ids, same slot
+    type and optionality as the existing reference slots) and its descriptions name the TrainJob
+    correspondence; the golden fixture exercises both. A 0.4.0-era manifest carrying neither still
+    validates.
+  - **Pins:** the Croissant, KitOps/ModelPack, HF `base_model`, Kubeflow TrainJob and §3.3 trainer-target
+    rows of [`../docs/upstream-standards.md`](../docs/upstream-standards.md) are filled with the
+    revisions this work was written against.
+  - **Re-ratification is restated, not replaced.** The pending owner re-ratification and its gating
+    scenario — the *Re-validation — KFT 0.4.0* section of
+    [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md) —
+    are unchanged and unmoved by this fold, since §4 is behaviourally untouched. §3.3 and §8.1 are new
+    normative surface no pressure pass has exercised; *Pressure test* records them as such rather than
+    inventing a second gate.
 - **0.4.0 — dependency re-pin + citation reconciliation** (2026-08-13) — Header hygiene inside the still-open 0.4.0
   re-ratification; **version and status are unchanged (0.4.0, Candidate)** because no normative
   clause moved — only the `Depends on:` pins and how they are to be read. The KCB / KGP / KMI pins
