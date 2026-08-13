@@ -97,6 +97,22 @@ The console is a *participant/observer*: it may inject requests and read streams
 service traffic still flows peer-to-peer (ADR-0001). Idempotent replay is free — content-
 addressed claim/asset ids make redelivery safe (KGP §6, KCB §4).
 
+> **Record which MCP revision each participant speaks (INFORMATIVE).** Step 1 above opens the *same
+> direct MCP/A2A links production uses*, and MCP's wire is not one wire: the revision KCB pins made the core
+> stateless, and a client speaking it is not a client speaking its predecessor — see
+> [`capability-bus.md`](capability-bus.md) §1.1 and §4.1 for the pin and the per-verb consequences,
+> and [`../docs/upstream-standards.md`](../docs/upstream-standards.md) for the version of record.
+> The consequence for a scenario is evidentiary: a green run proves the protocols **as spoken on the
+> run**, so a report that does not say which revision each participant spoke cannot be read as
+> evidence for the other. A console is therefore the right place to stamp each participant's observed
+> MCP revision into the step 2 observation log alongside the other per-entry facts, and to surface it
+> in the step 4 report. Being informative, that is a recommendation to an executor, not an RFC-2119 obligation on
+> anything; this note **adds no requirement to the scenario document**: no `participants[]` field, no
+> step, and no assertion in §5 is introduced or changed by it — the revision is a property of the
+> connection the console already opens, and recording it is reporting fidelity (§7 open question 3),
+> not conformance. It is called out here because the alternative is a report that silently averages
+> two incompatible wires.
+
 ## 5. Cross-plane assertion vocabulary
 
 Assertions are what make a scenario a *conformance test* rather than a demo. Drawn from all
@@ -213,6 +229,19 @@ bindings, §2.1/§3), **O** (`expect: ok|reject` + `refused`, §3/§5), **N** (`
 participants, §2), **P** (`timeout_ms`, §2/§3/§4). Ratified.
 
 ## Changelog
+
+- **Editorial** (2026-08-13) — Added an **informative note to §4** that a scenario driving MCP
+  participants must record **which MCP revision each participant speaks**, because MCP's 2026-07-28
+  revision made the core stateless and the two wires are **not interchangeable** — a green run on one
+  is not evidence for the other. The version facts live in one place and are not restated here: the
+  pin and its per-verb consequences are [`capability-bus.md`](capability-bus.md) §1.1/§4.1, and the
+  fabric-wide table is [`../docs/upstream-standards.md`](../docs/upstream-standards.md). The note is
+  addressed to the **console**, as a recommendation on what the observation log and report carry —
+  reporting fidelity, the subject of §7 open question 3, and not an RFC-2119 obligation — and
+  deliberately mints nothing in the scenario document: no `participants[]` field, no step, no binding. **No normative change:** §2's document
+  shape, §2.1's bindings, §3's step vocabulary, §4's four-stage execution model, §5's assertion
+  vocabulary and §7's open questions are unchanged, no MUST/SHOULD over a *scenario* is added or
+  altered, and KCS stays **0.2.0 Ratified**.
 
 - **Editorial** (2026-08-13) — Added **§8.1**, a forward note recording five conformance-program
   designs the 2026-08 sweep found worth borrowing — capability-config-selected cases plus

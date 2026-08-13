@@ -14,7 +14,7 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 | [`identity.md`](identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.2.1 · ✅ ratified |
 | [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.5.2 · 🚧 candidate |
 | [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.2 · 🚧 candidate |
-| [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.4.1 · 🚧 candidate |
+| [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.4.3 · 🚧 candidate |
 | [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data that drives **N real** participants over their actual MCP/A2A connections, asserting cross-plane properties, each cited to the clause it checks | 0.2.0 · ✅ ratified |
 | [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.5.0 · 🚧 candidate |
 
@@ -147,6 +147,45 @@ provisional status, no waiver, and no "ratified pending encoding": the rule has 
 grandfather clause above, and it is closed to new entrants. If that holds specs at `candidate` for a
 year, the roadmap is telling the truth about where this repo is.
 
+## External standards — the pin rule
+
+Every spec here is a convention over standards koine does not control, and those standards version
+on their own schedule. The rule that keeps that from silently rotting binds the **spec author**:
+
+**Every normative reference to an external standard MUST name a version or a dated revision.** A
+bare reference — "as in A2A", "per MCP", "PROV-shaped" — is a **defect**, not shorthand, and is
+fixed the way any other defect in a clause is fixed. This is not pedantry about citation style: two
+of the standards this fabric rides on shipped breaking changes to surfaces a koine spec maps onto,
+so an unversioned "over MCP" does not name one wire protocol, it names two incompatible ones, and an
+implementer cannot conform to it.
+
+Three consequences follow, and they are the whole of the rule:
+
+- **A pin states what koine was *validated against*** — never that the upstream is frozen. A newer
+  upstream is normal and expected; an **unrecorded** newer upstream is the failure. So a pin ages
+  honestly rather than becoming wrong.
+- **Moving a pin is a spec change**, run through the lifecycle above like any other: a version bump,
+  a changelog entry that says what moved and why, and — where the pin touches a **normative**
+  surface — a re-run of the scenario gating that spec. A pin is not metadata that can be edited in
+  passing.
+- **There is exactly one table of record**, [`../docs/upstream-standards.md`](../docs/upstream-standards.md),
+  which also carries the drift-check cadence (at every ratification or re-ratification, and
+  quarterly as a floor). A spec **MAY** restate a pin it depends on so it reads standalone — KCB
+  §1.1 and KMI §4.1 both do — and when it does it **MUST** cite that file; a restatement that
+  disagrees with the table is the bug, and the spec is what gets fixed. A spec that does not restate
+  a pin **MUST** point at the table rather than name a bare standard.
+
+Note the direction, which is the reverse of the version/status mirrors above and deliberately so: a
+spec's **own** version is a property of the spec, so its header wins over any table. An **upstream**
+version is a shared fact about the world — the pinned MCP revision is the same fact for KCB and for
+KCS — so it is recorded once where a single sweep can check it, and the specs cite it.
+
+Drift is found by *resolving* a pin, not by re-reading the prose around it. The first sweep under
+this rule turned up an SPDX identifier in [`../policy/license-classes.json`](../policy/license-classes.json)
+that no SPDX release has ever defined — which no amount of careful reading would have surfaced.
+
+---
+
 ## How to read a spec
 
 - **Header first.** Each spec opens with its **version**, **status**, `Applies to:` (the roles it
@@ -155,7 +194,7 @@ year, the roadmap is telling the truth about where this repo is.
 - **Status is a lifecycle:** `draft → candidate → ratified`, and the two promotions are gated
   differently — the second is **conformance-gated** ([The ratification gate](#the-ratification-gate)
   above). A spec is also demoted back to **candidate** when a later change touches its model shape.
-  Four sit there now — KGP 0.5.2, KMI 0.3.2, KCB 0.4.1, KFT 0.5.0 — each for its own reason; which
+  Four sit there now — KGP 0.5.2, KMI 0.3.2, KCB 0.4.3, KFT 0.5.0 — each for its own reason; which
   re-validation is outstanding for which spec is tracked in [`../ROADMAP.md`](../ROADMAP.md).
 - **Clauses are §-numbered and normative.** MUST / SHOULD / MAY carry RFC-2119 weight; other specs
   and the schemas cite these section numbers (e.g. "KGP §7.2", "KINP §4.3"), so the numbering is a

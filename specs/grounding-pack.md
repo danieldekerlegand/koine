@@ -38,6 +38,16 @@ KGP defines:
 KGP does **not** define media/asset transfer (that is `media-interchange.md`), reasoning
 semantics, or storage engines.
 
+**Upstream pins.** KGP names external standards in two normative places — §4.1's annotation
+vocabulary (W3C PROV-O, W3C OWL-Time, DCMI Metadata Terms, JSON-LD as the wire form) and §7.1's
+SPDX licence identifiers — and one rationale place, §3.4's argument from RDF / RDFC-1.0. Every one
+of those is pinned to a version or dated revision in
+[`../docs/upstream-standards.md`](../docs/upstream-standards.md), which is the **table of record**
+and carries the drift-check cadence; the clauses below cite the standards by name and do not
+restate their versions, so there is one place a pin can be wrong. A pin says what KGP was validated
+against, not that the upstream is frozen — see [`README.md`](README.md) § *External standards — the
+pin rule*.
+
 ---
 
 ## 2. The GroundingPack bundle
@@ -290,6 +300,10 @@ dcterms:  http://purl.org/dc/terms/            DCMI Metadata Terms
 xsd:      http://www.w3.org/2001/XMLSchema#
 ```
 
+The three reused vocabularies above are **pinned by version** in
+[`../docs/upstream-standards.md`](../docs/upstream-standards.md) — the terms this table names are
+normative, so the documents that define them are too. Their versions live there rather than here.
+
 | Annotation | Term | Value | Reused or minted |
 |---|---|---|---|
 | `claim` id (§3) | `kgp:claimId` | `xsd:string` — the algorithm-prefixed hash exactly as §3 emits it | **Minted.** No external term carries the obligation that makes this one work — that the id is *re-derivable* from the recovered canonical and MUST be checked against it (rule 2 below). `dcterms:identifier` names any identifier and would not distinguish a content address from an accession number. |
@@ -443,7 +457,10 @@ itself, in any encoding.
 
 ### 7.1 License-class policy (adopted from the existing bridges)
 
-Every entity/assertion record carries an SPDX `license`; the pack manifest carries a
+Every entity/assertion record carries an SPDX `license` — an identifier from the SPDX license
+list release pinned in [`../docs/upstream-standards.md`](../docs/upstream-standards.md), which is
+also where the class → identifier mapping in [`../policy/license-classes.json`](../policy/license-classes.json)
+is re-resolved on the drift-check cadence. The pack manifest carries a
 `license_policy` — a class-based admission allowlist. Licenses classify into `public-domain` /
 `permissive` / `attribution` / `share-alike` / `non-commercial` / `proprietary`; a consumer
 admits **per record** and **rejects with a report** anything outside its allowlist (default:
@@ -521,6 +538,20 @@ Ratified 2026-07-17.
 
 ## Changelog
 
+- **Editorial** (2026-08-13) — Pointed KGP's external references at the fabric-wide pin table,
+  [`../docs/upstream-standards.md`](../docs/upstream-standards.md), in the three places KGP names a
+  standard it does not control: §1 (a scope-level *Upstream pins* paragraph naming all of them),
+  §4.1 (the annotation vocabulary's reused namespaces — W3C PROV-O, OWL-Time, DCMI Terms — plus
+  JSON-LD as the wire form), and §7.1 (the SPDX licence identifiers, and the class map in
+  [`../policy/license-classes.json`](../policy/license-classes.json) that resolves against them).
+  **Rationale and pointers only — no normative change:** §3 and its canonical, §3.1's hashed set,
+  §3.3's convergence, §4.1's *mapping* and *annotation vocabulary* tables — every term, value and
+  reused-or-minted verdict — §5, §6, §7.1's six classes and §7.2 are all byte-unchanged, and **no
+  claim id moves**. The versions themselves are deliberately **not** restated here: the pin table is
+  the record, so there is exactly one place a pin can be wrong ([`README.md`](README.md) §
+  *External standards — the pin rule*). Stays **0.5.2 Candidate** on the unchanged gate — the
+  downstream round-trip fixture per
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md).
 - **0.5.2** (2026-08-13) — **Candidate** (rationale and prior art only; status unchanged).
   Lands the KGP side of the
   [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) **amendment of

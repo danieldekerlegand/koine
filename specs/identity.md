@@ -235,9 +235,13 @@ identifies the *kind* of thing you mint.
 
 Fuzzy matching a descriptor (name, type, attributes, embedding) to candidate entities is
 **probabilistic**, never assumed correct. KINP adopts the **OpenRefine / Wikidata
-Reconciliation API** shape for the `reconcile` operation (§8): a published standard that an
+Reconciliation API** shape for the `reconcile` operation (§8) — the *Reconciliation Service API*
+published by the W3C Entity Reconciliation Community Group, pinned by version in
+[`../docs/upstream-standards.md`](../docs/upstream-standards.md): a published standard that an
 identity authority with a Wikidata backbone can answer directly, giving every knowledge and
-world producer fuzzy matching against a standard interface for free. Reconciliation *proposes*
+world producer fuzzy matching against a standard interface for free. What KINP borrows is the
+**shape** of the query/candidate/score exchange, not a transport binding — which is what bounds
+what a version move can cost this section. Reconciliation *proposes*
 links; per the ratified
 merge policy (§11, decision 2) they are auto-applied above a confidence threshold and
 otherwise queued for review.
@@ -437,6 +441,14 @@ links opportunistically.
 | Content addressing (git/IPFS-style) | claim + asset IDs (§2, §6) | IPFS network itself |
 | `owl:sameAs` semantics (concept only) | `same_as` licensing (§4.3) | OWL reasoning stack |
 
+**Each borrowed standard is pinned by version** in
+[`../docs/upstream-standards.md`](../docs/upstream-standards.md) — the table of record for every
+external version this fabric depends on, and the one place a pin can be wrong. The rows this table
+draws on are W3C PROV (the provenance ontology §7's envelope is shaped after) and the
+Reconciliation Service API (§4.5, §8); the versions are deliberately not restated here. See
+[`README.md`](README.md) § *External standards — the pin rule* for what a pin claims and what
+moving one costs.
+
 Storage stays **Prolog / TSV / grounding-pack native.** A full RDF triplestore + SPARQL
 commitment would fight a Prolog-cored world producer and a TSV-first knowledge authority for
 little gain. KINP stays IRI-*compatible* so an RDF export remains possible later.
@@ -550,6 +562,19 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
 
 ## Changelog
 
+- **Editorial** (2026-08-13) — Pointed KINP's two external references at the fabric-wide pin table,
+  [`../docs/upstream-standards.md`](../docs/upstream-standards.md): §4.5 now names the
+  *Reconciliation Service API* (W3C Entity Reconciliation Community Group) as the published form of
+  the OpenRefine / Wikidata shape it adopts and cites the pin, and §9's borrowed-standards table
+  gains a pointer covering both that row and W3C PROV. §4.5 also states explicitly what was already
+  true — KINP borrows the **shape** of the query/candidate/score exchange, not a transport binding —
+  which is what bounds the blast radius of an upstream version move. **Pointers and one clarifying
+  sentence only — no normative change:** §3's identifier forms, §4's equivalence layer including
+  §4.3's `same_as`/`based_on` rule and §4.5's threshold-and-review-queue behaviour, §6, §7's
+  envelope, §8's operations and §11's decisions are all unchanged, and no identifier, envelope or
+  resolution semantic moves. The versions are **not** restated here by design — the table is the
+  record ([`README.md`](README.md) § *External standards — the pin rule*). Stays
+  **0.2.1 Ratified**.
 - **Editorial** (2026-08-13) — Added **§9.1**, an informative prior-art subsection recording the
   identity standards KINP had never engaged in writing and the gap they leave: **DIDs / Verifiable
   Credentials** are cited and dismissed *for this problem* (a DID method resolves, it does not

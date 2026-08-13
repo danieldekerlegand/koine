@@ -30,6 +30,13 @@ vocabulary.
   Both failures are otherwise silent. It checks **three of the four mirrors** — the *Current
   state* prose below is **not** checked, so a stale version there passes CI; update that line by
   hand and read it back. `node scripts/check-tasklist-categories.mjs` guards `tasks/chief/`.
+- **Every normative reference to an external standard names a version or dated revision** — a bare
+  reference is a defect. `docs/upstream-standards.md` is the **table of record** for those pins (the
+  reverse of the version/status mirrors above: an upstream version is a shared fact, so it lives in
+  one place and the specs cite it). A spec may restate a pin for standalone readability but must
+  cite that file, and on disagreement the file wins. Moving a pin is a spec change; a difference
+  found on the drift check opens a **finding**, never a silent prose update. Rule stated for authors
+  in `specs/README.md` § *External standards — the pin rule*.
 - Specs are validated by concrete pressure-test scenarios in `scenarios/` before ratification
   (status: `draft` → `candidate` → `ratified`). Prefer finding breaks over asserting correctness.
 - Identifiers, envelopes, and resolution semantics are defined once in `specs/identity.md`
@@ -61,7 +68,7 @@ vocabulary.
   byte-unchanged, so no claim id moves. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.4.1, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.4.3, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -85,7 +92,23 @@ vocabulary.
   consumer MUST accept both roots, a producer MUST emit the w3id form. Path/version segment,
   payload shape and every other clause unchanged; both re-ratification gates restated, neither
   moved. Provenance in ADR-0007's amendment log; implementations pinning the old literal migrate
-  downstream (ADR-0001).
+  downstream (ADR-0001). 0.4.2 (patch) corrects two **upstream** references that had drifted and pins
+  both in a new **§1.1**: the §2 example AgentCard now shows the **A2A v1.0** shape
+  (`supported_interfaces[]` of `AgentInterface{url, protocol_binding}`, replacing v0.x's top-level
+  `"url"`) along with the prose and §2.2 row that read the endpoint off it, and §4's MCP methods are
+  `tools/list` / `tools/call`. The **KCB manifest shape is byte-unchanged** — extension entry, `uri`
+  and every `params` field — so only the host card and the method names move; both gates restated,
+  neither moved. 0.4.3 (patch) adds the **MCP** row to §1.1 — **revision 2026-07-28**, a *breaking*
+  change with a **stateless core** (no `initialize` handshake, no session id, per-request `_meta`)
+  plus a mandatory `server/discover` — and a new **§4.1** auditing which wire each verb assumes.
+  Result: **no KCB clause requires the handshake or a session id** (`params.mcp` is an address; the
+  §3 crawl and §4 `describe`/`invoke` are request/response; `fetch` is not an MCP call); the one
+  session-shaped clause is §4 **`subscribe`**, whose stream rides **A2A streaming** under the pinned
+  revision, with "MCP notifications" named as the *pre-2026-07-28* wire — free, because KGP §6 deltas
+  are ordering-independent and content-addressed. No field added or removed, no participant required
+  to declare its revision; patch, and 0.5.0 is anyway spoken for by §2.2's removal. `KCS 0.2.0` stays
+  **ratified** and gains only an INFORMATIVE §4 note that a run must record which MCP revision each
+  participant speaks. Both gates restated, neither moved.
 - `specs/media-interchange.md` — KMI 0.3.2, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
