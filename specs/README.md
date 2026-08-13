@@ -74,6 +74,45 @@ is deliberate. A spec that is honestly `candidate` tells an implementer somethin
 status that flips back twice a year tells them nothing, and quietly costs them the one thing
 ratification is supposed to buy. Slower promotion is the price of a status that means what it says.
 
+**The two specs ratified before the rule — grandfathered, with the debt named.** KINP 0.2.1 and
+KCS 0.2.0 reached `ratified` under the previous rule, each on a hand-walked prose pass and nothing
+else. They **keep** the status. The rule binds forward: applying it retroactively would demote two
+specs as a side effect of editing this file, and a status change is a deliberate act taken on a
+spec's own merits — never a consequence of a governance amendment. It would also penalize work that
+satisfied the rule in force when it was done, which is not what a lifecycle rule is for.
+
+Grandfathered is not forgiven. Each of the two carries a named debt — the missing machine-replayable
+encoding of the prose pass that gated it — and the debt is tracked, not merely noted:
+
+| Spec | Gated by (prose) | Outstanding debt | Tracked in |
+|---|---|---|---|
+| **KINP 0.2.1** | [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) | `kcs:worlds-to-fabric` — that pass encoded as a runnable KCS document, then run over real links | [`../ROADMAP.md`](../ROADMAP.md) Phase F4 — `agora chief/62-encode-scenarios-as-kcs`, then `chief/63-run-kcs-over-live-links` (cross-repo, ADR-0001) |
+| **KCS 0.2.0** | [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md) | the encodings that pass *attempts* in prose, produced for real (see the self-reference note below) | same two Phase F4 tasklists |
+
+**What forces the debt to be paid.** The grandfather clause covers the status these two specs hold
+today and does not survive a demotion. When either spec's model shape changes and its status returns
+to `candidate`, it re-enters the lifecycle at the ordinary gate and **MUST NOT** return to `ratified`
+without the artefact; there is no second grandfathering. That is the event, and it is the only one —
+a grandfathered spec that never moves never owes the artefact. Note what this costs the two of them
+specifically: the corollary above buys a demoted spec a cheap re-ratification because it replays the
+scenario it earned, and a grandfathered spec has none, so its first demotion is where it pays the
+full price at the worst moment. That asymmetry is a reason to settle the debt under Phase F4 ahead of
+need, not a reason to weaken the rule.
+
+**KCS's self-reference, and why it is not circular.** KCS is both a `ratified` spec and the format
+the rule's artefact is written in, so "KCS needs a KCS scenario" reads as a loop. It is not one,
+because the two roles sit at different levels. What the rule requires is a runnable document that
+exercises the clauses being ratified; for every other spec that document is a KCS scenario driving
+participants over their real connections. KCS's own clauses are about *expressing* scenarios, and the
+artefact that exercises them is [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md):
+it ratifies KCS by attempting to encode **other** specs' pressure tests as KCS documents and
+recording every place the format could not say what a scenario needed — which is exactly what
+produced its deltas. The encodings are the artefact; KCS is the notation they are written in, never
+the subject they assert about. So KCS is never asserted against itself, and the Phase F4 encoding
+work discharges KCS's debt as a by-product of discharging every other spec's: a KCS document that
+cannot express a scenario is a KCS defect, surfaced by the attempt to write it. KCS is the one spec
+whose conformance artefact is earned by **use** rather than by a run.
+
 ## How to read a spec
 
 - **Header first.** Each spec opens with its **version**, **status**, `Applies to:` (the roles it
