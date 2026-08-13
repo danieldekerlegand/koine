@@ -2,6 +2,7 @@
   "kft_version": "0.4.0",
   "job": "orchestrator:activity:ft-run/9f2a",
   "base_model": "refkb:model:qwen2.5-vl-3b-instruct",
+  "base_model_descriptor": ["refkb:asset:blake3-mk1f2e3d4c5b"],
   "modality": "image-text-to-text",
   "method": "qlora",
   "dataset": {

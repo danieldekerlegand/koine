@@ -71,6 +71,13 @@ all three: *where something is already standardized and adopted, KFT cites it an
 fields it has no place for.* The pins are recorded in
 [`../docs/upstream-standards.md`](../docs/upstream-standards.md).
 
+A fourth external standard is engaged **differently**, and the difference matters: KFT does not adopt
+**Kubeflow `TrainJob`** by reference, it *resembles* it. TrainJob already ships the
+dataset-and-model-**by-reference** job shape, so §3's manifest follows that structure rather than
+diverging from it (§3.2). Nothing in KFT delegates to TrainJob, no KFT field is defined by it, and a
+producer never fetches it — what is borrowed is a **shape, not a scope**. TrainJob carries no
+license, egress, trust-tier, or budget field anywhere in its API, which is exactly the seam §4 fills.
+
 ---
 
 ## 2. The `finetune` capability
@@ -127,16 +134,21 @@ another):
 
 ## 3. The finetune job manifest
 
-The `invoke` payload. All data is referenced by KINP/KGP/KMI id — nothing is inlined.
+The `invoke` payload. All data is referenced by KINP/KGP/KMI id — nothing is inlined. The manifest
+has **two intakes** — a base model and a dataset — and each is a *reference plus, optionally, the
+document that describes it in its own standard's terms*, never an inlined description. That is the
+shape **Kubeflow `TrainJob`** already ships as `initializer.{model,dataset}.storageUri`, and §3.2
+states the correspondence field by field.
 
 ```jsonc
 {
   "kft_version": "0.1.0",
   "job":        "orchestrator:activity:ft-run/9f2a",       // KINP activity id — this run (PROV, §5)
-  "base_model": "refkb:model:qwen2.5-3b-instruct",         // KINP model-entity ref, externally anchored (§5.1)
+  "base_model": "refkb:model:qwen2.5-3b-instruct",         // intake 1 — KINP model-entity ref, externally anchored (§5.1)
+  "base_model_descriptor": ["refkb:asset:blake3-mk1f…"],   // the base's published card / ModelKit, by reference (§3.2)
   "modality":   "text-generation",                         // §3.1
   "method":     "qlora",                                   // sft | lora | qlora | full | dpo
-  "dataset": {                                             // data-plane refs (§4), never inline
+  "dataset": {                                             // intake 2 — data-plane refs (§4), never inline
     "knowledge": ["kgp:pack:sha256-7b1e…"],                // KGP GroundingPack ids
     "media":     ["analyzer:asset:blake3-a1b2…"],          // KMI asset ids (multimodal)
     "records":   ["mediastore:asset:blake3-e9d7…"],        // training-record JSONL, as KMI assets (§4.1, FT-M)
@@ -160,12 +172,13 @@ The machine-readable twin is [`../schemas/finetune-job.schema.json`](../schemas/
 [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) (koine specifies, implementers
 validate) — **not** in koine.
 
-**Three of this manifest's surfaces are references, not descriptions.** `dataset.descriptor[]`
+**Four of this manifest's surfaces are references, not descriptions.** `dataset.descriptor[]`
 names a **Croissant** document (§4.1.1), `base_model` names a KINP entity whose external anchor is
-the base's Hub coordinate (§5.1/§5.1.1), and `export[]` names output variants whose *packaging* is
-KitOps / ModelPack's (§5.3.1). §3 carries the reference and the fields those standards have no place
-for — it never restates them, and a proposal to add a field that duplicates one of theirs is a
-defect rather than an extension.
+the base's Hub coordinate (§5.1/§5.1.1), `base_model_descriptor[]` names that base's **published
+card / ModelKit manifest** (§3.2, §5.1.1/§5.3.1), and `export[]` names output variants whose
+*packaging* is KitOps / ModelPack's (§5.3.1). §3 carries the reference and the fields those standards
+have no place for — it never restates them, and a proposal to add a field that duplicates one of
+theirs is a defect rather than an extension.
 
 ### 3.1 Modality vocabulary
 
@@ -193,6 +206,64 @@ weight/export `media_type`s (§5.3, [`../registry/media-types.tsv`](../registry/
 registered in koine's shared registry so path-matching and validators recognize them from data, not
 prose — closing **FT-H**. These tokens are immutable once published (a change is a new token, never an
 edit in place), the same discipline as an immutable relation signature.
+
+### 3.2 Job shape — the Kubeflow `TrainJob` precedent
+
+Dataset-and-model-by-reference is not a koine invention, and §3 does not pretend it is. **Kubeflow
+Trainer v2's `TrainJob`** (API group `trainer.kubeflow.org/v1alpha1`, as observed **2026-08-13**)
+already expresses a training job as two initializers — `spec.initializer.dataset.storageUri` and
+`spec.initializer.model.storageUri` — each a *reference* to data that lives elsewhere, with the
+runtime named separately by `spec.runtimeRef`. That is the structure §3 follows. Resembling an
+established shape costs KFT nothing and hands an implementer a layout they already know; the place
+KFT differs is §4, and §4 must not move to buy this.
+
+| Kubeflow `TrainJob` | KFT §3 | What the correspondence is |
+|---|---|---|
+| `spec.initializer.model.storageUri` | `base_model` (+ optional `base_model_descriptor[]`) | Same move, stronger reference: TrainJob names the base by a storage URI (`hf://…`, `s3://…`); KFT names it by a **KINP `model` entity** whose external anchor *carries* that coordinate (§5.1, FT-G), so one id resolves on the fabric and off it |
+| `spec.initializer.dataset.storageUri` | `dataset.{knowledge,media,records}[]` (+ optional `dataset.descriptor[]`) | Same move, three slots, because a koine corpus is knowledge, media, or training records (§4.1) — and its *description* is Croissant's (§4.1.1), not a field here |
+| `spec.initializer.*.{env,secretRef}` | the KCB `fetch:asset` grant (§4.1, KCB §5) | Access to a referenced input is a **grant on the bus**, not a credential field in the job |
+| `spec.runtimeRef` | the `finetune` capability `(name, version)` + `schema_id` (§2) | Which executor runs the job is a capability binding (KCB §7), not an in-manifest runtime name |
+| `spec.trainer.{numNodes,resourcesPerNode}` | `compute.class` (§3) | KFT requests a **class**, not a pod resource shape; placement is the provider's, and §4.2 constrains it |
+| `spec.trainer.{command,args}` | `method` + `hyperparams` (§3, §3.1) | The one deliberate divergence — TrainJob passes the adaptation method through **argv**, KFT makes it a typed field validated against `modality` at admission (§3.1, FT-F) |
+| *(no counterpart)* | `job`, `seed`, `config_hash`, `signing`, `eval` | The run as a PROV activity and its reproducibility anchor (§5.2, FT-C), its attributability (§7), and its eval binding (§6) |
+
+**Reference plus describing standard, never inlined description (NORMATIVE).** Each intake is
+expressed as (a) a fabric-resolvable **reference** — a KINP entity id for the model, KGP pack / KMI
+asset ids for the data — and (b) OPTIONALLY a reference to the **document that describes it** in its
+own standard's terms: `dataset.descriptor[]` for the dataset (Croissant v1.1, §4.1.1) and
+`base_model_descriptor[]` for the base (its published Hugging Face model card and/or its KitOps /
+ModelPack `Kitfile` — §5.1.1, §5.3.1). Both descriptor slots are **KMI asset ids**, fetched under the
+same `fetch:asset` grant as any other asset, and both are **optional**. A manifest **MUST NOT** inline
+either description, and KFT **MUST NOT** grow a field that restates one of theirs.
+
+**A descriptor is never an admission input (NORMATIVE).** The rule §4.1.1 states for
+`dataset.descriptor[]` binds `base_model_descriptor[]` identically: §4.2's egress gate, §4.3's
+license/trust lineage, and §7's spend estimate read the `dataset-jsonl-header` and the referenced
+packs / assets / KINP entities — **never** a descriptor. A provider **MUST NOT** derive an egress
+class, license class, trust tier, record count, or base-model coordinate from a descriptor, and
+**MUST NOT** admit or refuse a job on its contents. Where a descriptor disagrees with the header or
+with the base-model entity, **the header and the entity win and the descriptor is the bug**.
+
+**What `TrainJob` does not have.** The alignment is a shape, not a scope. TrainJob has **no license
+field, no egress or redistribution class, no provenance trust tier, and no budget or spend ceiling**
+anywhere in its API — because it is a Kubernetes *workload* resource, whose admission control is
+RBAC, quotas, and admission webhooks over **cluster** resources, not over the **data's** license,
+redistribution class, or trust. Those four are precisely the seam KFT fills: §4.2 (egress gate),
+§4.3 (license & trust lineage), §5.4 (output inheritance), and §7 (cost and spend ceilings) have no
+TrainJob counterpart to inherit from, and adopting TrainJob's structure creates no obligation to
+adopt its (absent) data policy.
+
+**The gate does not move (NORMATIVE).** This alignment is structural and naming only. §4 admits and
+refuses exactly the jobs it did at KFT 0.4.0, for exactly the same reasons and from exactly the same
+inputs, and every finding folded by the three pressure passes — **FT-A…FT-Q** — is untouched. A
+0.4.0 manifest remains conformant unchanged: `base_model_descriptor[]` is optional and additive, and
+no existing field changed type, name, or meaning. Any proposed alignment edit that *would* change an
+admission outcome is **out of scope for the alignment** and is raised as its own change against §4,
+never landed as a side effect of resembling TrainJob.
+
+**On the pin.** `trainer.kubeflow.org/v1alpha1` is an **alpha** API and may break; that costs KFT
+nothing beyond a citation, since §3 depends on TrainJob for **no clause** — it names a precedent, not
+a dependency. The pin of record is [`../docs/upstream-standards.md`](../docs/upstream-standards.md).
 
 ---
 
@@ -287,7 +358,8 @@ provider **MUST NOT** derive an egress class, license class, trust tier, or reco
 Croissant document, and **MUST NOT** admit or refuse a job on its contents. Where a descriptor
 disagrees with a header, **the header wins and the descriptor is the bug** — the same
 the-inline-copy-is-a-claim discipline §4.1 already applies to the header itself. This is what makes
-the adoption safe: it adds a document an implementer may read, not a rule the gate must run.
+the adoption safe: it adds a document an implementer may read, not a rule the gate must run. §3.2
+generalizes this clause to **every** descriptor slot, model side included.
 
 **The re-open test.** If Croissant later specifies an *enforcing* egress/redistribution class and a
 provenance trust tier with the semantics KGP §7 gives them, the third row above is occupied and KFT
@@ -410,6 +482,12 @@ and lose; there is nothing KFT could put in such a field that `base_model` does 
 - `base_model` is therefore a **projection** of §5.1's relations onto the Hub, not their canonical
   form — and it is a projection that may be unavailable by design, since a model inheriting
   `local-only` (§5.4) is never pushed to the Hub at all.
+- **The card is referenceable from the job (§3.2).** A job MAY name the base's published card — the
+  same document that carries `base_model` / `base_model_relation` — in `base_model_descriptor[]`, as
+  a KMI asset id. That is the model-side twin of `dataset.descriptor[]` (§4.1.1) and it is
+  descriptive only: the base's lineage of record is the KINP entity and its `same_as` anchor, so a
+  provider **MUST NOT** read a base-model coordinate, license, or egress class out of a referenced
+  card (§3.2).
 
 **The seam.**
 
