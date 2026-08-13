@@ -4,7 +4,7 @@ A **conformance scenario** is a hand-written, end-to-end story that pushes concr
 several participants at once and, at every step, marks what *held* and what *broke*. A scenario's
 method is adversarial on purpose: **prefer finding breaks over asserting correctness**. Each break
 becomes a numbered **delta** that must be folded into a spec before that spec is promoted
-`draft → candidate → ratified`. These six documents are the executable-in-prose form of that
+`draft → candidate → ratified`. These seven documents are the executable-in-prose form of that
 gate; the [`conformance-scenario.md`](../specs/conformance-scenario.md) (KCS) format is how a
 scenario is later encoded so the downstream console can replay it over real MCP/A2A connections.
 
@@ -17,6 +17,7 @@ scenario is later encoded so the downstream console can replay it over real MCP/
 | [`e2e-finetune.md`](e2e-finetune.md) | KFT ([`../specs/fine-tuning.md`](../specs/fine-tuning.md)) | The seams KFT **adds** on top of the four planes — the KGP egress gate, model-as-entity identity, and weight/export artifact conventions — on two text finetune jobs. | FT-A…H |
 | [`e2e-finetune-multimodal.md`](e2e-finetune-multimodal.md) | KFT, second pass | **Fully-multimodal** finetunes (image-text-to-text, text-to-video) over KMI assets, plus the **multi-provider** topology (a general provider + a specialist provider, routed by the registry). | FT-I…L |
 | [`e2e-producer-exhaust-finetune.md`](e2e-producer-exhaust-finetune.md) | KFT, third pass | A producing **application's own training exhaust** (accepted edits, generations, preference pairs, QA labels) offered as a training set through the thin adapter of [`../decisions/ADR-0008-fabric-producer-adapter.md`](../decisions/ADR-0008-fabric-producer-adapter.md) — a corpus that is neither KGP claims nor image/video/audio bytes, arriving from a producer rather than an authority. | FT-M…Q |
+| [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md) | KCB §7 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) | **Evolution without a break** — a provider widens, re-prices, mutates-without-bumping, then ships a capability **v2 beside v1** and retires v1, all while a **live subscriber** keeps running. Hunts the one invariant of [ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md): *a subscriber never learns of a break by failing.* | V-1…V-8 |
 | [`kcs-format-stress.md`](kcs-format-stress.md) | KCS ([`../specs/conformance-scenario.md`](../specs/conformance-scenario.md)) | The **scenario format itself** — by trying to encode the two hand-written scenarios above as KCS documents and finding where the format can't express what they need. | KCS deltas |
 
 ## How a scenario reads
