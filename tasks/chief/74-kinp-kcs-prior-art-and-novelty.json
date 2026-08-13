@@ -61,7 +61,7 @@
         "No status, version, or normative surface changes anywhere in this story \u2014 it is description only, and the diff shows that.",
         "The five borrowable designs identified by the sweep are recorded as a forward note (not adopted here): connectrpc's capability-config-selects-cases + failure baselines, MCP's frozen per-revision requirement sets + not-scored reasons, OpenID's Condition/Sequence/TestModule/Plan composition, C2PA's YAML rubrics with JMESPath + specSection traceability, and Venom's executor abstraction \u2014 each named as a candidate for a future KCS revision under the normal lifecycle."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
