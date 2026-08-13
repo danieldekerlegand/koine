@@ -2,15 +2,34 @@
 
 **Spec version:** 0.4.0
 **Status:** Candidate
-**Last updated:** 2026-08-06
+**Last updated:** 2026-08-13
 **Applies to:** `finetune` capability providers (general and specialized), the control-plane host
 (registry, grants, orgs), training-data producers, and finetuned-model consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for model/entity ids, lineage
-relations, and provenance; [`capability-bus.md`](capability-bus.md) (KCB 0.2.0) for the
-capability shape, verbs, cost, and grants; [`grounding-pack.md`](grounding-pack.md) (KGP 0.4.0)
+relations, and provenance; [`capability-bus.md`](capability-bus.md) (KCB 0.4.x) for the
+capability shape, verbs, cost, and grants; [`grounding-pack.md`](grounding-pack.md) (KGP 0.5.x)
 for knowledge training data and the egress/license/trust axes; [`media-interchange.md`](media-interchange.md)
-(KMI 0.2.0) for media training data and weight/export assets;
-[`conformance-scenario.md`](conformance-scenario.md) (KCS) for eval/reward.
+(KMI 0.3.x) for media training data and weight/export assets;
+[`conformance-scenario.md`](conformance-scenario.md) (KCS 0.2.x) for eval/reward.
+
+> **How to read these pins — track-current, `MAJOR.MINOR.x`.** Every pin above is spelled
+> `MAJOR.MINOR.x` and names the plane's **current published version**, not its last-ratified one.
+> The rule is uniform across all five pins, and the patch position is a wildcard for all five —
+> a mixed header (one pin current, another last-ratified) states no rule at all.
+> - **Why track-current.** This repo publishes exactly one text per spec: the link in
+>   `Depends on:` resolves to that plane's current version. A pin to a superseded version
+>   therefore names a document no reader can retrieve. Through 0.4.0 the KCB/KGP/KMI pins read
+>   0.2.0 / 0.4.0 / 0.2.0 — each plane's *last-ratified* version — and had gone silently stale as
+>   the planes moved; they now track KCB 0.4.x, KGP 0.5.x, KMI 0.3.x.
+> - **A candidate profile may compose candidate planes.** Three of the five pins (KGP, KMI, KCB)
+>   are candidate, as is KFT itself. That is deliberate and not a defect: what a profile may not
+>   do is compose a version whose text is unavailable.
+> - **Re-check trigger.** A **minor or major** bump in any pinned plane obliges a re-read of the
+>   sections KFT cites (§2 → KCB §2/§2.1, §4 → KGP §7/§7.2, §5 → KMI assets/lineage, §7 → KCB §5)
+>   before KFT's next status transition. A **patch** bump does not: in koine's lifecycle a patch
+>   carries editorial, rationale, or deprecation-naming changes that do not move a cited clause,
+>   and a patch that does move one is a defect in that plane's versioning — the spec-level analogue
+>   of KCB §7.2's *digest-without-a-bump*.
 
 > **A profile, not a fifth plane.** Fine-tuning does not move a new kind of data — it *composes*
 > the four ratified planes into one operation: consume training data (KGP knowledge / KMI media)
@@ -46,13 +65,20 @@ no new identifier kind, no new plane, and no new transport.
 
 ## 2. The `finetune` capability
 
-A training provider advertises `finetune` in its KCB capability manifest (KCB §2). Inputs and
+A training provider advertises `finetune` in its KCB capability manifest (KCB §2). At the pinned
+**KCB 0.4.x that manifest is one named extension of the provider's A2A AgentCard**, not a document
+of its own: the block below is an entry in `capabilities.extensions[].params.capabilities` on the
+card the provider already serves (KCB §2). The standalone `/.well-known/kcb-manifest.json` that
+KFT's earlier KCB 0.2.0 pin implied is deprecated, and KCB §7.3 fixes its removal at **KCB 0.5.0**
+(KCB §2.2 carries the field-by-field migration) — so a provider that advertises `finetune` only on
+the standalone file is conformant today and unreachable after that version. Inputs and
 outputs are **plane-typed ports** (KCB §2.1), so a single capability spans the entity, knowledge,
 and media planes — which is exactly what fine-tuning needs (data in one plane, model out in
 another):
 
 ```jsonc
 { "name": "finetune",
+  "version": "1.0.0",                                                                 // semver, NEVER in the name (KCB §7.1)
   "inputs": [
     { "plane": "entity",    "types": ["model"], "shape": "base-model" },              // KINP model entity
     { "plane": "knowledge", "dialect": "grounding-only", "shape": "training-set" },   // KGP data …
@@ -72,7 +98,15 @@ another):
 - A provider MAY advertise several `finetune` capabilities distinguished by the `modality` they
   accept (§3) — e.g. one whose media port takes `image/*` (text-to-image LoRA), one whose entity
   port takes text-generation base models. Path search (KCB §3) then routes a job to a provider
-  that accepts its modality.
+  that accepts its modality. They all share the **name** `finetune` and are told apart by their
+  *ports*: a specialized variant advertised as `finetune-image` would be invisible to a consumer
+  searching for `finetune`, which is exactly the fragmentation KCB §7.1 forbids.
+- **Versioning fields (KCB 0.4.x).** A capability is a `(name, semver version)` pair and every port
+  SHOULD carry a content-addressed `schema_id` over its declared shape (KCB §7.1); `cost` sits
+  outside that digest, so a re-price does not re-digest the contract. The `schema_id`s are elided
+  from the illustration above for brevity — that is abridgement, not a KFT exemption, and KFT
+  restates neither rule. §11.5 records the one consequence specific to fine-tuning: what a
+  finetuned model's pinned versions mean once the capability moves.
 - `cost.meter` is `gpu-seconds` (fine-tuning's natural unit); `est_units` lets the caller gate
   spend **before** invoking (§7). Fine-tuning is the highest-cost capability class on the bus, so
   the KCB cost/grant machinery is load-bearing here, not decorative.
@@ -225,6 +259,13 @@ set**." KFT operationalizes that sentence:
   the job (e.g. `local-only` video-diffusion data on a tier without the required GPU), the provider
   **MUST fail at admission with a report** — never hang, never silently cloud-place (a privacy
   breach), never silently downscope the data. An impossible-to-place gated job is a rejected job.
+- **The gate sits upstream of every encoding (KGP 0.5.x) — no clause added.** KGP §7.2 filters
+  `local-only` at pack construction and states that enforcement is **never delegated to a
+  serialization or projection**, so the RDF-star / PROV / JSON-LD projection KGP 0.5.x specifies
+  (KGP §4.1) carries the egress class only so a consumer can *re-check* it. A projected corpus is
+  therefore not a route around this gate: the rules above already bind the referenced pack, whatever
+  encoding it arrives in. The claim-identity surface KFT depends on (KGP §3/§3.3) is byte-unchanged
+  across 0.4.0 → 0.5.x, so no `kgp:pack:…` reference in a job manifest (§3) moved.
 
 This makes the local-vs-cloud placement decision **contract-governed**, not an operator setting:
 the same axis that keeps private knowledge out of cross-project packs keeps it off rented GPUs.
@@ -311,6 +352,12 @@ Quantizations are `variant_of` (same model, different byte encoding) exactly as 
 resolution variants of a video — so a host's GGUF/ONNX/CoreML/TFLite export surface
 falls out of the ratified media plane for free, with lineage, rather than as a new subsystem.
 
+**What the KMI 0.3.x pin changes here: nothing.** KFT uses only the asset envelope (KMI §2), the
+lineage graph (KMI §3), and byte transport (KMI §7) — the surfaces 0.3.x left untouched. It cites
+no clause of KMI §4, so neither the OTIO adoption nor the deprecation of
+`application/vnd.koine.edl+json` (KMI §4.4, removed at **KMI 0.4.0** under KCB §7.3) reaches a
+model artifact: weights and exports are plain assets, never timeline items.
+
 ### 5.4 Output egress & license inheritance (NORMATIVE, FT-A)
 
 The §4.2 gate governs where training *runs*; this rule governs what the *output* may do — without
@@ -368,6 +415,14 @@ published model would exfiltrate exactly what §4.2 protected).
   most expensive capability class, the ceiling is a hard admission gate: a run whose projected
   `cost` (§2, `gpu-seconds`) exceeds the ceiling is **rejected before it starts**, and placement
   (§4.2) selects a backend that respects both the ceiling and the egress class.
+- **What the grant is scoped to (KCB 0.4.x).** A grant binds to `(capability, major)` (KCB §5): an
+  `invoke:finetune` token issued while `finetune` was at major 1 authorizes every **1.x** and does
+  **not** authorize major 2, and the major never enters the grant name. Two consequences for a
+  training run, neither of them a KFT clause: a provider cannot widen an already-issued ceiling by
+  publishing a breaking `finetune`, and a **re-price** is a version bump the pinned caller can see
+  rather than a silent bill — the ceiling is evaluated at invoke against the *then-published* cost,
+  so a raise past the remaining ceiling fails at the gate (KCB §5). The per-job estimate below is
+  KFT's own addition on top of that machinery, not a replacement for it.
 - **Admission-time estimate (FT-E).** The manifest's static `cost.est_units` (§2) cannot gate a
   variable-size job whose data is `fetch`ed lazily (KMI §7). The provider therefore computes a
   **per-job estimate** at admission — after resolving dataset cardinality — and checks *that* against
@@ -541,10 +596,45 @@ withdrawn or changed in meaning. The stressors exercised across the three passes
   (ADR-0008), verifying that a corpus which is neither KGP claims nor image/video/audio bytes has a
   reference slot, an admission-time egress class, and a resolvable cardinality *before* any transfer.
 
+**What re-ratification is still waiting on.** One item: a re-run of the third pass's
+*Re-validation — KFT 0.4.0* section by the spec owner, which walks the corrected §3/§4.1 flow clean
+as written but has not been re-executed since. The **dependency pins are no longer part of that
+gate** — the `Depends on:` header tracks each plane's current published version under one stated
+rule, and every in-body cross-plane citation (§2 → KCB §2/§2.1 and §7.1, §4.2 → KGP §7/§7.2,
+§5.3 → KMI §2/§3/§7, §7 → KCB §5) has been re-read against those pins and annotated where the
+plane text moved, so the stale-pin loose end is closed rather than unstated. What survives is the
+standing obligation in the header's **re-check trigger**: a minor or major bump in a pinned plane
+obliges re-reading those same sections before KFT's next status transition.
+
 ---
 
 ## Changelog
 
+- **0.4.0 — dependency re-pin + citation reconciliation** (2026-08-13) — Header hygiene inside the still-open 0.4.0
+  re-ratification; **version and status are unchanged (0.4.0, Candidate)** because no normative
+  clause moved — only the `Depends on:` pins and how they are to be read. The KCB / KGP / KMI pins
+  had read 0.2.0 / 0.4.0 / 0.2.0, which were each plane's **last-ratified** version, not a typo:
+  the planes had since published KCB 0.4.0, KGP 0.5.2, and KMI 0.3.1 (all candidate), so the header
+  was *silently* disagreeing with the specs it links to. Decision: **track-current**, on the ground
+  that this repo publishes exactly one text per spec — a pin to a superseded version names a
+  document a reader cannot retrieve, which is a worse failure than a profile citing a candidate
+  plane (KFT is itself candidate). The alternative, pin-to-ratified, was rejected for that reason
+  and because all three planes are currently candidate, which would have left KFT pinned to text
+  no longer published anywhere in the repo. Spelling is now uniform — `MAJOR.MINOR.x` on all five
+  pins, matching KINP's existing 0.2.x — with the patch position a wildcard and a **minor/major**
+  bump in a pinned plane named as the re-check trigger (see the header note). KCS gains the
+  explicit 0.2.x pin it had been missing.
+  The same edit reconciled the pins' **in-body consequences**, since a pin cannot be moved without
+  re-reading what it points at: §2 now states which manifest shape the KCB pin implies (one named
+  A2A AgentCard extension — the standalone manifest KFT's old 0.2.0 pin implied is deprecated and
+  removed at KCB 0.5.0 under KCB §7.3) and carries the capability's `(name, version)` /
+  `schema_id` fields; §4.2 records that KGP 0.5.x's projection is not a route around the egress
+  gate and that the claim-identity surface KFT references is byte-unchanged; §5.3 records that
+  KMI 0.3.x's OTIO adoption reaches no model artifact; §7 records that a grant binds to
+  `(capability, major)`. Each is a **citation, not a restatement** — no plane clause is
+  re-specified here — which is why §§2–8 are normatively untouched and neither the version nor the
+  status moves. With the pins and their citations closed, re-ratification is gated on the third
+  pass's *Re-validation — KFT 0.4.0* re-run alone (see *Pressure test*).
 - **0.4.0 — Candidate** (2026-08-06) — Folded third-pass deltas from
   [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md),
   which pressure-tests a producing application's **training exhaust** entering the fabric through the

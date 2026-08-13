@@ -30,7 +30,7 @@
         "The KINP pin (0.2.x, current) is confirmed and left consistent with the chosen policy's spelling (exact-version vs minor-range pinning is stated, not mixed).",
         "The decision's rationale is recorded in the spec's changelog (specs/README.md changelog discipline), citing that the old pins were the last-ratified plane versions."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -42,7 +42,7 @@
         "No plane contract is re-specified in KFT \u2014 citations reference, never restate, per CLAUDE.md ('defined once ... and referenced \u2014 never redefined').",
         "If the pin decision was pin-to-ratified, the annotations note where 0.3.0/0.5.0 candidates will change the reading when the re-pin trigger fires, so the next editor inherits the delta list."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
@@ -54,7 +54,7 @@
         "A dated changelog entry describes the pin decision, the citations reconciled, and its place in the 0.4.0 re-ratification; the 'Last updated' header date moves.",
         "The pressure-test section's re-ratification note (scenarios/e2e-producer-exhaust-finetune.md Re-validation \u2014 KFT 0.4.0) is referenced/updated so re-ratification is gated on the scenario re-run alone, with the dep pins no longer an unstated loose end; schemas/*.json still parse."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
