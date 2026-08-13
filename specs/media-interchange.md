@@ -38,7 +38,9 @@ Division of labor with KINP: KINP fixes the `asset` *identifier*, `source_world`
 the asset-lineage relations (KINP delta E lives here), and transform typing. Division of labor
 with **OTIO**: OTIO owns the composition model (tracks, clips, timing, transitions, effects,
 nesting); KMI owns the **additive layer** OTIO has no model for — identity, lineage, and
-knowledge (§4.2).
+knowledge (§4.2). Division of labor with the standards that already model **derivation** — C2PA
+and MovieLabs OMC: they own the vocabulary, KMI is a **bridge** onto them and claims only the
+ground neither occupies — the analysis→knowledge bridge (§5) and world-scoping (§3.1).
 
 ---
 
@@ -47,7 +49,8 @@ knowledge (§4.2).
 KMI defines:
 - the **asset envelope** — technical metadata over the KINP `asset` id (§2),
 - the **asset-lineage graph** — `derived_from` / `variant_of` / `excerpt_of` /
-  `perceptual_match` (§3),
+  `perceptual_match` (§3) — and what that graph does and does **not** claim relative to the
+  standards that already model derivation (§3.1),
 - the **timeline / composition** model — the adopted OTIO model, koine's additive layer over it,
   and NLE interchange through OTIO's adapters (§4),
 - the **analysis → knowledge bridge** into KGP (§5),
@@ -138,6 +141,81 @@ on the excerpt *asset's* envelope (§2, optional `excerpt` block), keeping the g
   "object": "analyzer:asset:blake3-c3d4…", "confidence": 1.0 }
 ```
 
+### 3.1 Prior art — C2PA and MovieLabs OMC, and what KMI claims (INFORMATIVE)
+
+Derivation is **not** unoccupied ground, and this spec previously read as though it were. Two
+bodies of work already model how one asset comes from another, and the table above must be read
+against them rather than beside them.
+
+**C2PA** ships a **cryptographically signed derivation chain**. A C2PA manifest records each input
+to an asset as a **`c2pa.ingredient`** assertion whose `relationship` field is one of
+**`parentOf`** (the asset this one was opened from and edited into), **`componentOf`** (an input
+placed *into* a composite), or **`inputTo`** (an input consumed by a process — the relationship an
+AI/ML generator's training or prompt inputs take). Each ingredient carries a **hash-based "hard
+binding"** to the bytes it names, and the manifest as a whole is signed by a credentialed actor, so
+the chain is not merely recorded but **attestable**: a consumer can verify that the named input is
+the bytes it claims to be and that a specific signer asserted the link.
+
+That chain is also **deployed**. C2PA runs a **conformance program** with certified products, and
+**as observed 2026-08-13 it lists 159 certified products** — including **Google** (roughly 35
+entries), **OpenAI**, **Amazon Bedrock**, **Getty Images**, **Qualcomm** (in silicon), and **Sony**.
+The figure is recorded with its observation date deliberately: it will be stale, and a stale figure
+that is visibly dated is evidence, where an undated one is a claim. What will **not** go stale is
+the shape of the finding — capture silicon, model providers, and stock libraries are already
+emitting signed derivation chains.
+
+**MovieLabs OMC v2.8** ships a derivation vocabulary that is **richer than C2PA's and richer than
+§3's**. Where §3 offers four relations and C2PA three relationships, OMC distinguishes
+**Revision**, **Variant**, **Derivation**, **Representation**, and **Alternative** — separating, for
+instance, a new *version* of a work from a differently-encoded *rendition* of it from a
+functionally-substitutable *alternative*, distinctions §3 collapses into `media:variant_of`.
+
+**The consequence for KMI's claim.** Both differentiators this spec originally advertised over OTIO
+— content-addressed asset identity (§2) and the asset-lineage graph (§3) — are therefore **already
+modelled elsewhere**: identity by C2PA's hard bindings, lineage by C2PA's ingredient relationships
+and, in more detail, by OMC's vocabulary. Publishing a third derivation vocabulary against a signed,
+certified, widely deployed one **and** against a richer domain one would be a losing move on its
+own terms, and this spec does not make it. **§3 is a bridge, not a claim to that ground:** its
+relations exist because a fabric-internal asset graph has to be expressible in the KGP envelope
+(confidence, provenance, world) that the rest of koine already speaks, and they are **projected**
+onto C2PA and OMC — canonical form retained, mapping specified, lossy edges named, conformance
+tested as a round-trip — which is the same discipline
+[ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) applies to KGP against
+RDF-star / PROV / JSON-LD.
+
+**Being the bridge is the deliberate position, not a retreat from a larger one.** Neither C2PA nor
+OMC nor OTIO is a competitor to be beaten here; each occupies a layer KMI needs and would otherwise
+have to reinvent worse. What a bridge is *for* is the thing none of them does: carry derivation
+across a boundary between two of them, and into a plane none of them reaches. A producer whose
+problem is **attestable provenance for published media** should emit C2PA, and KMI's projection is
+how it does so without leaving the fabric; a producer whose problem is **production-domain
+modelling** should speak OMC, likewise. KMI earns its place by connecting those to knowledge, not by
+replacing either.
+
+**What KMI does claim, and why it is unoccupied.** Two things, both narrower and more defensible
+than the claim they replace:
+
+1. **The analysis → knowledge bridge (§5).** Nothing in OTIO, C2PA, OMC, or **IPTC** connects
+   media-analysis output to a **knowledge graph**. Those standards describe the asset — its
+   derivation, its rights, its structure, its captions — and stop at its edge. §5 takes what an
+   analyzer *observed in the media* and emits it as **KGP assertions** with confidence and
+   provenance over registry relations, so that an observation about footage becomes a queryable,
+   mergeable fact about the **entities** the footage depicts. That is a different object than a
+   description of the file, and no standard on this page produces it.
+2. **World-scoping (§2, §5).** `source_world`, conditional on ingest and **per-asset**, scopes
+   every claim extracted from an asset into the world it depicts, and is what engages the KINP §4.3
+   firewall so that analyzing fictional footage never contaminates real-world knowledge. Derivation
+   standards have no notion of an asset depicting a world distinct from consensus reality, because
+   they answer "where did these bytes come from," not "which reality is what they show a fact
+   about." Per-asset attribution across composites (delta H, §5) is the sharp end of this and has
+   no counterpart in any of them.
+
+**The test to re-apply.** If C2PA or OMC (or IPTC, or OTIO) later specifies a binding from
+media-analysis output to a knowledge graph with per-assertion confidence and provenance, **or** a
+scoping construct that separates depicted-world facts from consensus-reality facts, then the claim
+above is occupied and KMI should adopt rather than bridge — the same re-open test KGP §3.4 states
+for its own canonical.
+
 ---
 
 ## 4. The timeline / composition model (OpenTimelineIO)
@@ -178,7 +256,11 @@ the media-map obligation in §4.3.
 
 OTIO addresses media by **location** (`ExternalReference.target_url`) and has no identity model,
 no lineage model, and no assertion semantics. KMI supplies exactly those three — and only the
-first of them travels *inside* the timeline.
+first of them travels *inside* the timeline. Supplying them is not the same as **claiming** them:
+identity and lineage are supplied here because a timeline needs them and OTIO does not carry them,
+but both are already modelled — and, for lineage, modelled better — by C2PA and by MovieLabs OMC,
+so KMI projects onto those rather than competing with them and claims only the third, assertion
+semantics (§3.1).
 
 **(a) Clips reference assets by KINP id.** A `Clip`'s media reference MUST carry the KINP `asset`
 id of the media it plays, in `metadata.koine.asset`:

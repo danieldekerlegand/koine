@@ -96,13 +96,15 @@ This section is **informative**. Where a comparison has been landed in the contr
 the ADR are the record and this narrative points at them: the KGP half — nanopublications /
 Trusty URIs and Frictionless / Data Package — lives in
 [`../specs/grounding-pack.md`](../specs/grounding-pack.md) §3.4 and
-[ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md). If this document and those
-ever disagree, they win and this is the thing to fix.
+[ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md), and the KMI half — C2PA and
+MovieLabs OMC — lives in [`../specs/media-interchange.md`](../specs/media-interchange.md) §3.1. If
+this document and those ever disagree, they win and this is the thing to fix.
 
 | Prior art | Overlaps | Outcome |
 |---|---|---|
 | Nanopublications / **Trusty URIs** | KGP claim identity | **Dismissed** — hashes the publication, not the claim (below) |
 | **C2PA** | KMI lineage | **Bridged** — KMI defines a projection to C2PA; it does not restate it |
+| **MovieLabs OMC** v2.8 | KMI lineage | **Bridged** — richer derivation vocabulary than KMI's; KMI projects onto it |
 | MLCommons **Croissant** | KFT dataset description | **Adopted by reference** — KFT cites, never restates |
 | **Frictionless / Data Package** | KGP/KFT packaging | **Dismissed** — file packaging, not claim or admission semantics |
 | **Pact** / consumer-driven contract testing | KCS | **Dismissed** — bilateral and mock-based (below) |
@@ -137,23 +139,33 @@ TSV," and as of the **2026-08-13 amendment** it is the one
 [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) leads with; the KGP-side
 landing is [`../specs/grounding-pack.md`](../specs/grounding-pack.md) §3.4.
 
-### C2PA — KMI narrows to a bridge
+### C2PA and MovieLabs OMC — KMI narrows to a bridge
+
+*Landed in the contracts: [`../specs/media-interchange.md`](../specs/media-interchange.md) §3.1 is
+the record; this is the narrative pointing at it.*
 
 **C2PA already ships a cryptographically signed derivation chain**: `c2pa.ingredient` with
 `parentOf` / `componentOf` / `inputTo` relationships and hash-based "hard bindings," backed by a
-real conformance program with **159 certified products** — Google (~35 entries), OpenAI, Amazon
-Bedrock, Getty, Qualcomm silicon, Sony. Separately, **MovieLabs OMC v2.8** ships a *richer*
-derivation vocabulary than either: Revision / Variant / Derivation / Representation / Alternative.
+real conformance program listing **159 certified products as observed 2026-08-13** — Google
+(~35 entries), OpenAI, Amazon Bedrock, Getty, Qualcomm silicon, Sony. Separately, **MovieLabs OMC
+v2.8** ships a *richer* derivation vocabulary than either: Revision / Variant / Derivation /
+Representation / Alternative.
 
 Both of KMI's originally-claimed differentiators over OTIO — content-addressed asset identity and
 the lineage graph — are therefore already modelled, one of them by a signed, certified, widely
-deployed standard. **KMI's answer is to become the bridge, not a third vocabulary**: define
-projections onto C2PA's ingredient relationships and onto OMC's derivation vocabulary, and hold
-only the part neither occupies.
+deployed standard. **KMI's answer is to be the bridge, not a third vocabulary**: define
+projections onto C2PA's ingredient relationships and onto OMC's derivation vocabulary — canonical
+form retained, mapping specified, lossy edges named, conformance tested as a round-trip, the same
+discipline [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) applies to KGP —
+and hold only the part neither occupies. That is a deliberate position rather than a retreat: a
+producer whose problem is attestable published provenance should emit C2PA and a producer whose
+problem is production-domain modelling should speak OMC, and KMI's job is to carry derivation
+between them and into a plane neither reaches.
 
 What *is* genuinely unoccupied is the **analysis→knowledge bridge**: nothing in OTIO, C2PA, OMC,
-or IPTC connects media-analysis output to a knowledge graph. That, plus world-scoping, is KMI's
-remaining ground — and it is narrower and more defensible than the claim it replaces.
+or IPTC connects media-analysis output to a knowledge graph. That, plus world-scoping
+(`source_world`, per-asset and conditional on ingest, which engages the KINP §4.3 firewall), is
+KMI's remaining ground — and it is narrower and more defensible than the claim it replaces.
 
 ### MLCommons Croissant — KFT adopts it by reference
 
