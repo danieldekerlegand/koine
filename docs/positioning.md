@@ -92,6 +92,13 @@ cited here with the specific reason it does not retire a Koine spec — or, wher
 overlaps, with the **narrowing Koine takes in response**. Where a body of work is better than
 ours, the answer is to project onto it, not to ship a third vocabulary.
 
+This section is **informative**. Where a comparison has been landed in the contracts, the spec and
+the ADR are the record and this narrative points at them: the KGP half — nanopublications /
+Trusty URIs and Frictionless / Data Package — lives in
+[`../specs/grounding-pack.md`](../specs/grounding-pack.md) §3.4 and
+[ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md). If this document and those
+ever disagree, they win and this is the thing to fix.
+
 | Prior art | Overlaps | Outcome |
 |---|---|---|
 | Nanopublications / **Trusty URIs** | KGP claim identity | **Dismissed** — hashes the publication, not the claim (below) |
@@ -126,7 +133,9 @@ argument: **RDFC-1.0 is defined over RDF 1.1 only and has no defined behaviour f
 terms**, and revising it is *explicitly out of scope* for the RDF/SPARQL Working Group charter,
 which runs to **2027**. The W3C canonicalization stack cannot — today, or on any published
 schedule — canonicalize the structure KGP needs. That is a stronger justification than "we prefer
-TSV," and it is the one ADR-0006 should lead with.
+TSV," and as of the **2026-08-13 amendment** it is the one
+[ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) leads with; the KGP-side
+landing is [`../specs/grounding-pack.md`](../specs/grounding-pack.md) §3.4.
 
 ### C2PA — KMI narrows to a bridge
 
@@ -167,7 +176,8 @@ arguably the most valuable thing KFT can deliver.
 Data Package standardizes how *files* are packaged and typed: resources, dialects, table schemas.
 It is a good answer to "what is in this zip." It expresses nothing about claim identity, provenance
 merge, license/egress class, or admission — the entire content of KGP §3/§7 and KFT §4. Adopting it
-would rename a container without discharging a single normative clause.
+would rename a container without discharging a single normative clause. Landed in
+[`../specs/grounding-pack.md`](../specs/grounding-pack.md) §3.4.
 
 ### Pact and consumer-driven contract testing — dismissed, and it makes KCS's case
 
