@@ -63,7 +63,7 @@
         "torchtune appears in the portability matrix ONLY as a legacy source format with its wind-down recorded (README notice; last release v0.6.1, 2025-04-07) — never as a live or recommended backend.",
         "docs/upstream-standards.md's Croissant, KitOps/ModelPack, HF base_model, and Kubeflow TrainJob rows are filled with the versions this work was written against; fine-tuning.md bumps its version with a dated changelog entry covering all three stories, Status stays candidate, and the pending owner re-ratification and its gating scenario are restated rather than replaced."
       ],
-      "passes": false,
+      "passes": true,
       "notes": ""
     }
   ]
