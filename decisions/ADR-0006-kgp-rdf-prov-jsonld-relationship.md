@@ -1,6 +1,9 @@
 # ADR-0006 — KGP's relationship to RDF-star, W3C PROV, and JSON-LD
 
 **Status:** Accepted (2026-08-02)
+**Amended:** 2026-08-13 — the rationale is re-founded on a structural, externally verifiable
+argument (RDFC-1.0's scope and the RDF/SPARQL Working Group charter) and now leads with it; the
+decision, its date, and its status are **unchanged**. See [*Amendment log*](#amendment-log).
 **Deciders:** ecosystem owner
 **Refines:** [`../specs/grounding-pack.md`](../specs/grounding-pack.md) (KGP) §3, §4; informs
 [`../specs/identity.md`](../specs/identity.md) (KINP) §9
@@ -37,6 +40,24 @@ quoted triple with different confidence and different provenance converge on one
 both annotations retained. That is KGP §3.3's worked example, arrived at from the other direction.
 So the choice is not "standard vs. not-invented-here"; it is which layer owns claim identity, and
 what a conformant producer must carry to compute it.
+
+**The nearest prior art at the identity layer is not on that list.** Nanopublications identify an
+assertion together with its provenance and publication info by a **Trusty URI** — a content hash
+folded into the identifier. That is the same instinct as §3's content-addressed `claim` id, and it
+is the closest ancestor KGP has. The difference is *what gets hashed*, and it decides the shape of
+this record. **A Trusty URI hashes all four graphs — head, assertion, provenance, and pubinfo** — so
+two producers asserting the **identical** triple mint **different** identifiers, because their
+provenance and publication info differ: the identifier fingerprints a **publication event**. KGP
+hashes the **claim alone**. §3 normalization is defined over the claim's subject, relation, object,
+and world only; provenance travels *beside* the claim as a repeated record and never enters its
+identity (§3.1 excludes `confidence`, `embedding`, `valid_time`, and all of `prov`). Two independent
+producers therefore **converge on one claim id** and their provenance records merge onto it (§3.3) —
+which is exactly what cross-producer merge requires, and exactly what a Trusty URI cannot provide by
+construction. This is a difference of **unit of interest**, not of quality: where the unit of
+interest is the publication, nanopublications are the better model; KGP's unit of interest is the
+**claim**, so its identity had to invert. The comparison is load-bearing below — it is the concrete
+reason the *granularity* of a dataset-or-publication canonicalization is wrong for KGP, and it holds
+whatever RDFC-1.0's scope later becomes.
 
 Precedent cuts both ways. [ADR-0005](ADR-0005-otio-canonical-timeline.md) adopted an external
 standard as canonical the moment that standard *covered the concern* — koine's bespoke timeline was
@@ -116,11 +137,25 @@ without a koine-specific profile layered on anyway (see *Decision*, point 2).
 RDF-star / PROV / JSON-LD is promoted from unstated to a specified, lossless, first-class
 projection.**
 
-Retention is not a preference for the incumbent. It is the conclusion that all three standards sit
-*above* the layer where KGP's problem lives: they are graph and annotation models, and KGP's
-canonical is a **byte** discipline that a graph model does not supply. Adopting them as canonical
-would leave §3 in place, add a processor and a mutable context to every producer's critical path,
-and buy an interop that a specified projection buys for free.
+**The reason, structurally and first (amended 2026-08-13).** The canonicalization KGP would have to
+delegate to *does not exist, and is not scheduled to exist*. **RDFC-1.0 — W3C RDF Dataset
+Canonicalization — is defined over RDF 1.1 only**, and has **no defined behaviour for RDF 1.2
+triple terms**, which is the construct statement-level annotation is expressed with and therefore
+the construct a KGP claim would project onto. Revising it to cover them is **explicitly out of
+scope** for the **RDF/SPARQL Working Group's charter, which runs to 2027**. So a producer wanting
+to mint a claim id by a standard canonicalization has nothing to call: the W3C canonicalization
+stack cannot canonicalize the structure KGP needs — not today, and not on any published schedule.
+That is not a comparison of fit; it is an absence, and it is checkable against published charter
+and specification text by anyone reading this record.
+
+Everything below is why retention would still be right *if* that gap closed. The paragraph above is
+why it is right **regardless**, and it is the argument this record leads with.
+
+Beneath it, the layering argument holds on its own: all three standards sit *above* the layer where
+KGP's problem lives — they are graph and annotation models, and KGP's canonical is a **byte**
+discipline that a graph model does not supply. Adopting them as canonical would leave §3 in place,
+add a processor and a mutable context to every producer's critical path, and buy an interop that a
+specified projection buys for free.
 
 **1. TSV remains canonical; §3 remains the identity mechanism.** No change to what is hashed, to the
 canonicalization rules, or to the §3.3 convergence result.
@@ -130,6 +165,7 @@ retention rests on, and the test to re-apply if any of them changes:
 
 | Requirement | Why the standards do not serve it |
 |---|---|
+| **A chartered, published canonicalization over the structure a KGP claim projects onto** | RDFC-1.0 is defined over **RDF 1.1 only** and has no defined behaviour for **RDF 1.2 triple terms**; defining that behaviour is explicitly out of the **RDF/SPARQL Working Group's charter (running to 2027)**. There is no standard algorithm to delegate to, and no dated commitment that there will be. This row is the leading one: the others say the delegation would be wrong, this one says it is unavailable. |
 | **Statement-level content-addressed identity that *excludes* its own annotations** | RDF-star can *express* the split; it does not *canonicalize* it. Dataset canonicalization hashes graphs, not statements, and a graph containing a claim's annotations hashes them in — destroying the cross-producer merge of §3.1/§3.3. A per-statement byte profile is required either way. |
 | **Byte-reproducibility across independent producers** | RDF's lexical/value distinction and its lack of a mandated Unicode normalization mean equal values need not be equal bytes. Reproducibility needs the §3 literal, IRI, and symmetric-operand rules regardless of syntax. |
 | **Probabilistic reasoning over confidence** | SPARQL has no probabilistic semantics. Confidence-as-probability is served by the ProbLog projection, which the canonical feeds directly; under (a) that projection is unchanged, so alignment adds nothing here. |
@@ -165,10 +201,16 @@ the interface or the shape, not the runtime.
 KGP's version is bumped and its status drops to **candidate** pending re-validation against the
 pressure test.
 
-**Re-open this record if** RDF gains a standardized *per-statement* canonicalization whose hash
-excludes the statement's own annotations, or if the ecosystem KGP exchanges with makes a JSON-LD
-processor a floor a producer already meets. Either would collapse the table in point 2, and the
-decision would then favor (a).
+**Re-open this record when** a **chartered, published canonicalization defined over RDF 1.2 triple
+terms** exists — concretely: RDFC (or a successor) is *re-chartered* to cover triple terms and that
+work reaches Recommendation — **and** that canonicalization is *per-statement*, hashing a statement
+without its own annotations. The charter is why the gap exists, so a **new charter naming triple-term
+canonicalization is the watchable signal**; publication is the trigger. A second, independent trigger
+stands: the ecosystem KGP exchanges with makes a JSON-LD processor a floor a producer already meets.
+Any of these collapses the table in point 2 — the first collapses its leading row — and the decision
+would then favor (a). Absent such an event, this record does not re-open on preference, tooling
+fashion, or the mere existence of RDF 1.2: the same re-open test is stated for readers of the spec
+in KGP §3.4.
 
 ---
 
@@ -212,6 +254,9 @@ They are the reason the choice was about *syntax and layering*, not about semant
   the identity path.
 - The retention now carries an explicit expiry test (point 2's table, and the re-open condition)
   rather than resting on precedent.
+- The leading argument is **externally verifiable and dated** — a specification's scope and a working
+  group's charter, not a fit judgment — so a reader can check it without re-litigating koine's taste,
+  and it expires on a published event rather than on someone's patience.
 
 **Negative / costs**
 - koine continues to own a canonicalization algorithm, its conformance burden, and its edge cases.
@@ -250,6 +295,48 @@ They are the reason the choice was about *syntax and layering*, not about semant
   (RDF-star's annotation semantics) unaddressed is how an unexamined incumbent survives.
 
 ---
+
+## Amendment log
+
+### 2026-08-13 — the rationale is re-founded on RDFC-1.0's scope; the decision is unchanged
+
+**What changed.** The *Decision* now opens with the structural reason KGP cannot delegate
+canonicalization to the W3C stack — **RDFC-1.0 is defined over RDF 1.1 only, has no defined
+behaviour for RDF 1.2 triple terms, and revising it is explicitly out of the RDF/SPARQL Working
+Group's charter, which runs to 2027** — instead of opening with the layering-and-fit argument.
+Point 2's requirement table gains that absence as its **first** row, and the re-open condition now
+names the concrete upstream event (a chartered, published canonicalization defined over RDF 1.2
+triple terms) rather than a general "if RDF gains…".
+
+The same amendment adds the **nanopublication / Trusty URI** comparison to *Context*, which the
+record had never engaged. It is the nearest prior art to §3 and the sharpest statement of what
+KGP's identity mechanism is: a Trusty URI hashes all four graphs (head, assertion, provenance,
+pubinfo) and so fingerprints a *publication event*, while KGP hashes the *claim alone* and so lets
+independent producers converge on one claim id with provenance merging onto it. Added as context
+and comparison — it changes no decision, and states a scope difference rather than a quality
+judgment. The KGP-side landing is in §3.4.
+
+**What did *not* change.** The decision itself: **option (b)**, accepted **2026-08-02**, status
+**Accepted** — TSV remains canonical, §3 remains the identity mechanism, the §3.3 convergence
+result is untouched, and RDF-star / PROV / JSON-LD remain a specified, lossless,
+round-trip-tested projection. Decisions 1–6 are unedited in substance, the options considered are
+unedited, and nothing here supersedes, deprecates, or reverses the original record. This is an
+amendment to the *justification's strength and ordering*, not a new decision.
+
+**Why.** A prior-art sweep (2026-08) established that the strongest argument for retention was one
+this record did not make. As originally written, the leading rationale was that the standards sit
+above the layer where claim identity lives — true, but a *judgment about fit*, which a reader may
+reasonably weigh differently. The charter argument is not a judgment: the algorithm KGP would have
+had to call is undefined for the structure it would have to canonicalize, and no chartered work
+is scheduled to define it. A record whose leading argument is checkable against published charter
+and specification text is harder to mistake for institutional preference, and it fails loudly and
+on a date if the upstream situation changes.
+
+**Spec effect.** Rationale only. KGP **§3, §3.1 and §3.3 are byte-unchanged**, so **no `claim` id
+moves** and no `schemas/` document shape is touched. The KGP-side landing is a §3.4 edit plus a
+dated changelog entry; KGP stays **candidate**, and its outstanding re-ratification gate — the
+downstream round-trip fixture ([ADR-0001](ADR-0001-control-plane-topology.md)) — is unaffected by
+this amendment.
 
 ## Relationship to the specs
 

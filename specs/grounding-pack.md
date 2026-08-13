@@ -1,6 +1,6 @@
 # Koine Grounding-Pack Protocol (KGP)
 
-**Spec version:** 0.5.1
+**Spec version:** 0.5.2
 **Status:** Candidate
 **Last updated:** 2026-08-13
 **Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
@@ -173,6 +173,36 @@ natively, which is also the test to re-apply if any of them changes:
 | **Egress gating enforced at pack construction** (§7.2) | RDF has no notion of a statement that must not cross a boundary. Gating is a property of the *bundle-building step* — which a graph model does not have and the pack manifest (§2) does. |
 | **Minting without a resolvable context** | JSON-LD term expansion depends on a context document; a content-addressed id must not depend on a document that can change. §3 depends only on the immutable relation registry (§3.2, §9 decision 1). |
 | **A canonical reviewable as a line diff** | Structural for TSV (§4); not a property any of the three standards offers. |
+
+**The nearest prior art, and the inversion it makes explicit.** The closest ancestor of §3 is not
+any of the three standards above but the **nanopublication**, which identifies an assertion together
+with its provenance and publication info by a **Trusty URI** — a content hash folded into the
+identifier, the same instinct as the content-addressed `claim` id. The difference is *what gets
+hashed*, and it is decisive. **A Trusty URI hashes all four graphs — head, assertion, provenance,
+and pubinfo** — so two producers asserting the **identical** triple mint **different** identifiers,
+because their provenance and publication info differ: the identifier fingerprints a **publication
+event**. KGP inverts that. §3 normalization is defined over the claim's subject, relation, object,
+and world **only**; provenance travels *beside* the claim as a repeated `prov` record and never
+enters claim identity (§3.1). Two independent producers therefore **converge on one claim id**, and
+their provenance records merge onto it (§3.3) — the property cross-producer merge requires, and the
+one a Trusty URI cannot provide by construction. This is a difference of **unit of interest**, not a
+quality claim: where the unit of interest is the *publication*, nanopublications are the better
+model and a producer whose problem is publication attestation should use them; KGP's unit of
+interest is the **claim**, so its identity had to invert. The same reasoning is why a
+*dataset*- or *publication*-granular canonicalization is the wrong thing to delegate identity to —
+the first row of the table above, arrived at from the other direction — and it holds independently
+of what the W3C canonicalization stack later covers.
+
+**The packaging prior art does not reach this layer either.** The other body of work a reader may
+expect to see retire §3 is **Frictionless / Data Package**, which standardizes how *files* are
+packaged and typed — resources, dialects, and table schemas — and is a good answer to the question
+"what is in this bundle." It is cited and **dismissed**, for a reason narrower than fit: it
+discharges **no clause** of §3 (claim identity), §3.3 (cross-producer convergence), or §7
+(confidence, license class, and egress class as filters). A Data Package can describe the TSV of
+§4 as a tabular resource, and a producer is free to ship one alongside a pack; doing so **renames a
+container without removing a single normative obligation** — the pack manifest (§2) would still
+have to carry the id, the policy, and the egress gate, and §3 would still have to mint the claim
+id. Packaging and identity are different layers, and only the first is occupied.
 
 Two consequences follow, and both are normative elsewhere in this spec rather than here:
 
@@ -491,6 +521,27 @@ Ratified 2026-07-17.
 
 ## Changelog
 
+- **0.5.2** (2026-08-13) — **Candidate** (rationale and prior art only; status unchanged).
+  Lands the KGP side of the
+  [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) **amendment of
+  2026-08-13**, which re-founds the retention decision on the structural argument — **RDFC-1.0 is
+  defined over RDF 1.1 only, has no defined behaviour for RDF 1.2 triple terms, and revising it is
+  explicitly out of the RDF/SPARQL Working Group's charter, which runs to 2027** — rather than on
+  fit; the decision itself (TSV canonical, §3 the identity mechanism, RDF-star / PROV / JSON-LD a
+  specified round-trip-tested projection) is unchanged. §3.4 gains the two prior-art engagements
+  that record had been missing: **nanopublications / Trusty URIs**, the nearest ancestor of §3 — a
+  Trusty URI hashes all four graphs (head, assertion, provenance, pubinfo) and so fingerprints a
+  *publication event*, where §3 hashes the **claim alone** so independent producers converge on one
+  claim id and their provenance merges onto it (§3.3), a difference of *unit of interest* rather
+  than of quality — and **Frictionless / Data Package**, cited and dismissed because it standardizes
+  file packaging, resources, and table schemas and discharges no clause of §3, §3.3, or §7.
+  §3.4 is INFORMATIVE and this edit is confined to it: **§3, §3.1 and §3.3 are byte-unchanged**, so
+  **no existing `claim` id moves**, and no `schemas/` document shape is touched. KGP stays
+  **candidate** on the same outstanding gate as 0.5.1 — the downstream round-trip fixture
+  ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)) — which this edit does not affect.
+  The informative companion narrative is
+  [`../docs/positioning.md`](../docs/positioning.md) *Prior art considered*; where the two differ,
+  this spec and ADR-0006 are the record.
 - **0.5.1** (2026-08-13) — **Candidate** (normative change to a candidate spec; status unchanged).
   Closes the two minor projection findings the *Re-validation — KGP 0.5.0* pass of
   [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) left open.

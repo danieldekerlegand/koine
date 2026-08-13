@@ -40,7 +40,7 @@ vocabulary.
 - `specs/identity.md` — KINP 0.2.1, **ratified**. Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
-- `specs/grounding-pack.md` — KGP 0.5.1, **candidate**. Knowledge data plane; normative §3
+- `specs/grounding-pack.md` — KGP 0.5.2, **candidate**. Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
   **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
   the requirements RDF-star / PROV / JSON-LD do not meet natively plus the re-open test, and §4.1
@@ -52,7 +52,12 @@ vocabulary.
   (aggregation is the consumer's policy, never KGP's), KGP-2 by §4.1's normative **annotation
   vocabulary** (a named term per annotation; PROV / OWL-Time / DCMI Terms reused where they exist,
   `kgp:` terms minted where they do not and immutable once ratified). Projection surface only — §3,
-  §3.1's hashed set, and §3.3 are untouched, so no claim id changes. Stays candidate on the one
+  §3.1's hashed set, and §3.3 are untouched, so no claim id changes. 0.5.2 is **rationale and prior art only** — §3.4 gains the two
+  engagements ADR-0006 had been missing (nanopublications / **Trusty URIs**, the nearest ancestor:
+  a Trusty URI hashes all four graphs and so fingerprints a *publication event*, where §3 hashes
+  the **claim alone** so producers converge; and **Frictionless / Data Package**, dismissed because
+  it packages files and discharges no clause of §3/§3.3/§7) — with §3, §3.1 and §3.3
+  byte-unchanged, so no claim id moves. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
 - `specs/capability-bus.md` — KCB 0.4.0, **candidate**. Control plane over MCP/A2A; cross-plane
