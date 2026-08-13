@@ -2,15 +2,34 @@
 
 **Spec version:** 0.4.0
 **Status:** Candidate
-**Last updated:** 2026-08-06
+**Last updated:** 2026-08-13
 **Applies to:** `finetune` capability providers (general and specialized), the control-plane host
 (registry, grants, orgs), training-data producers, and finetuned-model consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for model/entity ids, lineage
-relations, and provenance; [`capability-bus.md`](capability-bus.md) (KCB 0.2.0) for the
-capability shape, verbs, cost, and grants; [`grounding-pack.md`](grounding-pack.md) (KGP 0.4.0)
+relations, and provenance; [`capability-bus.md`](capability-bus.md) (KCB 0.4.x) for the
+capability shape, verbs, cost, and grants; [`grounding-pack.md`](grounding-pack.md) (KGP 0.5.x)
 for knowledge training data and the egress/license/trust axes; [`media-interchange.md`](media-interchange.md)
-(KMI 0.2.0) for media training data and weight/export assets;
-[`conformance-scenario.md`](conformance-scenario.md) (KCS) for eval/reward.
+(KMI 0.3.x) for media training data and weight/export assets;
+[`conformance-scenario.md`](conformance-scenario.md) (KCS 0.2.x) for eval/reward.
+
+> **How to read these pins — track-current, `MAJOR.MINOR.x`.** Every pin above is spelled
+> `MAJOR.MINOR.x` and names the plane's **current published version**, not its last-ratified one.
+> The rule is uniform across all five pins, and the patch position is a wildcard for all five —
+> a mixed header (one pin current, another last-ratified) states no rule at all.
+> - **Why track-current.** This repo publishes exactly one text per spec: the link in
+>   `Depends on:` resolves to that plane's current version. A pin to a superseded version
+>   therefore names a document no reader can retrieve. Through 0.4.0 the KCB/KGP/KMI pins read
+>   0.2.0 / 0.4.0 / 0.2.0 — each plane's *last-ratified* version — and had gone silently stale as
+>   the planes moved; they now track KCB 0.4.x, KGP 0.5.x, KMI 0.3.x.
+> - **A candidate profile may compose candidate planes.** Three of the five pins (KGP, KMI, KCB)
+>   are candidate, as is KFT itself. That is deliberate and not a defect: what a profile may not
+>   do is compose a version whose text is unavailable.
+> - **Re-check trigger.** A **minor or major** bump in any pinned plane obliges a re-read of the
+>   sections KFT cites (§2 → KCB §2/§2.1, §4 → KGP §7/§7.2, §5 → KMI assets/lineage, §7 → KCB §5)
+>   before KFT's next status transition. A **patch** bump does not: in koine's lifecycle a patch
+>   carries editorial, rationale, or deprecation-naming changes that do not move a cited clause,
+>   and a patch that does move one is a defect in that plane's versioning — the spec-level analogue
+>   of KCB §7.2's *digest-without-a-bump*.
 
 > **A profile, not a fifth plane.** Fine-tuning does not move a new kind of data — it *composes*
 > the four ratified planes into one operation: consume training data (KGP knowledge / KMI media)
@@ -545,6 +564,20 @@ withdrawn or changed in meaning. The stressors exercised across the three passes
 
 ## Changelog
 
+- **0.4.0 — dependency re-pin** (2026-08-13) — Header hygiene inside the still-open 0.4.0
+  re-ratification; **version and status are unchanged (0.4.0, Candidate)** because no normative
+  clause moved — only the `Depends on:` pins and how they are to be read. The KCB / KGP / KMI pins
+  had read 0.2.0 / 0.4.0 / 0.2.0, which were each plane's **last-ratified** version, not a typo:
+  the planes had since published KCB 0.4.0, KGP 0.5.2, and KMI 0.3.1 (all candidate), so the header
+  was *silently* disagreeing with the specs it links to. Decision: **track-current**, on the ground
+  that this repo publishes exactly one text per spec — a pin to a superseded version names a
+  document a reader cannot retrieve, which is a worse failure than a profile citing a candidate
+  plane (KFT is itself candidate). The alternative, pin-to-ratified, was rejected for that reason
+  and because all three planes are currently candidate, which would have left KFT pinned to text
+  no longer published anywhere in the repo. Spelling is now uniform — `MAJOR.MINOR.x` on all five
+  pins, matching KINP's existing 0.2.x — with the patch position a wildcard and a **minor/major**
+  bump in a pinned plane named as the re-check trigger (see the header note). KCS gains the
+  explicit 0.2.x pin it had been missing.
 - **0.4.0 — Candidate** (2026-08-06) — Folded third-pass deltas from
   [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md),
   which pressure-tests a producing application's **training exhaust** entering the fabric through the
