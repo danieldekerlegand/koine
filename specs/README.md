@@ -18,6 +18,11 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 | [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — a replayable script that drives participants over their real connections | 0.2.0 · ✅ ratified |
 | [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.4.0 · 🚧 candidate |
 
+**The table is a convenience mirror.** Each spec's own version + status header is the source of
+truth. This table — and the ones in [`../README.md`](../README.md) and
+[`../ECOSYSTEM.md`](../ECOSYSTEM.md) — restate it so the set can be scanned at once. If a table
+and a header ever disagree, the header wins and the table is the thing to fix.
+
 **KINP is the keystone.** Every other spec references its identifiers, envelopes, worlds, and
 resolution semantics rather than redefining them; KGP, KMI, and KCB each `Depends on:` it in their
 header. KFT is not a fifth plane — it is a *profile* that composes KGP + KMI + KINP + KCB.
@@ -28,9 +33,10 @@ header. KFT is not a fifth plane — it is a *profile* that composes KGP + KMI +
   binds), and `Depends on:` (the specs it builds on). Read only the clauses for the roles you
   claim.
 - **Status is a lifecycle:** `draft → candidate → ratified`. A spec is promoted only after a
-  concrete pressure-test scenario in [`../scenarios/`](../scenarios/) fails to break it. KCB sits
-  at **candidate** pending re-validation of its 0.3.0 AgentCard-extension manifest; KMI sits at
-  **candidate** pending re-validation of its 0.3.0 OTIO composition model.
+  concrete pressure-test scenario in [`../scenarios/`](../scenarios/) fails to break it. A spec is
+  also demoted back to **candidate** when a later change touches its model shape. Four sit there
+  now — KGP 0.5.0, KMI 0.3.0, KCB 0.3.0, KFT 0.4.0 — each for its own reason; which re-validation
+  is outstanding for which spec is tracked in [`../ROADMAP.md`](../ROADMAP.md).
 - **Clauses are §-numbered and normative.** MUST / SHOULD / MAY carry RFC-2119 weight; other specs
   and the schemas cite these section numbers (e.g. "KGP §7.2", "KINP §4.3"), so the numbering is a
   stable reference surface.

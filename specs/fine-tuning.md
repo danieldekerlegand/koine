@@ -552,7 +552,9 @@ withdrawn or changed in meaning. The stressors exercised across the three passes
   §6 telemetry event use the KINP §3.4 illustrative placeholder namespaces (`orchestrator` /
   `analyzer` / `refkb` / `provider`); §8 provider selection, §9 execution runtime, and the §9.1
   handoff table name **roles** instead of repos, with the concrete repo assignments left to the
-  program map and `ECOSYSTEM.md` (informative). No normative change — the job schema, egress gate,
+  deployment's own adoption program map and to the repo-level
+  [`../ECOSYSTEM.md`](../ECOSYSTEM.md) index (both informative; the former is instance data and
+  lives outside this repo). No normative change — the job schema, egress gate,
   license inheritance, telemetry shape, and every MUST/SHOULD clause are unchanged in meaning.
 - **Editorial** (2026-07-31) — Agnostic reframe: the `Applies to:` header and the participation/adoption table are now expressed as abstract **roles** (producer / consumer /
   authority / host / provider) instead of named products. No normative change — identifiers,
