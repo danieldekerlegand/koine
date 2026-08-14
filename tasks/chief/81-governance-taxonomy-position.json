@@ -1,0 +1,55 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/81-governance-taxonomy-position",
+  "parked": false,
+  "dependsOn": [],
+  "touches": ["specs", "decisions"],
+  "iters": 6,
+  "warmup": [
+    "specs/identity.md",
+    "specs/conformance-scenario.md",
+    "specs/capability-bus.md",
+    "../rosetta/strategy/PORTFOLIO-SCAN-2026-08.md"
+  ],
+  "description": "📐 **POSITION KOINE AGAINST A PUBLISHED GOVERNANCE TAXONOMY — decide scope, do not reflexively specify.** [Kang & Diponegoro, *Governance Gaps in Agent Interoperability Protocols*, arXiv 2606.31498, 30 June 2026](https://arxiv.org/abs/2606.31498) analyses MCP, A2A, ACP, ANP and ERC-8004 against six dimensions — **membership, deliberation, voting, dissent preservation, human escalation, audit/replay** — and concludes that *\"agent community governance constitutes a missing architectural layer above current interoperability standards, not a missing feature within them.\"*\n\n**That is koine's own structural thesis, independently reached, and it is the strongest external evidence the project has.** Their dimensions barely intersect koine's (license propagation, egress control, trust tiers, budget ceilings, capability grants), so there is **no prior-art threat** — this is validation, and the specs should cite it.\n\n**The inverse is the real question, and it is a SCOPE question rather than a work item.** Measured 2026-08-13 against `specs/`:\n\n| Their dimension | koine today |\n|---|---|\n| membership | partly — `identity.md` (KINP) |\n| audit | partly — `capability-bus.md`, `fine-tuning.md`, `media-interchange.md` |\n| replay | partly — `conformance-scenario.md` (KCS) |\n| **deliberation** | **absent** |\n| **voting** | **absent** |\n| **dissent preservation** | **absent** |\n\n**Do NOT assume the three absences are gaps.** Two facts argue they are not koine's: (1) cuneiform already implements voting as an **orchestration strategy** (`workforce/orchestrator.rs` — pipeline/star/hierarchy/voting over one ASSEMBLED org), which is agents inside a single organization deciding a task, not two organizations deliberating; and (2) **no cross-org edge in the tree needs a vote** — `talos → argos` is analysis, `insimul → lugh` is training, the rest are capability invocations and data flows. koine exists for INTER-organizational interop, so a dimension exercised only within one org belongs to cuneiform.\n\nNote also that the paper offers a **taxonomy, not a specification**, so there is nothing to adopt by reference. Specifying these would mean koine INVENTING three protocol dimensions — the opposite of the direction `78-kft-adopt-by-reference` and `73`/`74` just established. **A stated non-goal is worth as much as a spec**, and it is this repo's own discipline: no gate fires on a value nobody wrote.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Cite the paper where it validates the layer claim",
+      "description": "External, independent confirmation that the layer koine occupies is real and missing is worth more than any internal argument, and the specs currently assert it unaided.",
+      "acceptanceCriteria": [
+        "The paper is cited in the spec(s) that assert koine sits ABOVE MCP/A2A rather than competing with them, with its conclusion quoted accurately and its scope stated — it analyses five protocols against six governance dimensions, which is a different axis from koine's license/egress/tier/budget/grant dimensions.",
+        "The citation makes the NON-overlap explicit, so a reader cannot mistake validation for prior art over koine's own claims.",
+        "It is pinned by arXiv id and date, not by title alone — this repo's own upstream-pins discipline (`76`)."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Map all six against the specs, and record where coverage is partial",
+      "description": "Three dimensions are already partly covered. 'Partly' is the answer that needs writing down, because it is the one a reader will otherwise re-derive.",
+      "acceptanceCriteria": [
+        "For membership, audit and replay: name WHICH spec covers it, WHAT it covers, and what it does NOT — e.g. whether KCS replay is scenario replay or decision replay, which are different claims.",
+        "Where coverage is partial and the shortfall matters, it becomes a named finding rather than prose — the `72-kgp-findings-closure` posture.",
+        "The mapping lives where a future scan will find it, so this question is answered once."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Decide deliberation, voting and dissent — in or out, with a re-open trigger",
+      "description": "The load-bearing story. A NON-GOAL is a valid and probably correct outcome; what is not valid is leaving three named dimensions unaddressed after a published taxonomy has named them.",
+      "acceptanceCriteria": [
+        "Each of the three gets an explicit verdict — IN SCOPE (and therefore a spec change) or NON-GOAL (and therefore a stated boundary) — with the reason recorded.",
+        "The evidence for a non-goal is the one measured here: cuneiform implements voting as an intra-org orchestration strategy, and no cross-organizational edge in the tree requires a collective decision. If that stops being true, the verdict changes — so state the TRIGGER that re-opens it (a cross-org use case requiring two organizations to reach a joint decision).",
+        "If any is IN SCOPE, it is scoped as a PROFILE over an existing standard wherever one exists, never as an invention — the `78-kft-adopt-by-reference` rule. If no standard exists, that absence is recorded as part of the justification.",
+        "The decision is a `decisions/` record, so it is citable and closes the question rather than being re-asked at every portfolio scan."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
