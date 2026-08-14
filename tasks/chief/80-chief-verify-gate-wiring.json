@@ -1,0 +1,43 @@
+{
+  "project": "koine",
+  "category": "fix",
+  "branchName": "chief/80-chief-verify-gate-wiring",
+  "parked": false,
+  "dependsOn": [],
+  "touches": [".chief", "scripts"],
+  "iters": 5,
+  "warmup": [
+    ".chief/verify.sh",
+    "scripts/check-doc-integrity.mjs",
+    "../cuneiform/.chief/verify.sh"
+  ],
+  "description": "🔴 **THE MERGE GATE IS A NO-OP.** `.chief/verify.sh` is the untouched scaffold: it prints *\"verify: no checks configured yet — edit .chief/verify.sh (allowing merge)\"* and `exit 0`. Measured 2026-08-13 — koine and cuneiform were the only two repos in the tree still on the stub, and cuneiform's was fixed by its `196`. So **every koine tasklist merges unverified**, and koine currently has 13 live tasklists with 10 ready to run.\n\n**This is cheap here, because the checks already exist and are not wired.** `scripts/check-doc-integrity.mjs` already gates every relative Markdown link and `#heading` anchor — the two ways this repo's prose goes silently stale — and `scripts/check-tasklist-categories.mjs` gates the tasklist vocabulary. Neither runs at merge. Beyond those, koine holds three classes of machine-checkable asset that nothing verifies: `schemas/*.schema.json` (JSON Schema validity, and that every `$ref` resolves), `registry/*.tsv` (the shared relation and entity-type registries — column shape, no duplicate ids, referential integrity between `relations.tsv` and `relations/`), and the spec version pins that `70-spec-pin-repin-and-drift-gate` and `76-upstream-standards-pins` describe.\n\n**A spec repo is not exempt from gating — it is the repo where an unnoticed defect propagates furthest**, because agora, cuneiform and every export vendor these schemas and this registry by drift-gated copy. A malformed `relations.tsv` merged here becomes a failing drift gate in four downstream repos.\n\nFollow cuneiform's `196` shape: a CHANGED-PATH-SCOPED dispatch table, not a single blunt command — `.chief/verify.sh --plan` printing the selection without running, and `.chief/verify-test.sh` asserting the mapping.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Wire the checks that already exist",
+      "description": "The cheapest possible first step: koine already ships two guards that nothing runs at merge.",
+      "acceptanceCriteria": [
+        "`.chief/verify.sh` dispatches on the changed paths (`git diff --name-only $CHIEF_BASE_BRANCH...HEAD`) and runs `check-doc-integrity.mjs` for any `**/*.md` change and `check-tasklist-categories.mjs` for any `tasks/chief/**` change, exiting NON-ZERO on the first failure.",
+        "An unmatched path falls back to running everything, so a new file class is gated by default rather than silently ungated — cuneiform's `196` rule.",
+        "`.chief/verify.sh --plan` prints the selection without running anything, and a `.chief/verify-test.sh` asserts the path→gate mapping so the dispatch is checkable rather than read.",
+        "**Prove it BLOCKS**: a deliberately broken branch (a dangling Markdown link) is shown to fail the gate, and the proof is recorded in the notes. A gate nobody has seen refuse is not known to work — this is the story `196` credited with catching a real pre-existing defect."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Gate the assets a spec repo actually ships",
+      "description": "Schemas and the shared registry are what downstream repos vendor. A defect here propagates by drift gate into agora, cuneiform and every export.",
+      "acceptanceCriteria": [
+        "Every `schemas/*.schema.json` is validated as JSON Schema and every `$ref` is asserted to resolve — a schema that parses but whose refs dangle validates nothing downstream.",
+        "`registry/*.tsv` is gated for column shape, duplicate ids, and referential integrity between `relations.tsv` and `relations/` — the registry is the file ADR-0013's whole no-relation-coined rule depends on, and cuneiform's `render::fabric` vendors it byte-identically.",
+        "The guards live in `scripts/` beside the existing two and are runnable standalone, so CI and a developer run the same command — never a check that exists only inside the hook.",
+        "Each new guard is MUTATION-CHECKED and the mutation recorded: break a `$ref`, duplicate a registry id, and confirm each fails. An unmutated guard is a guess."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
