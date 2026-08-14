@@ -1,0 +1,55 @@
+{
+  "project": "koine",
+  "category": "feature",
+  "branchName": "chief/82-independent-implementation-evidence",
+  "parked": false,
+  "dependsOn": [],
+  "touches": ["specs", "decisions", "conformance"],
+  "iters": 7,
+  "warmup": [
+    "specs/conformance-scenario.md",
+    "decisions/",
+    "../rosetta/strategy/PORTFOLIO-SCAN-2026-08.md"
+  ],
+  "description": "📣 **A SPEC GAINS DEFENSIBILITY THROUGH ADOPTION, NOT THROUGH CLAUSES — and koine has never been implemented by anyone outside this tree.** The 2026-08-13 portfolio scan put koine at 7/10 with the highest headroom of any project in the portfolio, and the lever is not more specification. koine is already ~60% profiles-over-standards and its recent direction is explicitly to ADOPT rather than restate (`73`, `74`, `77`, `78` all merged). Adding clauses now moves the score down, not up.\n\n**What would move it is evidence that the contract works between parties who do not share a codebase.** Today every implementation of KINP/KGP/KCB/KMI/KFT is in this tree — agora, cuneiform's exports, lugh — all authored by one operator. A contract exercised only by its author is a format, not a standard, and that is the honest reading of the 7.\n\n**Two things make this the right moment.** First, `79-conformance-gated-ratification` merged: koine adopted MCP's SEP-2484 pattern, *a spec cannot reach Final without a matching conformance suite*, so the machinery to prove a third-party implementation conforms already exists. Second, [Kang & Diponegoro (arXiv 2606.31498, 30 June 2026)](https://arxiv.org/abs/2606.31498) independently concluded that agent-community governance is *\"a missing architectural layer above current interoperability standards, not a missing feature within them\"* — koine's own thesis, reached by people who had never seen it. **That is external demand evidence, and it is the strongest asset koine has for attracting an implementer.**\n\n**Be honest about what this is.** This is partly a positioning and outreach tasklist rather than an engineering one, which is unusual for this tree and should not be disguised. It is also **not** open-sourcing koine — that is a separate, company-level decision (`ADR-0007`-class) and nothing here presumes it.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Make the contract implementable by someone who has not read the tree",
+      "description": "Before asking for an implementer, check that the specs are sufficient without the surrounding context an insider carries.",
+      "acceptanceCriteria": [
+        "Each spec is audited for **implicit dependence on this tree** — a clause only satisfiable by reading agora's source, a term defined nowhere, an example that assumes cuneiform's shapes. Every finding is either fixed or recorded as a known gap.",
+        "The audit is done against the ACTUAL artefacts a third party would receive — the specs, the JSON schemas, the relation registry, the conformance suite — and not against the repo as a whole.",
+        "The single hardest question is answered explicitly: **could a competent engineer implement KINP resolution and a KGP GroundingPack producer from the specs alone?** If not, name what is missing. `80`'s schema and registry gates are the mechanical half of this; this story is the semantic half."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "One end-to-end run between two implementations that do not share code",
+      "description": "The evidence that matters. Everything else is a claim about the specs; this is a measurement of them.",
+      "acceptanceCriteria": [
+        "A KGP pack or a KCB capability produced by an implementation OUTSIDE this tree is consumed by one inside it, or the reverse, and the exchange is recorded with what worked and what did not.",
+        "It is run through the `79` conformance suite, so the result is a CONFORMANCE VERDICT rather than an anecdote — this is exactly what that machinery was adopted for.",
+        "Where the outside implementation had to guess, that guess is a finding against the spec. An interop exercise whose only output is 'it worked' has measured nothing; the value is in the ambiguities it surfaces.",
+        "If no external implementer can be found, the story is honestly re-scoped to the strongest available proxy — a clean-room implementation from the specs alone, by someone with no access to this tree's source — and the weaker evidential value is stated rather than glossed."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Publish the layer claim where the demand evidence already exists",
+      "description": "The governance-gaps paper establishes the layer is missing. koine can cite it; it can also answer it.",
+      "acceptanceCriteria": [
+        "A short public artefact states what koine specifies and, precisely, what it does NOT — the six governance dimensions of the paper that koine deliberately leaves alone (per `81`) belong in it, because a spec that says what it is not for is easier to adopt than one that appears to claim everything.",
+        "It cites the paper as independent evidence for the layer, and is honest that koine is pre-adoption: one operator, one tree, no external implementers yet.",
+        "Nothing commercially sensitive crosses over. `rosetta/strategy/` is ⛔ PRIVATE and names which projects become companies; this artefact draws only on koine's own public-facing material.",
+        "A DECLINE is acceptable and must be recorded if publishing conflicts with the open-source posture — that call is `ADR-0007`-class and is not taken here."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
