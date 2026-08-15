@@ -1,5 +1,7 @@
 # Upstream standards — what koine pins, and the drift check
 
+> **Status:** Current · **Updated:** 2026-08-14 · **Owner:** koine
+
 **Status:** informative (this file is not normative), but it is the **table of record** for every
 external version koine pins — see [Which document a pin lives in](#which-document-a-pin-lives-in).
 **Last reviewed:** 2026-08-13 · **Next review due:** 2026-11-13 (quarterly floor — see

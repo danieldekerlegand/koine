@@ -1,5 +1,7 @@
 # Walkthrough: a capability, end to end
 
+> **Status:** Current · **Updated:** 2026-08-14 · **Owner:** koine
+
 This is a worked example of the **Capability-Bus** protocol ([`../specs/capability-bus.md`](../specs/capability-bus.md),
 "KCB") — the part of Koine that lets one system offer a capability and another find and use it.
 It's the best way to build intuition for how the whole fabric fits together, because a single

@@ -1,5 +1,7 @@
 # Guide: publishing a self-describing participant
 
+> **Status:** Current · **Updated:** 2026-08-14 · **Owner:** koine
+
 Koine has no central config store. Everything another system needs in order to talk to you — your
 namespace, your capabilities, what knowledge you will and won't release, and how your vocabulary
 crosses into the shared one — is published **by you, from your own repository and your own

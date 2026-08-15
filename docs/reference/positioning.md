@@ -1,5 +1,7 @@
 # Koine in context: A2A, MCP, and existing standards
 
+> **Status:** Current · **Updated:** 2026-08-14 · **Owner:** koine
+
 A fair question for anyone meeting Koine: *how is this different from A2A or MCP — and does it
 reinvent things other projects already solved?* This document answers both, and explains what
 Koine deliberately builds on rather than replaces.
