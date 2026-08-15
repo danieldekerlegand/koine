@@ -156,7 +156,7 @@ analysis. The normative field-level shape is KMI §4's to fix (see *Relationship
   (decision 5) is the identity `target_url` does not carry, and the asset-id ↔ resolved-path media
   map (decision 4) is what relinks it on the far side. The residual cost is the pin itself: koine
   is pinned to a pre-1.0 upstream whose schema may still move, tracked as a row in
-  [`../docs/upstream-standards.md`](../docs/upstream-standards.md) and as KMI §9.1
+  [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) and as KMI §9.1
   (which OTIO core schema versions a conformant timeline may declare).
 - Consumers must read OTIO rather than a small purpose-built JSON. The model is larger and the
   floor for a minimal consumer rises.
@@ -201,7 +201,7 @@ left implicit: the standard it adopts is **not 1.0**. As observed **2026-08-13**
 leans on hardest for interchange — how a clip addresses its media — is the part that is
 under-specified: **`target_url` is loose enough that Adobe Premiere Beta 26.1 and DaVinci Resolve
 20.2 break against each other**, filed upstream as **OTIO issue #1985**. The observation is dated
-so it ages visibly, per [`../docs/upstream-standards.md`](../docs/upstream-standards.md) rule 2 (a
+so it ages visibly, per [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) rule 2 (a
 pin is a claim about what koine was validated against, not a claim the upstream is frozen).
 
 **What did *not* change.** The decision: **OTIO is KMI's canonical timeline / composition model**,
@@ -238,7 +238,7 @@ demonstrably not settled.
 **The honest cost, stated plainly.** Depending on a pre-1.0 upstream means the schema may still
 move under koine, and a 1.0 that is four months late may be later still. Two things bound it: the
 dependency is on a *serialization format*, not a library (koine holds no runtime — ADR-0001), and
-the pin is reviewed on the cadence in [`../docs/upstream-standards.md`](../docs/upstream-standards.md)
+the pin is reviewed on the cadence in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md)
 rather than on hope. The open question that would tighten it further — which OTIO core schema
 versions a conformant timeline may declare — is already KMI §9.1 and stays open; this amendment
 records the maturity picture that makes answering it matter, and does not answer it.
@@ -255,7 +255,7 @@ schedule slipping, which the pin already tracks.
 re-ratification path is still the outstanding re-run of
 [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) shared with KCB. The
 KMI-side landing is the §4.1 upstream-pin note plus a dated changelog entry; the pin table's OTIO
-row in [`../docs/upstream-standards.md`](../docs/upstream-standards.md) is the record of the
+row in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) is the record of the
 observation.
 
 ## Relationship to the specs

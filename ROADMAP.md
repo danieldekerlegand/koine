@@ -23,7 +23,7 @@ shared format every participant reads from and writes to. A new participant lear
 contracts, not one per peer. The intelligence and all the traffic stay at the edges — koine is
 *dumb pipes, smart endpoints*: a specification only, layered **above** A2A and MCP (which carry
 the message) to add the identity/knowledge/media/capability *meaning* those transports leave
-undefined ([`docs/positioning.md`](docs/positioning.md)).
+undefined ([`docs/reference/positioning.md`](docs/reference/positioning.md)).
 
 **In scope:** the normative prose contracts (role-scoped: producer / consumer / authority /
 host / provider), their machine-readable JSON-Schema twins, the shared agnostic vocabularies
@@ -59,14 +59,14 @@ koine holds contract **shape**, never a deployment instance.
 - **Note on drift (external) — new, 2026-08-11:** until now **no koine spec pinned any external
   standard version**, and a prior-art sweep found drift already present in three places (the A2A
   card shape, an MCP method name, and MCP's breaking 2026-07-28 revision). The pin table and the
-  drift-check cadence now live in [`docs/upstream-standards.md`](docs/upstream-standards.md); the
+  drift-check cadence now live in [`docs/reference/upstream-standards.md`](docs/reference/upstream-standards.md); the
   normative corrections are Phase F7. Separately, the **KCB extension URI had been minted under a
   private hostname that was never registered** — hence squattable, verified 2026-08-11; moving it to
   the w3id.org permanent identifier `https://w3id.org/koine/…` is the first row of that phase
   (registration PR and rationale:
   [`decisions/ADR-0007-self-describing-participant.md`](decisions/ADR-0007-self-describing-participant.md)'s
   amendment log).
-- **Prior art:** [`docs/positioning.md`](docs/positioning.md) now cites and dismisses the six
+- **Prior art:** [`docs/reference/positioning.md`](docs/reference/positioning.md) now cites and dismisses the six
   bodies koine had never engaged (nanopublications/Trusty URIs · C2PA · Croissant ·
   Frictionless/Data Package · Pact/consumer-driven contract testing · DIDs/VCs). The sweep's
   verdict was **keep the suite** — but it narrowed KMI to a bridge and moved half of KFT's manifest
@@ -110,7 +110,7 @@ test; two specs are ratified, and four ADR-driven hardening passes landed via Ch
 | ✅ | **KGP / KMI / KCB / KFT** first-authored & pressure-tested — all four planes covered by an e2e scenario | `scenarios/` · — (pre-Chief) |
 | ✅ | Adopt **OTIO** as KMI's canonical timeline; demote bespoke `edl+json` to deprecated; ADR-0005; KMI → 0.3.0 | `chief/10-kmi-adopt-otio` |
 | ✅ | **KGP standards alignment** — RDF-star / W3C PROV / JSON-LD as a specified, round-trip-tested projection; bespoke TSV canonical retained; ADR-0006; KGP → 0.5.0 | `chief/20-kgp-standards-alignment` |
-| ✅ | **Self-describing participant** — namespace + KCB AgentCard-extension manifest + egress policy + bridge maps published at the edge; ADR-0007; `schemas/participant-self-description.schema.json` + [`docs/self-describing-participant.md`](docs/self-describing-participant.md) | `chief/30-self-describing-participant` |
+| ✅ | **Self-describing participant** — namespace + KCB AgentCard-extension manifest + egress policy + bridge maps published at the edge; ADR-0007; `schemas/participant-self-description.schema.json` + [`docs/explanation/self-describing-participant.md`](docs/explanation/self-describing-participant.md) | `chief/30-self-describing-participant` |
 | ✅ | **Fabric-producer adapter** — one thin translate-only adapter; `same_as` grounding + `derived_from` lineage (no `mentions` relation); ADR-0008 | `chief/40-fabric-producer-contracts` |
 
 ### Phase 1 — Candidate re-ratification (close the ratification tail) — 🚧 in progress (scale: S)
@@ -262,8 +262,8 @@ correctly-scoped profiles — but that koine had **zero written engagement** wit
 bodies, **no external-standard version pin anywhere**, and **one squattable identifier**. Nothing
 here adds a plane; it closes citations, narrows two claims to what they can defend, and fixes two
 verified defects. The informative half is already landed in
-[`docs/positioning.md`](docs/positioning.md) (prior art cited and dismissed) and
-[`docs/upstream-standards.md`](docs/upstream-standards.md) (the pin table + drift check); the rows
+[`docs/reference/positioning.md`](docs/reference/positioning.md) (prior art cited and dismissed) and
+[`docs/reference/upstream-standards.md`](docs/reference/upstream-standards.md) (the pin table + drift check); the rows
 below are the **normative** half.
 
 | Status | Milestone | Tasklist |
@@ -278,7 +278,7 @@ below are the **normative** half.
 
 *Depends on:* `76` depends on `75` (the pin corrections rewrite the same example card the namespace
 move touches). `77` fills the OTIO/C2PA/OMC rows of the pin table and `78` the KFT rows, so both
-share `docs/upstream-standards.md` as a conflict domain with `76`. `78` coordinates with
+share `docs/reference/upstream-standards.md` as a conflict domain with `76`. `78` coordinates with
 `chief/71-kft-dep-repin`, which owns the cross-*plane* pins where `78` owns the cross-*standard*
 ones. `79` changes the lifecycle every other row lands under, so it is cheapest either first or
 last, never mid-flight. **Downstream:** `75` has a cross-repo half — a runtime commons pins the
@@ -328,8 +328,8 @@ stems and the Phase-1 stems — the doc-sync (`chief/50`) plus the two ratificat
 - [`scenarios/`](scenarios/) — the end-to-end pressure tests that gate ratification.
 
 **Guides & positioning:**
-- [`docs/positioning.md`](docs/positioning.md) — how koine relates to A2A, MCP, and mature domain standards (the governance gaps it fills; what it builds on rather than replaces), and the **prior art it cites and dismisses** — nanopublications/Trusty URIs, C2PA, Croissant, Frictionless, Pact, DIDs/VCs.
-- [`docs/upstream-standards.md`](docs/upstream-standards.md) — the **pin table**: which version or dated revision of each external standard koine was validated against, and the drift-check cadence that keeps it honest.
-- [`docs/self-describing-participant.md`](docs/self-describing-participant.md) — the adopter checklist (namespace, capability manifest, egress policy, vocabulary mappings).
-- [`docs/walkthrough-capability-bus.md`](docs/walkthrough-capability-bus.md) — a KCB advertise → discover → direct-dial walkthrough with real payloads.
+- [`docs/reference/positioning.md`](docs/reference/positioning.md) — how koine relates to A2A, MCP, and mature domain standards (the governance gaps it fills; what it builds on rather than replaces), and the **prior art it cites and dismisses** — nanopublications/Trusty URIs, C2PA, Croissant, Frictionless, Pact, DIDs/VCs.
+- [`docs/reference/upstream-standards.md`](docs/reference/upstream-standards.md) — the **pin table**: which version or dated revision of each external standard koine was validated against, and the drift-check cadence that keeps it honest.
+- [`docs/explanation/self-describing-participant.md`](docs/explanation/self-describing-participant.md) — the adopter checklist (namespace, capability manifest, egress policy, vocabulary mappings).
+- [`docs/guides/walkthrough-capability-bus.md`](docs/guides/walkthrough-capability-bus.md) — a KCB advertise → discover → direct-dial walkthrough with real payloads.
 - [`README.md`](README.md) · [`CLAUDE.md`](CLAUDE.md) — the fabric thesis / role vocabulary, and the in-repo working conventions + per-spec current state.

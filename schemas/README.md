@@ -68,7 +68,7 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
   rows, a topology, or a node/edge ontology cannot be embedded — those are the deployment's instance data
   and stay in the participant's repo. `$ref`s `provenance.schema.json#/$defs/contractVersion` (as
   `self_description_version`) and `#/$defs/egress` (as `egress.default_class`). Having one is OPTIONAL; see
-  the adopter guide, [`../docs/self-describing-participant.md`](../docs/self-describing-participant.md).
+  the adopter guide, [`../docs/explanation/self-describing-participant.md`](../docs/explanation/self-describing-participant.md).
 - [`fixtures/finetune-job.json`](fixtures/finetune-job.json) — a single **golden positive** example of
   a finetune job, kept off any library surface (like koine's other fixtures). It validates green against
   `finetune-job.schema.json`; the full negative/conformance fixture suite is a runtime concern, not

@@ -31,7 +31,7 @@ vocabulary.
   state* prose below is **not** checked, so a stale version there passes CI; update that line by
   hand and read it back. `node scripts/check-tasklist-categories.mjs` guards `tasks/chief/`.
 - **Every normative reference to an external standard names a version or dated revision** — a bare
-  reference is a defect. `docs/upstream-standards.md` is the **table of record** for those pins (the
+  reference is a defect. `docs/reference/upstream-standards.md` is the **table of record** for those pins (the
   reverse of the version/status mirrors above: an upstream version is a shared fact, so it lives in
   one place and the specs cite it). A spec may restate a pin for standalone readability but must
   cite that file, and on disagreement the file wins. Moving a pin is a spec change; a difference
@@ -188,7 +188,7 @@ vocabulary.
   `unsatisfiable-here`/`refused-policy`/`over-budget`) with a SHOULD-level `route_to[]` of resolvable
   addresses that MUST NOT breach the gate just enforced. Conversion conformance is the **round-trip**
   (§3.3.4) so no schema is minted; fixtures are a §9.1 downstream follow-up (ADR-0001). The four
-  KFT rows of `docs/upstream-standards.md` plus five §3.3 target rows are pinned. Status stays
+  KFT rows of `docs/reference/upstream-standards.md` plus five §3.3 target rows are pinned. Status stays
   candidate on the same restated gate — the owner's re-run of `e2e-producer-exhaust-finetune.md`'s
   *Re-validation — KFT 0.4.0* — with §3.3/§8.1 recorded as new normative surface no pass has
   exercised, not as a second gate.

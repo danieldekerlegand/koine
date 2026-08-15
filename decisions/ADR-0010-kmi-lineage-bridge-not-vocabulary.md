@@ -164,11 +164,11 @@ are paid explicitly below.
 
 ## Consequences
 
-- **KMI's self-description changes, and `docs/positioning.md` follows the spec.** The spec is the
+- **KMI's self-description changes, and `docs/reference/positioning.md` follows the spec.** The spec is the
   record; any disagreement between them is a positioning bug.
 - **Two upstream pins enter the drift check.** C2PA's ingredient revision and OMC v2.8 are now
   normative references from a spec, so they take rows in
-  [`../docs/upstream-standards.md`](../docs/upstream-standards.md) and are reviewed on that file's
+  [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) and are reviewed on that file's
   cadence. Moving either pin is a spec change.
 - **A standing obligation on §3.** Any relation added to §3 later MUST appear in both projection
   tables or be explicitly declared unprojected, with the reason. A relation absent from them is a

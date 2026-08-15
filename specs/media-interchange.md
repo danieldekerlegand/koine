@@ -246,7 +246,7 @@ KGP envelope (confidence, provenance, world) can carry.
 
 **Pinned revision.** This projection is written against the **C2PA Specification 2.1** ingredient
 assertion (`c2pa.ingredient.v3`) and its `relationship` value space, as recorded in
-[`../docs/upstream-standards.md`](../docs/upstream-standards.md). Per that file's rule 2 a pin is a
+[`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md). Per that file's rule 2 a pin is a
 claim about what koine was validated against, not a claim the upstream is frozen; moving it is a
 spec change under the drift check.
 
@@ -298,7 +298,7 @@ being honest rather than on the mapping looking total:
 ### 3.3 Projection — KMI lineage → MovieLabs OMC derivation
 
 The same discipline, onto the other target. **MovieLabs OMC v2.8** (pinned in
-[`../docs/upstream-standards.md`](../docs/upstream-standards.md)) distinguishes **Revision**,
+[`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md)) distinguishes **Revision**,
 **Variant**, **Derivation**, **Representation**, and **Alternative** — a vocabulary richer than §3's
 (§3.1). Here the loss runs in the **opposite direction from §3.2**: C2PA is coarser than §3 and
 collapses it; OMC is finer than §3 and §3 cannot fill it.
@@ -398,7 +398,7 @@ the media-map obligation in §4.3.
   analysis.
 
 **Upstream pin (INFORMATIVE).** This section is written against **OpenTimelineIO v0.18.1**,
-recorded in [`../docs/upstream-standards.md`](../docs/upstream-standards.md) and reviewed on that
+recorded in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) and reviewed on that
 file's cadence. Two facts about that pin are stated rather than left implicit, as observed
 **2026-08-13**: OTIO is **not 1.0** (v0.18.1 is tagged a prerelease; the "1.0 Release" milestone was
 due 2026-04-10 and is ~4 months overdue, with about a third of its issues open), and its
@@ -703,7 +703,7 @@ Promotion of both follows that pass.
   [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline.md)'s dated **amendment log** as a
   *risk*, with the OTIO adoption **reaffirmed unchanged**, because #1985 is the concrete, citable
   case for §4.2's asset-id envelope and §4.3's media map. All three pins take rows in
-  [`../docs/upstream-standards.md`](../docs/upstream-standards.md). **Unchanged in meaning:** the
+  [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md). **Unchanged in meaning:** the
   asset envelope (§2) including `source_world`, the §3 relation set and its semantics, §4's OTIO
   model and additive layer, the analysis→KGP bridge (§5), transform typing (§6), and byte transport
   (§7). Patch rather than minor — see the 0.3.2 status note. No delta is reopened; the

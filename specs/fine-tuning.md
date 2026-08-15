@@ -69,7 +69,7 @@ external standard covers, what KFT adds on top, and what a producer must supply 
 cannot express — so an implementer can tell which document to read for which field. The rule behind
 all three: *where something is already standardized and adopted, KFT cites it and holds only the
 fields it has no place for.* The pins are recorded in
-[`../docs/upstream-standards.md`](../docs/upstream-standards.md).
+[`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md).
 
 A fourth external standard is engaged **differently**, and the difference matters: KFT does not adopt
 **Kubeflow `TrainJob`** by reference, it *resembles* it. TrainJob already ships the
@@ -337,7 +337,7 @@ never landed as a side effect of resembling TrainJob.
 
 **On the pin.** `trainer.kubeflow.org/v1alpha1` is an **alpha** API and may break; that costs KFT
 nothing beyond a citation, since §3 depends on TrainJob for **no clause** — it names a precedent, not
-a dependency. The pin of record is [`../docs/upstream-standards.md`](../docs/upstream-standards.md).
+a dependency. The pin of record is [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md).
 
 ### 3.3 Cross-provider job portability — the trainer mapping (NORMATIVE)
 
@@ -349,7 +349,7 @@ defensible claim of §1.1 discharged as a specified artefact rather than asserte
 external trainer (**emit**), or an external trainer's job description into a §3 manifest (**import**).
 A conversion is performed by a capability provider (§9) or by tooling downstream of one; KFT specifies
 the mapping and its failure modes, not the converter. The trainer surfaces mapped here are pinned by
-dated observation in [`../docs/upstream-standards.md`](../docs/upstream-standards.md) — a mapping to an
+dated observation in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) — a mapping to an
 unversioned moving target is unfalsifiable, which is the whole point of that table.
 
 **Conversion is downstream of admission and can only narrow it (NORMATIVE).** §4's gate runs on the
@@ -1187,7 +1187,7 @@ obliges re-reading those same sections before KFT's next status transition.
     correspondence; the golden fixture exercises both. A 0.4.0-era manifest carrying neither still
     validates.
   - **Pins:** the Croissant, KitOps/ModelPack, HF `base_model`, Kubeflow TrainJob and §3.3 trainer-target
-    rows of [`../docs/upstream-standards.md`](../docs/upstream-standards.md) are filled with the
+    rows of [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) are filled with the
     revisions this work was written against.
   - **Re-ratification is restated, not replaced.** The pending owner re-ratification and its gating
     scenario — the *Re-validation — KFT 0.4.0* section of

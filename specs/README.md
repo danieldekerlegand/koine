@@ -65,7 +65,7 @@ Final without a matching conformance scenario*. Koine's lifecycle names its term
 `ratified` rather than `Final` and its artefact is a KCS document rather than MCP's, but the
 mechanism — and the reason it works — is theirs. It is cited here rather than claimed, consistent
 with how this repo treats prior art everywhere else
-([`../docs/positioning.md`](../docs/positioning.md)).
+([`../docs/reference/positioning.md`](../docs/reference/positioning.md)).
 
 **The cost, stated rather than glossed.** This rule makes ratification **harder**, and it will hold
 specs at `candidate` longer — possibly much longer, since as of this writing every one of the
@@ -168,7 +168,7 @@ Three consequences follow, and they are the whole of the rule:
   a changelog entry that says what moved and why, and — where the pin touches a **normative**
   surface — a re-run of the scenario gating that spec. A pin is not metadata that can be edited in
   passing.
-- **There is exactly one table of record**, [`../docs/upstream-standards.md`](../docs/upstream-standards.md),
+- **There is exactly one table of record**, [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md),
   which also carries the drift-check cadence (at every ratification or re-ratification, and
   quarterly as a floor). A spec **MAY** restate a pin it depends on so it reads standalone — KCB
   §1.1 and KMI §4.1 both do — and when it does it **MUST** cite that file; a restatement that

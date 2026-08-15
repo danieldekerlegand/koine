@@ -68,7 +68,7 @@ unimplementable: both standards have shipped breaking changes to surfaces this s
 | **A2A** | **v1.0** | The host document of the §2 manifest. v1.0 replaced the v0.x top-level `"url"` with **`supported_interfaces[]`** (`AgentInterface{ url, protocol_binding }`) — see §2. |
 | **MCP** | **revision 2026-07-28** | The transport of the §4 verbs. That revision made the core **stateless** and is a **breaking change** against its predecessor — see §4.1 for the per-clause audit. |
 
-**The table of record is [`../docs/upstream-standards.md`](../docs/upstream-standards.md)**, which
+**The table of record is [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md)**, which
 holds every pin in the fabric and the drift-check cadence that keeps them honest; the two rows above
 are restated here so this spec reads standalone, and if they ever disagree with that file **the file
 wins and this section is the defect**. That direction is deliberate and is the reverse of how a
@@ -703,7 +703,7 @@ outstanding and independent.
 
 - **Editorial** (2026-08-13) — Fixed the **direction of authority** on §1.1's pin table. It read
   *"the pin of record is this table"*, which conflicted with KMI §4.1, KFT §3.2 and §4.1.1, and
-  [`../docs/upstream-standards.md`](../docs/upstream-standards.md) itself, all of which treat that
+  [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) itself, all of which treat that
   file as the record — leaving two documents each claiming to be the one place a pin could be wrong.
   §1.1 now states that the file wins and that §1.1 is a standalone-readability restatement, with the
   reason the direction is the reverse of a spec's own version/status mirrors: an upstream revision is

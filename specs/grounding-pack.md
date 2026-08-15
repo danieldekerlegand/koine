@@ -42,7 +42,7 @@ semantics, or storage engines.
 vocabulary (W3C PROV-O, W3C OWL-Time, DCMI Metadata Terms, JSON-LD as the wire form) and §7.1's
 SPDX licence identifiers — and one rationale place, §3.4's argument from RDF / RDFC-1.0. Every one
 of those is pinned to a version or dated revision in
-[`../docs/upstream-standards.md`](../docs/upstream-standards.md), which is the **table of record**
+[`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md), which is the **table of record**
 and carries the drift-check cadence; the clauses below cite the standards by name and do not
 restate their versions, so there is one place a pin can be wrong. A pin says what KGP was validated
 against, not that the upstream is frozen — see [`README.md`](README.md) § *External standards — the
@@ -301,7 +301,7 @@ xsd:      http://www.w3.org/2001/XMLSchema#
 ```
 
 The three reused vocabularies above are **pinned by version** in
-[`../docs/upstream-standards.md`](../docs/upstream-standards.md) — the terms this table names are
+[`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) — the terms this table names are
 normative, so the documents that define them are too. Their versions live there rather than here.
 
 | Annotation | Term | Value | Reused or minted |
@@ -458,7 +458,7 @@ itself, in any encoding.
 ### 7.1 License-class policy (adopted from the existing bridges)
 
 Every entity/assertion record carries an SPDX `license` — an identifier from the SPDX license
-list release pinned in [`../docs/upstream-standards.md`](../docs/upstream-standards.md), which is
+list release pinned in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md), which is
 also where the class → identifier mapping in [`../policy/license-classes.json`](../policy/license-classes.json)
 is re-resolved on the drift-check cadence. The pack manifest carries a
 `license_policy` — a class-based admission allowlist. Licenses classify into `public-domain` /
@@ -539,7 +539,7 @@ Ratified 2026-07-17.
 ## Changelog
 
 - **Editorial** (2026-08-13) — Pointed KGP's external references at the fabric-wide pin table,
-  [`../docs/upstream-standards.md`](../docs/upstream-standards.md), in the three places KGP names a
+  [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md), in the three places KGP names a
   standard it does not control: §1 (a scope-level *Upstream pins* paragraph naming all of them),
   §4.1 (the annotation vocabulary's reused namespaces — W3C PROV-O, OWL-Time, DCMI Terms — plus
   JSON-LD as the wire form), and §7.1 (the SPDX licence identifiers, and the class map in
@@ -571,7 +571,7 @@ Ratified 2026-07-17.
   **candidate** on the same outstanding gate as 0.5.1 — the downstream round-trip fixture
   ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)) — which this edit does not affect.
   The informative companion narrative is
-  [`../docs/positioning.md`](../docs/positioning.md) *Prior art considered*; where the two differ,
+  [`../docs/reference/positioning.md`](../docs/reference/positioning.md) *Prior art considered*; where the two differ,
   this spec and ADR-0006 are the record.
 - **0.5.1** (2026-08-13) — **Candidate** (normative change to a candidate spec; status unchanged).
   Closes the two minor projection findings the *Re-validation — KGP 0.5.0* pass of

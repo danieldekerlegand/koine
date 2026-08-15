@@ -101,7 +101,7 @@ addressed claim/asset ids make redelivery safe (KGP §6, KCB §4).
 > direct MCP/A2A links production uses*, and MCP's wire is not one wire: the revision KCB pins made the core
 > stateless, and a client speaking it is not a client speaking its predecessor — see
 > [`capability-bus.md`](capability-bus.md) §1.1 and §4.1 for the pin and the per-verb consequences,
-> and [`../docs/upstream-standards.md`](../docs/upstream-standards.md) for the version of record.
+> and [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) for the version of record.
 > The consequence for a scenario is evidentiary: a green run proves the protocols **as spoken on the
 > run**, so a report that does not say which revision each participant spoke cannot be read as
 > evidence for the other. A console is therefore the right place to stamp each participant's observed
@@ -158,7 +158,7 @@ looks the way it does. It is **informative**: it binds no clause, and the scenar
 the step vocabulary (§3), the execution and observation model (§4), and the cross-plane assertion
 vocabulary (§5) are unchanged by it. Dated data points come from a prior-art sweep of **2026-08**
 and are stated with their dates so the claim ages visibly. The narrative version lives in
-[`../docs/positioning.md`](../docs/positioning.md) *Prior art considered*; where the two disagree,
+[`../docs/reference/positioning.md`](../docs/reference/positioning.md) *Prior art considered*; where the two disagree,
 this spec wins.
 
 **Pact and consumer-driven contract testing.** Pact is the mature name in contract testing — a
@@ -235,7 +235,7 @@ participants, §2), **P** (`timeout_ms`, §2/§3/§4). Ratified.
   revision made the core stateless and the two wires are **not interchangeable** — a green run on one
   is not evidence for the other. The version facts live in one place and are not restated here: the
   pin and its per-verb consequences are [`capability-bus.md`](capability-bus.md) §1.1/§4.1, and the
-  fabric-wide table is [`../docs/upstream-standards.md`](../docs/upstream-standards.md). The note is
+  fabric-wide table is [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md). The note is
   addressed to the **console**, as a recommendation on what the observation log and report carry —
   reporting fidelity, the subject of §7 open question 3, and not an RFC-2119 obligation — and
   deliberately mints nothing in the scenario document: no `participants[]` field, no step, no binding. **No normative change:** §2's document
@@ -270,7 +270,7 @@ participants, §2), **P** (`timeout_ms`, §2/§3/§4). Ratified.
   claim ages visibly. **Rationale and prior art only — no normative change:** the scenario document
   shape (§2), step vocabulary (§3), execution/observation model (§4), and assertion vocabulary (§5)
   are unchanged, no MUST/SHOULD clause is added, removed, or altered in meaning, and KCS stays
-  **0.2.0 Ratified**. The narrative version is [`../docs/positioning.md`](../docs/positioning.md)
+  **0.2.0 Ratified**. The narrative version is [`../docs/reference/positioning.md`](../docs/reference/positioning.md)
   *Prior art considered*; where the two differ, this spec wins.
 - **Editorial** (2026-07-31) — Agnostic reframe, part 2: the §2 `participants` example uses the
   KINP §3.4 illustrative placeholder namespaces, and the §6 pointer names a downstream

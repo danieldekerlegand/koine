@@ -170,7 +170,7 @@ containment policy, never in topology.
   policy, and vocabulary mappings live in *its own* repo and are served from *its own*
   endpoints — there is no central config store
   ([ADR-0007](decisions/ADR-0007-self-describing-participant.md),
-  [`docs/self-describing-participant.md`](docs/self-describing-participant.md)).
+  [`docs/explanation/self-describing-participant.md`](docs/explanation/self-describing-participant.md)).
 - **One thin adapter per producer.** An application joins the fabric by translating its records
   into the shapes already specified here — never by building a bridge per peer
   ([ADR-0008](decisions/ADR-0008-fabric-producer-adapter.md)).

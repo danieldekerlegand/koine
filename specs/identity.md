@@ -237,7 +237,7 @@ Fuzzy matching a descriptor (name, type, attributes, embedding) to candidate ent
 **probabilistic**, never assumed correct. KINP adopts the **OpenRefine / Wikidata
 Reconciliation API** shape for the `reconcile` operation (§8) — the *Reconciliation Service API*
 published by the W3C Entity Reconciliation Community Group, pinned by version in
-[`../docs/upstream-standards.md`](../docs/upstream-standards.md): a published standard that an
+[`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md): a published standard that an
 identity authority with a Wikidata backbone can answer directly, giving every knowledge and
 world producer fuzzy matching against a standard interface for free. What KINP borrows is the
 **shape** of the query/candidate/score exchange, not a transport binding — which is what bounds
@@ -442,7 +442,7 @@ links opportunistically.
 | `owl:sameAs` semantics (concept only) | `same_as` licensing (§4.3) | OWL reasoning stack |
 
 **Each borrowed standard is pinned by version** in
-[`../docs/upstream-standards.md`](../docs/upstream-standards.md) — the table of record for every
+[`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) — the table of record for every
 external version this fabric depends on, and the one place a pin can be wrong. The rows this table
 draws on are W3C PROV (the provenance ontology §7's envelope is shaped after) and the
 Reconciliation Service API (§4.5, §8); the versions are deliberately not restated here. See
@@ -470,7 +470,7 @@ does **not** borrow from, and the specific question each one leaves unanswered. 
 **informative**: it binds no clause, and the identifier grammar (§3), the envelopes (§7), and the
 resolution semantics (§4, §8) are unchanged by it. Dated data points come from a prior-art sweep of
 **2026-08** and are stated with their dates so the claim ages visibly; the narrative version lives
-in [`../docs/positioning.md`](../docs/positioning.md) and, where the two disagree, this spec wins.
+in [`../docs/reference/positioning.md`](../docs/reference/positioning.md) and, where the two disagree, this spec wins.
 
 **DIDs and Verifiable Credentials.** W3C **Decentralized Identifiers** give a self-certifying
 identifier that resolves — by a registered DID method — to a DID document; **Verifiable
@@ -563,7 +563,7 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
 ## Changelog
 
 - **Editorial** (2026-08-13) — Pointed KINP's two external references at the fabric-wide pin table,
-  [`../docs/upstream-standards.md`](../docs/upstream-standards.md): §4.5 now names the
+  [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md): §4.5 now names the
   *Reconciliation Service API* (W3C Entity Reconciliation Community Group) as the published form of
   the OpenRefine / Wikidata shape it adopts and cites the pin, and §9's borrowed-standards table
   gains a pointer covering both that row and W3C PROV. §4.5 also states explicitly what was already
@@ -588,7 +588,7 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
   only — no normative change:** no clause, identifier grammar (§3), envelope (§7), or resolution
   semantic (§4, §8) is added, removed, or altered in meaning, no `same_as`/`based_on` rule moves,
   and KINP stays **0.2.1 Ratified**. The narrative version is
-  [`../docs/positioning.md`](../docs/positioning.md) *Prior art considered*; where the two differ,
+  [`../docs/reference/positioning.md`](../docs/reference/positioning.md) *Prior art considered*; where the two differ,
   this spec wins.
 - **Editorial** (2026-08-02) — §9's "not adopting" row is **narrowed, not reversed**, per
   [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) decision 5: what is not
