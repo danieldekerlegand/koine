@@ -7,7 +7,7 @@ namespace, your capabilities, what knowledge you will and won't release, and how
 crosses into the shared one — is published **by you, from your own repository and your own
 endpoints**. Nobody registers it on your behalf, and no peer needs read access to your repo.
 
-That convention is [ADR-0007](../decisions/ADR-0007-self-describing-participant.md); this guide is
+That convention is [ADR-0007](../../decisions/ADR-0007-self-describing-participant.md); this guide is
 the practical version of it. It is a checklist, not a spec — each item points at the spec that fixes
 the shape.
 
@@ -23,10 +23,10 @@ the last two apply to a pure **consumer** too, because a consumer MUST reject a 
 
 | # | Facet | What you publish | Where it lives | Spec |
 |---|---|---|---|---|
-| 1 | **Identity** | your namespace prefix and the fact that you are its sole minting authority; the kinds you mint under it; your anchoring to external authorities | prefix **registered by PR** in KINP §3.4; everything minted under it stays in your repo | [KINP](../specs/identity.md) §3.2–§3.4, §4.4, §6 |
-| 2 | **Capability** | your KCB manifest — `kcb_version`, `produces` / `consumes` ports, `capabilities` (with `cost`), `auth`, `signing`, and any non-A2A endpoint such as `mcp` | **served** by you, in your AgentCard | [KCB](../specs/capability-bus.md) §2, §2.1 |
-| 3 | **Egress** | which relations and records are `exportable` and which are `local-only`, plus the license classes you release under | your own repo | [KGP](../specs/grounding-pack.md) §7.1, §7.2 |
-| 4 | **Translation** | the bridge / predicate mappings for the data you produce *and* consume — how your local predicates cross into the shared registry relations | your own repo — **never** committed here | [KGP](../specs/grounding-pack.md) §5, §7; [`registry/README.md`](../registry/README.md) |
+| 1 | **Identity** | your namespace prefix and the fact that you are its sole minting authority; the kinds you mint under it; your anchoring to external authorities | prefix **registered by PR** in KINP §3.4; everything minted under it stays in your repo | [KINP](../../specs/identity.md) §3.2–§3.4, §4.4, §6 |
+| 2 | **Capability** | your KCB manifest — `kcb_version`, `produces` / `consumes` ports, `capabilities` (with `cost`), `auth`, `signing`, and any non-A2A endpoint such as `mcp` | **served** by you, in your AgentCard | [KCB](../../specs/capability-bus.md) §2, §2.1 |
+| 3 | **Egress** | which relations and records are `exportable` and which are `local-only`, plus the license classes you release under | your own repo | [KGP](../../specs/grounding-pack.md) §7.1, §7.2 |
+| 4 | **Translation** | the bridge / predicate mappings for the data you produce *and* consume — how your local predicates cross into the shared registry relations | your own repo — **never** committed here | [KGP](../../specs/grounding-pack.md) §5, §7; [`registry/README.md`](../../registry/README.md) |
 
 The rule behind the "where" column is **publish at the edge, index at the center**.
 
@@ -54,7 +54,7 @@ The rule behind the "where" column is **publish at the edge, index at the center
       peers then fetch the card from you. You must stay fully functional, and fully describable to a
       peer that dials you directly, with the registry down.
 
-The [Capability-Bus walkthrough](walkthrough-capability-bus.md) shows a complete card and the
+The [Capability-Bus walkthrough](../guides/walkthrough-capability-bus.md) shows a complete card and the
 advertise → discover → dial loop it enables.
 
 ### 3. Egress — state it, and enforce it yourself
@@ -75,7 +75,7 @@ advertise → discover → dial loop it enables.
 - [ ] Keep your bridge / predicate mappings in your own repo, with per-entry dialect, egress, and
       id-space rules.
 - [ ] A mapping **coins no relation name**. If an entry has nothing to normalize to, close the gap
-      by adding a row to [`registry/relations.tsv`](../registry/relations.tsv) or a domain file — a
+      by adding a row to [`registry/relations.tsv`](../../registry/relations.tsv) or a domain file — a
       relation named only in a mapping is a second source of truth.
 - [ ] Treat published entries as immutable: retarget by adding an entry that supersedes the old one,
       never by rewriting it (a relation signature is immutable, so an edit changes every dependent
@@ -89,7 +89,7 @@ mapping entries are your deployment's instance data — they belong in your repo
 cadence.
 
 In particular, **bridge / predicate mappings must not be committed into Koine**, and neither may a
-topology or a canonical node/edge ontology; [`registry/README.md`](../registry/README.md) states the
+topology or a canonical node/edge ontology; [`registry/README.md`](../../registry/README.md) states the
 same rule from the registry's side. The test is: *if it would read the same for any other ecosystem
 it belongs here; if it names a particular participant in a key or a value, it is instance data.*
 
@@ -109,17 +109,17 @@ against a declared intent instead of hand-maintained. It is a **source** documen
 manifest: pointers and references only, referencing the KCB manifest shape rather than restating it,
 and embedding no mapping, topology, or node/edge ontology. Nothing requires you to have one.
 
-Its shape is [`schemas/participant-self-description.schema.json`](../schemas/participant-self-description.schema.json),
+Its shape is [`schemas/participant-self-description.schema.json`](../../schemas/participant-self-description.schema.json),
 with a worked example at
-[`schemas/fixtures/participant-self-description.json`](../schemas/fixtures/participant-self-description.json).
+[`schemas/fixtures/participant-self-description.json`](../../schemas/fixtures/participant-self-description.json).
 The schema holds those bounds for you: each facet block admits pointers only, so a manifest payload, a
 mapping's rows, or a node/edge ontology will not validate — which is the point. Fill it in **in your own
 repo**; the filled-in document never comes here.
 
 ## Further reading
 
-- [ADR-0007](../decisions/ADR-0007-self-describing-participant.md) — the convention, its
+- [ADR-0007](../../decisions/ADR-0007-self-describing-participant.md) — the convention, its
   alternatives, and its costs.
-- [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) — the traffic-side decision this
+- [ADR-0001](../../decisions/ADR-0001-control-plane-topology.md) — the traffic-side decision this
   extends: route-by-lookup, not route-by-proxy.
-- [Capability-Bus walkthrough](walkthrough-capability-bus.md) — the served card in action.
+- [Capability-Bus walkthrough](../guides/walkthrough-capability-bus.md) — the served card in action.

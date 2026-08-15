@@ -28,11 +28,11 @@ A2A lets agents discover one another (via Agent Cards) and delegate tasks. Both 
 Koine defines the meaning: stable **identity**, **knowledge**, **media**, and **capability**
 semantics that travel *over* that transport. It does not compete with A2A/MCP — it uses them:
 
-- The Capability-Bus manifest ([KCB](../specs/capability-bus.md)) is **not** a new file. It rides
+- The Capability-Bus manifest ([KCB](../../specs/capability-bus.md)) is **not** a new file. It rides
   inside a standard A2A Agent Card as one entry in `capabilities.extensions[]`, and its verbs map
   onto MCP tool-calls and A2A tasks/streaming. KCB is a *convention over existing standards*, not
   a new runtime.
-- Conformance scenarios ([KCS](../specs/conformance-scenario.md)) run over participants' **real**
+- Conformance scenarios ([KCS](../../specs/conformance-scenario.md)) run over participants' **real**
   MCP/A2A connections — testing the actual protocols, not mocks.
 
 So the honest one-line positioning is: **A2A/MCP carry the message; Koine says what it means.**
@@ -46,11 +46,11 @@ This isn't only our framing. Independent analysis of agent-interoperability prot
 
 | Gap the analysis identifies | Koine spec that addresses it |
 |---|---|
-| Cross-domain **identity & provenance** | [KINP](../specs/identity.md) + provenance envelopes |
-| **Economic / cost** semantics | [KCB](../specs/capability-bus.md) cost + budget ceilings |
-| **Cross-domain knowledge representation** | [KGP](../specs/grounding-pack.md) |
+| Cross-domain **identity & provenance** | [KINP](../../specs/identity.md) + provenance envelopes |
+| **Economic / cost** semantics | [KCB](../../specs/capability-bus.md) cost + budget ceilings |
+| **Cross-domain knowledge representation** | [KGP](../../specs/grounding-pack.md) |
 | **Accountability / audit trails** | content-addressed claim & asset ids |
-| Data **semantics** beyond function signatures | KGP / [KMI](../specs/media-interchange.md) |
+| Data **semantics** beyond function signatures | KGP / [KMI](../../specs/media-interchange.md) |
 
 ## Building on existing standards, not forking them
 
@@ -97,9 +97,9 @@ ours, the answer is to project onto it, not to ship a third vocabulary.
 This section is **informative**. Where a comparison has been landed in the contracts, the spec and
 the ADR are the record and this narrative points at them: the KGP half — nanopublications /
 Trusty URIs and Frictionless / Data Package — lives in
-[`../specs/grounding-pack.md`](../specs/grounding-pack.md) §3.4 and
-[ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md), and the KMI half — C2PA and
-MovieLabs OMC — lives in [`../specs/media-interchange.md`](../specs/media-interchange.md) §3.1. If
+[`../specs/grounding-pack.md`](../../specs/grounding-pack.md) §3.4 and
+[ADR-0006](../../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md), and the KMI half — C2PA and
+MovieLabs OMC — lives in [`../specs/media-interchange.md`](../../specs/media-interchange.md) §3.1. If
 this document and those ever disagree, they win and this is the thing to fix.
 
 | Prior art | Overlaps | Outcome |
@@ -138,15 +138,15 @@ terms**, and revising it is *explicitly out of scope* for the RDF/SPARQL Working
 which runs to **2027**. The W3C canonicalization stack cannot — today, or on any published
 schedule — canonicalize the structure KGP needs. That is a stronger justification than "we prefer
 TSV," and as of the **2026-08-13 amendment** it is the one
-[ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) leads with; the KGP-side
-landing is [`../specs/grounding-pack.md`](../specs/grounding-pack.md) §3.4.
+[ADR-0006](../../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) leads with; the KGP-side
+landing is [`../specs/grounding-pack.md`](../../specs/grounding-pack.md) §3.4.
 
 ### C2PA and MovieLabs OMC — KMI narrows to a bridge
 
-*Landed in the contracts: [`../specs/media-interchange.md`](../specs/media-interchange.md) §3.1
+*Landed in the contracts: [`../specs/media-interchange.md`](../../specs/media-interchange.md) §3.1
 (the prior art and the narrowed claim), §3.2 / §3.3 (the two projections) and §3.4 (their shared
 conformance obligation) are the record, decided by
-[ADR-0010](../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md); this is the narrative
+[ADR-0010](../../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md); this is the narrative
 pointing at them.*
 
 **C2PA already ships a cryptographically signed derivation chain**: `c2pa.ingredient` with
@@ -161,7 +161,7 @@ the lineage graph — are therefore already modelled, one of them by a signed, c
 deployed standard. **KMI's answer is to be the bridge, not a third vocabulary**: define
 projections onto C2PA's ingredient relationships and onto OMC's derivation vocabulary — canonical
 form retained, mapping specified, lossy edges named, conformance tested as a round-trip, the same
-discipline [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) applies to KGP —
+discipline [ADR-0006](../../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) applies to KGP —
 and hold only the part neither occupies. Unlike KGP's projection, neither of these is **lossless**,
 and the spec says so: C2PA is coarser than KMI's relation set and collapses it, OMC is finer and
 KMI cannot fill it, so the obligation is *complete or reported* rather than total. That is a deliberate position rather than a retreat: a
@@ -190,7 +190,7 @@ models only the objective axis; Kubeflow buries adaptation in argv), **egress-ga
 Axolotl, LLaMA-Factory, torchtune, TRL, and OpenAI despite 190k+ combined stars. That last is
 arguably the most valuable thing KFT can deliver.
 
-All of this landed in [`../specs/fine-tuning.md`](../specs/fine-tuning.md) at **0.5.0**: the three
+All of this landed in [`../specs/fine-tuning.md`](../../specs/fine-tuning.md) at **0.5.0**: the three
 adoptions in §4.1.1 / §5.3.1 / §5.1.1 (each with its seam stated), the borrowed TrainJob shape in
 §3.2, the four claims collected in §1.1 — and the fourth of them turned into a **specified artefact**
 rather than a claim, as the NORMATIVE §3.3 conversion mapping (mapped / carried out of band /
@@ -204,7 +204,7 @@ Data Package standardizes how *files* are packaged and typed: resources, dialect
 It is a good answer to "what is in this zip." It expresses nothing about claim identity, provenance
 merge, license/egress class, or admission — the entire content of KGP §3/§7 and KFT §4. Adopting it
 would rename a container without discharging a single normative clause. Landed in
-[`../specs/grounding-pack.md`](../specs/grounding-pack.md) §3.4.
+[`../specs/grounding-pack.md`](../../specs/grounding-pack.md) §3.4.
 
 ### Pact and consumer-driven contract testing — dismissed, and it makes KCS's case
 
@@ -218,16 +218,16 @@ with **cross-plane assertions** (`firewall_holds`, `claims_converge`, `cost_with
 a single request/response pair, plus **traceability to the clauses under test** — every step and
 assertion is cited to a named clause of the four plane specs. (Traceability is by construction of
 the vocabulary; a machine-readable per-assertion spec-section *field* is not part of the format
-today — see [KCS](../specs/conformance-scenario.md) §8.)
+today — see [KCS](../../specs/conformance-scenario.md) §8.)
 
 The nearest thing in the agent-protocol world is A2A's own test kit — a **45★** project as of the
 2026-08 sweep, and declarative only in its participant matrix. **KCS is the most defensible spec in
 the suite**, and it was for a long time also the least advertised — a positioning bug, not a design
 one. It is fixed as of 2026-08-13: the index descriptions in [`../README.md`](../README.md),
-[`../specs/README.md`](../specs/README.md) and [`../ECOSYSTEM.md`](../ECOSYSTEM.md) now state what
+[`../specs/README.md`](../../specs/README.md) and [`../ECOSYSTEM.md`](../../ECOSYSTEM.md) now state what
 KCS is (declarative scenario data × N real participants × cross-plane assertions × traceability to
 the clauses under test) rather than summarizing it as a generic conformance format. The landed
-comparison is [`../specs/conformance-scenario.md`](../specs/conformance-scenario.md) §8, which also
+comparison is [`../specs/conformance-scenario.md`](../../specs/conformance-scenario.md) §8, which also
 records the conformance-program designs KCS could borrow from in a later revision — a forward note,
 none of them adopted.
 

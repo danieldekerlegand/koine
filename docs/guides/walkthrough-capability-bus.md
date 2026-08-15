@@ -2,7 +2,7 @@
 
 > **Status:** Current · **Updated:** 2026-08-14 · **Owner:** koine
 
-This is a worked example of the **Capability-Bus** protocol ([`../specs/capability-bus.md`](../specs/capability-bus.md),
+This is a worked example of the **Capability-Bus** protocol ([`../specs/capability-bus.md`](../../specs/capability-bus.md),
 "KCB") — the part of Koine that lets one system offer a capability and another find and use it.
 It's the best way to build intuition for how the whole fabric fits together, because a single
 capability call touches identity, knowledge, and media at once.
@@ -10,10 +10,10 @@ capability call touches identity, knowledge, and media at once.
 The goal is one complete loop in three moves: a **provider** *advertises* a capability, a
 **consumer** *discovers* it, and the two *dial each other directly*. Nothing is relayed through a
 central server — the registry hands back an **address**, and the peers connect to each other
-([ADR-0001](../decisions/ADR-0001-control-plane-topology.md) explains why).
+([ADR-0001](../../decisions/ADR-0001-control-plane-topology.md) explains why).
 
-> **Before you start**, it helps to have skimmed two specs: [Identity](../specs/identity.md)
-> (how entities are named) and [Capability-Bus](../specs/capability-bus.md) (the protocol itself).
+> **Before you start**, it helps to have skimmed two specs: [Identity](../../specs/identity.md)
+> (how entities are named) and [Capability-Bus](../../specs/capability-bus.md) (the protocol itself).
 > The identifiers below use KINP's placeholder namespaces — `mediastore` is a made-up media
 > provider, `analyzer` a made-up knowledge consumer. Substitute your own.
 
@@ -102,7 +102,7 @@ Two things make this safe across trust boundaries:
 **Advertise → discover → dial** — dumb pipes, smart endpoints. To see it stretched to its full
 size, read the pressure tests these steps are distilled from:
 
-- [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) — the four-participant
+- [`../scenarios/e2e-media-transform.md`](../../scenarios/e2e-media-transform.md) — the four-participant
   version, adding narration, clip-cutting, an edit list, and the media→knowledge bridge.
-- [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) — the identity-side
+- [`../scenarios/e2e-worlds-to-fabric.md`](../../scenarios/e2e-worlds-to-fabric.md) — the identity-side
   counterpart: mint a name, then `resolve` and `reconcile` it.
