@@ -4,8 +4,9 @@
 
 **koine** is the contracts source-of-truth for the ecosystem — the interchange protocols (KINP identity · KGP knowledge · KCB capability-bus · KMI media · KFT fine-tuning · KCS conformance), the shared relation registry, and the ADRs. It carries **no runtime code**: *koine specifies, agora implements*. It is a genuine interop contract **between two companies**, which is why its clauses are role-scoped and product-agnostic rather than fussy.
 
-The map. Structured per the ecosystem
-[documentation standard](../../rosetta/docs/reference/documentation-standard.md) —
+The map. Structured per the ecosystem documentation standard — `rosetta`'s
+`docs/reference/documentation-standard.md`, cited as text rather than linked because a
+reference out of this repo resolves for nobody who has only this one —
 **a document not linked here does not exist**.
 
 ## Guides
