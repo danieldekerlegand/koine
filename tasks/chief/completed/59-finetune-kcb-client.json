@@ -29,5 +29,6 @@
       "passes": false,
       "notes": "Cross-repo (agora). Parked in koine as a ROADMAP F3 marker."
     }
-  ]
+  ],
+  "supersededBy": "cuneiform:90-finetune-client"
 }
