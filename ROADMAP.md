@@ -328,7 +328,7 @@ stems and the Phase-1 stems — the doc-sync (`chief/50`) plus the two ratificat
 - [`scenarios/`](scenarios/) — the end-to-end pressure tests that gate ratification.
 
 **Guides & positioning:**
-- [`docs/reference/positioning.md`](docs/reference/positioning.md) — how koine relates to A2A, MCP, and mature domain standards (the governance gaps it fills; what it builds on rather than replaces), and the **prior art it cites and dismisses** — nanopublications/Trusty URIs, C2PA, Croissant, Frictionless, Pact, DIDs/VCs.
+- [`docs/reference/positioning.md`](docs/reference/positioning.md) — how koine relates to A2A, MCP, and mature domain standards (the semantic gaps it fills — and, since the 2026-08-18 correction, what the Kang & Diponegoro *governance*-gap analysis does and does not corroborate; what it builds on rather than replaces), and the **prior art it cites and dismisses** — nanopublications/Trusty URIs, C2PA, Croissant, Frictionless, Pact, DIDs/VCs.
 - [`docs/reference/upstream-standards.md`](docs/reference/upstream-standards.md) — the **pin table**: which version or dated revision of each external standard koine was validated against, and the drift-check cadence that keeps it honest.
 - [`docs/explanation/self-describing-participant.md`](docs/explanation/self-describing-participant.md) — the adopter checklist (namespace, capability manifest, egress policy, vocabulary mappings).
 - [`docs/guides/walkthrough-capability-bus.md`](docs/guides/walkthrough-capability-bus.md) — a KCB advertise → discover → direct-dial walkthrough with real payloads.

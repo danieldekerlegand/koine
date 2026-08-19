@@ -1,6 +1,6 @@
 # Koine in context: A2A, MCP, and existing standards
 
-> **Status:** Current · **Updated:** 2026-08-14 · **Owner:** koine
+> **Status:** Current · **Updated:** 2026-08-18 · **Owner:** koine
 
 A fair question for anyone meeting Koine: *how is this different from A2A or MCP — and does it
 reinvent things other projects already solved?* This document answers both, and explains what
@@ -37,20 +37,57 @@ semantics that travel *over* that transport. It does not compete with A2A/MCP �
 
 So the honest one-line positioning is: **A2A/MCP carry the message; Koine says what it means.**
 
-## The gap Koine fills
+## The gap Koine fills — and the independent analysis that corroborates the *shape* of the claim
 
-This isn't only our framing. Independent analysis of agent-interoperability protocols (see
-*"Governance Gaps in Agent Interoperability Protocols: What MCP, A2A, and ACP Cannot Express"*,
-[arXiv:2606.31498](https://arxiv.org/pdf/2606.31498)) enumerates the semantics these protocols
-*cannot* express — and they line up with Koine's specs:
+The claim above is Koine's own, and until recently it had only internal evidence. It now has one
+piece of external evidence, and it is worth being precise about what that evidence does and does
+not cover, because the temptation to overread it is real.
 
-| Gap the analysis identifies | Koine spec that addresses it |
-|---|---|
-| Cross-domain **identity & provenance** | [KINP](../../specs/identity.md) + provenance envelopes |
-| **Economic / cost** semantics | [KCB](../../specs/capability-bus.md) cost + budget ceilings |
-| **Cross-domain knowledge representation** | [KGP](../../specs/grounding-pack.md) |
-| **Accountability / audit trails** | content-addressed claim & asset ids |
-| Data **semantics** beyond function signatures | KGP / [KMI](../../specs/media-interchange.md) |
+Richard Kang and Yudho Diponegoro, *Governance Gaps in Agent Interoperability Protocols: What MCP,
+A2A, and ACP Cannot Express*, [arXiv:2606.31498](https://arxiv.org/abs/2606.31498), submitted
+**30 June 2026**, reaches Koine's structural conclusion independently and states it in one sentence:
+
+> "agent community governance constitutes a missing architectural layer above current
+> interoperability standards, not a missing feature within them."
+
+**What the paper actually is.** A systematic gap analysis of **five** protocols — MCP v1.1, A2A
+v1.0.1, ACP, ANP, ERC-8004 — against a **six-dimension governance taxonomy**: membership,
+deliberation, voting, dissent preservation, human escalation, audit/replay. Each protocol–dimension
+pair is graded *Supported* / *Partial* / *Absent*, on what the specification **encodes** rather than
+on what could be built over it. Voting and dissent preservation are absent from all five.
+
+**What it is not.** It is not an analysis of Koine — it does not mention or evaluate this project —
+and it is a **taxonomy, not a specification**, so there is nothing in it to adopt by reference the
+way [KFT adopts Croissant](../../specs/fine-tuning.md). It is cited by **arXiv id and date**, never by
+title alone, and it is deliberately **not** a row in
+[`upstream-standards.md`](upstream-standards.md): no koine clause delegates to it, and a prior-art
+link is not a pin.
+
+**The non-overlap is the whole point, and it runs both ways.** The paper's axis is *collective
+decision-making among agents*. Koine's axis is *interchange semantics between organizations* —
+license class, egress class, trust tier, budget ceiling, capability grant. Not one of the paper's
+six dimensions is one of Koine's, and not one of Koine's is one of the six. So:
+
+- **Toward Koine it is validation, and prior art over nothing.** It corroborates that "a layer above
+  MCP/A2A" is a real architectural position rather than a misreading of the protocols — reached on a
+  different axis by authors who had never seen this repo. It retires no spec and establishes
+  priority over no clause.
+- **Toward the paper, Koine is not the answer to it.** Koine occupies a *different* layer over the
+  same two protocols. No Koine spec implements deliberation, voting, or dissent preservation, and
+  nobody should read "Koine is the missing layer" out of this citation: the paper names a missing
+  **governance** layer, Koine is a missing **semantics** layer, and they are neighbours.
+
+*Landed in the contracts:* [`../specs/capability-bus.md`](../../specs/capability-bus.md) **§1.2** is the
+record — KCB is the spec that asserts the layer claim, so the evidence for it lives there and this
+document points at it.
+
+**An earlier version of this section was wrong about the paper**, and the correction is worth
+keeping visible: it presented a five-row table of "gaps the analysis identifies" mapped onto Koine
+specs, including *economic / cost semantics*. Those rows are not the paper's taxonomy, and the cost
+row inverts it — §III-A explicitly places incentive alignment and payment **outside** governance
+scope, "a different architectural layer (economic coordination, not decision governance)." Citing a
+paper as endorsing coverage it never assessed is exactly the failure this document exists to
+prevent.
 
 ## Building on existing standards, not forking them
 
