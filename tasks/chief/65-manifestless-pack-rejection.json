@@ -3,7 +3,7 @@
   "project": "agora",
   "category": "feature",
   "branchName": "chief/65-manifestless-pack-rejection",
-  "description": "CROSS-REPO \u2014 owned and built in AGORA (downstream validator obligations), not koine. Delivers a validator behavior the specs REQUIRE but koine deliberately does not hold (ADR-0001): a bare projection arriving WITHOUT its manifest is not a unit of transfer, so the validator must REFUSE it (schemas/README.md). koine holds the schema shape; the validator runtime is downstream. Tracked here as a koine ROADMAP Phase F5 marker ('agora chief/65-manifestless-pack-rejection'). PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.",
+  "description": "CROSS-REPO \u2014 owned and built in AGORA (downstream validator obligations), not koine. Delivers a validator behavior the specs REQUIRE but koine deliberately does not hold (ADR-0001): a bare projection arriving WITHOUT its manifest is not a unit of transfer, so the validator must REFUSE it (schemas/README.md). koine holds the schema shape; the validator runtime is downstream. Tracked here as a koine ROADMAP Phase F5 marker ('agora chief/65-manifestless-pack-rejection'). PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.\n\nDOWNSTREAM COUNTERPART (authored 2026-08-19): agora:78-manifestless-pack-rejection. This record is the marker, not the work. Retire it with supersededBy naming that tasklist once it merges \u2014 nothing in chief does this automatically.",
   "parked": true,
   "dependsOn": [],
   "touches": [
