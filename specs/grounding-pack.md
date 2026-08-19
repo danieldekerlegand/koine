@@ -57,7 +57,7 @@ one or more **worlds** (KINP §5). Logical shape:
 
 ```jsonc
 {
-  "kgp_version": "0.1.0",
+  "kgp_version": "0.5.2",
   "pack_id": "sha256-7b1e…",            // hash of the canonical manifest+contents (§2.1)
   "producer": "refkb",                  // KINP namespace
   "worlds":   ["refkb:world:consensus-reality"],
@@ -503,7 +503,8 @@ Rules:
 Adopted from an existing producer-side `predicate-mapping.json`, which introduced this as the
 privacy invariant of a personal-media bridge (ADR-0002 reverse flow). That registry groups it
 under `portabilityClasses` alongside the dialect tiers; KGP deliberately separates the two axes
-(§5) — see `20-shared-relation-registry` US-SRR2 for the reconciliation.
+(§5) — see [`../registry/README.md`](../registry/README.md) for the reconciliation of the two axes
+and for why the shared vocabulary carries no `egress` column.
 
 ## 8. Producer / consumer mapping (by role)
 
@@ -538,6 +539,21 @@ Ratified 2026-07-17.
 
 ## Changelog
 
+- **Editorial** (2026-08-18) — Two corrections found by the third-party implementability audit
+  ([`../docs/reference/implementability-audit.md`](../docs/reference/implementability-audit.md),
+  findings IMP-14 and IMP-19), both to text a reader hits before any clause. §7.2's closing pointer
+  named `20-shared-relation-registry` US-SRR2 — a tasklist id that exists nowhere in this repo, so a
+  reader following it found nothing; it now names [`../registry/README.md`](../registry/README.md),
+  where the dialect/egress reconciliation and the absence of an `egress` column are actually
+  recorded. §2's worked envelope declared `"kgp_version": "0.1.0"` against a 0.5.2 spec. **Pointer
+  and one illustrative value only — no normative change:** §3 and its canonical, §3.1's hashed set,
+  §3.3's convergence, §4/§4.1's projection and annotation vocabulary, §5, §7.1's six classes and
+  §7.2's rules are byte-unchanged, and **no claim id moves**. The audit's other sixteen findings —
+  including the two open against this spec's normative surface, IMP-5 (whether a `claim` id is bare
+  or namespaced) and IMP-15 (§7.2's egress class carried on a registry column that does not exist) —
+  are recorded there and deliberately **not** decided here: each is a spec-owner decision that moves
+  a version. Stays **0.5.2 Candidate** on the unchanged gate — the downstream round-trip fixture per
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md).
 - **Editorial** (2026-08-13) — Pointed KGP's external references at the fabric-wide pin table,
   [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md), in the three places KGP names a
   standard it does not control: §1 (a scope-level *Upstream pins* paragraph naming all of them),

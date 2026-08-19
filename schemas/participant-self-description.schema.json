@@ -74,7 +74,7 @@
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
           "uniqueItems": true,
-          "description": "The KINP kinds minted under the namespace (identity.md §2, §3.2) — e.g. entity, asset, activity, world, agent, model."
+          "description": "The KINP kinds minted under the namespace — tokens from the closed <kind> enum of identity.md §3.1: ent | claim | asset | world | agent | src. A refinement such as a KFT model is an entity TYPE (registry/entity-types.tsv), minted under the ent kind, not a kind of its own."
         },
         "external_anchors": {
           "type": "array",
