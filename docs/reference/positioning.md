@@ -6,6 +6,10 @@ A fair question for anyone meeting Koine: *how is this different from A2A or MCP
 reinvent things other projects already solved?* This document answers both, and explains what
 Koine deliberately builds on rather than replaces.
 
+*Shorter, and written for a reader who has not seen this repository:*
+[The layer claim](layer-claim.md) states the same position in one page — what Koine specifies, what
+it does not, and where it stands on adoption. This document is the long form.
+
 ## Koine is a specification, not a runtime
 
 Koine is **contracts only** — the prose specs, schemas, and shared vocabularies that any system
