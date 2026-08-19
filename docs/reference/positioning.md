@@ -81,6 +81,12 @@ six dimensions is one of Koine's, and not one of Koine's is one of the six. So:
 record — KCB is the spec that asserts the layer claim, so the evidence for it lives there and this
 document points at it.
 
+*The inverse question — how much of the paper's taxonomy does Koine itself cover? — is measured once,
+dated, and section by section in [The six governance dimensions, mapped onto Koine](governance-taxonomy-map.md).*
+Short version: membership, human escalation and audit/replay are **partial**, deliberation, voting
+and dissent preservation are **absent**, and that map files the three shortfalls that matter on
+Koine's own axis as named findings (GOV-1…GOV-3) rather than leaving them in prose.
+
 **An earlier version of this section was wrong about the paper**, and the correction is worth
 keeping visible: it presented a five-row table of "gaps the analysis identifies" mapped onto Koine
 specs, including *economic / cost semantics*. Those rows are not the paper's taxonomy, and the cost
