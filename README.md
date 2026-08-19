@@ -122,6 +122,12 @@ citation and its limits are in [KCB §1.2](specs/capability-bus.md); the full
 positioning — the gaps it fills and exactly what it builds on — is in
 **[`docs/reference/positioning.md`](docs/reference/positioning.md)**.
 
+If you are meeting Koine from that paper, or from anywhere else outside this repository, start
+instead with **[the layer claim](docs/reference/layer-claim.md)**: one short document stating what
+Koine specifies, precisely what it deliberately does **not** (including the six governance
+dimensions it leaves alone), and where it honestly stands — pre-adoption, with no implementer
+outside this tree yet.
+
 ## Repository layout
 
 | Path | Contents |
