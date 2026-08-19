@@ -4,7 +4,10 @@
   "branchName": "chief/80-chief-verify-gate-wiring",
   "parked": false,
   "dependsOn": [],
-  "touches": [".chief", "scripts"],
+  "touches": [
+    ".chief",
+    "scripts"
+  ],
   "iters": 5,
   "warmup": [
     ".chief/verify.sh",
@@ -23,8 +26,8 @@
         "`.chief/verify.sh --plan` prints the selection without running anything, and a `.chief/verify-test.sh` asserts the path→gate mapping so the dispatch is checkable rather than read.",
         "**Prove it BLOCKS**: a deliberately broken branch (a dangling Markdown link) is shown to fail the gate, and the proof is recorded in the notes. A gate nobody has seen refuse is not known to work — this is the story `196` credited with catching a real pre-existing defect."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "verify.sh is now a changed-path dispatch table (4 gates: guard-doc-integrity, guard-doc-links, guard-categories, verify-selftest); unruled paths select the umbrella = every gate. .chief/verify-test.sh: 21 passed, 0 failed. Real branch gate green (rc=0, doc-integrity OK on 35 files / 572 links, doc-links 0 dead vs 0 on main). BLOCK PROOF: on a scratch branch a dangling link appended to README.md made the gate exit rc=1 — 'gate \"guard-doc-integrity\" FAILED (selected by changed path README.md) - blocking merge'; branch discarded, gate back to rc=0. Wiring it also caught a real pre-existing defect: docs/README.md:8 linked out of the repo to ../../rosetta/... — converted to a text citation."
     },
     {
       "id": "US-2",
