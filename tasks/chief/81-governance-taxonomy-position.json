@@ -38,8 +38,8 @@
         "Where coverage is partial and the shortfall matters, it becomes a named finding rather than prose — the `72-kgp-findings-closure` posture.",
         "The mapping lives where a future scan will find it, so this question is answered once."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "docs/reference/governance-taxonomy-map.md (new, informative, binds no clause and moves no spec version) + pointers from docs/README.md, positioning.md, ROADMAP.md. All six graded on the paper's own criterion: G1 membership Partial, G5 human escalation Partial-narrow, G6a audit Partial, G6b replay Partial, G2/G3/G4 Absent (verdict deferred to US-3's decision record). For each Partial the doc names which spec covers it, what it covers and what it does not — KCS replay is scenario re-execution against live participants, NOT decision reconstruction from a log, stated as a four-row comparison table, plus the third sense (KGP §6 idempotent redelivery). Three shortfalls filed as named findings in the upstream-standards.md register posture: GOV-1 (a grant is issued and never ends, KCB §5/§7.3), GOV-2 (the fabric's gates decide and record nothing, KGP §7 / KCB §5 / KFT §4,§8.1), GOV-3 (a KCS report is content-addressable but its run is not reproducible from it — evidence for KCS §7 OQ3, the V-8 posture). None is a gate; no re-ratification leg moved. Also corrected two errors in the brief's own six-row table: G5 human escalation was missing and audit/replay is one dimension (G6), not two. check-doc-integrity.mjs: 36 files, 591 relative links checked, all six mirrors agree, 1 error — docs/README.md:8, verified byte-identical to HEAD (pre-existing escapes-repo link), so no new failure. check-doc-links.mjs: 0 dead references. check-tasklist-categories.mjs: OK, 20 tasklists categorized."
     },
     {
       "id": "US-3",
