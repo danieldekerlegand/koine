@@ -70,9 +70,9 @@ KFT 0.5.0.
 | | Dimension | koine | Where it lives | The one-line reason |
 |---|---|---|---|---|
 | **G1** | Membership | **Partial** | KINP §3.4 · KCB §3, §5 · [ADR-0007](../../decisions/ADR-0007-self-describing-participant.md) | Identity, self-declared role and per-capability authorization exist; **admission and removal do not**. |
-| **G2** | Deliberation | **Absent** | — | No koine clause encodes argument exchange, turn-taking, or challenge/response. |
-| **G3** | Voting | **Absent** | — | No koine clause encodes preference aggregation, quorum, or rounds. |
-| **G4** | Dissent preservation | **Absent** | — | No koine clause encodes a minority position; nothing in the fabric produces a "decision output" to preserve one in. |
+| **G2** | Deliberation | **Absent** (decided: [non-goal](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)) | — | No koine clause encodes argument exchange, turn-taking, or challenge/response. |
+| **G3** | Voting | **Absent** (decided: [non-goal](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)) | — | No koine clause encodes preference aggregation, quorum, or rounds. |
+| **G4** | Dissent preservation | **Absent** (decided: [non-goal](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)) | — | No koine clause encodes a minority position; nothing in the fabric produces a "decision output" to preserve one in. |
 | **G5** | Human escalation | **Partial (narrow)** | KINP §11 decision 2 · KCB §5 · KGP §7 · KMI §3 | **One** route to a human exists — the hybrid merge **review queue** — and it is a knowledge-contamination control, not a decision-escalation mechanism. |
 | **G6a** | Audit | **Partial** | KGP §2/§7 · KINP §7 · KMI §3 · KFT §3.3.1, §5.2 · KCB §5 | **Artifacts** are provenanced and tamper-evident by construction; **events and decisions** are not recorded at all. |
 | **G6b** | Replay | **Partial** | KCS §1, §4 · KGP §6 · KCB §4 | KCS replays a **scenario** against live participants; nothing reconstructs a past run from a log. |
@@ -204,14 +204,31 @@ All three are **Absent** under the paper's criterion, unambiguously: no koine sp
 exchange, preference aggregation, or minority-position retention, and nothing in the fabric produces
 a *collective decision output* for a dissent to be preserved in. There is nothing partial to split.
 
-**Their absence is a scope question, and this file does not answer it.** Whether each is a gap koine
-should close or a boundary koine should state is a decision with evidence behind it, and it belongs
-in a `decisions/` record where it is citable and closes the question — not in an informative map.
-Until that record lands, read these three rows as *measured absent*, not as *filed as debt*. They are
-**not** findings below, and that is deliberate: filing them would be the reflex this repo's
-adopt-by-reference discipline exists to prevent — the paper is a **taxonomy, not a specification**,
-so closing them would mean koine **inventing** three protocol dimensions rather than profiling an
-existing standard.
+**Their absence is a scope question, and this file does not answer it** — it is answered, as of
+2026-08-18, by [ADR-0011](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md),
+which decides all three as **non-goals**. Whether each is a gap koine should close or a boundary koine
+should state is a decision with evidence behind it, and it belongs in a `decisions/` record where it is
+citable and closes the question — not in an informative map. So read these three rows as *measured
+absent and decided*, never as *filed as debt*. They are **not** findings below, and that is deliberate:
+filing them would be the reflex this repo's adopt-by-reference discipline exists to prevent — the
+paper is a **taxonomy, not a specification**, so closing them would mean koine **inventing** three
+protocol dimensions rather than profiling an existing standard.
+
+**What the ADR decides, in one paragraph, so this section is not the place it gets re-argued.** Every
+gate koine specifies is **unilateral** — KGP §7 license and egress, KCB §5 grant and ceiling, KFT §4
+admission and §8.1 refusal are each one participant deciding for itself, and refusing is always
+available — so the fabric has no outcome that is a function of several participants' preferences. No
+cross-organizational edge requires a joint decision, and the one vote observed anywhere in the known
+implementations is intra-organizational answer selection (majority-vote-over-identical-answers), which
+has no quorum, no rounds and no positions and is therefore not G3 in the taxonomy's own terms. A
+prior-art sweep dated the same day found **nothing to profile** — so specifying would mean inventing.
+G4 is shown to be *dependent* on G3: with no collective decision output there is nothing to preserve a
+minority position **in**, while the property G4 protects — a minority view surviving rather than being
+silently dropped — is already how KGP behaves when two participants assert contradictory claims. The
+ADR also states the **trigger that re-opens** the verdict (a binding joint decision across two KINP
+§3.4 minting authorities · a standard koine could profile · a koine gate ceasing to be unilateral),
+and carves out that it decides **these three only**: the Partial grades above stand, and GOV-1…GOV-3
+stay open.
 
 ## Findings
 
@@ -245,8 +262,9 @@ absence that is **already a decision**, and re-filing it would re-open settled g
   Partial rather than Absent, and it is not a defective version of the thing G6 asks for.
 - **KGP §6 deltas are ordering-independent** (G6a/G6b). A deliberate property (redelivery is safe,
   §6, and KCB §4.1 leans on it), not a missing ordering guarantee.
-- **G2 / G3 / G4 being Absent.** A scope question, answered in `decisions/`, not a finding — see the
-  section above.
+- **G2 / G3 / G4 being Absent.** A scope question, answered in
+  [ADR-0011](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md) as a
+  **non-goal** with a stated re-open trigger — a decision, not a finding. See the section above.
 
 ## Keeping this map honest
 

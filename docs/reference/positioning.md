@@ -87,6 +87,17 @@ Short version: membership, human escalation and audit/replay are **partial**, de
 and dissent preservation are **absent**, and that map files the three shortfalls that matter on
 Koine's own axis as named findings (GOV-1…GOV-3) rather than leaving them in prose.
 
+*And the three absences are decided, not outstanding:*
+[ADR-0011](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md) records
+deliberation, voting and dissent preservation as **non-goals** — Koine specifies what crosses an
+organizational boundary, not how one organization decides — because every gate the specs define is
+**unilateral** with refusal always available, and because a prior-art sweep dated 2026-08-18 found no
+standards-body specification of any of the three to profile, so specifying them would mean
+**inventing** three protocol dimensions. That is the same adopt-by-reference discipline this document
+describes everywhere else, reaching the opposite conclusion for the same reason: where nothing exists
+to adopt, Koine declines rather than coins. The record states the trigger that re-opens the verdict,
+and leaves membership, human escalation and audit/replay open.
+
 **An earlier version of this section was wrong about the paper**, and the correction is worth
 keeping visible: it presented a five-row table of "gaps the analysis identifies" mapped onto Koine
 specs, including *economic / cost semantics*. Those rows are not the paper's taxonomy, and the cost

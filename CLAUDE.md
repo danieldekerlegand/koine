@@ -76,7 +76,7 @@ vocabulary.
   byte-unchanged, so no claim id moves. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.4.4, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.4.5, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -127,7 +127,15 @@ vocabulary.
   koine is **not** an answer to it (no KCB clause implements deliberation, voting or dissent). Cited by
   **arXiv id + date**, deliberately **not** a row in `docs/reference/upstream-standards.md`: a taxonomy
   is not a specification, no clause delegates to it, and a prior-art citation is not a pin. No field,
-  no clause, no manifest byte moves; both gates restated, neither moved.
+  no clause, no manifest byte moves; both gates restated, neither moved. 0.4.5 (patch) points §1.2's
+  closing bullet — *no KCB clause implements deliberation, voting or dissent preservation* — at
+  **ADR-0011**, which decides all three as fabric **non-goals**: 0.4.4 left that as a bare fact, and
+  "koine does not do X" reads as an omission until something says it is a choice. The ADR carries the
+  evidence (every gate the specs define is **unilateral** and refusal is always available; a sweep
+  dated 2026-08-18 found no standards-body specification of the three to profile), the **re-open
+  trigger**, and the carve-out that G1/G5/G6 stay *Partial* with findings GOV-1…GOV-3 open. A
+  cross-reference in an informative section: no field, no clause, no manifest byte moves; both gates
+  restated, neither moved.
 - `specs/media-interchange.md` — KMI 0.3.2, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
@@ -246,9 +254,13 @@ vocabulary.
   self-description), ADR-0008 (an application joins as a producer through a thin **adapter**
   that only translates; every generic data-plane bridge is built once in the runtime commons),
   ADR-0009 (semver states intent, a content digest establishes identity — capability versioning
-  plus the one fabric-wide deprecation policy), and ADR-0010 (KMI is a **bridge** between C2PA and
+  plus the one fabric-wide deprecation policy), ADR-0010 (KMI is a **bridge** between C2PA and
   MovieLabs OMC, not a third lineage vocabulary — §3's relations are retained as the fabric-internal
-  form and projected onto both, explicitly *not* losslessly).
+  form and projected onto both, explicitly *not* losslessly), and ADR-0011 (deliberation, voting and
+  dissent preservation are **non-goals** — koine specifies what crosses an organizational boundary,
+  not how one organization decides; every gate it defines is unilateral, nothing exists to profile as
+  of 2026-08-18, and the record states the trigger that re-opens the verdict, while leaving G1/G5/G6
+  measured *Partial* with findings GOV-1…GOV-3 open).
   `decisions/README.md` carries the full table — keep this list and that table in step. The deployment-history ADRs (ADR-0002/0003/0004 — bridge
   reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
   integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently
