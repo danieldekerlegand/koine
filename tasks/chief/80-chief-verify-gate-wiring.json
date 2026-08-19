@@ -4,7 +4,10 @@
   "branchName": "chief/80-chief-verify-gate-wiring",
   "parked": false,
   "dependsOn": [],
-  "touches": [".chief", "scripts"],
+  "touches": [
+    ".chief",
+    "scripts"
+  ],
   "iters": 5,
   "warmup": [
     ".chief/verify.sh",
@@ -23,8 +26,8 @@
         "`.chief/verify.sh --plan` prints the selection without running anything, and a `.chief/verify-test.sh` asserts the path→gate mapping so the dispatch is checkable rather than read.",
         "**Prove it BLOCKS**: a deliberately broken branch (a dangling Markdown link) is shown to fail the gate, and the proof is recorded in the notes. A gate nobody has seen refuse is not known to work — this is the story `196` credited with catching a real pre-existing defect."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "verify.sh is now a changed-path dispatch table (4 gates: guard-doc-integrity, guard-doc-links, guard-categories, verify-selftest); unruled paths select the umbrella = every gate. .chief/verify-test.sh: 21 passed, 0 failed. Real branch gate green (rc=0, doc-integrity OK on 35 files / 572 links, doc-links 0 dead vs 0 on main). BLOCK PROOF: on a scratch branch a dangling link appended to README.md made the gate exit rc=1 — 'gate \"guard-doc-integrity\" FAILED (selected by changed path README.md) - blocking merge'; branch discarded, gate back to rc=0. Wiring it also caught a real pre-existing defect: docs/README.md:8 linked out of the repo to ../../rosetta/... — converted to a text citation."
     },
     {
       "id": "US-2",
@@ -36,8 +39,8 @@
         "The guards live in `scripts/` beside the existing two and are runnable standalone, so CI and a developer run the same command — never a check that exists only inside the hook.",
         "Each new guard is MUTATION-CHECKED and the mutation recorded: break a `$ref`, duplicate a registry id, and confirm each fails. An unmutated guard is a guess."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Two new standalone guards beside the existing two: `node scripts/check-schemas.mjs` (9 schemas, 274 schema positions, 78 $refs, 3 fixtures — draft-2020-12 dialect, $id matches path, every key at a schema position is a real keyword, every $ref resolves file-then-pointer) and `node scripts/check-registry.mjs` (7 TSVs, 27 relation names unique across the core file and every domain file — column shape, duplicate ids, and the cross-file pointers: domain prefix vs `domain`, media-types `lineage_relation` -> a declared relation, entity-types `refinement_enum` -> an enum file whose token column matches). Both wired into .chief/verify.sh as guard-schemas / guard-registry with narrow rules (`schemas/*.schema.json`, `schemas/fixtures/*.json`, `registry/*.tsv`); `scripts/*` now selects all five guards. MUTATION-CHECKED, 8 mutations, all rc=1: M1 $ref nodeRef->nodeReff (dangles), M2 additionalProperties->additionalProperies (not a keyword), M3 $id drifted from filename, M4 duplicate relation id part_of, M5 a row missing a tab (7 fields, header declares 8), M6 lineage_relation media:transcoded_from names no relation, M7 an unregistered registry TSV, M8 soc:spouse_of stripped of its prefix; tree restored, both guards rc=0 after. verify-test.sh: 30 passed, 0 failed. Full branch gate CHIEF_BASE_BRANCH=main .chief/verify.sh: rc=0, all six gates green (doc-integrity OK 35 files/572 links, doc-links 0 dead vs 0 on main, categories 20 tasklists, schemas OK, registry OK, selftest 30/30)."
     }
   ]
 }
