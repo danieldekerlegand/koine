@@ -4,7 +4,10 @@
   "branchName": "chief/81-governance-taxonomy-position",
   "parked": false,
   "dependsOn": [],
-  "touches": ["specs", "decisions"],
+  "touches": [
+    "specs",
+    "decisions"
+  ],
   "iters": 6,
   "warmup": [
     "specs/identity.md",
@@ -23,8 +26,8 @@
         "The citation makes the NON-overlap explicit, so a reader cannot mistake validation for prior art over koine's own claims.",
         "It is pinned by arXiv id and date, not by title alone — this repo's own upstream-pins discipline (`76`)."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "KCB 0.4.4 §1.2 (informative) + docs/reference/positioning.md rewrite + README clause. Paper verified against the live arXiv record, not the brief: authors Richard Kang & Yudho Diponegoro, submitted 30 Jun 2026, five protocols (MCP v1.1, A2A v1.0.1, ACP, ANP, ERC-8004) x six dimensions (G1-G6), conclusion quoted verbatim. Non-overlap stated in both directions. Cited by arXiv id + date; deliberately not a row in upstream-standards.md. Found and fixed a real defect: positioning.md attributed 'economic / cost semantics' to the paper, which its SIII-A explicitly puts OUTSIDE governance scope. check-doc-integrity.mjs: 35 files, 575 relative links checked, mirrors agree at 0.4.4, 1 error - docs/README.md:8 - byte-identical on HEAD before the change (pre-existing, escapes-repo link to ../../rosetta). check-doc-links.mjs: 0 dead references. check-tasklist-categories.mjs: OK, 20 tasklists categorized."
     },
     {
       "id": "US-2",
