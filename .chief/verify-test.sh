@@ -44,7 +44,7 @@ plan_is() {
   fi
 }
 
-ALL_GATES="guard-doc-integrity guard-doc-links guard-categories verify-selftest"
+ALL_GATES="guard-doc-integrity guard-doc-links guard-categories guard-schemas guard-registry verify-selftest"
 
 echo "verify-test: dispatch (.chief/verify.sh --plan)"
 
@@ -61,7 +61,7 @@ plan_is "a tasklist edit → the category gate only" \
   tasks/chief/80-chief-verify-gate-wiring.json
 
 plan_is "a guard script → the guards themselves" \
-  "guard-doc-integrity guard-doc-links guard-categories" -- \
+  "guard-doc-integrity guard-doc-links guard-categories guard-schemas guard-registry" -- \
   scripts/check-doc-integrity.mjs
 
 plan_is "the gate itself → this self-test" \
@@ -72,20 +72,44 @@ plan_is "no-gate path → nothing selected, passes fast" \
   "verify: 1 changed file(s), none with a configured gate — passing fast" -- \
   LICENSE
 
-# The default that makes the gate safe to leave alone. koine's schemas and its
-# shared registry are vendored downstream by drift-gated copy, so a file class
-# with no rule must cost the world, not nothing.
-plan_is "an unruled path (registry) → the umbrella, every gate" \
-  "$ALL_GATES" -- \
+# The two asset classes downstream repos vendor by drift-gated copy. Each has its
+# own guard, so each now has its own narrow rule — a schema edit must not pay for
+# the registry, and neither pays for the documentation gates.
+plan_is "a schema → the schema guard only" \
+  "guard-schemas" -- \
+  schemas/grounding-pack.schema.json
+
+plan_is "a fixture → the schema guard (it names the schema set)" \
+  "guard-schemas" -- \
+  schemas/fixtures/finetune-job.json
+
+plan_is "the core registry → the registry guard only" \
+  "guard-registry" -- \
   registry/relations.tsv
 
-plan_is "an unruled path (schemas) → the umbrella, every gate" \
-  "$ALL_GATES" -- \
-  schemas/grounding-pack.schema.json
+plan_is "a domain + enum registry file → the registry guard" \
+  "guard-registry" -- \
+  registry/relations/media.tsv registry/enums/modality.tsv
+
+# The narrow globs are on the FILE TYPE, not the directory, so each of these
+# dirs keeps its prose gated — a README under schemas/ is still Markdown.
+plan_is "a README beside them is still prose, not an asset" \
+  "guard-doc-integrity guard-doc-links" -- \
+  schemas/README.md registry/README.md
 
 plan_is "mixed diff → the union, in gate-table order" \
   "guard-doc-integrity guard-doc-links guard-categories" -- \
   tasks/chief/80-chief-verify-gate-wiring.json specs/identity.md
+
+plan_is "an asset diff → both asset guards, in gate-table order" \
+  "guard-schemas guard-registry" -- \
+  registry/media-types.tsv schemas/provenance.schema.json
+
+# The default that makes the gate safe to leave alone: a file class nobody has
+# ruled on costs the world, not nothing.
+plan_is "an unruled path → the umbrella, every gate" \
+  "$ALL_GATES" -- \
+  policy/license-classes.json
 
 plan_is "one unruled path in a mixed diff still widens it" \
   "$ALL_GATES" -- \
@@ -183,6 +207,18 @@ if (cd "$REPO_ROOT" && "$VERIFY" --run tasks/chief/80-chief-verify-gate-wiring.j
   ok "a tasks-only diff runs the real guard and exits 0"
 else
   bad "a tasks-only diff runs the real guard and exits 0"
+fi
+
+if (cd "$REPO_ROOT" && "$VERIFY" --run schemas/provenance.schema.json >/dev/null 2>&1); then
+  ok "a schema diff runs the real schema guard and exits 0"
+else
+  bad "a schema diff runs the real schema guard and exits 0"
+fi
+
+if (cd "$REPO_ROOT" && "$VERIFY" --run registry/relations.tsv >/dev/null 2>&1); then
+  ok "a registry diff runs the real registry guard and exits 0"
+else
+  bad "a registry diff runs the real registry guard and exits 0"
 fi
 
 # ── Gate commands: standalone, and nothing that lives only in the hook ────────

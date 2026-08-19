@@ -30,6 +30,14 @@ vocabulary.
   Both failures are otherwise silent. It checks **three of the four mirrors** — the *Current
   state* prose below is **not** checked, so a stale version there passes CI; update that line by
   hand and read it back. `node scripts/check-tasklist-categories.mjs` guards `tasks/chief/`.
+- The other two machine-readable surfaces have guards of their own, and both are things a
+  downstream repo vendors by drift-gated copy: `node scripts/check-schemas.mjs` checks every
+  `schemas/*.schema.json` for the draft-2020-12 dialect, keywords that are actually keywords
+  (a misspelled one is silently ignored, so the constraint it means is absent) and `$ref`s
+  that resolve; `node scripts/check-registry.mjs` checks `registry/`'s column shape, that no
+  id is declared twice across the core file and every domain file, and that each cross-file
+  pointer resolves. Every guard runs at merge — `.chief/verify.sh` selects them from the
+  changed paths, and `.chief/verify-test.sh` asserts that mapping.
 - **Every normative reference to an external standard names a version or dated revision** — a bare
   reference is a defect. `docs/reference/upstream-standards.md` is the **table of record** for those pins (the
   reverse of the version/status mirrors above: an upstream version is a shared fact, so it lives in

@@ -46,11 +46,17 @@ set -uo pipefail
 # regression and tolerates pre-existing rot, so the rot is retired deliberately
 # instead of blocking every merge. guard-doc-integrity is a wall — it covers the
 # published contract surface, where the count is already zero.
+#
+# guard-schemas and guard-registry are walls too, and for the same reason: both
+# cover machine-readable assets that downstream repos vendor by drift-gated
+# copy, so their failures do not stay in this repo.
 gate_table() {
   cat <<'EOF'
 guard-doc-integrity|.|node scripts/check-doc-integrity.mjs
 guard-doc-links|.|node scripts/check-doc-links.mjs --ratchet --base "${CHIEF_BASE_BRANCH:-main}"
 guard-categories|.|node scripts/check-tasklist-categories.mjs
+guard-schemas|.|node scripts/check-schemas.mjs
+guard-registry|.|node scripts/check-registry.mjs
 verify-selftest|.|if [ "${CHIEF_VERIFY_INNER:-0}" = 1 ]; then echo "verify-selftest: already inside the self-test — skipping"; else bash .chief/verify-test.sh; fi
 EOF
 }
@@ -65,10 +71,22 @@ rule_table() {
 .chief/*|verify-selftest
 # A guard SCRIPT is the gate, so editing one runs the guards themselves — the only
 # way to learn that a guard still works is to run it.
-scripts/*|guard-doc-integrity guard-doc-links guard-categories
+scripts/*|guard-doc-integrity guard-doc-links guard-categories guard-schemas guard-registry
 # A tasklist is JSON, not prose: the category vocabulary is the whole of what can
 # be wrong with it, and the doc gates have nothing to say about it.
 tasks/*|guard-categories
+# The machine-readable twin of the specs. A schema that parses is not a schema
+# that constrains: a misspelled keyword is silently ignored and a dangling $ref
+# leaves its position unconstrained, so the document still loads and validates
+# less than it says. Fixtures ride the same gate — they are checked against the
+# schema set they name.
+schemas/*.schema.json|guard-schemas
+schemas/fixtures/*.json|guard-schemas
+# The shared vocabularies, which are data. A relation's signature fixes canonical
+# argument order (KGP §3.2), so a shifted column or a name declared twice is two
+# claim ids for the same claim — in this repo and in every repo that vendors the
+# copy. Matches the domain files under relations/ and the enums/ too.
+registry/*.tsv|guard-registry
 # Every Markdown file, wherever it lives. Both failures the doc guards catch are
 # SILENT — a dead link and a status table that disagrees with the spec header it
 # mirrors both read as ordinary prose.
