@@ -26,5 +26,6 @@
       "passes": false,
       "notes": "Cross-repo (lugh). Parked in koine as a ROADMAP F3 marker."
     }
-  ]
+  ],
+  "supersededBy": "lugh:30-kft-provider-manifest"
 }

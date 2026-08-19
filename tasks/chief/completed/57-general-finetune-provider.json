@@ -26,5 +26,6 @@
       "passes": false,
       "notes": "Cross-repo (agora). Parked in koine as a ROADMAP F3 marker; move to agora/tasks/chief/ to activate."
     }
-  ]
+  ],
+  "supersededBy": "agora:50-finetune-live-endpoints"
 }

@@ -26,5 +26,6 @@
       "passes": false,
       "notes": "Cross-repo (agora). Parked in koine as a ROADMAP F3/F5 marker."
     }
-  ]
+  ],
+  "supersededBy": "agora:41-finetune-job-validator"
 }
