@@ -21,6 +21,7 @@ reference out of this repo resolves for nobody who has only this one —
 
 - [Koine in context: A2A, MCP, and existing standards](reference/positioning.md)
 - [Upstream standards — what koine pins, and the drift check](reference/upstream-standards.md)
+- [The six governance dimensions, mapped onto koine](reference/governance-taxonomy-map.md)
 
 ## Explanation
 

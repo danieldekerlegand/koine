@@ -47,7 +47,7 @@ koine holds contract **shape**, never a deployment instance.
   with a golden fixture, updated to the current spec versions), `registry/` (agnostic binary
   relations + entity/media kinds + enums; signatures immutable once published), `policy/`
   (license-class + trust-tier), `scenarios/` (six end-to-end pressure tests + the KCS stress
-  test), `decisions/` (five agnostic ADRs).
+  test), `decisions/` (eight agnostic ADRs).
 - **Chief program:** 4/4 built-program tasklists (`10`–`40`) merged; **13 koine-owned forward
   tasklists authored** (`tasks/chief/*.json`, `passes:false`, unrun) — pending a run, not merged;
   plus **17 parked markers** — proposal-only Phase-F stems and cross-repo runtime built downstream
@@ -323,12 +323,13 @@ stems and the Phase-1 stems — the doc-sync (`chief/50`) plus the two ratificat
 
 **Canonical reference surfaces (kept in place — this roadmap links, never duplicates them):**
 - [`specs/`](specs/) — the six protocol contracts ([`identity.md`](specs/identity.md) · [`grounding-pack.md`](specs/grounding-pack.md) · [`media-interchange.md`](specs/media-interchange.md) · [`capability-bus.md`](specs/capability-bus.md) · [`conformance-scenario.md`](specs/conformance-scenario.md) · [`fine-tuning.md`](specs/fine-tuning.md)) and their [`README.md`](specs/README.md).
-- [`decisions/`](decisions/) — the agnostic ADRs: [ADR-0001](decisions/ADR-0001-control-plane-topology.md) (control-plane topology) · [ADR-0005](decisions/ADR-0005-otio-canonical-timeline.md) (OTIO) · [ADR-0006](decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) (KGP canonical + projection) · [ADR-0007](decisions/ADR-0007-self-describing-participant.md) (self-describing participant) · [ADR-0008](decisions/ADR-0008-fabric-producer-adapter.md) (fabric-producer adapter).
+- [`decisions/`](decisions/) — the agnostic ADRs: [ADR-0001](decisions/ADR-0001-control-plane-topology.md) (control-plane topology) · [ADR-0005](decisions/ADR-0005-otio-canonical-timeline.md) (OTIO) · [ADR-0006](decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) (KGP canonical + projection) · [ADR-0007](decisions/ADR-0007-self-describing-participant.md) (self-describing participant) · [ADR-0008](decisions/ADR-0008-fabric-producer-adapter.md) (fabric-producer adapter) · [ADR-0009](decisions/ADR-0009-capability-versioning-deprecation.md) (capability versioning + deprecation) · [ADR-0010](decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md) (KMI lineage bridge) · [ADR-0011](decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md) (deliberation / voting / dissent are non-goals).
 - [`schemas/`](schemas/) · [`registry/`](registry/) · [`policy/`](policy/) — the machine-readable twins, shared vocabularies, and license/trust policy.
 - [`scenarios/`](scenarios/) — the end-to-end pressure tests that gate ratification.
 
 **Guides & positioning:**
-- [`docs/reference/positioning.md`](docs/reference/positioning.md) — how koine relates to A2A, MCP, and mature domain standards (the governance gaps it fills; what it builds on rather than replaces), and the **prior art it cites and dismisses** — nanopublications/Trusty URIs, C2PA, Croissant, Frictionless, Pact, DIDs/VCs.
+- [`docs/reference/positioning.md`](docs/reference/positioning.md) — how koine relates to A2A, MCP, and mature domain standards (the semantic gaps it fills — and, since the 2026-08-18 correction, what the Kang & Diponegoro *governance*-gap analysis does and does not corroborate; what it builds on rather than replaces), and the **prior art it cites and dismisses** — nanopublications/Trusty URIs, C2PA, Croissant, Frictionless, Pact, DIDs/VCs.
+- [`docs/reference/governance-taxonomy-map.md`](docs/reference/governance-taxonomy-map.md) — the six governance dimensions of Kang & Diponegoro (arXiv:2606.31498) measured against the specs, section by section: which are **partial** and precisely what is missing from each (including the scenario-replay vs decision-replay distinction), which are **absent**, and the three shortfalls filed as findings **GOV-1…GOV-3**. The three absences are decided in [ADR-0011](decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md) as **non-goals**, with the trigger that re-opens the verdict.
 - [`docs/reference/upstream-standards.md`](docs/reference/upstream-standards.md) — the **pin table**: which version or dated revision of each external standard koine was validated against, and the drift-check cadence that keeps it honest.
 - [`docs/explanation/self-describing-participant.md`](docs/explanation/self-describing-participant.md) — the adopter checklist (namespace, capability manifest, egress policy, vocabulary mappings).
 - [`docs/guides/walkthrough-capability-bus.md`](docs/guides/walkthrough-capability-bus.md) — a KCB advertise → discover → direct-dial walkthrough with real payloads.

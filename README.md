@@ -60,7 +60,7 @@ ratified only after passing a concrete pressure test.
 | [Identity & Namespace](specs/identity.md) (KINP) | How every entity gets a stable, shared name — the keystone the rest build on | 0.2.1 | ✅ ratified |
 | [Grounding-Pack](specs/grounding-pack.md) (KGP) | How knowledge (facts, relationships, graphs) is exchanged | 0.5.2 | 🚧 candidate |
 | [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | 0.3.2 | 🚧 candidate |
-| [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.4.3 | 🚧 candidate |
+| [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.4.5 | 🚧 candidate |
 | [Conformance-Scenario](specs/conformance-scenario.md) (KCS) | A declarative scenario — data, not code — that drives several **real** participants over their actual connections at once, and checks properties spanning all four planes, each tied to the clause it tests | 0.2.0 | ✅ ratified |
 | [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 0.5.0 | 🚧 candidate |
 
@@ -111,7 +111,14 @@ The best way to understand the protocols is to watch one work end to end:
 Koine is a **specification, not a runtime** ([agora](https://github.com/danieldekerlegand/agora)
 is the runtime that implements it), and it layers *above* A2A and MCP rather than competing with
 them — reusing them, and mature domain standards, for what they already do well, and adding only
-the identity/knowledge/media/capability *meaning* those layers leave undefined. The full
+the identity/knowledge/media/capability *meaning* those layers leave undefined. That a layer
+*above* these protocols is a real architectural position is corroborated independently — Kang &
+Diponegoro, *Governance Gaps in Agent Interoperability Protocols*,
+[arXiv:2606.31498](https://arxiv.org/abs/2606.31498) (30 June 2026), conclude that what is missing
+above MCP/A2A "constitutes a missing architectural layer … not a missing feature within them" — but
+on a **governance** axis (membership, deliberation, voting, dissent, escalation, audit) that does not
+overlap Koine's, so it validates the *shape* of the claim and nothing about the clauses. The
+citation and its limits are in [KCB §1.2](specs/capability-bus.md); the full
 positioning — the gaps it fills and exactly what it builds on — is in
 **[`docs/reference/positioning.md`](docs/reference/positioning.md)**.
 

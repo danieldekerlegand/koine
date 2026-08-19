@@ -1,17 +1,21 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.4.3
+**Spec version:** 0.4.5
 **Status:** Candidate
-**Last updated:** 2026-08-13
+**Last updated:** 2026-08-18
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
 capability consumers (most participants are both provider and consumer).
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for identifiers;
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
-> **Status note (0.4.3):** stays **Candidate**, on the same two counts as 0.4.0 — 0.4.1 added a
-> transition clause (§2.3), 0.4.2 corrected two upstream references (§1.1) and 0.4.3 pins the MCP
-> revision and audits which wire each verb assumes (§1.1, §4.1); none of the three is a gate. 0.3.0 changed the *shape* of the
+> **Status note (0.4.5):** stays **Candidate**, on the same two counts as 0.4.0 — 0.4.1 added a
+> transition clause (§2.3), 0.4.2 corrected two upstream references (§1.1), 0.4.3 pins the MCP
+> revision and audits which wire each verb assumes (§1.1, §4.1), 0.4.4 adds **§1.2**, an
+> INFORMATIVE record of the layer claim and the external analysis that corroborates it
+> (arXiv:2606.31498, 30 June 2026), and 0.4.5 points §1.2's closing bullet at **ADR-0011**, which
+> decides the three governance dimensions KCB does not implement as **non-goals** — no normative
+> clause, field, or manifest byte moves, and none of the five is a gate. 0.3.0 changed the *shape* of the
 > manifest — it is now an A2A AgentCard extension (§2), not a standalone
 > `/.well-known/kcb-manifest.json` — and that re-validation is still outstanding. 0.4.0 adds the
 > capability-versioning surface (§7, wired through §2/§2.1/§3/§5) per
@@ -31,7 +35,9 @@ carries.
 > **§1.1**; it changes no KCB clause, field, or manifest shape, so the two legs are again restated
 > unchanged. 0.4.3 pins **MCP revision 2026-07-28** in the same §1.1 table and adds **§4.1**, the
 > per-verb audit of which MCP wire each clause assumes; it adds no field and removes none, and the
-> two legs are restated unchanged once more.
+> two legs are restated unchanged once more. 0.4.4 adds **§1.2**, which is INFORMATIVE and cites
+> external corroboration for where KCB sits; it defines nothing, delegates to nothing, and the two
+> legs are restated unchanged again.
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
 > capability bus moves *capability*: how a participant advertises what it can do, how orgs and
@@ -88,6 +94,67 @@ why §4.1 states, clause by clause, which wire each of KCB's five verbs assumes.
 own revision is a property of the MCP endpoint it publishes (`params.mcp`, §2), not a KCB field:
 this pin says what KCB was written and validated against, and a participant still on the older wire
 is a participant KCB describes rather than one it excludes.
+
+### 1.2 The layer claim, and the external analysis that corroborates it (INFORMATIVE)
+
+This section binds nothing. It records **why** the sentence above the scope list — *KCB is mostly a
+convention over existing standards, not a new runtime* — is a defensible position rather than a
+preference, and it names the one piece of **external, independent** evidence koine has for the
+shape of that claim.
+
+**The claim.** KCB does not compete with MCP or A2A; it sits *above* them and gives their traffic a
+meaning they leave undefined — what a capability **is** (§7), what invoking it **costs** (§5), what a
+grant **permits**, which world a port is scoped to (§2.1). The §1.1 pins are the other half of the
+same posture: a layer above names the version of what it is above.
+
+**The corroboration.** Richard Kang and Yudho Diponegoro, *Governance Gaps in Agent Interoperability
+Protocols: What MCP, A2A, and ACP Cannot Express*, **arXiv:2606.31498**, submitted **30 June 2026**,
+reaches the same structural conclusion from an entirely different direction and states it in one
+sentence:
+
+> "agent community governance constitutes a missing architectural layer above current
+> interoperability standards, not a missing feature within them."
+
+**Its scope, stated so it is not overread.** It is a systematic gap analysis of **five** protocols —
+**MCP** (v1.1), **A2A** (v1.0.1), **ACP**, **ANP**, **ERC-8004** — against a **six-dimension
+governance taxonomy** derived from organizational theory: **G1 membership**, **G2 deliberation**,
+**G3 voting**, **G4 dissent preservation**, **G5 human escalation**, **G6 audit/replay**. Each
+protocol–dimension pair is classified *Supported* / *Partial* / *Absent* **on what the specification
+encodes, not on what could be built on top** — the authors' own stated limitation — and the paper
+separates gaps that a protocol's extension mechanism could close from gaps that require a new layer.
+It is a **taxonomy, not a specification**: it defines no wire format, no verb, and no field, so
+there is **nothing here to adopt by reference** in the sense of §1.1 or of KFT §4.1.1. That is also
+why the paper is **not** a row in
+[`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md): a pin records what a
+normative clause was validated against, and no KCB clause delegates to this paper. A prior-art
+citation is not a pin.
+
+**What it does and does not say about koine — the non-overlap is the point.** The paper's axis is
+**collective decision-making among agents**; KCB's axis is **interchange semantics between
+organizations** — license class, egress class, trust tier, budget ceiling, capability grant. None of
+G1–G6 is one of those, and none of those is one of G1–G6. Read that in both directions:
+
+- **Toward koine, it is validation and not prior art.** The paper does not analyse, anticipate, or
+  occupy a single KCB clause. It does not evaluate koine at all. What it corroborates is the *shape*
+  of the claim this section opens with — that a layer above MCP/A2A is a real architectural position
+  and not a failure to read the protocols — reached independently, on a different axis, by authors
+  with no knowledge of this repo. It retires no koine clause and establishes no priority over one.
+- **Toward the paper, koine is not an answer to it.** koine occupies a *different* layer above the
+  same two protocols. Nothing in this spec implements G2 deliberation, G3 voting, or G4 dissent
+  preservation, and a reader must not take "koine is the missing layer" from this citation — the
+  paper names a missing **governance** layer, koine is a missing **semantics** layer, and the two
+  are neighbours rather than the same thing.
+
+**That last bullet is a decision, not an omission.**
+[`../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md`](../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)
+records **G2**, **G3** and **G4** as explicit **non-goals** for the fabric — with the evidence (every
+gate koine specifies is unilateral and refusal is always available; a sweep on 2026-08-18 found no
+standards-body specification of any of the three to profile) and, more usefully, the **trigger that
+re-opens the verdict**: a use case in which participants under different KINP §3.4 minting authorities
+must reach one binding joint decision, or a standard koine could profile. Read alongside
+[`../docs/reference/governance-taxonomy-map.md`](../docs/reference/governance-taxonomy-map.md), which
+measures all six dimensions against the specs and keeps the shortfalls that *are* on koine's axis open
+as findings.
 
 ---
 
@@ -700,6 +767,50 @@ that scenario's *Findings* and *Re-ratification* sections. The extension-shape r
 outstanding and independent.
 
 ## Changelog
+
+- **0.4.5** (2026-08-18) — **Candidate.** **§1.2**'s closing bullet — *no KCB clause implements G2
+  deliberation, G3 voting, or G4 dissent preservation* — now points at
+  [`../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md`](../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md),
+  which decides all three as **non-goals** for the fabric. *Why the pointer is in the spec at all:*
+  0.4.4 left that bullet stating a **fact**, and a fact of the form "koine does not do X" is read as
+  an omission until something says it is a choice — the reader who asks *"omission or decision?"* asks
+  it here, so the answer belongs here. *What the ADR carries, so this section does not:* the evidence
+  (every gate KCB and its sibling specs define is **unilateral** and refusal is always available, so
+  there is nothing to aggregate preferences over; a sweep dated 2026-08-18 found **no** standards-body
+  specification of deliberation, preference aggregation or dissent to profile — the adopt-by-reference
+  option was tried first and came back empty), the **re-open trigger** (participants under different
+  KINP §3.4 minting authorities needing one binding joint decision, or a standard appearing), and the
+  explicit carve-out that G1 / G5 / G6 stay measured *Partial* with findings **GOV-1…GOV-3** open —
+  "governance is not koine's axis" is **not** licence to dismiss those. *Classification:* **patch** —
+  §1.2 is informative, the addition is a cross-reference, no field is added or removed, nothing is
+  narrowed, and a manifest conformant at 0.4.4 is conformant unchanged. Both re-ratification legs are
+  restated and neither moves; **0.5.0 remains spoken for** by §7.3's removal of §2.2's standalone
+  manifest location.
+- **0.4.4** (2026-08-18) — **Candidate.** Added **§1.2**, INFORMATIVE: the layer claim KCB has always
+  made — *a convention over MCP/A2A, not a new runtime* — plus the first **external, independent**
+  corroboration of its shape, Kang & Diponegoro, *Governance Gaps in Agent Interoperability
+  Protocols*, **arXiv:2606.31498**, **30 June 2026**. *Why it is in the spec and not only in
+  [`../docs/reference/positioning.md`](../docs/reference/positioning.md):* KCB is the spec that asserts
+  the position, so the evidence for it belongs where the assertion is; the positioning document
+  points here. *What the citation is careful about, in three parts.* **(i) Scope.** The paper analyses
+  **five** protocols (MCP v1.1, A2A v1.0.1, ACP, ANP, ERC-8004) against a **six-dimension governance
+  taxonomy** (membership, deliberation, voting, dissent preservation, human escalation, audit/replay),
+  classified *Supported/Partial/Absent* on what a specification **encodes** — the authors' own stated
+  limitation, restated in §1.2 so a reader does not take the matrix for a claim about what is
+  buildable. **(ii) Non-overlap, in both directions.** The paper's axis is collective decision-making;
+  KCB's is interchange semantics — license class, egress class, trust tier, budget ceiling, capability
+  grant. No dimension of one is a dimension of the other, so the paper is **validation of the layer
+  claim and prior art over nothing** — it retires no clause and establishes priority over none — and,
+  read the other way, **koine is not an answer to the paper**: no KCB clause implements deliberation,
+  voting, or dissent preservation, and §1.2 says so rather than letting the citation imply it.
+  **(iii) Pin discipline.** Cited by **arXiv id and submission date**, never by title alone, per
+  [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) — and deliberately
+  **not** a row in that table: it is a taxonomy, not a specification, no KCB clause delegates to it,
+  and a prior-art citation is not a pin. *Classification:* **patch** — §1.2 is informative, adds no
+  field, removes none, and narrows nothing; a manifest conformant at 0.4.3 is conformant unchanged.
+  Both re-ratification legs are restated and neither moves. (**0.5.0 remains spoken for** by §7.3's
+  removal of §2.2's standalone manifest, so an informative addition could not have taken the minor in
+  any case.)
 
 - **Editorial** (2026-08-13) — Fixed the **direction of authority** on §1.1's pin table. It read
   *"the pin of record is this table"*, which conflicted with KMI §4.1, KFT §3.2 and §4.1.1, and

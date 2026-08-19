@@ -4,7 +4,10 @@
   "branchName": "chief/81-governance-taxonomy-position",
   "parked": false,
   "dependsOn": [],
-  "touches": ["specs", "decisions"],
+  "touches": [
+    "specs",
+    "decisions"
+  ],
   "iters": 6,
   "warmup": [
     "specs/identity.md",
@@ -23,8 +26,8 @@
         "The citation makes the NON-overlap explicit, so a reader cannot mistake validation for prior art over koine's own claims.",
         "It is pinned by arXiv id and date, not by title alone — this repo's own upstream-pins discipline (`76`)."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "KCB 0.4.4 §1.2 (informative) + docs/reference/positioning.md rewrite + README clause. Paper verified against the live arXiv record, not the brief: authors Richard Kang & Yudho Diponegoro, submitted 30 Jun 2026, five protocols (MCP v1.1, A2A v1.0.1, ACP, ANP, ERC-8004) x six dimensions (G1-G6), conclusion quoted verbatim. Non-overlap stated in both directions. Cited by arXiv id + date; deliberately not a row in upstream-standards.md. Found and fixed a real defect: positioning.md attributed 'economic / cost semantics' to the paper, which its SIII-A explicitly puts OUTSIDE governance scope. check-doc-integrity.mjs: 35 files, 575 relative links checked, mirrors agree at 0.4.4, 1 error - docs/README.md:8 - byte-identical on HEAD before the change (pre-existing, escapes-repo link to ../../rosetta). check-doc-links.mjs: 0 dead references. check-tasklist-categories.mjs: OK, 20 tasklists categorized."
     },
     {
       "id": "US-2",
@@ -35,8 +38,8 @@
         "Where coverage is partial and the shortfall matters, it becomes a named finding rather than prose — the `72-kgp-findings-closure` posture.",
         "The mapping lives where a future scan will find it, so this question is answered once."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "docs/reference/governance-taxonomy-map.md (new, informative, binds no clause and moves no spec version) + pointers from docs/README.md, positioning.md, ROADMAP.md. All six graded on the paper's own criterion: G1 membership Partial, G5 human escalation Partial-narrow, G6a audit Partial, G6b replay Partial, G2/G3/G4 Absent (verdict deferred to US-3's decision record). For each Partial the doc names which spec covers it, what it covers and what it does not — KCS replay is scenario re-execution against live participants, NOT decision reconstruction from a log, stated as a four-row comparison table, plus the third sense (KGP §6 idempotent redelivery). Three shortfalls filed as named findings in the upstream-standards.md register posture: GOV-1 (a grant is issued and never ends, KCB §5/§7.3), GOV-2 (the fabric's gates decide and record nothing, KGP §7 / KCB §5 / KFT §4,§8.1), GOV-3 (a KCS report is content-addressable but its run is not reproducible from it — evidence for KCS §7 OQ3, the V-8 posture). None is a gate; no re-ratification leg moved. Also corrected two errors in the brief's own six-row table: G5 human escalation was missing and audit/replay is one dimension (G6), not two. check-doc-integrity.mjs: 36 files, 591 relative links checked, all six mirrors agree, 1 error — docs/README.md:8, verified byte-identical to HEAD (pre-existing escapes-repo link), so no new failure. check-doc-links.mjs: 0 dead references. check-tasklist-categories.mjs: OK, 20 tasklists categorized."
     },
     {
       "id": "US-3",
@@ -48,8 +51,8 @@
         "If any is IN SCOPE, it is scoped as a PROFILE over an existing standard wherever one exists, never as an invention — the `78-kft-adopt-by-reference` rule. If no standard exists, that absence is recorded as part of the justification.",
         "The decision is a `decisions/` record, so it is citable and closes the question rather than being re-asked at every portfolio scan."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md (new). Explicit verdict per dimension: G2 deliberation NON-GOAL, G3 voting NON-GOAL, G4 dissent preservation NON-GOAL and shown *dependent* on G3 (no collective decision output to preserve a minority position in; the property G4 protects is already how KGP behaves when two participants assert contradictory claims). Reasons measured, not asserted: every gate koine specifies is unilateral with refusal always available (KGP §7, KCB §5, KFT §4/§8.1), no cross-org edge requires a joint decision, and the one vote in the known implementations is intra-org answer selection — verified read-only in the sibling repo: Topology::{Pipeline,Star,Hierarchy,Voting}, AGGREGATION_MAJORITY_VOTE, 'the most common answer wins' — which has no quorum, no rounds and no positions and so is not G3 in the taxonomy's own terms. Criterion 3 (profile-over-standard) discharged by a dated prior-art sweep that came back EMPTY, recorded as an appendix table: FIPA standard set verified live at fipa.org (SC00029/30/33/36/37/61, © 2002) = task allocation + bilateral negotiation; ERC-5805 'Voting with delegation' verified at eips.ethereum.org = Stagnant, created 2022-07-04, excludes proposal mechanics and vote execution; dissent has no standards-body work; IETF 126 (Vienna 18-24 Jul 2026) agent BoFs agentproto/DAWN/DMSC verified at ietf.org/blog/ietf126-bofs — none scopes collective decision-making. Re-open trigger stated as three checkable conditions (T1 binding joint decision across two KINP §3.4 minting authorities, T2 a standard to profile, T3 a koine gate ceasing to be unilateral) plus an explicit what-does-NOT-re-open list. Carve-out: G1/G5/G6 stay measured Partial with findings GOV-1..GOV-3 open, and G5 is named as undecided rather than a non-goal. KCB 0.4.4 -> 0.4.5 (patch) so §1.2's closing bullet points at the ADR; four mirrors updated; also fixed two stale ADR lists (ROADMAP 'five agnostic ADRs' -> eight, and its ADR line missing 0009/0010). VERIFICATION: .chief/verify.sh -> 'all selected gates green - allowing merge'. check-doc-integrity.mjs: 37 markdown files, 617 relative links checked, all 3 status tables match their headers, OK with 0 errors (the docs/README.md:8 error the earlier stories baselined is gone on HEAD, not touched by me). check-doc-links.mjs: 0 dead vs 0 on main. check-tasklist-categories.mjs: OK, 19 tasklists categorized."
     }
   ]
 }
