@@ -75,6 +75,14 @@ The column's three states mean:
   has nothing scheduled that would change that; the honest move is to schedule it, not to promote
   the spec.
 
+**A second gap sits underneath the missing console.** An attempt to encode a producer-conformance
+exercise as a KCS document — [`../docs/reference/interop-trial.md`](../docs/reference/interop-trial.md),
+finding **INT-11** — found that KCS §3's step vocabulary and §5's assertions range over *interactions
+between live participants*, and that no step means *"here is an artefact; is it conformant?"*. That
+is the first verdict a third-party implementer needs and the one they cannot currently obtain, since
+they have nobody to run against. Recorded against a **ratified** spec, so it is a re-open candidate
+for KCS's owner rather than anything scheduled here.
+
 **Who builds them.** Encoding and running are downstream runtime work, not contract work
 ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)): koine specifies the format (KCS) and
 holds the prose; the console that replays a KCS document lives in a runtime commons. Both halves are

@@ -1,6 +1,6 @@
 # koine documentation
 
-> **Status:** Current · **Updated:** 2026-08-14 · **Owner:** koine
+> **Status:** Current · **Updated:** 2026-08-18 · **Owner:** koine
 
 **koine** is the contracts source-of-truth for the ecosystem — the interchange protocols (KINP identity · KGP knowledge · KCB capability-bus · KMI media · KFT fine-tuning · KCS conformance), the shared relation registry, and the ADRs. It carries **no runtime code**: *koine specifies, agora implements*. It is a genuine interop contract **between two companies**, which is why its clauses are role-scoped and product-agnostic rather than fussy.
 
@@ -23,6 +23,7 @@ reference out of this repo resolves for nobody who has only this one —
 - [Upstream standards — what koine pins, and the drift check](reference/upstream-standards.md)
 - [The six governance dimensions, mapped onto koine](reference/governance-taxonomy-map.md)
 - [Implementability audit — what a third party receives, and what they cannot build from it](reference/implementability-audit.md)
+- [Interop trial — a spec-only producer, and what the receiving side does with it](reference/interop-trial.md)
 
 ## Explanation
 

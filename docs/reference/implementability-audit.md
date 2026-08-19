@@ -369,6 +369,14 @@ engineer will build them correctly from the text. What they cannot do:
 *implementation* of it. That is enough to build a participant; it is not enough for two participants
 built independently to talk.
 
+**This answer was subsequently tested by building the pack.** The
+[interop trial](interop-trial.md) emitted a five-claim GroundingPack from the receivable set alone
+and handed it to the schemas, the registry and the policy files. It confirms ten of the findings
+above and adds eleven that only appear when an artefact is assembled — including two cases (INT-6,
+INT-7) where KGP §2.1 refutes its own stated reproducibility guarantee with no ambiguity involved.
+Measured claim-id convergence between two spec-conformant producers: **1 of 5** at the hash, **0 of
+5** as identifiers.
+
 ---
 
 ## 5. What is not a gap
@@ -414,6 +422,9 @@ and no spec version or status changes.
 
 ## Changelog
 
+- **2026-08-18** — Cross-referenced the [interop trial](interop-trial.md), which tested §4's answer
+  by emitting a pack. No finding above changed: the trial confirms ten of them and opens nine of its
+  own under its own INT-n series.
 - **2026-08-18** — First audit. Nineteen findings against the receivable set; three closed, sixteen
   recorded. The hard question answered explicitly in §4: **no** for a conformant KGP producer,
   **partially** for KINP resolution, with the missing pieces enumerated.
