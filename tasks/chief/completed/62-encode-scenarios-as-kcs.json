@@ -1,0 +1,31 @@
+{
+  "name": null,
+  "project": "agora",
+  "category": "feature",
+  "branchName": "chief/62-encode-scenarios-as-kcs",
+  "description": "RETIRED 2026-08-20 — the downstream counterpart has MERGED (agora:75-encode-scenarios-as-kcs), so this marker is work that is already done. It sat in the backlog counted as pending; that is exactly the silence `chief/102` exists to close.\n\nCROSS-REPO — owned and built in AGORA, not koine. The six scenarios/ pressure tests are hand-walked PROSE; the KCS payoff is to encode each as a machine-replayable KCS document. KCS §6 names this a downstream conformance-console tasklist, so per ADR-0001 it lives in agora, not koine (koine holds KCS conformance-scenario.md + the prose scenarios; agora holds the console runtime). Tracked here as a koine ROADMAP Phase F4 marker ('agora chief/62-encode-scenarios-as-kcs'). PARKED in koine: placeholder; move to agora/tasks/chief/ to activate.\n\nDOWNSTREAM COUNTERPART (authored 2026-08-19): agora:75-encode-scenarios-as-kcs. This record is the marker, not the work. Retire it with supersededBy naming that tasklist once it merges — nothing in chief does this automatically.",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "agora:conformance-console"
+  ],
+  "iters": 6,
+  "warmup": [
+    "echo 'Cross-repo: implement in agora against koine specs/conformance-scenario.md §6 + the six scenarios/*.md'"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Encode the six prose scenarios as machine-replayable KCS documents",
+      "description": "In agora, encode scenarios/ as KCS documents (kcs:worlds-to-fabric, kcs:media-transform, the finetune passes, the format-stress). koine ROADMAP marker; work is agora's.",
+      "acceptanceCriteria": [
+        "Implemented in agora (not koine): each of koine's six scenarios/*.md is encoded as a machine-replayable KCS document per conformance-scenario.md §6 (observation model §4, cross-plane assertion vocabulary §5), named e.g. kcs:worlds-to-fabric, kcs:media-transform, the finetune passes, and the format-stress.",
+        "The encoded documents preserve each prose scenario's assertions (firewall, cost, world-scoping, egress/license gating) and conform to koine's ratified KCS 0.2.0 by reference (ADR-0001).",
+        "Runs under agora's own gates; no koine file is edited by this tasklist (the prose scenarios in koine remain the source)."
+      ],
+      "passes": false,
+      "notes": "Cross-repo (agora). Parked in koine as a ROADMAP F4 marker."
+    }
+  ],
+  "supersededBy": "agora:75-encode-scenarios-as-kcs"
+}
