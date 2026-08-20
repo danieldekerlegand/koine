@@ -1,0 +1,44 @@
+{
+  "project": "koine",
+  "category": "feature",
+  "branchName": "chief/71-autonomy-posture-clause",
+  "parked": true,
+  "description": "PARKED — raised 2026-08-19, deliberately not scheduled. Recorded so the question is not lost.\n\ncuneiform/362 is building a SAFETY-MODE vocabulary for the default export console: a declared posture (roughly ask-for-approval → approve-edits → plan-first → autonomous) that the runtime enforces and the run records, gating spend and irreversibility rather than every action. It is being built locally, in cuneiform, in a shape that could become a contract without being rewritten.\n\nThe question this tasklist holds: **should autonomy posture be a koine clause?**\n\nThe case for is the ownership boundary. Two organizations run products over this fabric, and the two edges that cross it — `talos → argos` (Tier-B/C A/V analysis) and `insimul → lugh` (world-derived SLM training) — are inter-organizational integrations. If Overpowered dispatches work to an Ontolo service, 'autonomous' has to mean the same thing on both sides, or the posture the caller believes it selected is not the posture the callee enforces. That is exactly the class of problem koine exists for, and it is why the role-scoped, product-agnostic clause style is right here rather than fussy.\n\nThe case against is prematurity. One console's vocabulary is not yet evidence of a shared need, and a clause written before two independent implementations exist tends to encode the first one's accidents.\n\nDo not start this until cuneiform/362 has shipped and a SECOND consumer wants the same vocabulary. Re-ask then.",
+  "dependsOn": [],
+  "touches": [
+    "specs/",
+    "scenarios/"
+  ],
+  "iters": 4,
+  "warmup": [
+    "ls specs/",
+    "grep -rn 'autonomy\\|posture\\|approval' specs/*.md | head",
+    "sed -n '/Ownership/,/Consequences/p' ../CLAUDE.md | head -30"
+  ],
+  "verify": [
+    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\""
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Decide whether posture is a contract at all",
+      "acceptanceCriteria": [
+        "An ADR answers it either way, with the cross-org edges named as the concrete case rather than argued in the abstract.",
+        "If the answer is no, the ADR says what would change the answer, and this tasklist is retired against it. A parked question with no closing condition is just a backlog entry.",
+        "The answer must account for the fact that the two edges cross an ownership boundary — a posture that is only advisory across that line provides no guarantee to either side."
+      ],
+      "notes": null
+    },
+    {
+      "id": "US-2",
+      "title": "If it is a clause, it is role-scoped and product-agnostic",
+      "acceptanceCriteria": [
+        "The vocabulary names postures by what they GUARANTEE, not by what a particular console calls its buttons.",
+        "It states the floor — the stops no posture may skip — since that is the only part a caller can rely on when the callee is another organization.",
+        "A scenario covers a cross-org dispatch where caller and callee postures disagree, and states which wins.",
+        "It is expressible by an implementation that has no console at all."
+      ],
+      "notes": null
+    }
+  ]
+}
