@@ -114,8 +114,8 @@ vocabulary.
   session-shaped clause is §4 **`subscribe`**, whose stream rides **A2A streaming** under the pinned
   revision, with "MCP notifications" named as the *pre-2026-07-28* wire — free, because KGP §6 deltas
   are ordering-independent and content-addressed. No field added or removed, no participant required
-  to declare its revision; patch, and 0.5.0 is anyway spoken for by §2.2's removal. `KCS 0.2.0` stays
-  **ratified** and gains only an INFORMATIVE §4 note that a run must record which MCP revision each
+  to declare its revision; patch, and 0.5.0 is anyway spoken for by §2.2's removal. `KCS 0.2.0` stayed
+  **ratified** through that patch-only change and gained only an INFORMATIVE §4 note that a run must record which MCP revision each
   participant speaks. Both gates restated, neither moved. 0.4.4 (patch) adds an INFORMATIVE **§1.2**
   recording the layer claim — *a convention over MCP/A2A, not a new runtime* — and its first external
   corroboration: **Kang & Diponegoro, arXiv:2606.31498, 30 June 2026**, whose gap analysis of five
@@ -165,8 +165,11 @@ vocabulary.
   recorded as a *risk* in ADR-0005's dated amendment log with the adoption **reaffirmed**, since
   #1985 is the citable case for the asset-id envelope. Patch, not minor: nothing that conformed at
   0.3.1 stops conforming, and §4.4 has already spent **0.4.0** on the EDL removal.
-- `specs/conformance-scenario.md` — KCS 0.2.0, **ratified**. Declarative, replayable scenarios
+- `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
+  The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
+  scenarios to assert stable structure/invariants rather than exact bytes/content; §7.1 and §7.3
+  remain open.
 - `specs/fine-tuning.md` — KFT 0.5.0, **candidate** (ratified 2026-07-23 on two pressure passes:
   `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L; a **third**
   pass, `scenarios/e2e-producer-exhaust-finetune.md`, then pressure-tested a *producing application's*

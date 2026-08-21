@@ -15,7 +15,7 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 | [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.5.2 · 🚧 candidate |
 | [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.3 · 🚧 candidate |
 | [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.4.5 · 🚧 candidate |
-| [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data that drives **N real** participants over their actual MCP/A2A connections, asserting cross-plane properties, each cited to the clause it checks | 0.2.0 · ✅ ratified |
+| [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data that drives **N real** participants over their actual MCP/A2A connections, asserting cross-plane properties, each cited to the clause it checks | 0.3.0 · 🚧 candidate |
 | [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.5.0 · 🚧 candidate |
 
 **The table is a convenience mirror.** Each spec's own version + status header is the source of
@@ -76,9 +76,10 @@ ratification is supposed to buy. Slower promotion is the price of a status that 
 
 **The two specs ratified before the rule — grandfathered, with the debt named.** KINP 0.2.1 and
 KCS 0.2.0 reached `ratified` under the previous rule, each on a hand-walked prose pass and nothing
-else. They **keep** the status. The rule binds forward: applying it retroactively would demote two
-specs as a side effect of editing this file, and a status change is a deliberate act taken on a
-spec's own merits — never a consequence of a governance amendment. It would also penalize work that
+else. KINP keeps that status; KCS is now back at `candidate` because its 0.3.0 determinism fold is
+a normative change. The rule binds forward: applying it retroactively would demote KINP as a side
+effect of editing this file, and a status change is a deliberate act taken on a spec's own merits —
+never a consequence of a governance amendment. It would also penalize work that
 satisfied the rule in force when it was done, which is not what a lifecycle rule is for.
 
 Grandfathered is not forgiven. Each of the two carries a named debt — the missing machine-replayable
@@ -99,7 +100,7 @@ scenario it earned, and a grandfathered spec has none, so its first demotion is 
 full price at the worst moment. That asymmetry is a reason to settle the debt under Phase F4 ahead of
 need, not a reason to weaken the rule.
 
-**KCS's self-reference, and why it is not circular.** KCS is both a `ratified` spec and the format
+**KCS's self-reference, and why it is not circular.** KCS is the format
 the rule's artefact is written in, so "KCS needs a KCS scenario" reads as a loop. It is not one,
 because the two roles sit at different levels. What the rule requires is a runnable document that
 exercises the clauses being ratified; for every other spec that document is a KCS scenario driving
