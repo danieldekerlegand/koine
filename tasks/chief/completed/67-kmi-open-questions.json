@@ -43,7 +43,18 @@
         "The KMI version header is bumped and Status set to candidate with a changelog entry citing the scenario leg; the remaining §9 questions stay listed as open."
       ],
       "passes": true,
-      "notes": "KMI 0.3.3 candidate folds only §9.5: missing metadata.koine.asset is detected; re-attach requires exact bytes-to-KINP-id verification, otherwise reject/quarantine. kmi-otio-roundtrip.md resolution updated; doc-integrity green (41 Markdown files, 664 links); schemas ok; registry ok; tsv ok."
+      "notes": "KMI 0.3.3 candidate folds only §9.5: missing metadata.koine.asset is detected; re-attach requires exact bytes-to-KINP-id verification, otherwise reject/quarantine. kmi-otio-roundtrip.md resolution updated; doc-integrity green (41 Markdown files, 664 links); schemas ok; registry ok; tsv ok.",
+      "diffSize": {
+        "files": 7,
+        "lines": 67,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": false
+      }
     }
-  ]
+  ],
+  "mergedToMain": "b94488d"
 }
