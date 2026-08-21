@@ -42,8 +42,8 @@
         "If perceptual-hash provenance is folded, the recording field is added minimally (schema twin + registry note if a new immutable relation name is needed — never an in-place signature edit, CLAUDE.md registry rule), keeping media:perceptual_match a similarity signal, never identity.",
         "The KMI version header is bumped and Status set to candidate with a changelog entry citing the scenario leg; the remaining §9 questions stay listed as open."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "KMI 0.3.3 candidate folds only §9.5: missing metadata.koine.asset is detected; re-attach requires exact bytes-to-KINP-id verification, otherwise reject/quarantine. kmi-otio-roundtrip.md resolution updated; doc-integrity green (41 Markdown files, 664 links); schemas ok; registry ok; tsv ok."
     }
   ]
 }
