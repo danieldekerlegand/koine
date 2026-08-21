@@ -1,8 +1,8 @@
 # Koine Media-Interchange Protocol (KMI)
 
-**Spec version:** 0.3.2
+**Spec version:** 0.3.3
 **Status:** Candidate
-**Last updated:** 2026-08-13
+**Last updated:** 2026-08-20
 **Applies to:** media authorities (producer/authority for assets + timelines), media producers of
 any modality, and media consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP) for the `asset` id, `source_world`, and
@@ -24,6 +24,10 @@ composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline
 > ([ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md)). Patch-level and
 > additive: it closes a declared window rather than changing the model shape, so no delta is
 > reopened and the re-ratification path above is unchanged.
+
+> **Status note (0.3.3):** folds the §9.5 additive-metadata-survival pressure break. A third-party
+> OTIO round-trip may remain structurally valid while dropping `metadata.koine.asset`; KMI now
+> requires fail-closed id re-attachment on re-import (§4.2a), so the status remains **Candidate**.
 
 > **Status note (0.3.2):** narrows what KMI *claims* about lineage and makes the narrowing
 > operational. §3's relation set is unchanged; what changes is that §3 is now explicitly a
@@ -441,6 +445,17 @@ id of the media it plays, in `metadata.koine.asset`:
   id (§7) MUST prefer the id over the URL when the two disagree or the URL does not resolve.
 - A producer that has no path to offer MUST still carry the id — on a `MissingReference` if
   necessary — so an offline timeline is still resolvable in the fabric.
+- **Re-import after metadata loss is fail-closed.** If a third-party OTIO round-trip removes
+  `metadata.koine.asset`, a producer MUST treat the clip as having lost its KMI identity. It MAY
+  re-attach an id only when it can identify a previously published asset and verify that the
+  recovered bytes hash to that asset's KINP id (for example, by resolving an entry in the media
+  map and checking the bytes). Before accepting the timeline as canonical KMI, the producer MUST
+  restore the verified id in `metadata.koine.asset`.
+- A `target_url`, media-map path, filename, clip name, ordering, source range, or perceptual
+  similarity alone is not proof of identity. If exact byte verification is unavailable or fails,
+  the producer MUST reject or quarantine the clip and report the unresolved asset; it MUST NOT
+  guess or attach the old id to replacement bytes. Re-encoding replacement bytes mints a new asset
+  id (§2), even when the result is perceptually similar.
 - Nothing is inlined: the timeline carries references, never bytes (§7).
 - Where OTIO supports multiple media references per clip, the alternates SHOULD be the assets
   linked `media:variant_of` (§3) — each carrying its own `metadata.koine.asset`.
@@ -639,10 +654,10 @@ Assets are large; envelopes and timelines are small. KMI is a **reference-by-id*
 4. **Perceptual-hash choice** — which pHash/audio-fingerprint/embedding backs
    `media:perceptual_match`, and recording it (like KGP `embedding_model`) so scores are
    comparable.
-5. **Additive-metadata survival** — a naïve round-trip through a third-party OTIO tool can drop
-   `metadata.koine` (§4.2a). The media map and the lineage graph make recovery possible; whether
-   KMI should require a producer to *re-attach* ids on re-import, and how it detects that they
-   were lost, is open.
+5. **Additive-metadata survival** — **closed in 0.3.3** by §4.2a's fail-closed re-import rule:
+   a producer detects loss when `metadata.koine.asset` is absent, re-attaches only after exact
+   byte verification against a known KINP asset id, and rejects or quarantines an unverified
+   clip. The rule does not make `target_url`, a media-map path, or perceptual similarity identity.
 
 ## Pressure test
 
@@ -667,6 +682,14 @@ manifest→AgentCard-extension change its discovery steps exercise and which has
 Promotion of both follows that pass.
 
 ## Changelog
+
+- **0.3.3** (2026-08-20) — **Candidate.** Folded the only question forced by the adversarial
+  [`kmi-otio-roundtrip.md`](../scenarios/kmi-otio-roundtrip.md) pressure-test leg (§9.5). A
+  producer MUST detect a missing `metadata.koine.asset` on re-import, MAY re-attach only after
+  exact byte verification against the known KINP asset id, MUST restore the verified id before
+  accepting canonical KMI, and MUST reject or quarantine an unverified clip rather than guess.
+  The OTIO `target_url`, media map, names, edit ranges, and perceptual similarity remain
+  non-identity hints. Questions §9.1–§9.4 remain open; no schema or registry surface changes.
 
 - **0.3.2** (2026-08-13) — **Candidate.** **KMI's lineage claim is narrowed from "a vocabulary" to
   "a bridge."** Three additions under §3, none of which touch §3's relation set:

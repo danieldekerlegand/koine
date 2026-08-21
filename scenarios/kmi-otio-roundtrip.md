@@ -9,8 +9,7 @@ the clips, rather than whether the edited timeline remains valid OTIO.
 This scenario is a focused follow-up to
 [`e2e-media-transform.md`](e2e-media-transform.md), which established that a
 clip's `metadata.koine.asset` is authoritative and `target_url` is only a
-location. It exercises KMI §9.5; it does not fold that question into the
-contract.
+location. It exercises KMI §9.5; its finding is folded into KMI 0.3.3.
 
 ## Setup
 
@@ -97,10 +96,13 @@ allowed OTIO core schema-version range (§9.1), profile-vocabulary granularity
 (§9.2), CAS operational model (§9.3), or the perceptual-match backend (§9.4);
 those questions remain open and are not carried into the next contract fold.
 
-## Resolution gate
+## Resolution — KMI 0.3.3
 
-This finding is intentionally unresolved in this scenario. The next KMI
-contract change must answer §9.5, then re-run this leg against that answer.
-Until then, a consumer may refuse the re-import rather than invent an asset
-attachment; this scenario records the pressure break, not a new normative
-requirement.
+KMI 0.3.3 answers the forced question in §4.2a: `analyzer` MUST detect the
+missing `metadata.koine.asset` and may re-attach an id only after the recovered
+bytes hash to the known KINP asset id. The stale or local `target_url`, path,
+filename, clip name, edit range, ordering, and perceptual similarity are not
+identity evidence. If exact verification fails, `analyzer` rejects or
+quarantines the clip and reports it unresolved; it does not guess. A verified
+re-attachment restores `metadata.koine.asset` before the timeline is accepted
+as canonical KMI. M-1 is therefore resolved without folding §9.1–§9.4.
