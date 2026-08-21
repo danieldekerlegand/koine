@@ -30,8 +30,8 @@
         "The leg is adversarial (prefer finding a break) and uses the KINP §3.4 placeholder namespaces per scenarios/README.md.",
         "Only the question(s) the break actually forces are carried into US-2 — the others stay open, consistent with the reactive-fold policy."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added scenarios/kmi-otio-roundtrip.md: adversarial third-party OTIO round-trip drops metadata.koine.asset and stale/local target_url plus media_map cannot safely recover identity; M-1 forces only §9.5. doc-integrity green (41 Markdown files, 663 links); schemas ok; tsv ok."
     },
     {
       "id": "US-2",
