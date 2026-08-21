@@ -1,8 +1,8 @@
 # Koine Conformance-Scenario format (KCS)
 
-**Spec version:** 0.2.0
-**Status:** Ratified
-**Last updated:** 2026-07-18
+**Spec version:** 0.3.0
+**Status:** Candidate
+**Last updated:** 2026-08-20
 **Applies to:** the conformance console (executor) and every participant it drives
 **Depends on:** [`identity.md`](identity.md) (KINP), [`grounding-pack.md`](grounding-pack.md)
 (KGP), [`capability-bus.md`](capability-bus.md) (KCB), [`media-interchange.md`](media-interchange.md)
@@ -31,7 +31,7 @@ the console UI, transport internals (that's MCP/A2A + KCB), or payload formats (
 
 ```jsonc
 {
-  "kcs_version": "0.2.0",
+  "kcs_version": "0.3.0",
   "id":    "kcs:worlds-to-fabric",
   "title": "Fiction stays uncontaminated across the media→knowledge bridge",
   "timeout_ms": 120000,                     // scenario-level liveness bound (delta P)
@@ -129,6 +129,14 @@ four planes:
   `tier_resolved(invoke, tier)`, `dangling_ref_tolerated(ref)`, `refused(step)` (a step with
   `expect: reject` was correctly refused — e.g. an unauthorized `fetch` or over-ceiling `invoke`).
 - **Liveness/timing:** `completes(step)`, `always_completes(scenario)` (the zero-spend property).
+- **Determinism/invariants:** `structure_matches(a, b)` (the outputs may differ in generated
+  bytes/content, but their declared structural or cross-plane invariants match — for example,
+  the same attachment target, source world, or constituent topology). This predicate MUST NOT
+  be interpreted as byte equality.
+
+When a scenario exercises generated or otherwise nondeterministic output, its assertions MUST
+test the stable structure/invariants that the contract promises, rather than exact generated
+content. Exact-content assertions remain valid only where exact content is itself the contract.
 
 ## 6. Relationship to the written scenarios
 
@@ -146,8 +154,10 @@ Encoding them is a downstream conformance-console tasklist (see `../tasks/chief/
 
 1. **Assertion extensibility** — a fixed vocabulary (§5) vs. a small predicate DSL over the
    observation log. Leaning: fixed core + an escape hatch.
-2. **Determinism** — model outputs vary; scenarios must assert *structure/invariants* (firewall,
-   cost, world-scoping), not exact generated content. How strictly to enforce this in the format.
+2. **Determinism** — **folded in 0.3.0:** model outputs vary; scenarios MUST assert
+   *structure/invariants* (firewall, cost, world-scoping), not exact generated content, unless
+   exact content is itself the contract. `structure_matches(a, b)` is the fixed-core predicate
+   for comparing generated outputs without requiring byte equality.
 3. **Recording fidelity** — how much stream payload the observation log retains vs. references by
    id (ties to KMI byte transport).
 
@@ -224,11 +234,21 @@ this spec, not an editorial one.
 ## Pressure test
 
 Exercised by [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md) (encoding
-both hand-written scenarios as KCS). Deltas folded in 0.2.0: **M** (step `id` + `${id.path}`
-bindings, §2.1/§3), **O** (`expect: ok|reject` + `refused`, §3/§5), **N** (`standin`
-participants, §2), **P** (`timeout_ms`, §2/§3/§4). Ratified.
+both hand-written scenarios as KCS). Deltas folded in 0.3.0: **Q** (`structure_matches` and the
+stable-invariant rule, §5/§7.2) in response to Attempt 3's generated-output break. Earlier deltas
+remain in force: **M** (step `id` + `${id.path}` bindings, §2.1/§3), **O** (`expect: ok|reject` +
+`refused`, §3/§5), **N** (`standin` participants, §2), **P** (`timeout_ms`, §2/§3/§4). Candidate
+pending re-validation; §7.1 assertion extensibility and §7.3 recording fidelity remain open.
 
 ## Changelog
+
+- **0.3.0** (2026-08-20) — **Candidate.** Folded the determinism question forced by Attempt 3
+  (`kcs:generated-output-invariants`) in [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md):
+  added the fixed-core `structure_matches(a, b)` predicate and the normative rule that generated
+  output scenarios assert stable structure/invariants rather than exact bytes/content. Existing
+  §5 assertions and the §3 step vocabulary are unchanged and backward-compatible. The normative
+  change returns KCS to candidate for re-validation; §7.1 assertion extensibility and §7.3
+  recording fidelity remain open.
 
 - **Editorial** (2026-08-13) — Added an **informative note to §4** that a scenario driving MCP
   participants must record **which MCP revision each participant speaks**, because MCP's 2026-07-28

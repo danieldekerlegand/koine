@@ -40,8 +40,8 @@
         "The KCS version header is bumped and Status set from ratified to candidate (per the draft->candidate->ratified convention any normative change re-enters validation), with a changelog entry citing the leg; the remaining §7 questions stay open.",
         "schemas/*.json still parse; the fold is a format/prose change requiring no schema-twin shape break."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Folded the §7.2 determinism break from kcs:generated-output-invariants into KCS 0.3.0: added fixed-core structure_matches(a, b), required stable structure/invariant assertions for generated output, and left §7.1/§7.3 open. schemas/*.json parse successfully; doc integrity and doc links checks are green."
     }
   ]
 }
