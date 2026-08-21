@@ -43,5 +43,6 @@
       "passes": true,
       "notes": "Folded the §7.2 determinism break from kcs:generated-output-invariants into KCS 0.3.0: added fixed-core structure_matches(a, b), required stable structure/invariant assertions for generated output, and left §7.1/§7.3 open. schemas/*.json parse successfully; doc integrity and doc links checks are green."
     }
-  ]
+  ],
+  "mergedToMain": "785c688"
 }
