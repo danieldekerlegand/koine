@@ -136,7 +136,7 @@ vocabulary.
   trigger**, and the carve-out that G1/G5/G6 stay *Partial* with findings GOV-1…GOV-3 open. A
   cross-reference in an informative section: no field, no clause, no manifest byte moves; both gates
   restated, neither moved.
-- `specs/media-interchange.md` — KMI 0.3.2, **candidate**. Media data plane; asset envelope +
+- `specs/media-interchange.md` — KMI 0.3.3, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
