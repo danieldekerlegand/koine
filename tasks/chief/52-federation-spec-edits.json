@@ -34,8 +34,8 @@
         "The KINP version header is bumped and Status set to candidate, with a changelog entry citing the ADR; cross-references to \u00a711 elsewhere in the spec stay consistent.",
         "The change is additive to the existing model \u2014 a single-authority deployment stays conformant unchanged."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "git diff --check clean; doc-integrity: OK (42 Markdown files, 669 relative links); schema JSON parse: schemas ok; candidate header present."
     },
     {
       "id": "US-2",
