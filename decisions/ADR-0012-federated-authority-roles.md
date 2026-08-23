@@ -2,7 +2,7 @@
 
 **Status:** Accepted (2026-08-23)
 **Deciders:** ecosystem owner
-**Supersedes as the decision source:** KINP §11 decision 1 (canonical identity authority), KCB §8 open question 1 (registry federation), and KMI §9 open question 3 (CAS operational model).
+**Supersedes as the decision source:** KINP §11 decision 1 (canonical identity authority), KCB §7 open question 1 (registry federation; now §8 after the versioning question moved), and KMI §9 open question 3 (CAS operational model).
 **Applies to:** every participant acting as an authority, producer, consumer, or host.
 **Numbering note:** ADR-0002 – ADR-0004 are reserved for deployment-history records that live downstream (see [`README.md`](README.md)); this record takes the next free agnostic number.
 
@@ -53,6 +53,12 @@ Federation changes neither the right to mint local identifiers nor the offline-f
 This record decides **contract shape**, not a deployment. It does not prescribe how many role holders exist, how they are located, how they exchange records, or when federation is enabled. It also does not alter ADR-0001: discovery may return an address or authority reference, but an authority role is not a data-plane relay between participants.
 
 The future plane-specific clauses must be additive: the existing single-holder behavior stays valid; the federation form adds authority-boundary information and cross-authority handling rather than redefining identifiers, envelopes, direct peer communication, or local minting.
+
+## Follow-on application
+
+This ADR is the single referent for the three deferred sites: KINP §11 decision 1, KCB §7 open question 1 (currently §8), and KMI §9 open question 3. Applying the decision to their plane-specific clauses is deliberately deferred to `chief/52-federation-spec-edits`; the multi-authority pressure test is deliberately deferred to `chief/53-multi-authority-scenario`.
+
+Until those follow-ons are applied, the invariant is unchanged regardless of whether federation is enabled: authority remains a role rather than a hard dependency, identifiers can be minted offline without authority reachability, and the existing single-holder contracts remain valid. The follow-ons therefore add authority-boundary and cross-authority handling; they do not break or redefine local minting, identity, envelopes, or direct peer communication.
 
 ## Consequences
 

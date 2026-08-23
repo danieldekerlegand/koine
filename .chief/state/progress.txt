@@ -13,3 +13,13 @@ Started: Sun Aug 23 04:48:49 CDT 2026
 - Learnings for future iterations: federation ADRs stay role-scoped and resolve contract shape only;
   retain ADR-0001's discovery-not-proxy boundary and defer plane-specific clauses to the spec-edit
   follow-up.
+
+## 2026-08-23 — US-2
+
+- Updated `decisions/ADR-0012-federated-authority-roles.md` to make it the explicit single referent
+  for the KINP, KCB, and KMI deferred questions, including the original KCB §7 label and its current
+  §8 location after renumbering.
+- Recorded `chief/52-federation-spec-edits` as the plane-specific follow-up and
+  `chief/53-multi-authority-scenario` as the pressure test; no normative spec clause or version was changed.
+- Learnings for future iterations: cite both an historical section reference and its current location
+  when an open-question list has been renumbered, so the ADR remains a durable referent.
