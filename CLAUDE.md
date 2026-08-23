@@ -53,7 +53,11 @@ vocabulary.
   as clearly-marked illustrative examples or in informative "known implementations" pointers.
 
 ## Current state
-- `specs/identity.md` — KINP 0.2.1, **ratified**. Deltas A–E folded; three forks decided
+- `specs/identity.md` — KINP 0.3.0, **candidate**. ADR-0012 makes the canonical
+  identity-authority role federable: a single designated holder remains conformant, while
+  multiple independently operated holders reconcile through KINP's existing namespace,
+  provenance, and §4 safeguards; local offline-first minting remains unchanged. Candidate pending
+  `chief/53-multi-authority-scenario`. Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
 - `specs/grounding-pack.md` — KGP 0.5.2, **candidate**. Knowledge data plane; normative §3

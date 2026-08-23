@@ -1,8 +1,8 @@
 # Koine Identity & Namespace Protocol (KINP)
 
-**Spec version:** 0.2.1
-**Status:** Ratified
-**Last updated:** 2026-07-17
+**Spec version:** 0.3.0
+**Status:** Candidate
+**Last updated:** 2026-08-23
 **Applies to:** every participant that mints, publishes, or resolves identifiers — producers,
 consumers, identity authorities, control-plane hosts.
 
@@ -304,10 +304,12 @@ emits `same_as` links — eventually-consistent, never blocking. This preserves:
 - an embedded (no-network) world-producer runtime,
 - an authority's bulk imports.
 
-**Canonical authority:** a deployment designates **one** participant in the identity-authority
+**Canonical authority:** a deployment MAY designate **one** participant in the identity-authority
 role as canonical for *real-world* entities (anchoring them to an external authority such as
-Wikidata) — ratified, §11 decision 1. Every other participant mints locals and defers
-canonicalization to the resolver.
+Wikidata) — §11 decision 1. Every other participant mints locals and defers canonicalization to
+the resolver. A federation MAY instead comprise multiple independently operated holders of that
+role; the local minting rule above is unchanged, and reconciliation happens later rather than
+requiring any authority to be online.
 
 **Claim normalization is normative and load-bearing — not optional (delta B).**
 Content-addressed claim dedup across producers *only* works if every producer canonicalizes a
@@ -540,12 +542,21 @@ claims; most participants claim several.
 The three design forks were ratified on 2026-07-17. The choices below are now normative;
 rejected alternatives are recorded for provenance.
 
-1. **Resolver authority → a single canonical identity authority** for real-world entities
-   (anchored to an external authority such as Wikidata); a deployment designates which
-   participant holds the role. *Rejected:* fully federated with no privileged node.
-   *Rationale:* canonical quality and dedup outweigh federation purity, and offline-first is
-   preserved regardless because minting is local and reconciliation is eventually-consistent
-   (§6). Authority is a **role**, not a hard dependency — federation stays a future option.
+1. **Resolver authority → a canonical identity-authority role** for real-world entities
+   (anchored to an external authority such as Wikidata); a deployment MAY designate one
+   participant to hold it. A single-authority deployment remains conformant unchanged. Per
+   [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md), a federation MAY instead
+   comprise multiple independently operated holders of the role: each remains authoritative for
+   the identifiers it mints and the reconciliation it publishes, while the namespace and
+   provenance rules (§3.4, §4) identify that authority boundary. Cross-authority reconciliation
+   MUST still use the §4 equivalence layer, including its `same_as` review gate and
+   `based_on` firewall; it MUST NOT turn a holder into a mandatory online minting service.
+   *Rejected:* fully federated peers with no distinguished authority role or convergence policy.
+   *Rationale:* a selected holder preserves canonical quality and dedup where a deployment wants
+   it, while federation is additive; offline-first is preserved because minting is local and
+   reconciliation is eventually-consistent (§6). Authority is a **role**, not a hard dependency.
+   This normative change is candidate pending the cross-authority break test in
+   [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json).
 2. **Merge aggressiveness → hybrid.** Auto-apply `same_as`/`based_on` above a confidence
    threshold; route high-impact or below-threshold links to a **review queue**, reusing the
    authority's convergence-QA gate. *Rejected:* always-auto (contamination risk) and
@@ -562,6 +573,13 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
 
 ## Changelog
 
+- **0.3.0** (2026-08-23) — Applied [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
+  to §11 decision 1: the canonical identity-authority role can now be held by federated,
+  independently operated authorities, each identified by the existing namespace and provenance
+  rules and still bound by §4 reconciliation. This is additive: a single designated authority
+  remains conformant, and §6 local offline-first minting does not require reaching any authority.
+  **Candidate** pending the cross-authority break test in
+  [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json).
 - **Editorial** (2026-08-13) — Pointed KINP's two external references at the fabric-wide pin table,
   [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md): §4.5 now names the
   *Reconciliation Service API* (W3C Entity Reconciliation Community Group) as the published form of
