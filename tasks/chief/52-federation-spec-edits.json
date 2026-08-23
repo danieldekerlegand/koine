@@ -4,7 +4,7 @@
   "category": "feature",
   "branchName": "chief/52-federation-spec-edits",
   "description": "Apply the federation ADR (chief/51) into the three specs that each defer the single-authority question, turning three separate 'future option' notes into one consistent, ADR-backed clause per spec (ROADMAP.md Phase F1): KINP \u00a711 (identity-authority role -> federated authorities, identity.md ~line 477), KCB \u00a77.1 (single registry -> peering registries, capability-bus.md ~line 251), and KMI \u00a79 (single CAS -> per-project stores replicating on reference, media-interchange.md ~line 380). Each edit is normative, so per koine's draft->candidate->ratified convention each touched spec bumps version and returns to candidate pending the multi-authority pressure test (chief/53). PARKED: gated on chief/51 and on a real >1-authority deployment target (ROADMAP.md: 'nothing is built until a deployment actually needs more than one authority'). Public-safe/agnostic: bind roles, names no deployment.",
-  "parked": true,
+  "parked": false,
   "dependsOn": [
     "51-federation-adr"
   ],
@@ -61,5 +61,6 @@
       "passes": false,
       "notes": ""
     }
-  ]
+  ],
+  "unparkNote": "UNPARKED 2026-08-23. Its gate had two halves: 'gated on chief/51 AND on a real >1-authority deployment target'. The second half is satisfied by cuneiform ADR-0027; the first is a DEPENDENCY, already declared in dependsOn.\n\nSo the parked flag is now redundant and actively unhelpful: parked short-circuits before blocked in the census, so this reported PARKED and hid the fact that it is simply waiting on 51. Unparked, it reports BLOCKED and unblocks automatically when 51 merges, instead of needing a human to remember to unpark it."
 }

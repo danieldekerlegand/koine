@@ -4,7 +4,7 @@
   "category": "unblock",
   "branchName": "chief/51-federation-adr",
   "description": "Three specs independently deferred the SAME single-authority to federation question, each promising to 'likely resolve the same way': KINP \u00a711 decision 1 (a single canonical identity authority ROLE for real-world entities; 'federation stays a future option', identity.md around line 477), KCB \u00a77 open question 1 (a single host-provisioned registry vs per-org registries that peer; 'Mirrors KINP \u00a711 decision 1', capability-bus.md ~line 251), and KMI \u00a79 open question 3 (single shared CAS vs per-project stores that replicate on reference; 'mirrors KINP \u00a711 authority fork and KCB \u00a77 registry federation', media-interchange.md ~line 380). This tasklist resolves that shared single-authority-role to federated-peers pattern ONCE, in a new agnostic ADR, so the three specs stop deferring it three separate ways (ROADMAP.md Phase F1). PARKED: per the roadmap, nothing is built until a real deployment actually needs more than one authority; this file is the authored proposal, held until that trigger. Public-safe/agnostic per decisions/README.md: bind roles, standards named only as adopted standards, number at or above 0009 (0002-0004 permanently reserved; 0005-0008 taken).",
-  "parked": true,
+  "parked": false,
   "dependsOn": [],
   "touches": [
     "decisions/",
@@ -47,5 +47,6 @@
       "passes": false,
       "notes": ""
     }
-  ]
+  ],
+  "unparkNote": "UNPARKED 2026-08-23 \u2014 the trigger fired. Its gate was 'nothing is built until a real deployment actually needs more than one authority'. cuneiform ADR-0027 (venture-studio tenancy and distribution) establishes exactly that: per-organization NixOS installs, each configured for one organization and networked to other installs. That is a >1-authority deployment target, and it is real rather than hypothetical.\n\nThis resolves ONE question three specs deferred identically - KINP \u00a711 decision 1, KCB \u00a77 open question 1, and KMI \u00a79 open question 3 - each of which promised it would 'likely resolve the same way'.\n\nIT ALSO OWNS A CUNEIFORM BLOCKER: cuneiform/261-federation-protocol is unparked but must not start until this lands, because 'installs networked via a gateway' may conflict with koine ADR-0001's no-central-hub rule (the registry returns ADDRESSES; peers dial each other; it never proxies traffic). A gateway that BROKERS DISCOVERY is compatible; one that CARRIES TRAFFIC is not. Settle it here - it is koine's contract."
 }
