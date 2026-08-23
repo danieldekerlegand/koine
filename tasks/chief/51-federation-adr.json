@@ -32,8 +32,8 @@
         "The ADR is agnostic per decisions/README.md (binds roles; names no deployment, topology, or product except as illustrative/known-implementation pointers), and decisions/README.md's records table gains a row for it.",
         "The ADR names the concrete cross-authority hazards a later pressure test must hunt (cross-authority same_as reconciliation, registry peering, per-project CAS replication on reference) without specifying a deployment \u2014 it resolves contract SHAPE only."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "ADR-0012 and its decisions index row added; schema JSON parse: schemas ok; doc-integrity: OK, 42 Markdown files and 667 relative links checked; git diff --check: clean."
     },
     {
       "id": "US-2",

@@ -1,15 +1,15 @@
-# Chief Progress — 68-kcs-open-questions
-Started: Thu Aug 20 21:35:56 CDT 2026
+# Chief Progress — 51-federation-adr
+Started: Sun Aug 23 04:48:49 CDT 2026
 ---
 
-## 2026-08-20 — US-2
+## 2026-08-23 — US-1
 
-- Folded the pressure-forced §7.2 determinism question into `specs/conformance-scenario.md`:
-  added fixed-core `structure_matches(a, b)`, defined it as structural/invariant comparison
-  rather than byte equality, and made that rule normative for generated-output scenarios.
-- Bumped KCS to 0.3.0 Candidate, updated its version/status mirrors and current-state docs, and
-  recorded that §7.1 assertion extensibility and §7.3 recording fidelity remain open.
-- Verification: all schema JSON parsed successfully; doc integrity and doc links checks were
-  green.
-- Learnings for future iterations: normative KCS folds require synchronized version/status mirrors;
-  preserve the existing step and assertion vocabulary when adding a fixed-core predicate.
+- Added `decisions/ADR-0012-federated-authority-roles.md`, resolving the shared authority-role
+  fork: a single holder remains valid, while multiple holders federate without making authority a
+  dependency; local offline-first minting remains intact.
+- Added the ADR-0012 row to `decisions/README.md`. No normative spec was changed.
+- Verification: schema JSON parse `schemas ok`; `node scripts/check-doc-integrity.mjs` **OK**
+  (42 Markdown files, 667 relative links); `git diff --check` clean.
+- Learnings for future iterations: federation ADRs stay role-scoped and resolve contract shape only;
+  retain ADR-0001's discovery-not-proxy boundary and defer plane-specific clauses to the spec-edit
+  follow-up.
