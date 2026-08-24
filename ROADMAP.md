@@ -207,7 +207,7 @@ client's live end-to-end run is externally blocked until **≥1 real provider** 
 ### Phase F4 — Conformance console (the ratification critical path) — ⬜ planned (scale: L, cross-repo)
 
 ⚠️ **This phase is no longer optional payoff — it is the gate every other spec promotion waits
-behind.** All seven scenarios are hand-walked **prose**, and under the
+behind.** All eight scenarios are hand-walked **prose**, and under the
 [ratification gate](specs/README.md#the-ratification-gate) a prose pass no longer promotes anything
 to `ratified`. Encoding each scenario as a machine-replayable KCS document and running it over real
 MCP/A2A links (KCS §6 names this a downstream conformance-console tasklist) is therefore the **only**
@@ -215,11 +215,11 @@ route by which any spec earns `ratified` — it gates all four Phase 1 re-ratifi
 settles the grandfathered debt KINP 0.2.1 and KCS 0.2.0 carry. Partly blocked because the media
 producer is still a *planned* KCB provider — bridged by the KCS **delta-N stand-in** already in the
 format. Per-scenario state lives in the **KCS encoding** column of
-[`scenarios/README.md`](scenarios/README.md); today it reads `planned` seven times and `exists` zero.
+[`scenarios/README.md`](scenarios/README.md); today it reads `planned` eight times and `exists` zero.
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | Encode the seven `scenarios/` as machine-replayable **KCS documents** (`kcs:worlds-to-fabric`, `kcs:media-transform`, the three finetune passes, `kcs:live-schema-mutation`, the format-stress) — **the artefact `candidate → ratified` now requires**; each one that lands flips its row in `scenarios/README.md` from `planned` to `exists` · L | agora `chief/62-encode-scenarios-as-kcs` *(proposed, cross-repo)* |
+| ⬜ | Encode the eight `scenarios/` as machine-replayable **KCS documents** (`kcs:worlds-to-fabric`, `kcs:media-transform`, the three finetune passes, `kcs:live-schema-mutation`, `kcs:multi-authority`, the format-stress) — **the artefact `candidate → ratified` now requires**; each one that lands flips its row in `scenarios/README.md` from `planned` to `exists` · L | agora `chief/62-encode-scenarios-as-kcs` *(proposed, cross-repo)* |
 | ⬜ | Run the KCS suite over **real MCP/A2A connections**, using **delta-N `standin`** fixtures for not-yet-adopted providers (the still-*planned* media KCB provider); each run is recorded back into its scenario's `## Downstream results` section (Phase 2 row D), which is what a ratification gate reads · L | agora `chief/63-run-kcs-over-live-links` *(proposed, cross-repo)* |
 
 *Depends on:* Phase 2 adoption (real participants to drive) and Phase F3 for the finetune legs; KCS 0.2.0 (ratified, delta N folded) already expresses the stand-ins. **Depended on by:** all four Phase 1 re-ratifications and every future promotion to `ratified`. Source: conformance-scenario.md §6, scenarios/kcs-format-stress.md (delta N), specs/README.md (the ratification gate).
