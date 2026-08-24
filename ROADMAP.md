@@ -155,17 +155,22 @@ build programs are Phases F3–F5 below. Real conformance results feed back into
 | 🚧 | **Fine-tuning providers** — general + specialized (local-only) trainers, registry-routed (KFT) | agora (general) · lugh (specialist) |
 | ✅ | **D: conformance-results intake** — **settled 2026-08-13** by `chief/79` (the rule needed it to be operable). **Where results land:** a per-scenario `## Downstream results` section in the relevant `scenarios/*.md`, recording run date, participants **by role**, and pass/fail per assertion with the clause each cites — instance-free and role-scoped, so a deployment's hosts/endpoints stay in the private integration repo ([`scenarios/README.md`](scenarios/README.md)). **Which gate consumes them:** the Phase 1 spec-owner ratification gate — an owner **MAY** cite a recorded pass as evidence alongside the hand-walked re-validation and **MUST** reopen a finding a recorded failure contradicts; a result never promotes a spec by itself. Both halves of the feedback loop are now defined (agora's console emits KCS reports; koine records and consumes them) | `chief/79-conformance-gated-ratification` |
 
-### Phase F1 — Cross-spec federation — ⬜ planned (scale: L)
+### Phase F1 — Cross-spec federation — 🚧 in progress (scale: L)
 
 Three specs independently deferred the same single-authority → federation question. Resolve the
 shared pattern **once** in an ADR, then apply it per-spec and pressure-test a multi-authority
-deployment. *Nothing is built until a deployment actually needs more than one authority.*
+deployment. *Nothing is built until a deployment actually needs more than one authority.* The ADR
+([ADR-0012](decisions/ADR-0012-federated-authority-roles.md)) and all three §-edits have landed, and
+the break-test has now been written and run — it found **every plane's edit locally sound and the
+seams between them open**, so what remains is the fold it demands (MA-1…MA-11, blocking MA-1…MA-6,
+all additive) and a clean re-run.
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | A **federation ADR (≥0009)** resolving the shared single-authority-role → federated-peers pattern once, so KINP/KCB/KMI stop deferring it three separate ways · L | `chief/51-federation-adr` *(proposed, koine)* |
-| ⬜ | Per-spec §-edits applying the ADR — KINP §11.1 (identity-authority role → federated authorities), KCB §3.1 (single registry → peering registries — landed), KMI §7.1 (single CAS → per-project stores replicating on reference — landed) · M | `chief/52-federation-spec-edits` *(proposed, koine)* |
-| ⬜ | A **multi-authority pressure scenario** — two authorities, cross-authority `same_as` reconciliation + registry peering, hunting the break the shared pattern must survive · M | `chief/53-multi-authority-scenario` *(proposed, koine `scenarios/`)* |
+| ✅ | A **federation ADR (≥0009)** resolving the shared single-authority-role → federated-peers pattern once, so KINP/KCB/KMI stop deferring it three separate ways; ADR-0012 — *an authority is a **role**, not a hard dependency* · L | `chief/51-federation-adr` → [ADR-0012](decisions/ADR-0012-federated-authority-roles.md) |
+| ✅ | Per-spec §-edits applying the ADR — KINP §11.1 (identity-authority role → federated authorities, KINP → 0.3.0), KCB §3.1 (single registry → peering registries, KCB → 0.4.6), KMI §7.1 (single CAS → per-project stores replicating on reference, KMI → 0.3.4); each names the scenario below as a re-ratification count · M | `chief/52-federation-spec-edits` |
+| ✅ | A **multi-authority pressure scenario** — two authorities, cross-authority `same_as` reconciliation + registry peering + CAS replication on reference, hunting the break the shared pattern must survive; **run, not clean** — deltas **MA-1…MA-11**, blocking MA-1…MA-6 (see the scenario's *Re-ratification* §) · M | `chief/53-multi-authority-scenario` → [`scenarios/e2e-multi-authority.md`](scenarios/e2e-multi-authority.md) |
+| ⬜ | **Fold MA-1…MA-11** — additive, across three specs: an authority-aware `same_as` closure + a fail-closed branch when §4.5's operand does not resolve (MA-1/MA-2), a convergence target for claim ids and an equivalence layer over worlds (MA-3/MA-4), `license`/`egress` on the KMI §2 envelope so §7.1(e)'s gate has an operand (MA-5), a grant that names its issuing host (MA-6), plus MA-7…MA-10; then re-run the break-test. KINP 0.3.0 → Ratified on a clean re-run (its only count); KCB/KMI close one count each · M | *(proposed, koine)* |
 
 *Depends on:* a real >1-authority deployment target to justify starting; ADR (`51`) gates the §-edits (`52`) and the scenario (`53`). Source: identity.md §11.1, capability-bus.md §3.1 (was §8 open question 1), media-interchange.md §7.1 (was §9 open question 3).
 
@@ -207,7 +212,7 @@ client's live end-to-end run is externally blocked until **≥1 real provider** 
 ### Phase F4 — Conformance console (the ratification critical path) — ⬜ planned (scale: L, cross-repo)
 
 ⚠️ **This phase is no longer optional payoff — it is the gate every other spec promotion waits
-behind.** All seven scenarios are hand-walked **prose**, and under the
+behind.** All eight scenarios are hand-walked **prose**, and under the
 [ratification gate](specs/README.md#the-ratification-gate) a prose pass no longer promotes anything
 to `ratified`. Encoding each scenario as a machine-replayable KCS document and running it over real
 MCP/A2A links (KCS §6 names this a downstream conformance-console tasklist) is therefore the **only**
@@ -215,11 +220,11 @@ route by which any spec earns `ratified` — it gates all four Phase 1 re-ratifi
 settles the grandfathered debt KINP 0.2.1 and KCS 0.2.0 carry. Partly blocked because the media
 producer is still a *planned* KCB provider — bridged by the KCS **delta-N stand-in** already in the
 format. Per-scenario state lives in the **KCS encoding** column of
-[`scenarios/README.md`](scenarios/README.md); today it reads `planned` seven times and `exists` zero.
+[`scenarios/README.md`](scenarios/README.md); today it reads `planned` eight times and `exists` zero.
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | Encode the seven `scenarios/` as machine-replayable **KCS documents** (`kcs:worlds-to-fabric`, `kcs:media-transform`, the three finetune passes, `kcs:live-schema-mutation`, the format-stress) — **the artefact `candidate → ratified` now requires**; each one that lands flips its row in `scenarios/README.md` from `planned` to `exists` · L | agora `chief/62-encode-scenarios-as-kcs` *(proposed, cross-repo)* |
+| ⬜ | Encode the eight `scenarios/` as machine-replayable **KCS documents** (`kcs:worlds-to-fabric`, `kcs:media-transform`, the three finetune passes, `kcs:live-schema-mutation`, `kcs:multi-authority`, the format-stress) — **the artefact `candidate → ratified` now requires**; each one that lands flips its row in `scenarios/README.md` from `planned` to `exists` · L | agora `chief/62-encode-scenarios-as-kcs` *(proposed, cross-repo)* |
 | ⬜ | Run the KCS suite over **real MCP/A2A connections**, using **delta-N `standin`** fixtures for not-yet-adopted providers (the still-*planned* media KCB provider); each run is recorded back into its scenario's `## Downstream results` section (Phase 2 row D), which is what a ratification gate reads · L | agora `chief/63-run-kcs-over-live-links` *(proposed, cross-repo)* |
 
 *Depends on:* Phase 2 adoption (real participants to drive) and Phase F3 for the finetune legs; KCS 0.2.0 (ratified, delta N folded) already expresses the stand-ins. **Depended on by:** all four Phase 1 re-ratifications and every future promotion to `ratified`. Source: conformance-scenario.md §6, scenarios/kcs-format-stress.md (delta N), specs/README.md (the ratification gate).

@@ -2,65 +2,54 @@
   "name": null,
   "project": "koine",
   "category": "feature",
-  "branchName": "chief/52-federation-spec-edits",
-  "description": "Apply the federation ADR (chief/51) into the three specs that each defer the single-authority question, turning three separate 'future option' notes into one consistent, ADR-backed clause per spec (ROADMAP.md Phase F1): KINP §11 (identity-authority role -> federated authorities, identity.md ~line 477), KCB §7.1 (single registry -> peering registries, capability-bus.md ~line 251), and KMI §9 (single CAS -> per-project stores replicating on reference, media-interchange.md ~line 380). Each edit is normative, so per koine's draft->candidate->ratified convention each touched spec bumps version and returns to candidate pending the multi-authority pressure test (chief/53). PARKED: gated on chief/51 and on a real >1-authority deployment target (ROADMAP.md: 'nothing is built until a deployment actually needs more than one authority'). Public-safe/agnostic: bind roles, names no deployment.",
+  "branchName": "chief/53-multi-authority-scenario",
+  "description": "A new pressure-test scenario that hunts the break the shared federation pattern (chief/51 ADR, chief/52 §-edits) must survive: two authorities in one fabric, cross-authority same_as reconciliation plus registry peering plus per-project CAS replication on reference (ROADMAP.md Phase F1). koine promotes a spec only after a concrete pressure test fails to break it (CLAUDE.md conventions), so this scenario is the gate that lets the three federation §-edits re-ratify. Follows the existing scenarios/ convention (replayable, cross-plane assertions) as in scenarios/e2e-worlds-to-fabric.md and scenarios/e2e-media-transform.md. PARKED: gated on chief/51 + chief/52 and on a real >1-authority deployment target (ROADMAP.md: nothing built until a deployment needs more than one authority). Public-safe: bind roles, illustrative CURIEs use the KINP §3.4 placeholder namespaces.",
   "parked": false,
   "dependsOn": [
-    "51-federation-adr"
+    "51-federation-adr",
+    "52-federation-spec-edits"
   ],
   "touches": [
+    "scenarios/",
     "specs/identity.md",
     "specs/capability-bus.md",
     "specs/media-interchange.md"
   ],
-  "iters": 6,
+  "iters": 5,
   "warmup": [
-    "sed -n '470,486p' specs/identity.md",
-    "sed -n '248,260p' specs/capability-bus.md",
-    "sed -n '370,388p' specs/media-interchange.md",
-    "ls decisions/ADR-00*.md"
+    "ls -1 scenarios/ && sed -n '1,40p' scenarios/e2e-worlds-to-fabric.md",
+    "sed -n '1,40p' scenarios/e2e-media-transform.md",
+    "sed -n '470,486p' specs/identity.md"
   ],
   "verify": [
     "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
-    "grep -qi 'candidate' specs/identity.md specs/capability-bus.md specs/media-interchange.md"
+    "test -f scenarios/e2e-multi-authority.md || ls scenarios/*multi-authority*.md"
   ],
   "userStories": [
     {
       "id": "US-1",
-      "title": "KINP §11 — identity-authority role generalized to federated authorities",
-      "description": "Edit identity.md §11 (the resolver-authority fork, ~line 477) to apply the ADR: keep the single authority ROLE as the default, and specify the federated-authorities extension the ADR resolves, citing the ADR instead of restating a bespoke 'future option'.",
+      "title": "A two-authority pressure scenario hunting the shared-pattern break",
+      "description": "Author a scenarios/ pressure test with two identity authorities in one fabric, driving cross-authority same_as reconciliation, registry peering, and per-project CAS replication on reference — written to find a break, not to assert correctness (CLAUDE.md conventions).",
       "acceptanceCriteria": [
-        "identity.md §11 references the federation ADR (chief/51) and specifies how the single identity-authority role generalizes to federated authorities, preserving the offline-first minting and authority-as-role invariants (§6, §11).",
-        "The KINP version header is bumped and Status set to candidate, with a changelog entry citing the ADR; cross-references to §11 elsewhere in the spec stay consistent.",
-        "The change is additive to the existing model — a single-authority deployment stays conformant unchanged."
+        "A new scenarios/ file (e.g. scenarios/e2e-multi-authority.md) defines a replayable pressure test with TWO authorities and exercises all three federation surfaces the ADR unified: cross-authority same_as reconciliation (KINP), peering discovery registries (KCB), and per-project CAS replicating on reference (KMI).",
+        "The scenario asserts the invariants the federation pattern must preserve — offline-first minting still works, content-addressed identity stays byte-stable across authorities/stores, and no query-time merge produces a false cross-authority identity — and is written adversarially (prefer finding a break).",
+        "It follows the scenarios/ convention (cross-plane assertion vocabulary, replayable steps) and, per scenarios/README.md, illustrative CURIEs use the KINP §3.4 placeholder namespaces; it names no deployment or product."
       ],
       "passes": true,
-      "notes": "git diff --check clean; doc-integrity: OK (42 Markdown files, 669 relative links); schema JSON parse: schemas ok; candidate header present."
+      "notes": "scenarios/e2e-multi-authority.md written (522 lines): 10 adversarial steps over two authority domains (A: refkb/orchestrator/analyzer/worldsim/mediastore, B: archivekb/coordinator/assetstore), all three federation surfaces exercised. 11 findings MA-1..MA-11, 6 blocking (MA-1..MA-6); 5 held-under-attack results recorded (offline-first minting with both authorities dark, asset-id byte-stability across stores, KMI 7.1(d) no-lineage-on-copy incl. C2PA/OMC projections, KCB 3.1(b) route-by-lookup, KINP 4.5 no-transitive-promotion). Verify: node scripts/check-doc-integrity.mjs OK - 43 markdown files, 705 relative links checked, all 3 status tables match; .chief/verify.sh --run over the changed set green (guard-doc-integrity, guard-doc-links 0 dead vs 0 on main, verify-selftest 30 passed 0 failed); schemas/*.json all parse."
     },
     {
       "id": "US-2",
-      "title": "KCB §7.1 — single registry generalized to peering registries",
-      "description": "Edit capability-bus.md §7 open question 1 (~line 251) to apply the ADR: the single host-provisioned discovery registry generalizes to per-org registries that peer, citing the ADR.",
+      "title": "Record the re-ratification resolution across the three specs",
+      "description": "Wire the scenario back to the three federation §-edits so a clean pass re-ratifies them, matching how existing re-validations record a Resolution note.",
       "acceptanceCriteria": [
-        "capability-bus.md's registry-federation clause references the ADR and specifies the peering-registries extension, consistent with ADR-0001's route-by-lookup-not-proxy stance (the registry returns addresses; peers dial each other).",
-        "The KCB version header is bumped and Status set to candidate, with a changelog entry citing the ADR.",
-        "A single-registry deployment stays conformant unchanged (additive)."
+        "The scenario carries a Resolution / note recording which KINP/KCB/KMI spec versions its pass gates, mirroring the 'Re-validation' sections in the existing scenarios.",
+        "On a clean pass the three federation §-edits (chief/52) may return from candidate to ratified; the scenario states this explicitly and each affected spec's changelog can cite it.",
+        "schemas/*.json still parse; no schema twin changes are required by this scenario (it is a control/data-plane behavior test, not a shape change)."
       ],
       "passes": true,
-      "notes": "doc-integrity: OK — 42 markdown files, 677 relative links, all 3 status tables match headers; doc-links: 0 dead vs 0 on main; check-schemas: OK (9 schemas, 274 positions, 78 $refs, 3 fixtures); check-tasklist-categories: OK (5 tasklists); git diff --check clean. KCB header reads 0.4.6 / Candidate."
-    },
-    {
-      "id": "US-3",
-      "title": "KMI §9 — single CAS generalized to per-project stores replicating on reference",
-      "description": "Edit media-interchange.md §9 open question 3 / the CAS operational model (~line 380) to apply the ADR: a single shared content-addressed store generalizes to per-project stores that replicate on reference.",
-      "acceptanceCriteria": [
-        "media-interchange.md's CAS clause references the ADR and specifies the per-project-store-replicating-on-reference model, keeping content-addressed asset identity byte-stable across stores.",
-        "The KMI version header is bumped and Status set to candidate, with a changelog entry citing the ADR; the three edited specs read consistently with each other and all cite the one ADR.",
-        "The three §-edits leave every current single-authority deployment conformant (the fold is additive), and each names chief/53-multi-authority-scenario as the pressure test that must break-test the shared pattern before re-ratification."
-      ],
-      "passes": true,
-      "notes": "doc-integrity: OK — 42 markdown files, 688 relative links, all 3 status tables match headers (media-interchange 0.3.4 candidate); doc-links: 0 dead vs 0 on main; check-schemas: OK (9 schemas, 274 positions, 78 $refs, 3 fixtures); check-registry: OK (27 relation names); check-tasklist-categories: OK (5 tasklists); .chief/verify.sh: all selected gates green (verify-test 30 passed, 0 failed); git diff --check clean. KMI header reads 0.3.4 / Candidate; §7.1 cites ADR-0012 and names chief/53, matching KINP §11 decision 1 and KCB §3.1."
+      "notes": "Added `## Re-ratification — what this pass gates` to scenarios/e2e-multi-authority.md (87 lines): a 7-row per-spec table (KINP 0.3.0 / KCB 0.4.6 / KMI 0.3.4 gated; KGP 0.5.2 as a consequence surface; KCS 0.3.0 evidence-only; ADR-0012 not reopened; schemas/ no shape change), a *What a clean pass would license* section stating per spec what leaving Candidate means (KINP -> Ratified on its only count; KCB 1 of 3 counts; KMI 1 of 2) plus the KCS-encoding precondition from specs/README.md's ratification gate, and a dated **Resolution (2026-08-24)** note: MA-1..MA-11 open, none folded, all three stay Candidate. Wired the three specs to cite the scenario by name at each gate site + one Editorial (2026-08-24) changelog entry each (no clause, version, or status moves). ROADMAP F1 -> in progress; scenarios/README.md fold paragraph records the trio. Verify: node scripts/check-doc-integrity.mjs OK - 43 markdown files, 741 relative links checked, all 3 status tables match headers; .chief/verify.sh --run over the changed set green (guard-doc-integrity; guard-doc-links 0 dead vs 0 on main; guard-categories OK 4 tasklists; verify-selftest 30 passed, 0 failed); schemas/*.json all parse ('schemas ok') and are byte-unchanged (git diff --stat shows no schemas/ file)."
     }
   ],
-  "unparkNote": "UNPARKED 2026-08-23. Its gate had two halves: 'gated on chief/51 AND on a real >1-authority deployment target'. The second half is satisfied by cuneiform ADR-0027; the first is a DEPENDENCY, already declared in dependsOn.\n\nSo the parked flag is now redundant and actively unhelpful: parked short-circuits before blocked in the census, so this reported PARKED and hid the fact that it is simply waiting on 51. Unparked, it reports BLOCKED and unblocks automatically when 51 merges, instead of needing a human to remember to unpark it."
+  "unparkNote": "UNPARKED 2026-08-23, same reasoning as 52: the real-deployment half of the gate is satisfied by cuneiform ADR-0027, and the rest is dependsOn on 51 and 52. Let the dependency graph express it - this now reports BLOCKED and clears itself when its deps merge."
 }

@@ -556,7 +556,13 @@ rejected alternatives are recorded for provenance.
    it, while federation is additive; offline-first is preserved because minting is local and
    reconciliation is eventually-consistent (§6). Authority is a **role**, not a hard dependency.
    This normative change is candidate pending the cross-authority break test in
-   [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json).
+   [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), now
+   written and run as
+   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md). That pass did
+   **not** run clean — deltas MA-1…MA-11, of which **MA-1, MA-2, MA-3 and MA-4** are blocking on
+   this spec — so KINP stays **Candidate**. It is this spec's **only** re-ratification count; see
+   that scenario's *Re-ratification — what this pass gates* section for what a clean re-run would
+   license.
 2. **Merge aggressiveness → hybrid.** Auto-apply `same_as`/`based_on` above a confidence
    threshold; route high-impact or below-threshold links to a **review queue**, reusing the
    authority's convergence-QA gate. *Rejected:* always-auto (contamination risk) and
@@ -573,6 +579,20 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
 
 ## Changelog
 
+- **Editorial** (2026-08-24) — The cross-authority break test §11 decision 1 and the 0.3.0 entry
+  below name as this spec's gate has **landed and been run**:
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), two independently
+  built authority domains composed into one fabric. It did **not** pass clean — deltas
+  **MA-1…MA-11**, four of them blocking here (**MA-1** a query-time `same_as` closure that unions
+  two authorities and is governed by its weakest link; **MA-2** §4.5's relation-choice rule with no
+  fail-closed branch for an operand published in the other domain; **MA-3** §6's convergence rule
+  re-expressing against *the* canonical entity, singular; **MA-4** two default consensus-reality
+  worlds inside the claim hash with no equivalence layer over worlds) — plus **MA-7** on §3.4's
+  namespace-prefix registry, the one authority federation reintroduces unfederated. Step 1 attacked
+  the ADR's central invariant directly and it **held**: minting succeeded with both authorities
+  dark. **No clause changes and the status does not move** — KINP stays **Candidate** on the same
+  single count, now with a run pass and an open delta list behind it. That scenario's
+  *Re-ratification — what this pass gates* section records what a clean re-run would license.
 - **0.3.0** (2026-08-23) — Applied [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
   to §11 decision 1: the canonical identity-authority role can now be held by federated,
   independently operated authorities, each identified by the existing namespace and provenance
