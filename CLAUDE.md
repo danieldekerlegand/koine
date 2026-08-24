@@ -80,7 +80,7 @@ vocabulary.
   byte-unchanged, so no claim id moves. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.4.5, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.4.6, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -139,7 +139,20 @@ vocabulary.
   dated 2026-08-18 found no standards-body specification of the three to profile), the **re-open
   trigger**, and the carve-out that G1/G5/G6 stay *Partial* with findings GOV-1…GOV-3 open. A
   cross-reference in an informative section: no field, no clause, no manifest byte moves; both gates
-  restated, neither moved.
+  restated, neither moved. 0.4.6 (patch) resolves **§8 open question 1** — registry federation — into
+  a normative **§3.1** applying **ADR-0012**: one registry per authority domain stays conformant
+  unchanged, and where a deployment needs more than one they **peer**. Peering forwards a *query* and
+  merges entries, so what comes back is still an **address** and ADR-0001's route-by-lookup-not-proxy
+  rule is preserved (a registry never carries `invoke`/`subscribe`/`fetch` for a peer); every peered
+  entry is attributable to the peer that served it by KINP id + resolvable address; §3's
+  version/deprecation ranking applies to the merged set and two authorities naming the same capability
+  are **both** returned, never silently reconciled; an unreachable peer narrows discovery but
+  invalidates no manifest, grant, pin, or live subscription. Patch, not minor: additive (no manifest
+  field, no verb changes) and **0.5.0 is already spent** on §2.2's removal. New normative text, so it
+  adds a **third** candidate count — the cross-authority break test
+  `chief/53-multi-authority-scenario`, the same one KINP 0.3.0 names — gating §3.1 alone; the two
+  existing gates are restated, neither moved. §8 now holds one open question (backpressure,
+  renumbered to §8.1).
 - `specs/media-interchange.md` — KMI 0.3.3, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
