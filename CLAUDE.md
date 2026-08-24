@@ -153,7 +153,7 @@ vocabulary.
   `chief/53-multi-authority-scenario`, the same one KINP 0.3.0 names — gating §3.1 alone; the two
   existing gates are restated, neither moved. §8 now holds one open question (backpressure,
   renumbered to §8.1).
-- `specs/media-interchange.md` — KMI 0.3.3, **candidate**. Media data plane; asset envelope +
+- `specs/media-interchange.md` — KMI 0.3.4, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
@@ -182,6 +182,23 @@ vocabulary.
   recorded as a *risk* in ADR-0005's dated amendment log with the adoption **reaffirmed**, since
   #1985 is the citable case for the asset-id envelope. Patch, not minor: nothing that conformed at
   0.3.1 stops conforming, and §4.4 has already spent **0.4.0** on the EDL removal.
+  0.3.4 resolves **§9 open question 3** — the CAS operational model — into a normative **§7.1**
+  applying **ADR-0012**: one shared store per authority domain stays conformant unchanged, and
+  where a deployment runs more than one the stores **replicate on reference**. The `asset` id is
+  the hash of the bytes, so it is **byte-stable across stores** — a store may never mint, rewrite,
+  scope, or namespace an id for a copy, and a replicated copy is the *same asset*, not a §3
+  lineage edge. *Which* store holds it is a control-plane lookup (KCB §3.1) after which the holder
+  is dialed **directly**, so ADR-0001's route-by-lookup-not-proxy rule is preserved; a receiver
+  MUST verify bytes against the id and reject on mismatch; provenance/lineage never replicate
+  implicitly (no synthesized envelope or `prov`); replication is a `fetch`, so the **serving**
+  participant evaluates license/egress/trust-tier in its own authority domain and fails closed, and
+  an asset barred from leaving a domain is not replicated across it; an unreachable store is a
+  **pending fetch**, never a broken identifier. Patch, not minor: additive and **0.4.0 is already
+  spent** on the EDL removal. §9's numbering is deliberately *not* shifted — question 3 is marked
+  resolved in place the way §9.5 already is — so every existing §9.x reference still resolves. New
+  normative text, so it adds a **second** candidate count: the cross-authority break test
+  `chief/53-multi-authority-scenario`, the same one KINP 0.3.0 and KCB 0.4.6 name, gating §7.1
+  alone; the outstanding KCB re-run is restated and does not move.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
