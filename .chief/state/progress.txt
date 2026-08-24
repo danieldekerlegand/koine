@@ -57,3 +57,49 @@ tables match headers); doc-links 0 dead vs 0 on main; check-schemas OK (9 schema
 - **ADR-0012's *Consequences* names the hazard each plane's break test must hunt.** For KMI that is
   "per-project CAS replication on reference that loses content identity, provenance, or availability
   semantics" — good raw material for US-3's re-ratification paragraph.
+
+---
+
+## US-3 — KMI §7.1 — single CAS generalized to per-project stores replicating on reference (2026-08-24)
+
+Applied ADR-0012 to byte transport, completing the three-plane fold. **KMI 0.3.3 → 0.3.4**, Status
+stays Candidate.
+
+Files changed:
+- `specs/media-interchange.md` — header 0.3.4 / 2026-08-24; new **Status note (0.3.4)** adding a
+  **second** candidate count (chief/53) gating §7.1 alone; §1 scope bullet now names §7.1; §7 intro
+  says one shared store per authority domain is the default; **new normative §7.1** *CAS federation
+  — per-project stores that replicate on reference* with clauses (a)–(f) + a Re-ratification
+  paragraph; §8 mapping row for the control-plane host notes multi-store holders; §9 question 3
+  marked **resolved in place** (numbering NOT shifted); **Pressure test** gains a *Second count
+  (0.3.4)* paragraph; changelog entry for 0.3.4.
+- `ROADMAP.md` — Phase F1 row + Source line now point at `media-interchange.md §7.1` (was §9.3).
+- `README.md`, `specs/README.md` (×2), `ECOSYSTEM.md`, `CLAUDE.md` — the four version mirrors.
+
+Verification (all green): doc-integrity OK (42 markdown files, **688** relative links, all 3 status
+tables match headers); doc-links 0 dead vs 0 on main; check-schemas OK (9 schemas, 274 positions,
+78 $refs, 3 fixtures); check-registry OK (27 relation names); check-tasklist-categories OK (5
+tasklists); **`.chief/verify.sh` all selected gates green** (verify-test 30 passed, 0 failed);
+`git diff --check` clean.
+
+### Learnings for future iterations
+
+- **Do not renumber a spec's open-questions list reflexively.** KCB could renumber §8 because it
+  had two items and no cross-reference to the survivors. KMI §9 is cross-referenced by number in
+  four places (`§9.1` at :414/:692/:757, `§9.5` at :28/:678/:687/:692, plus ROADMAP's `§9.4` twice),
+  and several of those live in *frozen* changelog/status-note text that must not be rewritten. KMI
+  already had the right in-file precedent: §9.5 stays listed and is marked **closed in 0.3.3**.
+  Question 3 got the same treatment — resolved in place, numbering preserved — and the changelog
+  says so explicitly so a future reader does not "fix" the gap.
+- **PRD line numbers were stale for all three stories.** US-3 said "~line 380"; the real §9 item was
+  ~line 653 and the clause landed under §7 (~line 628). Grep for content.
+- **`.chief/verify.sh` is runnable directly** and is the closest thing to the merge gate — it
+  path-selects the guards and then runs `verify-test`'s 30 self-tests. Cheaper than remembering
+  which four `scripts/check-*.mjs` apply.
+- **Relative links in specs are checked, including into non-`specs/` dirs.** A first draft cited
+  `../schemas/policy/` (does not exist); the real policy files are `policy/license-classes.json` and
+  `policy/trust-tiers.json`, cited from specs as `../policy/…`. `check-doc-integrity.mjs` catches
+  this, so run it before assuming a path.
+- **Phase F1 row markers left as ⬜ with "— landed" annotations**, matching what US-2 chose. Flipping
+  the row to ✅ would also imply the ADR row (chief/51's bookkeeping) and the unbuilt scenario
+  (chief/53) — out of scope for this tasklist.

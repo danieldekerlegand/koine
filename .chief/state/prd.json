@@ -58,8 +58,8 @@
         "The KMI version header is bumped and Status set to candidate, with a changelog entry citing the ADR; the three edited specs read consistently with each other and all cite the one ADR.",
         "The three §-edits leave every current single-authority deployment conformant (the fold is additive), and each names chief/53-multi-authority-scenario as the pressure test that must break-test the shared pattern before re-ratification."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "doc-integrity: OK — 42 markdown files, 688 relative links, all 3 status tables match headers (media-interchange 0.3.4 candidate); doc-links: 0 dead vs 0 on main; check-schemas: OK (9 schemas, 274 positions, 78 $refs, 3 fixtures); check-registry: OK (27 relation names); check-tasklist-categories: OK (5 tasklists); .chief/verify.sh: all selected gates green (verify-test 30 passed, 0 failed); git diff --check clean. KMI header reads 0.3.4 / Candidate; §7.1 cites ADR-0012 and names chief/53, matching KINP §11 decision 1 and KCB §3.1."
     }
   ],
   "unparkNote": "UNPARKED 2026-08-23. Its gate had two halves: 'gated on chief/51 AND on a real >1-authority deployment target'. The second half is satisfied by cuneiform ADR-0027; the first is a DEPENDENCY, already declared in dependsOn.\n\nSo the parked flag is now redundant and actively unhelpful: parked short-circuits before blocked in the census, so this reported PARKED and hid the fact that it is simply waiting on 51. Unparked, it reports BLOCKED and unblocks automatically when 51 merges, instead of needing a human to remember to unpark it."
