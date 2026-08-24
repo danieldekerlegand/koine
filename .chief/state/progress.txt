@@ -87,3 +87,64 @@ verify-selftest `30 passed, 0 failed`). `node scripts/check-tasklist-categories.
   clean pass would license* + a dated Resolution note) and wire the three specs to cite the scenario
   by name; the Verdict currently ends at the blocking summary with no pointer, which US-2 adds.
 - The research map in the PRD was accurate; no correction needed.
+
+---
+
+## US-2 — Record the re-ratification resolution across the three specs (2026-08-24)
+
+**What I did.** Closed the loop from the scenario back to the three §-edits it gates.
+
+1. **`scenarios/e2e-multi-authority.md`** (+87 lines, 522 → 609): the Verdict now ends with
+   `> **Resolution:** — see *Re-ratification — what this pass gates*, below.`, and that section
+   follows, modelled exactly on `e2e-live-schema-mutation.md`'s (the only other pass younger than
+   the edits it tests, so the note runs "which version this pass gates" rather than "which version
+   folded these deltas"):
+   - *Which specs this pass gates* — 7 rows. **KINP 0.3.0 / KCB 0.4.6 / KMI 0.3.4** gated, each
+     with its delta set and which of its counts this is; **KGP 0.5.2** named as a *consequence
+     surface, not gated* (MA-3/MA-4/MA-5 each land partly in §3.3 / §7 / §7.1-2, no version moves);
+     **KCS 0.3.0** evidence-only (MA-11 → open question 1, the V-8 class); **ADR-0012** not
+     reopened; **`../schemas/`** no shape change by construction.
+   - *What a clean pass would license* — the honest per-spec split: this pass is the **whole** of
+     KINP's gate (0.3.0 → Ratified, the status 0.2.1 held), **one of three** counts on KCB, **one
+     of two** on KMI. Plus the second, fabric-wide condition no fold can satisfy — `specs/README.md`'s
+     ratification gate requires the machine-replayable KCS encoding, `kcs:multi-authority` reads
+     `planned`, and **MA-11 is why it cannot simply be written**.
+   - *What this pass does discharge* — ADR-0012's own "the later pressure test must actively seek
+     these hazards" requirement, hazard by hazard.
+   - A dated **Resolution (2026-08-24)**: MA-1…MA-11 **open, none folded**, all three stay Candidate.
+2. **The three specs cite the scenario by name** at every gate site (they previously linked only the
+   tasklist JSON), plus **one `**Editorial** (2026-08-24)` changelog entry each** stating what held,
+   what broke, and that *no clause changes and the status does not move*. Sites touched: KINP §11
+   decision 1 + changelog; KCB status note, §3.1 *Re-ratification*, changelog; KMI 0.3.4 status note,
+   §7.1 *Re-ratification*, *Second count (0.3.4)*, changelog.
+3. **`ROADMAP.md`** Phase F1 ⬜ planned → 🚧 in progress, with the F2-style prose sentence; rows for
+   `chief/51` and `chief/52` marked ✅ (both had landed and the table still said planned), `chief/53`
+   ✅ **run, not clean**, and a new ⬜ **Fold MA-1…MA-11** row mirroring F2's fold row.
+4. **`scenarios/README.md`** — a paragraph in the folds/resolutions block recording the federation
+   trio alongside the KGP / KMI / KCB ones.
+
+**Files changed.** `scenarios/e2e-multi-authority.md`, `scenarios/README.md`, `ROADMAP.md`,
+`specs/identity.md`, `specs/capability-bus.md`, `specs/media-interchange.md`.
+
+**Verification.** `node scripts/check-doc-integrity.mjs` → OK, 43 markdown files, **741** relative
+links checked, all 3 status tables match their headers. `.chief/verify.sh --run` over the changed
+set → green: guard-doc-integrity, guard-doc-links (`0 dead vs 0 on main`), guard-categories
+(`4 tasklists`), verify-selftest (`30 passed, 0 failed`). `schemas/*.json` all parse and are
+**byte-unchanged** (`git diff --stat schemas/` is empty) — which is AC-3 verified rather than
+asserted.
+
+**Learnings for future iterations.**
+- **A "candidate pending X" line has three homes per spec, not one** — the top status note, the
+  §-level *Re-ratification* paragraph, and the changelog entry — and KMI has a fourth (its *Pressure
+  test* § *Second count* paragraph). Grep the branch name (`53-multi-authority-scenario`) rather
+  than the section number to find them all; that grep is what caught the KMI fourth site.
+- **Editorial changelog entries are the escape hatch for wiring evidence into a spec without moving
+  its version.** KINP already had one (`**Editorial** (2026-08-13)`), so a pointer-only change has
+  precedent and needs no version bump and no status-table edit — which is what keeps
+  `check-doc-integrity.mjs`'s three-table diff quiet.
+- **Say which of a spec's counts a pass closes.** KCB carries three and KMI two, so "a clean pass
+  re-ratifies the §-edits" is false as stated for two of the three specs; only KINP reaches Ratified
+  on this pass alone, and even it needs the KCS encoding first. Stating that split is the difference
+  between a Resolution note that is usable and one that over-promises.
+- The `../schemas/` **directory** link resolves fine under `check-doc-integrity.mjs` (741 links, OK),
+  so a table row may link a directory, not just a file.

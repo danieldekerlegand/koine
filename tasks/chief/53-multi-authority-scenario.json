@@ -3,7 +3,7 @@
   "project": "koine",
   "category": "feature",
   "branchName": "chief/53-multi-authority-scenario",
-  "description": "A new pressure-test scenario that hunts the break the shared federation pattern (chief/51 ADR, chief/52 \u00a7-edits) must survive: two authorities in one fabric, cross-authority same_as reconciliation plus registry peering plus per-project CAS replication on reference (ROADMAP.md Phase F1). koine promotes a spec only after a concrete pressure test fails to break it (CLAUDE.md conventions), so this scenario is the gate that lets the three federation \u00a7-edits re-ratify. Follows the existing scenarios/ convention (replayable, cross-plane assertions) as in scenarios/e2e-worlds-to-fabric.md and scenarios/e2e-media-transform.md. PARKED: gated on chief/51 + chief/52 and on a real >1-authority deployment target (ROADMAP.md: nothing built until a deployment needs more than one authority). Public-safe: bind roles, illustrative CURIEs use the KINP \u00a73.4 placeholder namespaces.",
+  "description": "A new pressure-test scenario that hunts the break the shared federation pattern (chief/51 ADR, chief/52 §-edits) must survive: two authorities in one fabric, cross-authority same_as reconciliation plus registry peering plus per-project CAS replication on reference (ROADMAP.md Phase F1). koine promotes a spec only after a concrete pressure test fails to break it (CLAUDE.md conventions), so this scenario is the gate that lets the three federation §-edits re-ratify. Follows the existing scenarios/ convention (replayable, cross-plane assertions) as in scenarios/e2e-worlds-to-fabric.md and scenarios/e2e-media-transform.md. PARKED: gated on chief/51 + chief/52 and on a real >1-authority deployment target (ROADMAP.md: nothing built until a deployment needs more than one authority). Public-safe: bind roles, illustrative CURIEs use the KINP §3.4 placeholder namespaces.",
   "parked": false,
   "dependsOn": [
     "51-federation-adr",
@@ -29,11 +29,11 @@
     {
       "id": "US-1",
       "title": "A two-authority pressure scenario hunting the shared-pattern break",
-      "description": "Author a scenarios/ pressure test with two identity authorities in one fabric, driving cross-authority same_as reconciliation, registry peering, and per-project CAS replication on reference \u2014 written to find a break, not to assert correctness (CLAUDE.md conventions).",
+      "description": "Author a scenarios/ pressure test with two identity authorities in one fabric, driving cross-authority same_as reconciliation, registry peering, and per-project CAS replication on reference — written to find a break, not to assert correctness (CLAUDE.md conventions).",
       "acceptanceCriteria": [
         "A new scenarios/ file (e.g. scenarios/e2e-multi-authority.md) defines a replayable pressure test with TWO authorities and exercises all three federation surfaces the ADR unified: cross-authority same_as reconciliation (KINP), peering discovery registries (KCB), and per-project CAS replicating on reference (KMI).",
-        "The scenario asserts the invariants the federation pattern must preserve \u2014 offline-first minting still works, content-addressed identity stays byte-stable across authorities/stores, and no query-time merge produces a false cross-authority identity \u2014 and is written adversarially (prefer finding a break).",
-        "It follows the scenarios/ convention (cross-plane assertion vocabulary, replayable steps) and, per scenarios/README.md, illustrative CURIEs use the KINP \u00a73.4 placeholder namespaces; it names no deployment or product."
+        "The scenario asserts the invariants the federation pattern must preserve — offline-first minting still works, content-addressed identity stays byte-stable across authorities/stores, and no query-time merge produces a false cross-authority identity — and is written adversarially (prefer finding a break).",
+        "It follows the scenarios/ convention (cross-plane assertion vocabulary, replayable steps) and, per scenarios/README.md, illustrative CURIEs use the KINP §3.4 placeholder namespaces; it names no deployment or product."
       ],
       "passes": true,
       "notes": "scenarios/e2e-multi-authority.md written (522 lines): 10 adversarial steps over two authority domains (A: refkb/orchestrator/analyzer/worldsim/mediastore, B: archivekb/coordinator/assetstore), all three federation surfaces exercised. 11 findings MA-1..MA-11, 6 blocking (MA-1..MA-6); 5 held-under-attack results recorded (offline-first minting with both authorities dark, asset-id byte-stability across stores, KMI 7.1(d) no-lineage-on-copy incl. C2PA/OMC projections, KCB 3.1(b) route-by-lookup, KINP 4.5 no-transitive-promotion). Verify: node scripts/check-doc-integrity.mjs OK - 43 markdown files, 705 relative links checked, all 3 status tables match; .chief/verify.sh --run over the changed set green (guard-doc-integrity, guard-doc-links 0 dead vs 0 on main, verify-selftest 30 passed 0 failed); schemas/*.json all parse."
@@ -41,14 +41,14 @@
     {
       "id": "US-2",
       "title": "Record the re-ratification resolution across the three specs",
-      "description": "Wire the scenario back to the three federation \u00a7-edits so a clean pass re-ratifies them, matching how existing re-validations record a Resolution note.",
+      "description": "Wire the scenario back to the three federation §-edits so a clean pass re-ratifies them, matching how existing re-validations record a Resolution note.",
       "acceptanceCriteria": [
         "The scenario carries a Resolution / note recording which KINP/KCB/KMI spec versions its pass gates, mirroring the 'Re-validation' sections in the existing scenarios.",
-        "On a clean pass the three federation \u00a7-edits (chief/52) may return from candidate to ratified; the scenario states this explicitly and each affected spec's changelog can cite it.",
+        "On a clean pass the three federation §-edits (chief/52) may return from candidate to ratified; the scenario states this explicitly and each affected spec's changelog can cite it.",
         "schemas/*.json still parse; no schema twin changes are required by this scenario (it is a control/data-plane behavior test, not a shape change)."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added `## Re-ratification — what this pass gates` to scenarios/e2e-multi-authority.md (87 lines): a 7-row per-spec table (KINP 0.3.0 / KCB 0.4.6 / KMI 0.3.4 gated; KGP 0.5.2 as a consequence surface; KCS 0.3.0 evidence-only; ADR-0012 not reopened; schemas/ no shape change), a *What a clean pass would license* section stating per spec what leaving Candidate means (KINP -> Ratified on its only count; KCB 1 of 3 counts; KMI 1 of 2) plus the KCS-encoding precondition from specs/README.md's ratification gate, and a dated **Resolution (2026-08-24)** note: MA-1..MA-11 open, none folded, all three stay Candidate. Wired the three specs to cite the scenario by name at each gate site + one Editorial (2026-08-24) changelog entry each (no clause, version, or status moves). ROADMAP F1 -> in progress; scenarios/README.md fold paragraph records the trio. Verify: node scripts/check-doc-integrity.mjs OK - 43 markdown files, 741 relative links checked, all 3 status tables match headers; .chief/verify.sh --run over the changed set green (guard-doc-integrity; guard-doc-links 0 dead vs 0 on main; guard-categories OK 4 tasklists; verify-selftest 30 passed, 0 failed); schemas/*.json all parse ('schemas ok') and are byte-unchanged (git diff --stat shows no schemas/ file)."
     }
   ],
   "unparkNote": "UNPARKED 2026-08-23, same reasoning as 52: the real-deployment half of the gate is satisfied by cuneiform ADR-0027, and the rest is dependsOn on 51 and 52. Let the dependency graph express it - this now reports BLOCKED and clears itself when its deps merge."

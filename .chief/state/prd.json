@@ -47,8 +47,8 @@
         "On a clean pass the three federation §-edits (chief/52) may return from candidate to ratified; the scenario states this explicitly and each affected spec's changelog can cite it.",
         "schemas/*.json still parse; no schema twin changes are required by this scenario (it is a control/data-plane behavior test, not a shape change)."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added `## Re-ratification — what this pass gates` to scenarios/e2e-multi-authority.md (87 lines): a 7-row per-spec table (KINP 0.3.0 / KCB 0.4.6 / KMI 0.3.4 gated; KGP 0.5.2 as a consequence surface; KCS 0.3.0 evidence-only; ADR-0012 not reopened; schemas/ no shape change), a *What a clean pass would license* section stating per spec what leaving Candidate means (KINP -> Ratified on its only count; KCB 1 of 3 counts; KMI 1 of 2) plus the KCS-encoding precondition from specs/README.md's ratification gate, and a dated **Resolution (2026-08-24)** note: MA-1..MA-11 open, none folded, all three stay Candidate. Wired the three specs to cite the scenario by name at each gate site + one Editorial (2026-08-24) changelog entry each (no clause, version, or status moves). ROADMAP F1 -> in progress; scenarios/README.md fold paragraph records the trio. Verify: node scripts/check-doc-integrity.mjs OK - 43 markdown files, 741 relative links checked, all 3 status tables match headers; .chief/verify.sh --run over the changed set green (guard-doc-integrity; guard-doc-links 0 dead vs 0 on main; guard-categories OK 4 tasklists; verify-selftest 30 passed, 0 failed); schemas/*.json all parse ('schemas ok') and are byte-unchanged (git diff --stat shows no schemas/ file)."
     }
   ],
   "unparkNote": "UNPARKED 2026-08-23, same reasoning as 52: the real-deployment half of the gate is satisfied by cuneiform ADR-0027, and the rest is dependsOn on 51 and 52. Let the dependency graph express it - this now reports BLOCKED and clears itself when its deps merge."
