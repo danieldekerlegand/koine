@@ -22,7 +22,9 @@ carries.
 > that returns *addresses* across an authority boundary — never a proxy (ADR-0001). It adds a
 > **third** re-ratification count, the cross-authority break test in
 > [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), which is
-> the same test KINP 0.3.0 and KMI's federation clause name. 0.3.0 changed the *shape* of the
+> the same test KINP 0.3.0 and KMI's federation clause name — now written and run as
+> [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), and **not clean**
+> (MA-6 blocking, MA-8/MA-9 should-fix), so that third count does not close. 0.3.0 changed the *shape* of the
 > manifest — it is now an A2A AgentCard extension (§2), not a standalone
 > `/.well-known/kcb-manifest.json` — and that re-validation is still outstanding. 0.4.0 adds the
 > capability-versioning surface (§7, wired through §2/§2.1/§3/§5) per
@@ -501,6 +503,18 @@ break-test the pattern ADR-0012 shares across all three planes — for this sect
 peering that returns stale, conflicting, or unresolvable authority records. It is a **third** count
 on this spec's status and gates §3.1 alone; the two legs in the status note are unaffected.
 
+That test is now written and run:
+[`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md). It did **not** pass
+clean. §3.1(b)'s route-by-lookup rule held against the case built to break it, §3's version ranking
+applied to the merged set unchanged, and §3.1(d) returned both authorities' entries without
+reconciling them — but three deltas are open against this section: **MA-6** (blocking — discovery
+federates and **authorization** does not: §5 grants issue from one host, so §3.1 returns addresses
+whose calls nobody can authorize across a domain edge), **MA-8** (three of §3.1's six clauses have
+no carrier in §3's `find` response — no serving-peer id, no peered-vs-local marker, no observation
+time, no partial-result channel for an unreachable peer), and **MA-9** (a forwarded `find` has no
+horizon and no de-duplication key). All three are additive. The §3.1 count therefore stays open;
+see that scenario's *Re-ratification — what this pass gates* section.
+
 ---
 
 ## 4. Verbs
@@ -844,6 +858,26 @@ outstanding and independent.
 
 ## Changelog
 
+- **Editorial** (2026-08-24) — The cross-authority break test §3.1 names as this spec's **third**
+  re-ratification count has **landed and been run**:
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), which composes two
+  independently built authority domains into one fabric and peers their registries. It did **not**
+  pass clean. What held: §3.1(b)'s *forward the query, return an address* rule survived a peer
+  reachable only from inside its own domain and produced an honest *unreachable* rather than a
+  silent proxy; §3's version/deprecation ranking applied to the merged set unchanged; §3.1(d)
+  returned both authorities' same-named capability without reconciling them. What broke: **MA-6**
+  (blocking) — discovery federates and **authorization does not**, since §5 issues grants from one
+  host and no clause says whose token a provider honors across a domain edge, whether a grant
+  crosses one, or whether `budget_units` denominates the same quantity in two governance domains;
+  **MA-8** — §3.1(c)'s attribution, (e)'s observation time and (f)'s report-an-unreachable-peer have
+  **no carrier** in §3's `find` response; **MA-9** — a forwarded `find` carries no query id, hop
+  limit or visited set, and (d)'s never-silently-reconcile rule has no converse for one participant
+  crawled by two registries. All three are additive and fold into the **0.5.0** minor §7.3 already
+  schedules. **No clause changes and the status does not move** — KCB stays **Candidate** on all
+  three counts; the other two (the [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md)
+  re-run against the §2 AgentCard extension, and the §7.5 deltas V-2/V-4/V-5/V-7 from
+  [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md)) are
+  untouched by that pass and neither moves.
 - **0.4.6** (2026-08-24) — **Candidate.** Applied
   [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) to discovery: **§8 open question 1
   (registry federation) is resolved and promoted to a normative §3.1**, so the single

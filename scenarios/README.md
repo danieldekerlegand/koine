@@ -60,6 +60,14 @@ break-test of its versioning section, which has now **landed and been run**
 that scenario's *Re-ratification — what this pass gates* section for exactly what a clean re-run
 would license.
 
+The **three federation §-edits** — [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
+applied to KINP §11 decision 1, KCB §3.1 and KMI §7.1 — are gated the same way, by
+[`e2e-multi-authority.md`](e2e-multi-authority.md), which has now landed and been run and also did
+**not** pass clean: deltas **MA-1…MA-11**, blocking **MA-1…MA-6**, every one additive. **KINP
+0.3.0, KCB 0.4.6 and KMI 0.3.4 all stay candidate** — that pass is the whole of KINP's gate, one of
+KCB's three counts, and one of KMI's two. Its *Re-ratification — what this pass gates* section
+carries the per-spec table, what a clean re-run would license, and the dated **Resolution**.
+
 ## The KCS encodings — none exists yet, and that is the ratification tail
 
 Read the **KCS encoding** column honestly: it says `planned` eight times and `exists` zero times.

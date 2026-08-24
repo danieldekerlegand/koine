@@ -33,7 +33,10 @@ composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline
 > adds a **second** re-ratification count, the cross-authority break test in
 > [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), which is
 > the same test KINP 0.3.0 and KCB §3.1 name; it gates §7.1 alone and does not move the
-> KCB-re-run count below.
+> KCB-re-run count below. That test is now written and run as
+> [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), and is **not clean**
+> — the id stayed byte-stable under every attack tried, but **MA-5** (blocking) and **MA-10** are
+> open, so the second count does not close.
 
 > **Status note (0.3.3):** folds the §9.5 additive-metadata-survival pressure break. A third-party
 > OTIO round-trip may remain structurally valid while dropping `metadata.koine.asset`; KMI now
@@ -716,6 +719,21 @@ break-test the pattern ADR-0012 shares across all three planes — for this sect
 semantics.* It is a **second** count on this spec's status and gates §7.1 alone; the outstanding
 KCB re-run recorded under **Pressure test** is unaffected.
 
+That test is now written and run:
+[`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md). **Content identity and
+provenance held**; availability and policy did not. (a)'s byte-stable id survived every attack tried
+— re-minting is forbidden in terms, (c)'s mandatory verify rejected corrupted bytes, and a verified
+copy is indistinguishable from the original; (d)'s refusal to make a copy a §3 lineage edge held
+even through the §3.2/§3.3 C2PA and OMC projections, which bind to content and so cannot see a
+replication; (f) correctly invalidated nothing when a store went dark. Two deltas are open:
+**MA-5** (blocking — (e)'s egress/license gate has **no operand**, because the §2 envelope carries
+no `license` and no `egress`, KGP §7's classes are record properties rather than byte properties,
+and (d) rightly forbids synthesizing the envelope that would carry them; so a second holder either
+refuses everything or serves under its own domain's policy) and **MA-10** ((b)'s *MAY retain* plus
+no minimum replica count makes (f)'s *pending fetch* unfalsifiable — a consumer cannot distinguish
+*not yet propagated* from *no holder remains*). Both are additive. The §7.1 count therefore stays
+open; see that scenario's *Re-ratification — what this pass gates* section.
+
 ---
 
 ## 8. Mapping (by role)
@@ -782,10 +800,27 @@ one store. It is candidate on the cross-authority break test in
 test KINP 0.3.0 and KCB §3.1 name, which must hunt per-project CAS replication on reference that
 loses content identity, provenance, or availability semantics
 ([ADR-0012](../decisions/ADR-0012-federated-authority-roles.md), *Consequences*). It gates §7.1
-alone; the KCB re-run count above is unaffected and no delta is reopened.
+alone; the KCB re-run count above is unaffected and no delta is reopened. That test has now been
+run — [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), **not clean**:
+identity and provenance held, **MA-5** and **MA-10** are open, and the count stays open with them.
 
 ## Changelog
 
+- **Editorial** (2026-08-24) — The cross-authority break test §7.1 names as this spec's **second**
+  re-ratification count has **landed and been run**:
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), in which two
+  authority domains' stores replicate on reference. It did **not** pass clean, but the half §7.1
+  exists to protect **held**: the `asset` id was byte-stable across stores under every attack tried,
+  a corrupted copy was rejected by (c)'s mandatory verify, (d)'s refusal to record a copy as a §3
+  lineage edge survived the §3.2/§3.3 C2PA and OMC projections, and (f) invalidated no id, envelope,
+  edge, timeline or grant when a store went dark. Two deltas are open: **MA-5** (blocking — (e)'s
+  egress/license gate has no operand, since the §2 envelope carries neither field and (d) forbids
+  synthesizing one, so one legitimate fetch plus (b)'s *MAY retain* ends the originating domain's
+  control permanently) and **MA-10** ((f)'s *pending fetch* becomes unfalsifiable under optional
+  retention with no durable holder). MA-5 adds two envelope fields excluded from the id and MA-10
+  makes absence answerable — both additive, and **0.4.0 remains spoken for** by §4.4's EDL removal.
+  **No clause changes and the status does not move** — KMI stays **Candidate** on both counts, and
+  the outstanding KCB re-run is untouched by that pass.
 - **0.3.4** (2026-08-24) — **Candidate.** Applied
   [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) to byte transport: **§9 open
   question 3 (CAS operational model) is resolved by a new normative §7.1**, so the single shared

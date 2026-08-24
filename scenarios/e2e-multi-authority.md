@@ -520,3 +520,90 @@ forward, MA-10 makes absence answerable. Every one is additive.
 
 **Not clean. KINP 0.3.0, KCB 0.4.6 and KMI 0.3.4 all stay Candidate** on the gate each of them names
 as this pass.
+
+> **Resolution:** — see *Re-ratification — what this pass gates*, below.
+
+---
+
+## Re-ratification — what this pass gates
+
+The older scenarios keep a **Resolution** note naming the spec version that folded their deltas
+([`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) for A–E,
+[`e2e-media-transform.md`](e2e-media-transform.md) for F–L,
+[`e2e-producer-exhaust-finetune.md`](e2e-producer-exhaust-finetune.md) for FT-M…Q). This pass, like
+[`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md), is **younger than the edits it tests**
+— all three were published *naming this test as their gate* — so the note runs the other way round:
+it records which spec version this pass gates, and what a clean re-run would license.
+
+### Which specs this pass gates
+
+| Spec | Version at the time of this pass | What this pass does to it |
+|---|---|---|
+| **KINP** ([`../specs/identity.md`](../specs/identity.md)) | 0.3.0, **Candidate** | **Gated spec 1 of 3.** §11 decision 1's federation clause, plus the §3.4/§4.1/§4.2/§4.5/§5/§6 surfaces that decision was wired through and never re-read against a second holder. Deltas **MA-1, MA-2, MA-3, MA-4, MA-7**; four blocking (**MA-1, MA-2, MA-3, MA-4**). This is KINP's **only** re-ratification count, so this pass is the whole of its gate. **Not clean → KINP stays Candidate.** |
+| **KCB** ([`../specs/capability-bus.md`](../specs/capability-bus.md)) | 0.4.6, **Candidate** | **Gated spec 2 of 3, on one of its three counts.** §3.1 in full, plus §3's `find` response and §5's grants, which §3.1 composes over. Deltas **MA-6, MA-8, MA-9** and the control-plane half of **MA-2**; **MA-6** blocking. **Not clean → the §3.1 count does not close.** The other two counts — the [`e2e-media-transform.md`](e2e-media-transform.md) re-run against the §2 AgentCard-extension manifest, and the §7.5 fold that [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md) left open — are **untouched by this pass and do not move**. |
+| **KMI** ([`../specs/media-interchange.md`](../specs/media-interchange.md)) | 0.3.4, **Candidate** | **Gated spec 3 of 3, on one of its two counts.** §7.1 in full, plus the §2 envelope it needs an operand from and the §3 lineage graph it must *not* write to. Deltas **MA-5, MA-10**; **MA-5** blocking. Four of §7.1's own clauses **held under direct attack** — (a) byte-stable id, (c) verify-and-reject, (d) a copy is not a lineage edge (through the §3.2/§3.3 C2PA and OMC projections as well), (f) no invalidation. **Not clean → the §7.1 count does not close**; the outstanding KCB re-run count is untouched. |
+| **KGP** ([`../specs/grounding-pack.md`](../specs/grounding-pack.md)) | 0.5.2, Candidate | **Named as a consequence surface, not gated.** No step contradicts a KGP clause on its own terms, and **no version moves** — but three deltas land partly here and cannot be folded without stating KGP's reading: **MA-3** (claim-id convergence, §3.3), **MA-4** (§7's `world = consensus-reality` filter loses its referent when there are two consensus realities), **MA-5** (the license/egress classes of §7.1/§7.2 are the operand KMI §7.1(e) has no carrier for). Whoever folds MA-3/MA-4/MA-5 answers for this column too. |
+| **KCS** ([`../specs/conformance-scenario.md`](../specs/conformance-scenario.md)) | 0.3.0, Candidate | **MA-11 only, and as evidence, not a demand.** Five of this pass's ten assertions have no §5 predicate and three more borrow a neighbour's meaning; §5 has no authority-boundary vocabulary at all. That is input to KCS open question 1 (*fixed core + escape hatch*) — the same class as delta **V-8**. No clause is contradicted and **no version moves**. |
+| [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) | accepted | **Not reopened.** Nothing in this pass argues against the decision: option (a) really would have broken offline-first, option (b) really would have left reconciliation unspecified, and Step 1 vindicates *an authority is a role, not a hard dependency* outright. Every delta is additive and lands in a spec, not in the ADR. |
+| [`../schemas/`](../schemas/) | — | **No shape change, by construction.** This is a control/data-plane *behavior* test: it moves ids, addresses, grants and bytes, and reads no machine-readable twin. The twins that exist (`provenance`, `media-timeline`, `finetune-job`) are document shapes no step writes. Every `schemas/*.json` is byte-unchanged and still parses. |
+
+### What a clean pass would license
+
+On a **clean** re-run — Steps 1–10 all ✅, no delta reopened — the three federation §-edits
+([ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) → KINP §11 decision 1, KCB §3.1,
+KMI §7.1; `chief/51` + `chief/52`) may leave **Candidate**, and each affected spec's changelog may
+cite this document by name and section as the evidence, exactly as KINP's *Ratified decisions* §
+already cites [`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) for A–E and KCB's *Pressure test*
+§ cites [`e2e-media-transform.md`](e2e-media-transform.md) for F–L.
+
+*What* leaving Candidate means differs per spec, because this pass is the whole gate for only one of
+the three:
+
+1. **KINP 0.3.0 → Ratified.** This pass is its only count. A clean re-run — with **MA-1, MA-2,
+   MA-3, MA-4** folded first and **MA-7** in the same fold — restores the status 0.2.1 held. Steps
+   2, 3, 4 and 6 are the ones that must flip; Step 1 held and is the regression set.
+2. **KCB — one count of three closes.** Folding **MA-6**, with **MA-8** and **MA-9** alongside,
+   discharges the §3.1 count and nothing else: KCB remains Candidate until the media-transform
+   re-run lands *and* the §7.5 deltas **V-2/V-4/V-5/V-7** are folded. All of MA-6/MA-8/MA-9 are
+   additive, so they fold into the same **0.5.0** minor those already occupy.
+3. **KMI — one count of two closes.** Folding **MA-5**, with **MA-10** alongside, discharges the
+   §7.1 count; KMI remains Candidate until the KCB re-run lands. MA-5 adds two fields to the §2
+   envelope and MA-10 adds an answerable *not held, and not expected* — additive, and **0.4.0 is
+   already spoken for** by §4.4's EDL removal, so they land at **0.5.0** or in a patch that adds no
+   field, not by displacing that removal.
+
+**And a second condition, fabric-wide, that no fold can satisfy.** Under
+[the ratification gate](../specs/README.md#the-ratification-gate), `candidate → ratified` requires a
+machine-replayable **KCS encoding** whose assertions cite the clauses being ratified — a prose pass
+is necessary and *no longer sufficient*. This pass's encoding is `kcs:multi-authority`, and it reads
+**planned** in [`README.md`](README.md). **MA-11 is the reason it cannot simply be written**: KCS §5
+cannot express five of the ten assertions this pass needs, so the encoding is gated on KCS open
+question 1 in turn. A clean re-run of the prose is therefore the *first* of two things KINP needs,
+not the last.
+
+**What this pass does discharge** is ADR-0012's own requirement — that *"the later pressure test
+must actively seek these hazards without assuming a particular deployment."* It named three; all
+three were run and all three produced findings. Cross-authority `same_as` that over-merges or
+bypasses the `based_on` firewall: found twice, **MA-1** (a closure nobody governs) and **MA-2** (a
+firewall whose operand does not cross the boundary) — and note that the firewall itself, §4.5's ban
+on promoting a `based_on` chain by transitivity, was attacked head-on and did **not** yield; MA-2
+goes around it. Registry peering that returns stale, conflicting, or unresolvable records: found in
+a **weaker form than the ADR feared** — the records resolve and §3.1(b)'s route-by-lookup rule held
+— but the attribution that (c) requires has no carrier (**MA-8**) and the forward has no horizon
+(**MA-9**). Per-project CAS replication that loses content identity, provenance, or availability
+semantics: identity held under every attack tried and provenance held including through the
+projections, but the **policy** that governs the bytes does not travel (**MA-5**) and availability
+degrades to an unfalsifiable *pending* (**MA-10**). The test exists and has been run; what remains
+is the fold.
+
+> **Resolution (2026-08-24):** recorded against **KINP 0.3.0**, **KCB 0.4.6** and **KMI 0.3.4** —
+> the three §-edits `chief/52` applied under
+> [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md), each of which names this pass as a
+> re-ratification count. Deltas **MA-1…MA-11** are **open — none folded**, and **MA-1…MA-6** are
+> blocking, so **all three stay Candidate**: this pass is the whole of KINP's gate, one of three
+> counts on KCB, and one of two on KMI. No other spec version moves — MA-11 is evidence for a KCS
+> open question, KGP 0.5.2 is a consequence surface rather than a gated spec, ADR-0012 is not
+> reopened, and every `schemas/*.json` is byte-unchanged. When a fold lands, amend this note to name
+> the version that closed each delta — as [`e2e-media-transform.md`](e2e-media-transform.md)'s
+> Resolution does for F–L — after which this document stands as the historical record of what the
+> break-test found.
