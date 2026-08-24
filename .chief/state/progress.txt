@@ -1,105 +1,89 @@
-# Chief Progress — 52-federation-spec-edits
-Started: Mon Aug 24 16:16:20 CDT 2026
+# Chief Progress — 53-multi-authority-scenario
+Started: Mon Aug 24 16:24:34 CDT 2026
 ---
 
 ## Codebase Patterns
 
-- **Four version mirrors, not three.** A spec header bump must be echoed in `README.md`,
-  `specs/README.md` (table AND the "Four sit there now — …" prose line ~195), `ECOSYSTEM.md` §2,
-  and `CLAUDE.md`'s *Current state* prose. `check-doc-integrity.mjs` diffs only the three tables;
-  the CLAUDE.md prose is unchecked, so edit it by hand and read it back.
-- **Guards to run after any doc edit** (this is what `.chief/verify.sh` selects for `*.md`):
-  `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs --ratchet --base main`,
-  `node scripts/check-tasklist-categories.mjs`. Add `check-schemas.mjs` if `schemas/` moved.
-- **Patch-vs-minor in koine.** New *normative* text is not automatically a minor. House precedent
-  (KCB 0.4.1 §2.3, KMI 0.3.2 §3.2) is: if nothing conformant stops conforming AND the next minor is
-  already spoken for by a scheduled removal (KCB §7.3c forbids declaring and removing in one
-  publication), it ships as a **patch** with that reasoning written into the changelog entry.
-- **Changelog entries carry the reasoning, not just the delta** — what the clause fixes, the
-  *Classification:* line justifying patch/minor, and a restatement of every open re-ratification
-  gate (whether or not it moved). Match the surrounding entries' density.
+- **Scenario documents follow a fixed shape.** Title + *Purpose* (naming the exact spec versions
+  under test and quoting the invariant) → *The story* → *Setup* table in KINP §3.4 placeholder
+  namespaces → numbered **Steps** each tagged ✅ *held* / 🔴 *broke* / 🟡 *noted* → *Assertions — as
+  KCS steps* (a table mapping each assertion to a KCS §5 predicate, with `— **none**` where the
+  format cannot express it) → *Findings* table (`# | Severity | Gap | Delta | Spec`) → a
+  *Not deltas — what this pass tried to break and could not* paragraph → *Verdict* →
+  *Re-ratification / Resolution*. `scenarios/e2e-live-schema-mutation.md` is the best model.
+- **Findings must be grounded in quoted clause text.** Read the actual §-text before writing a
+  break; every finding here cites the sentence it contradicts. Recording what *held* under a named
+  attack is as load-bearing as the breaks.
+- **Adding a scenario means four doc edits, not one.** The file, the row in `scenarios/README.md`'s
+  table (incl. the *KCS encoding* column), the prose counts in that README ("These N documents",
+  "`planned` N times", "encodes the N documents", "the attempt at the N above"), and the two count
+  sentences + the F4 milestone row in `ROADMAP.md`. None of those counts is machine-checked.
+- **Verify with the real gate, not just the guard.** `git diff --name-only <base>...HEAD |
+  .chief/verify.sh --plan` shows which gates the diff selects; `.chief/verify.sh --run <files>`
+  runs them. A prose branch selects guard-doc-integrity + guard-doc-links + verify-selftest.
 
 ---
 
-## US-2 — KCB §7.1/§8.1 — single registry generalized to peering registries (2026-08-24)
+## US-1 — A two-authority pressure scenario hunting the shared-pattern break (2026-08-24)
 
-Applied ADR-0012 to KCB. **KCB 0.4.5 → 0.4.6**, Status stays Candidate.
+**What I did.** Wrote `scenarios/e2e-multi-authority.md` (522 lines), the ADR-0012 federation
+break-test that KINP 0.3.0 §11.1, KCB 0.4.6 §3.1 and KMI 0.3.4 §7.1 each name as their candidate
+gate. Two independently built authority domains compose into one fabric: domain A is the
+`e2e-worlds-to-fabric.md` deployment (`refkb` / `orchestrator` / `analyzer` / `worldsim` /
+`mediastore`), domain B is an archive (`archivekb` / `coordinator` / `assetstore` — three new
+placeholder registrations in KINP §3.4's illustrative style, since the existing set has exactly one
+of each authority-ish role). Ten steps, adversarial throughout.
 
-Files changed:
-- `specs/capability-bus.md` — header 0.4.6 / 2026-08-24; status note gains a **third** candidate
-  count (chief/53) gating §3.1 alone; §1 scope bullet now names §3.1; §3 intro says one registry per
-  authority domain is the default; **new normative §3.1** *Registry federation — peering registries*
-  with clauses (a)–(f) + a Re-ratification paragraph; §8 open question 1 resolved-and-moved (the
-  *Resolved and moved* paragraph now records both ADR-0009's and ADR-0012's promotions), leaving one
-  open question renumbered to **§8.1**; changelog entry for 0.4.6.
-- `ROADMAP.md` — Phase F1 row + Source line now point at `capability-bus.md §3.1`; Phase F6's
-  backpressure row and Source line renumbered §8.2 → §8.1.
-- `README.md`, `specs/README.md` (×2), `ECOSYSTEM.md`, `CLAUDE.md` — the four version mirrors.
+**Files changed.**
+- `scenarios/e2e-multi-authority.md` (new)
+- `scenarios/README.md` — table row + the four prose counts
+- `ROADMAP.md` — two count sentences + the Phase F4 encoding milestone (`kcs:multi-authority`)
 
-Verification (all green): doc-integrity OK (42 markdown files, 677 relative links, all 3 status
-tables match headers); doc-links 0 dead vs 0 on main; check-schemas OK (9 schemas, 274 positions,
-78 $refs, 3 fixtures); check-tasklist-categories OK (5 tasklists); `git diff --check` clean.
+**Findings the pass produced.** MA-1…MA-11; six blocking.
+- MA-1 (H) query-time `same_as` closure (§4.1) unions two authorities' links, governed by its
+  weakest link — a merged identity no authority asserted and no review gate saw; re-running
+  `e2e-worlds-to-fabric.md`'s Q2 now leaks fiction.
+- MA-2 (H) §4.5's relation-choice rule needs the candidate's world + inherit-as-identity mode; both
+  are published in the *other* domain, no KCB verb returns them, and §4.5 has no branch for a
+  **missing operand** (its third branch is about confidence) → the firewall is absent on the second
+  authority.
+- MA-3 (H) §6 re-expresses claims against "**the** canonical entity" — singular; two holders means
+  two claim ids for one fact, and nominating a target reinstates ADR-0012's rejected option (a).
+- MA-4 (H) the world is *inside* the claim hash (§6) and §5 makes the default real world the
+  authority's own, so two consensus realities → two hashes even for a shared `wikidata:` anchor; §4.2
+  ranges over entities, so nothing can assert the two worlds are one. Also strands KGP §7's
+  `world = consensus-reality` filter.
+- MA-5 (H) KMI §7.1(e)'s egress gate has **no operand** — the §2 envelope carries no `license` /
+  `egress`, KGP §7's classes are record properties, and §7.1(d) forbids synthesizing the envelope
+  that would carry them. Both horns conformant, both wrong.
+- MA-6 (H) discovery federates, authorization does not: §5 grants come from one host; §3.1 returns
+  addresses nobody can authorize a call to. KMI §7.1(b)(e) inherits it for `fetch:asset`.
+- MA-7 (M-H) federation reintroduces one unfederated authority — §3.4's prefix registry.
+- MA-8 (M) three of §3.1's six clauses have no carrier in §3's `find` response.
+- MA-9 (M) peering has no horizon and no de-dup key. MA-10 (M) no durability floor: *pending fetch*
+  becomes unfalsifiable. MA-11 (cleanup) KCS §5 has no authority-boundary vocabulary (V-8's class).
 
-### Learnings for future iterations
+**What held under attack** (the three acceptance-criteria invariants, two of three):
+offline-first minting with both authorities gone — including the world-stamp back door — and asset
+id byte-stability across stores (re-minting forbidden, corrupted bytes rejected by the mandatory
+verify, C2PA/OMC projections gained no spurious derivation). The third invariant, *no query-time
+merge produces a false cross-authority identity*, **failed** — MA-1.
 
-- **The PRD's §-numbers are stale on this tasklist.** US-2 says "KCB §7 open question 1 (~line 251)";
-  the versioning fold already moved the open questions to **§8**, and the ADR itself flags this
-  ("KCB §7 open question 1; now §8 after the versioning question moved"). US-3 says "media-interchange
-  §9 open question 3 (~line 380)" — the real line is **~653**. Grep for the content, not the line.
-- **Renumbering §8 has out-of-file consequences.** `ROADMAP.md` tracked the backpressure question as
-  "KCB §8.2" in two places; both were updated in the same commit. `specs/media-interchange.md:653`
-  still says "KCB §8 registry federation" — **US-3 owns that line** (it is KMI §9 open question 3)
-  and should repoint it to **KCB §3.1** while rewriting the item.
-- **Follow US-1's shape for US-3.** KINP 0.3.0 cites the ADR by relative link
-  (`../decisions/ADR-0012-federated-authority-roles.md`) and names the pressure test as a link to
-  `../tasks/chief/53-multi-authority-scenario.json`; §3.1 here does the same. US-3's AC requires all
-  three specs to name chief/53 — KINP and KCB already do.
-- **ADR-0012's *Consequences* names the hazard each plane's break test must hunt.** For KMI that is
-  "per-project CAS replication on reference that loses content identity, provenance, or availability
-  semantics" — good raw material for US-3's re-ratification paragraph.
+**Verification.** `node scripts/check-doc-integrity.mjs` → OK, 43 markdown files, 705 relative links
+checked, all 3 status tables match their headers. `.chief/verify.sh --run` over the changed set →
+all selected gates green (guard-doc-integrity; guard-doc-links `0 dead vs 0 on main`;
+verify-selftest `30 passed, 0 failed`). `node scripts/check-tasklist-categories.mjs` → green.
+`schemas/*.json` all parse.
 
----
-
-## US-3 — KMI §7.1 — single CAS generalized to per-project stores replicating on reference (2026-08-24)
-
-Applied ADR-0012 to byte transport, completing the three-plane fold. **KMI 0.3.3 → 0.3.4**, Status
-stays Candidate.
-
-Files changed:
-- `specs/media-interchange.md` — header 0.3.4 / 2026-08-24; new **Status note (0.3.4)** adding a
-  **second** candidate count (chief/53) gating §7.1 alone; §1 scope bullet now names §7.1; §7 intro
-  says one shared store per authority domain is the default; **new normative §7.1** *CAS federation
-  — per-project stores that replicate on reference* with clauses (a)–(f) + a Re-ratification
-  paragraph; §8 mapping row for the control-plane host notes multi-store holders; §9 question 3
-  marked **resolved in place** (numbering NOT shifted); **Pressure test** gains a *Second count
-  (0.3.4)* paragraph; changelog entry for 0.3.4.
-- `ROADMAP.md` — Phase F1 row + Source line now point at `media-interchange.md §7.1` (was §9.3).
-- `README.md`, `specs/README.md` (×2), `ECOSYSTEM.md`, `CLAUDE.md` — the four version mirrors.
-
-Verification (all green): doc-integrity OK (42 markdown files, **688** relative links, all 3 status
-tables match headers); doc-links 0 dead vs 0 on main; check-schemas OK (9 schemas, 274 positions,
-78 $refs, 3 fixtures); check-registry OK (27 relation names); check-tasklist-categories OK (5
-tasklists); **`.chief/verify.sh` all selected gates green** (verify-test 30 passed, 0 failed);
-`git diff --check` clean.
-
-### Learnings for future iterations
-
-- **Do not renumber a spec's open-questions list reflexively.** KCB could renumber §8 because it
-  had two items and no cross-reference to the survivors. KMI §9 is cross-referenced by number in
-  four places (`§9.1` at :414/:692/:757, `§9.5` at :28/:678/:687/:692, plus ROADMAP's `§9.4` twice),
-  and several of those live in *frozen* changelog/status-note text that must not be rewritten. KMI
-  already had the right in-file precedent: §9.5 stays listed and is marked **closed in 0.3.3**.
-  Question 3 got the same treatment — resolved in place, numbering preserved — and the changelog
-  says so explicitly so a future reader does not "fix" the gap.
-- **PRD line numbers were stale for all three stories.** US-3 said "~line 380"; the real §9 item was
-  ~line 653 and the clause landed under §7 (~line 628). Grep for content.
-- **`.chief/verify.sh` is runnable directly** and is the closest thing to the merge gate — it
-  path-selects the guards and then runs `verify-test`'s 30 self-tests. Cheaper than remembering
-  which four `scripts/check-*.mjs` apply.
-- **Relative links in specs are checked, including into non-`specs/` dirs.** A first draft cited
-  `../schemas/policy/` (does not exist); the real policy files are `policy/license-classes.json` and
-  `policy/trust-tiers.json`, cited from specs as `../policy/…`. `check-doc-integrity.mjs` catches
-  this, so run it before assuming a path.
-- **Phase F1 row markers left as ⬜ with "— landed" annotations**, matching what US-2 chose. Flipping
-  the row to ✅ would also imply the ADR row (chief/51's bookkeeping) and the unbuilt scenario
-  (chief/53) — out of scope for this tasklist.
+**Learnings for future iterations.**
+- The research value is in *reading the clause before claiming the break*. Several findings only
+  exist because §2's envelope, §5's world default and §6's hash inputs were read literally — e.g.
+  the world being inside the claim hash is what makes MA-4 independent of MA-3.
+- The verdict shape matters: this pass is the **inverse** of `e2e-live-schema-mutation.md` (there,
+  one spec's model held and its perimeter leaked; here, three edits are each locally sound and every
+  break is at a seam none of them owns). Say which shape a pass has — it is what tells the owner
+  whether to fold or to reconsider.
+- US-2 must add the *Re-ratification — what this pass gates* section (a per-spec table + *what a
+  clean pass would license* + a dated Resolution note) and wire the three specs to cite the scenario
+  by name; the Verdict currently ends at the blocking summary with no pointer, which US-2 adds.
+- The research map in the PRD was accurate; no correction needed.

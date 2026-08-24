@@ -35,8 +35,8 @@
         "The scenario asserts the invariants the federation pattern must preserve \u2014 offline-first minting still works, content-addressed identity stays byte-stable across authorities/stores, and no query-time merge produces a false cross-authority identity \u2014 and is written adversarially (prefer finding a break).",
         "It follows the scenarios/ convention (cross-plane assertion vocabulary, replayable steps) and, per scenarios/README.md, illustrative CURIEs use the KINP \u00a73.4 placeholder namespaces; it names no deployment or product."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "scenarios/e2e-multi-authority.md written (522 lines): 10 adversarial steps over two authority domains (A: refkb/orchestrator/analyzer/worldsim/mediastore, B: archivekb/coordinator/assetstore), all three federation surfaces exercised. 11 findings MA-1..MA-11, 6 blocking (MA-1..MA-6); 5 held-under-attack results recorded (offline-first minting with both authorities dark, asset-id byte-stability across stores, KMI 7.1(d) no-lineage-on-copy incl. C2PA/OMC projections, KCB 3.1(b) route-by-lookup, KINP 4.5 no-transitive-promotion). Verify: node scripts/check-doc-integrity.mjs OK - 43 markdown files, 705 relative links checked, all 3 status tables match; .chief/verify.sh --run over the changed set green (guard-doc-integrity, guard-doc-links 0 dead vs 0 on main, verify-selftest 30 passed 0 failed); schemas/*.json all parse."
     },
     {
       "id": "US-2",
