@@ -53,7 +53,11 @@ vocabulary.
   as clearly-marked illustrative examples or in informative "known implementations" pointers.
 
 ## Current state
-- `specs/identity.md` — KINP 0.2.1, **ratified**. Deltas A–E folded; three forks decided
+- `specs/identity.md` — KINP 0.3.0, **candidate**. ADR-0012 makes the canonical
+  identity-authority role federable: a single designated holder remains conformant, while
+  multiple independently operated holders reconcile through KINP's existing namespace,
+  provenance, and §4 safeguards; local offline-first minting remains unchanged. Candidate pending
+  `chief/53-multi-authority-scenario`. Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
 - `specs/grounding-pack.md` — KGP 0.5.2, **candidate**. Knowledge data plane; normative §3
@@ -76,7 +80,7 @@ vocabulary.
   byte-unchanged, so no claim id moves. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.4.5, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.4.6, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -135,8 +139,21 @@ vocabulary.
   dated 2026-08-18 found no standards-body specification of the three to profile), the **re-open
   trigger**, and the carve-out that G1/G5/G6 stay *Partial* with findings GOV-1…GOV-3 open. A
   cross-reference in an informative section: no field, no clause, no manifest byte moves; both gates
-  restated, neither moved.
-- `specs/media-interchange.md` — KMI 0.3.3, **candidate**. Media data plane; asset envelope +
+  restated, neither moved. 0.4.6 (patch) resolves **§8 open question 1** — registry federation — into
+  a normative **§3.1** applying **ADR-0012**: one registry per authority domain stays conformant
+  unchanged, and where a deployment needs more than one they **peer**. Peering forwards a *query* and
+  merges entries, so what comes back is still an **address** and ADR-0001's route-by-lookup-not-proxy
+  rule is preserved (a registry never carries `invoke`/`subscribe`/`fetch` for a peer); every peered
+  entry is attributable to the peer that served it by KINP id + resolvable address; §3's
+  version/deprecation ranking applies to the merged set and two authorities naming the same capability
+  are **both** returned, never silently reconciled; an unreachable peer narrows discovery but
+  invalidates no manifest, grant, pin, or live subscription. Patch, not minor: additive (no manifest
+  field, no verb changes) and **0.5.0 is already spent** on §2.2's removal. New normative text, so it
+  adds a **third** candidate count — the cross-authority break test
+  `chief/53-multi-authority-scenario`, the same one KINP 0.3.0 names — gating §3.1 alone; the two
+  existing gates are restated, neither moved. §8 now holds one open question (backpressure,
+  renumbered to §8.1).
+- `specs/media-interchange.md` — KMI 0.3.4, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
@@ -165,6 +182,23 @@ vocabulary.
   recorded as a *risk* in ADR-0005's dated amendment log with the adoption **reaffirmed**, since
   #1985 is the citable case for the asset-id envelope. Patch, not minor: nothing that conformed at
   0.3.1 stops conforming, and §4.4 has already spent **0.4.0** on the EDL removal.
+  0.3.4 resolves **§9 open question 3** — the CAS operational model — into a normative **§7.1**
+  applying **ADR-0012**: one shared store per authority domain stays conformant unchanged, and
+  where a deployment runs more than one the stores **replicate on reference**. The `asset` id is
+  the hash of the bytes, so it is **byte-stable across stores** — a store may never mint, rewrite,
+  scope, or namespace an id for a copy, and a replicated copy is the *same asset*, not a §3
+  lineage edge. *Which* store holds it is a control-plane lookup (KCB §3.1) after which the holder
+  is dialed **directly**, so ADR-0001's route-by-lookup-not-proxy rule is preserved; a receiver
+  MUST verify bytes against the id and reject on mismatch; provenance/lineage never replicate
+  implicitly (no synthesized envelope or `prov`); replication is a `fetch`, so the **serving**
+  participant evaluates license/egress/trust-tier in its own authority domain and fails closed, and
+  an asset barred from leaving a domain is not replicated across it; an unreachable store is a
+  **pending fetch**, never a broken identifier. Patch, not minor: additive and **0.4.0 is already
+  spent** on the EDL removal. §9's numbering is deliberately *not* shifted — question 3 is marked
+  resolved in place the way §9.5 already is — so every existing §9.x reference still resolves. New
+  normative text, so it adds a **second** candidate count: the cross-authority break test
+  `chief/53-multi-authority-scenario`, the same one KINP 0.3.0 and KCB 0.4.6 name, gating §7.1
+  alone; the outstanding KCB re-run is restated and does not move.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output

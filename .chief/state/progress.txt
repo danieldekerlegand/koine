@@ -1,25 +1,105 @@
-# Chief Progress — 51-federation-adr
-Started: Sun Aug 23 04:48:49 CDT 2026
+# Chief Progress — 52-federation-spec-edits
+Started: Mon Aug 24 16:16:20 CDT 2026
 ---
 
-## 2026-08-23 — US-1
+## Codebase Patterns
 
-- Added `decisions/ADR-0012-federated-authority-roles.md`, resolving the shared authority-role
-  fork: a single holder remains valid, while multiple holders federate without making authority a
-  dependency; local offline-first minting remains intact.
-- Added the ADR-0012 row to `decisions/README.md`. No normative spec was changed.
-- Verification: schema JSON parse `schemas ok`; `node scripts/check-doc-integrity.mjs` **OK**
-  (42 Markdown files, 667 relative links); `git diff --check` clean.
-- Learnings for future iterations: federation ADRs stay role-scoped and resolve contract shape only;
-  retain ADR-0001's discovery-not-proxy boundary and defer plane-specific clauses to the spec-edit
-  follow-up.
+- **Four version mirrors, not three.** A spec header bump must be echoed in `README.md`,
+  `specs/README.md` (table AND the "Four sit there now — …" prose line ~195), `ECOSYSTEM.md` §2,
+  and `CLAUDE.md`'s *Current state* prose. `check-doc-integrity.mjs` diffs only the three tables;
+  the CLAUDE.md prose is unchecked, so edit it by hand and read it back.
+- **Guards to run after any doc edit** (this is what `.chief/verify.sh` selects for `*.md`):
+  `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs --ratchet --base main`,
+  `node scripts/check-tasklist-categories.mjs`. Add `check-schemas.mjs` if `schemas/` moved.
+- **Patch-vs-minor in koine.** New *normative* text is not automatically a minor. House precedent
+  (KCB 0.4.1 §2.3, KMI 0.3.2 §3.2) is: if nothing conformant stops conforming AND the next minor is
+  already spoken for by a scheduled removal (KCB §7.3c forbids declaring and removing in one
+  publication), it ships as a **patch** with that reasoning written into the changelog entry.
+- **Changelog entries carry the reasoning, not just the delta** — what the clause fixes, the
+  *Classification:* line justifying patch/minor, and a restatement of every open re-ratification
+  gate (whether or not it moved). Match the surrounding entries' density.
 
-## 2026-08-23 — US-2
+---
 
-- Updated `decisions/ADR-0012-federated-authority-roles.md` to make it the explicit single referent
-  for the KINP, KCB, and KMI deferred questions, including the original KCB §7 label and its current
-  §8 location after renumbering.
-- Recorded `chief/52-federation-spec-edits` as the plane-specific follow-up and
-  `chief/53-multi-authority-scenario` as the pressure test; no normative spec clause or version was changed.
-- Learnings for future iterations: cite both an historical section reference and its current location
-  when an open-question list has been renumbered, so the ADR remains a durable referent.
+## US-2 — KCB §7.1/§8.1 — single registry generalized to peering registries (2026-08-24)
+
+Applied ADR-0012 to KCB. **KCB 0.4.5 → 0.4.6**, Status stays Candidate.
+
+Files changed:
+- `specs/capability-bus.md` — header 0.4.6 / 2026-08-24; status note gains a **third** candidate
+  count (chief/53) gating §3.1 alone; §1 scope bullet now names §3.1; §3 intro says one registry per
+  authority domain is the default; **new normative §3.1** *Registry federation — peering registries*
+  with clauses (a)–(f) + a Re-ratification paragraph; §8 open question 1 resolved-and-moved (the
+  *Resolved and moved* paragraph now records both ADR-0009's and ADR-0012's promotions), leaving one
+  open question renumbered to **§8.1**; changelog entry for 0.4.6.
+- `ROADMAP.md` — Phase F1 row + Source line now point at `capability-bus.md §3.1`; Phase F6's
+  backpressure row and Source line renumbered §8.2 → §8.1.
+- `README.md`, `specs/README.md` (×2), `ECOSYSTEM.md`, `CLAUDE.md` — the four version mirrors.
+
+Verification (all green): doc-integrity OK (42 markdown files, 677 relative links, all 3 status
+tables match headers); doc-links 0 dead vs 0 on main; check-schemas OK (9 schemas, 274 positions,
+78 $refs, 3 fixtures); check-tasklist-categories OK (5 tasklists); `git diff --check` clean.
+
+### Learnings for future iterations
+
+- **The PRD's §-numbers are stale on this tasklist.** US-2 says "KCB §7 open question 1 (~line 251)";
+  the versioning fold already moved the open questions to **§8**, and the ADR itself flags this
+  ("KCB §7 open question 1; now §8 after the versioning question moved"). US-3 says "media-interchange
+  §9 open question 3 (~line 380)" — the real line is **~653**. Grep for the content, not the line.
+- **Renumbering §8 has out-of-file consequences.** `ROADMAP.md` tracked the backpressure question as
+  "KCB §8.2" in two places; both were updated in the same commit. `specs/media-interchange.md:653`
+  still says "KCB §8 registry federation" — **US-3 owns that line** (it is KMI §9 open question 3)
+  and should repoint it to **KCB §3.1** while rewriting the item.
+- **Follow US-1's shape for US-3.** KINP 0.3.0 cites the ADR by relative link
+  (`../decisions/ADR-0012-federated-authority-roles.md`) and names the pressure test as a link to
+  `../tasks/chief/53-multi-authority-scenario.json`; §3.1 here does the same. US-3's AC requires all
+  three specs to name chief/53 — KINP and KCB already do.
+- **ADR-0012's *Consequences* names the hazard each plane's break test must hunt.** For KMI that is
+  "per-project CAS replication on reference that loses content identity, provenance, or availability
+  semantics" — good raw material for US-3's re-ratification paragraph.
+
+---
+
+## US-3 — KMI §7.1 — single CAS generalized to per-project stores replicating on reference (2026-08-24)
+
+Applied ADR-0012 to byte transport, completing the three-plane fold. **KMI 0.3.3 → 0.3.4**, Status
+stays Candidate.
+
+Files changed:
+- `specs/media-interchange.md` — header 0.3.4 / 2026-08-24; new **Status note (0.3.4)** adding a
+  **second** candidate count (chief/53) gating §7.1 alone; §1 scope bullet now names §7.1; §7 intro
+  says one shared store per authority domain is the default; **new normative §7.1** *CAS federation
+  — per-project stores that replicate on reference* with clauses (a)–(f) + a Re-ratification
+  paragraph; §8 mapping row for the control-plane host notes multi-store holders; §9 question 3
+  marked **resolved in place** (numbering NOT shifted); **Pressure test** gains a *Second count
+  (0.3.4)* paragraph; changelog entry for 0.3.4.
+- `ROADMAP.md` — Phase F1 row + Source line now point at `media-interchange.md §7.1` (was §9.3).
+- `README.md`, `specs/README.md` (×2), `ECOSYSTEM.md`, `CLAUDE.md` — the four version mirrors.
+
+Verification (all green): doc-integrity OK (42 markdown files, **688** relative links, all 3 status
+tables match headers); doc-links 0 dead vs 0 on main; check-schemas OK (9 schemas, 274 positions,
+78 $refs, 3 fixtures); check-registry OK (27 relation names); check-tasklist-categories OK (5
+tasklists); **`.chief/verify.sh` all selected gates green** (verify-test 30 passed, 0 failed);
+`git diff --check` clean.
+
+### Learnings for future iterations
+
+- **Do not renumber a spec's open-questions list reflexively.** KCB could renumber §8 because it
+  had two items and no cross-reference to the survivors. KMI §9 is cross-referenced by number in
+  four places (`§9.1` at :414/:692/:757, `§9.5` at :28/:678/:687/:692, plus ROADMAP's `§9.4` twice),
+  and several of those live in *frozen* changelog/status-note text that must not be rewritten. KMI
+  already had the right in-file precedent: §9.5 stays listed and is marked **closed in 0.3.3**.
+  Question 3 got the same treatment — resolved in place, numbering preserved — and the changelog
+  says so explicitly so a future reader does not "fix" the gap.
+- **PRD line numbers were stale for all three stories.** US-3 said "~line 380"; the real §9 item was
+  ~line 653 and the clause landed under §7 (~line 628). Grep for content.
+- **`.chief/verify.sh` is runnable directly** and is the closest thing to the merge gate — it
+  path-selects the guards and then runs `verify-test`'s 30 self-tests. Cheaper than remembering
+  which four `scripts/check-*.mjs` apply.
+- **Relative links in specs are checked, including into non-`specs/` dirs.** A first draft cited
+  `../schemas/policy/` (does not exist); the real policy files are `policy/license-classes.json` and
+  `policy/trust-tiers.json`, cited from specs as `../policy/…`. `check-doc-integrity.mjs` catches
+  this, so run it before assuming a path.
+- **Phase F1 row markers left as ⬜ with "— landed" annotations**, matching what US-2 chose. Flipping
+  the row to ✅ would also imply the ADR row (chief/51's bookkeeping) and the unbuilt scenario
+  (chief/53) — out of scope for this tasklist.

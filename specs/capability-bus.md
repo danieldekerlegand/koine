@@ -1,21 +1,28 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.4.5
+**Spec version:** 0.4.6
 **Status:** Candidate
-**Last updated:** 2026-08-18
+**Last updated:** 2026-08-24
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
 capability consumers (most participants are both provider and consumer).
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for identifiers;
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
-> **Status note (0.4.5):** stays **Candidate**, on the same two counts as 0.4.0 — 0.4.1 added a
+> **Status note (0.4.6):** stays **Candidate**, on the same two counts as 0.4.0 — 0.4.1 added a
 > transition clause (§2.3), 0.4.2 corrected two upstream references (§1.1), 0.4.3 pins the MCP
 > revision and audits which wire each verb assumes (§1.1, §4.1), 0.4.4 adds **§1.2**, an
 > INFORMATIVE record of the layer claim and the external analysis that corroborates it
 > (arXiv:2606.31498, 30 June 2026), and 0.4.5 points §1.2's closing bullet at **ADR-0011**, which
 > decides the three governance dimensions KCB does not implement as **non-goals** — no normative
-> clause, field, or manifest byte moves, and none of the five is a gate. 0.3.0 changed the *shape* of the
+> clause, field, or manifest byte moves, and none of the five is a gate. 0.4.6 adds **§3.1**, the
+> normative registry-federation clause applying
+> [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md): a single host-provisioned registry
+> (§3) stays conformant unchanged, and peering registries are specified as an additive composition
+> that returns *addresses* across an authority boundary — never a proxy (ADR-0001). It adds a
+> **third** re-ratification count, the cross-authority break test in
+> [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), which is
+> the same test KINP 0.3.0 and KMI's federation clause name. 0.3.0 changed the *shape* of the
 > manifest — it is now an A2A AgentCard extension (§2), not a standalone
 > `/.well-known/kcb-manifest.json` — and that re-validation is still outstanding. 0.4.0 adds the
 > capability-versioning surface (§7, wired through §2/§2.1/§3/§5) per
@@ -37,7 +44,8 @@ carries.
 > per-verb audit of which MCP wire each clause assumes; it adds no field and removes none, and the
 > two legs are restated unchanged once more. 0.4.4 adds **§1.2**, which is INFORMATIVE and cites
 > external corroboration for where KCB sits; it defines nothing, delegates to nothing, and the two
-> legs are restated unchanged again.
+> legs are restated unchanged again. 0.4.6 does not move either leg; it adds the third count above,
+> which gates §3.1 alone.
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
 > capability bus moves *capability*: how a participant advertises what it can do, how orgs and
@@ -53,7 +61,7 @@ carries.
 
 KCB defines:
 - the **capability manifest** every participant publishes (§2),
-- the **discovery registry** and how it is populated (§3),
+- the **discovery registry**, how it is populated, and how registries **peer** (§3, §3.1),
 - the **verbs**: discover / describe / invoke / subscribe / **fetch** (§4),
 - **trust & authorization** — capability grants, signing, per-world scoping (§5),
 - the per-role **mapping** onto existing MCP/A2A surfaces (§6),
@@ -393,7 +401,8 @@ A thin index of manifests — *who offers what*. **The control-plane host provis
 it** (it is itself a host-provisioned org, per the fabric thesis: the interconnect fabric is
 itself Company-as-Code). The registry is a cache/index over participants' own MCP/A2A surfaces,
 not a source of truth — a provider's manifest is authoritative; the registry just makes it
-findable.
+findable. One registry per authority domain is the default and stays conformant unchanged; where a
+deployment needs more than one, they **peer** (§3.1).
 
 - **Population:** participants register their manifest (push), or the registry crawls known A2A
   agent-cards / MCP servers (pull) and **reads the KCB extension off each peer's
@@ -427,6 +436,70 @@ findable.
   tool namespace to clients (forwarding without transforming) for convenience, but is never the
   mandatory path. The registry + resolver reference implementation is a downstream runtime
   concern, not part of this contract.
+
+### 3.1 Registry federation — peering registries (0.4.6)
+
+How discovery works when more than one registry exists. This was KCB's open question 1 through
+0.4.5 — *a single host-provisioned registry vs. per-org registries that peer* — deferred there
+because two sibling specs deferred the same question at their own surfaces. It is decided once, for
+all three, by [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md): **an authority is a
+role, not a hard dependency.** KINP applies that decision to the identity-authority role (§11
+decision 1 there); this section applies it to discovery.
+
+This section is **additive**. A deployment that runs exactly one registry (§3) is conformant
+unchanged: no field is added to the manifest (§2), no verb changes (§4), and nothing below is
+required of a participant whose deployment has one registry.
+
+**a. Federation is a composition of registries, not a redefinition of one.** Each registry in a
+federation is a §3 registry: it indexes the participants of its own **authority domain** — those
+that registered with it, or whose cards it crawled — and a provider's own card remains
+authoritative over any index entry (§2, §3). A registry is authoritative for **which entries it
+serves**, never for the contents of an entry it did not read off the provider's card itself.
+
+**b. Peering resolves queries, it does not relay traffic
+([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)).** A registry MAY answer a `find`
+(§3) from its peers as well as its own index, by forwarding the *query* and merging the entries
+returned. That is a control-plane lookup and stays within §3's route-by-lookup rule, because what
+comes back is still an **address**: the consumer then dials the provider **directly** over MCP/A2A.
+A registry MUST NOT carry `invoke`, `subscribe`, or `fetch` traffic (§4) on a peer's behalf, and a
+peered entry MUST NOT name a registry as the address of a capability. An aggregator facade stays
+what §3 already makes it — optional, forwarding without transforming, never the mandatory path.
+
+**c. The authority boundary is observable.** Every entry a registry returns MUST be attributable to
+the registry that served it: an entry sourced from a peer MUST carry that peer's **KINP id** (§2 —
+a registry is a participant, so it has one) and a resolvable address for it, and MUST be
+distinguishable from a locally indexed entry. A consumer that cannot tell which authority asserted
+an entry cannot choose between two of them, which is the whole of what federation adds.
+
+**d. Ranking and conflict across peers.** §3's ranking rules — highest satisfying version first,
+deprecated below non-deprecated (§7.3d) — apply to the **merged** result set unchanged, and MUST
+NOT be overridden by whether an entry is local or peered. Where two entries from different
+authorities name the same capability, the registry MUST return **both**, ranked by §3's rules and
+attributed per (c); it MUST NOT silently pick one. Two different providers offering the same
+capability `name` at the same `version` is not a conflict at all — capability identity is
+`(name, version)` **as published by a provider** (§7.1), and the provider is identified by its own
+KINP id. The same provider reached through two peers at the same `(name, version)` but a differing
+`schema_id` is a defect at that provider (§7.2), not a choice for the registry: both entries are
+returned, and the consumer resolves it by re-reading the provider's card.
+
+**e. Staleness is visible, never silent.** A registry is already a cache (§3); a peered entry is a
+cache of a cache. A registry SHOULD carry, on each peered entry, when that entry was observed from
+its peer. A consumer MUST resolve any disagreement between two entries — or between an entry and
+what it finds on the wire — against the **provider's own card**, never by preferring one index over
+another.
+
+**f. An unreachable peer degrades discovery; it invalidates nothing.** Per ADR-0012, an authority
+role is not a hard dependency. A peer that cannot be reached MAY narrow what a `find` returns, and
+a registry MUST report that a peer was unreachable rather than return a silently short result. It
+MUST NOT invalidate a locally registered manifest, a grant already issued (§5), a version already
+pinned (§7.4), or a live `subscribe` (§4) — none of which is mediated by the registry.
+
+**Re-ratification.** This section is new normative text and is candidate on the cross-authority
+break test in
+[`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), which must
+break-test the pattern ADR-0012 shares across all three planes — for this section specifically,
+peering that returns stale, conflicting, or unresolvable authority records. It is a **third** count
+on this spec's status and gates §3.1 alone; the two legs in the status note are unaffected.
 
 ---
 
@@ -719,16 +792,19 @@ re-runs clean.
 
 ## 8. Open questions
 
-1. **Registry federation** — a single host-provisioned registry vs. per-org registries that
-   peer. (Mirrors KINP §11 decision 1; likely resolve the same way: one authority as a role,
-   federation as a future option.)
-2. **Subscription backpressure** — flow-control for high-volume-world subscriptions (per-invoke
+1. **Subscription backpressure** — flow-control for high-volume-world subscriptions (per-invoke
    *cost* is now handled by capability `cost` + grant spend ceilings, §2.1/§5); firehose
    flow-control remains an infra concern for the host's cost advisor.
 
 *Resolved and moved:* **capability versioning & deprecation** was open question 2 through 0.3.0. It
 is decided by [ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md) and is now
-normative **§7**; the numbering of the two questions above shifted accordingly in 0.4.0.
+normative **§7**; the numbering of the questions above shifted accordingly in 0.4.0.
+**Registry federation** — *a single host-provisioned registry vs. per-org registries that peer* —
+was then open question 1 through 0.4.5, and noted that it mirrored KINP §11 decision 1 and would
+likely resolve the same way. It did:
+[ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) decides the shared pattern for all
+three planes, and its KCB application is now normative **§3.1**. The numbering shifted again in
+0.4.6, leaving one open question.
 
 ## Pressure test
 
@@ -768,6 +844,26 @@ outstanding and independent.
 
 ## Changelog
 
+- **0.4.6** (2026-08-24) — **Candidate.** Applied
+  [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) to discovery: **§8 open question 1
+  (registry federation) is resolved and promoted to a normative §3.1**, so the single
+  host-provisioned registry of §3 generalizes to **peering registries**. What §3.1 fixes: peering
+  resolves *queries* and returns *addresses*, never traffic — the consumer still dials the provider
+  directly, so ADR-0001's route-by-lookup-not-proxy stance is preserved rather than reinterpreted;
+  every peered entry is attributable to the peer that served it, by KINP id and a resolvable
+  address, because a consumer that cannot see the authority boundary cannot choose across it; §3's
+  version/deprecation ranking applies to the merged set unchanged and two authorities naming the
+  same capability are **both** returned rather than silently reconciled; and an unreachable peer
+  narrows discovery but invalidates no manifest, grant, pin, or live subscription — the ADR's
+  *an authority is a role, not a hard dependency* stated at this surface. *Classification:*
+  **patch** — the fold is additive (no field added to or removed from the manifest, no verb
+  changed, nothing narrowed), a single-registry deployment conformant at 0.4.5 is conformant
+  unchanged, and **0.5.0 is spoken for** by §7.3's removal of §2.2's standalone manifest location,
+  which §7.3c forbids folding into an unrelated publication. Status: this is new normative text, so
+  it adds a **third** count to Candidate — the cross-authority break test in
+  [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), the same
+  test KINP 0.3.0 names — gating §3.1 alone. The two existing re-ratification legs are restated and
+  neither moves.
 - **0.4.5** (2026-08-18) — **Candidate.** **§1.2**'s closing bullet — *no KCB clause implements G2
   deliberation, G3 voting, or G4 dissent preservation* — now points at
   [`../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md`](../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md),

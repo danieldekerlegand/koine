@@ -11,10 +11,10 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 
 | Spec | Protocol | Plane | Version · status |
 |---|---|---|---|
-| [`identity.md`](identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.2.1 · ✅ ratified |
+| [`identity.md`](identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.3.0 · 🟡 candidate |
 | [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.5.2 · 🚧 candidate |
-| [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.3 · 🚧 candidate |
-| [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.4.5 · 🚧 candidate |
+| [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.4 · 🚧 candidate |
+| [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.4.6 · 🚧 candidate |
 | [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data that drives **N real** participants over their actual MCP/A2A connections, asserting cross-plane properties, each cited to the clause it checks | 0.3.0 · 🚧 candidate |
 | [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.5.0 · 🚧 candidate |
 
@@ -74,31 +74,28 @@ is deliberate. A spec that is honestly `candidate` tells an implementer somethin
 status that flips back twice a year tells them nothing, and quietly costs them the one thing
 ratification is supposed to buy. Slower promotion is the price of a status that means what it says.
 
-**The two specs ratified before the rule — grandfathered, with the debt named.** KINP 0.2.1 and
-KCS 0.2.0 reached `ratified` under the previous rule, each on a hand-walked prose pass and nothing
-else. KINP keeps that status; KCS is now back at `candidate` because its 0.3.0 determinism fold is
-a normative change. The rule binds forward: applying it retroactively would demote KINP as a side
-effect of editing this file, and a status change is a deliberate act taken on a spec's own merits —
-never a consequence of a governance amendment. It would also penalize work that
-satisfied the rule in force when it was done, which is not what a lifecycle rule is for.
+**The spec ratified before the rule — grandfathered, with the debt named.** KCS 0.2.0 reached
+`ratified` under the previous rule on a hand-walked prose pass and nothing else. It is now back at
+`candidate` because its 0.3.0 determinism fold is a normative change. KINP likewise returned to
+`candidate` with its 0.3.0 federation fold. The rule binds forward: a status change is a deliberate
+act taken on a spec's own merits — never a consequence of a governance amendment — and a normative
+change does not retain grandfathered ratification.
 
-Grandfathered is not forgiven. Each of the two carries a named debt — the missing machine-replayable
-encoding of the prose pass that gated it — and the debt is tracked, not merely noted:
+Grandfathered is not forgiven. KCS carries a named debt — the missing machine-replayable encoding
+of the prose pass that gated it — and the debt is tracked, not merely noted:
 
 | Spec | Gated by (prose) | Outstanding debt | Tracked in |
 |---|---|---|---|
-| **KINP 0.2.1** | [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) | `kcs:worlds-to-fabric` — that pass encoded as a runnable KCS document, then run over real links | [`../ROADMAP.md`](../ROADMAP.md) Phase F4 — `agora chief/62-encode-scenarios-as-kcs`, then `chief/63-run-kcs-over-live-links` (cross-repo, ADR-0001) |
 | **KCS 0.2.0** | [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md) | the encodings that pass *attempts* in prose, produced for real (see the self-reference note below) | same two Phase F4 tasklists |
 
-**What forces the debt to be paid.** The grandfather clause covers the status these two specs hold
-today and does not survive a demotion. When either spec's model shape changes and its status returns
-to `candidate`, it re-enters the lifecycle at the ordinary gate and **MUST NOT** return to `ratified`
-without the artefact; there is no second grandfathering. That is the event, and it is the only one —
-a grandfathered spec that never moves never owes the artefact. Note what this costs the two of them
-specifically: the corollary above buys a demoted spec a cheap re-ratification because it replays the
-scenario it earned, and a grandfathered spec has none, so its first demotion is where it pays the
-full price at the worst moment. That asymmetry is a reason to settle the debt under Phase F4 ahead of
-need, not a reason to weaken the rule.
+**What forces the debt to be paid.** The grandfather clause does not survive a demotion. When a
+grandfathered spec's model shape changes and its status returns to `candidate`, it re-enters the
+lifecycle at the ordinary gate and **MUST NOT** return to `ratified` without the artefact; there is
+no second grandfathering. That is the event, and it is the only one — a grandfathered spec that
+never moves never owes the artefact. The corollary above buys an ordinarily demoted spec a cheap
+re-ratification because it replays the scenario it earned; a grandfathered spec has none, so its
+first demotion is where it pays the full price at the worst moment. That asymmetry is a reason to
+settle the debt under Phase F4 ahead of need, not a reason to weaken the rule.
 
 **KCS's self-reference, and why it is not circular.** KCS is the format
 the rule's artefact is written in, so "KCS needs a KCS scenario" reads as a loop. It is not one,
@@ -195,7 +192,7 @@ that no SPDX release has ever defined — which no amount of careful reading wou
 - **Status is a lifecycle:** `draft → candidate → ratified`, and the two promotions are gated
   differently — the second is **conformance-gated** ([The ratification gate](#the-ratification-gate)
   above). A spec is also demoted back to **candidate** when a later change touches its model shape.
-  Four sit there now — KGP 0.5.2, KMI 0.3.3, KCB 0.4.5, KFT 0.5.0 — each for its own reason; which
+  Four sit there now — KGP 0.5.2, KMI 0.3.4, KCB 0.4.6, KFT 0.5.0 — each for its own reason; which
   re-validation is outstanding for which spec is tracked in [`../ROADMAP.md`](../ROADMAP.md).
 - **Clauses are §-numbered and normative.** MUST / SHOULD / MAY carry RFC-2119 weight; other specs
   and the schemas cite these section numbers (e.g. "KGP §7.2", "KINP §4.3"), so the numbering is a

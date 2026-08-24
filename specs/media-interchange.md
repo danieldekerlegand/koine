@@ -1,8 +1,8 @@
 # Koine Media-Interchange Protocol (KMI)
 
-**Spec version:** 0.3.3
+**Spec version:** 0.3.4
 **Status:** Candidate
-**Last updated:** 2026-08-20
+**Last updated:** 2026-08-24
 **Applies to:** media authorities (producer/authority for assets + timelines), media producers of
 any modality, and media consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP) for the `asset` id, `source_world`, and
@@ -24,6 +24,16 @@ composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline
 > ([ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md)). Patch-level and
 > additive: it closes a declared window rather than changing the model shape, so no delta is
 > reopened and the re-ratification path above is unchanged.
+
+> **Status note (0.3.4):** adds **§7.1**, the normative CAS-federation clause applying
+> [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md): a single shared content-addressed
+> store (§7) stays conformant unchanged, and **per-project stores that replicate on reference** are
+> specified as an additive composition in which the KINP `asset` id — the hash of the bytes — is
+> **byte-stable across stores**, so a replicated copy is the same asset rather than a new one. It
+> adds a **second** re-ratification count, the cross-authority break test in
+> [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), which is
+> the same test KINP 0.3.0 and KCB §3.1 name; it gates §7.1 alone and does not move the
+> KCB-re-run count below.
 
 > **Status note (0.3.3):** folds the §9.5 additive-metadata-survival pressure break. A third-party
 > OTIO round-trip may remain structurally valid while dropping `metadata.koine.asset`; KMI now
@@ -76,7 +86,7 @@ KMI defines:
   and NLE interchange through OTIO's adapters (§4),
 - the **analysis → knowledge bridge** into KGP (§5),
 - **transform typing** — the media-plane port profile; cross-plane typing lives in KCB §2.1 (§6),
-- **byte transport** via a content-addressed store (§7),
+- **byte transport** via a content-addressed store, and how stores **federate** (§7, §7.1),
 - the per-role **mapping** (§8).
 
 KMI does **not** define knowledge semantics (KGP), capability discovery/invocation (KCB),
@@ -626,6 +636,86 @@ Assets are large; envelopes and timelines are small. KMI is a **reference-by-id*
   bus; KMI defines the payloads, not the pipe. Because a reference can arrive before its bytes
   propagate, consumers `fetch` lazily and tolerate dangling refs (KCB delta L).
 
+One shared store per authority domain is the default and stays conformant unchanged; where a
+deployment runs more than one, the stores **replicate on reference** (§7.1).
+
+### 7.1 CAS federation — per-project stores that replicate on reference (0.3.4)
+
+How byte transport works when more than one store exists. This was KMI's open question 3 through
+0.3.3 — *a single shared store vs. per-project stores that replicate on reference* — deferred
+there because two sibling specs deferred the same question at their own surfaces. It is decided
+once, for all three, by
+[ADR-0012](../decisions/ADR-0012-federated-authority-roles.md): **an authority is a role, not a
+hard dependency.** KINP applies that decision to the identity-authority role (§11 decision 1
+there) and KCB to discovery (KCB §3.1); this section applies it to the bytes.
+
+This section is **additive**. A deployment that runs exactly one shared store (§7) is conformant
+unchanged: no envelope field is added (§2), no lineage relation is added or narrowed (§3), the
+`fetch` verb and its grant are untouched (KCB §4/§5), and nothing below is required of a
+participant whose deployment has one store.
+
+**a. Federation composes stores; it never touches asset identity.** The `asset` id *is* the hash
+of the bytes (§2, KINP §2/§6), so the same bytes carry the **same id in every store** — identity
+is a property of the content, not of the holder. A store MUST NOT mint, rewrite, scope, or
+namespace an id for a copy it holds, and MUST NOT treat "which store served it" as part of the
+identifier. A store is authoritative for **what it holds**, never for what an id *means*: two
+stores serving the same id are serving the same asset by construction, and that is the property
+the whole of this section relies on.
+
+**b. Replication is triggered by a reference, and retrieval stays a direct dial
+([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)).** When a participant references an
+asset its project store does not hold, that store MAY obtain the bytes from a peer store that does
+and, after the verification in (c), MAY retain the copy — that is the whole of "replicate on
+reference". *Which* store to ask is a control-plane **lookup**: a store advertises `fetch:asset`
+like any other capability (KCB §2/§4) and is found through the registry, including across peers
+(KCB §3.1), after which the consumer or store dials the holder **directly**. No store is a
+mandatory gateway, and none is required to be reachable for another to serve what it already
+holds. Bulk or scheduled pre-replication is a deployment choice this contract neither requires
+nor forbids; it changes no clause here.
+
+**c. Verification on receipt is mandatory and is what makes replication safe.** A participant that
+receives bytes from a peer store MUST verify them against the KINP `asset` id before serving,
+retaining, or accepting them as that asset, and MUST **reject** on mismatch. It MUST NOT re-mint
+an id for bytes that failed verification and MUST NOT serve unverified bytes under the requested
+id. Because the id is the hash, a verified copy is indistinguishable from the original: replication
+adds availability, never a new asset.
+
+**d. Provenance and lineage do not replicate implicitly.** Bytes are self-verifying; the envelope
+(§2), the lineage graph (§3), and analysis-derived knowledge (§5) are not — they travel as KMI and
+KGP payloads carrying their own `prov` (KINP §4). A store that replicates bytes MUST NOT
+synthesize an envelope, a lineage edge, or a `prov` record for them, and holding a copy is **not**
+a `derived_from` / `variant_of` / `excerpt_of` edge (§3) — a copy is the same asset, and none of
+§3's relations describes replication. Which participant asserted an envelope is read off that
+envelope's `prov`, never off the store the bytes came from; the §3.2/§3.3 projections are likewise
+unaffected, since a C2PA hard binding and an OMC derivation both bind to content, not to a holder.
+
+**e. The authority boundary is observable, and egress is evaluated at it.** A participant that
+serves an asset is a participant (§8) and MUST be identifiable by its **KINP id**, so a consumer
+can tell whose copy it holds and attribute availability and cost to that holder. Replication on
+reference is a `fetch`, so it is gated exactly as a `fetch` is: the serving participant MUST
+evaluate the request against its own authority domain's license, egress, and trust-tier policy
+(KGP §7, [`../policy/license-classes.json`](../policy/license-classes.json)) and MUST **fail
+closed** where a
+`fetch:asset` grant (KCB §5) does not authorize it. An asset whose governing policy forbids egress
+from an authority domain MUST NOT be replicated across that boundary, and a peer's willingness to
+serve a copy MUST NOT be read as having pre-cleared that decision for anyone else.
+
+**f. An unreachable store delays retrieval; it invalidates nothing.** Per ADR-0012, an authority
+role is not a hard dependency. A store that cannot be reached MAY delay or deny byte retrieval —
+which §7 already tolerates, since a reference can legitimately arrive before its bytes propagate
+(KCB delta L) — but MUST NOT invalidate the `asset` id, its envelope (§2), a lineage edge (§3), a
+timeline that references it (§4), an analysis claim derived from it (§5), or a grant already
+issued (KCB §5). A reference whose bytes are not yet reachable is a **pending fetch**, never a
+broken identifier.
+
+**Re-ratification.** This section is new normative text and is candidate on the cross-authority
+break test in
+[`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), which must
+break-test the pattern ADR-0012 shares across all three planes — for this section specifically,
+*per-project CAS replication on reference that loses content identity, provenance, or availability
+semantics.* It is a **second** count on this spec's status and gates §7.1 alone; the outstanding
+KCB re-run recorded under **Pressure test** is unaffected.
+
 ---
 
 ## 8. Mapping (by role)
@@ -636,7 +726,7 @@ Assets are large; envelopes and timelines are small. KMI is a **reference-by-id*
 | **Audio producer** | Producer | Emits `audio/*` assets + instrument renders; consumes timelines to place audio; later a *transform provider* ("render this instrument") via KCB. |
 | **World producer** | Producer | Emits video/render assets with `source_world` = the world/playthrough; consumes assets for in-engine use. |
 | **Knowledge authority** | Consumer | Consumes analysis-derived KGP (not bytes); may catalog media entities. |
-| **Control-plane host** | Consumer + host | Provisions the CAS + transform capabilities as orgs; agents invoke transforms. |
+| **Control-plane host** | Consumer + host | Provisions the CAS + transform capabilities as orgs; agents invoke transforms. Where a deployment runs more than one store, each holder is a participant with its own KINP id and the stores replicate on reference (§7.1). |
 
 ---
 
@@ -649,8 +739,13 @@ Assets are large; envelopes and timelines are small. KMI is a **reference-by-id*
    they are in the adopted model. ADR-0005.)
 2. **Profile vocabulary granularity** — how fine constraints get (e.g. "H.264 High@L4.1")
    before path-finding becomes brittle; likely a coarse core + optional constraints.
-3. **CAS operational model** — single shared store vs. per-project stores that replicate on
-   reference (mirrors KINP §11 authority fork and KCB §8 registry federation).
+3. **CAS operational model** — **resolved in 0.3.4** by §7.1. It mirrored KINP §11 decision 1 and
+   KCB's registry-federation question, and all three are decided together by
+   [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md): a single shared store stays
+   conformant, and per-project stores **replicate on reference** with the `asset` id byte-stable
+   across stores. KINP's half is §11 decision 1 there; KCB's is now normative **KCB §3.1**. The
+   numbering of the questions here is unchanged, so §9.1/§9.2/§9.4 still name what they always
+   did.
 4. **Perceptual-hash choice** — which pHash/audio-fingerprint/embedding backs
    `media:perceptual_match`, and recording it (like KGP `embedding_model`) so scores are
    comparable.
@@ -681,8 +776,42 @@ KMI nonetheless stays at **candidate**: the same scenario also gates **KCB 0.4.0
 manifest→AgentCard-extension change its discovery steps exercise and which has not been re-run.
 Promotion of both follows that pass.
 
+**Second count (0.3.4).** §7.1 is new normative text that this scenario does not exercise — it has
+one store. It is candidate on the cross-authority break test in
+[`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), the same
+test KINP 0.3.0 and KCB §3.1 name, which must hunt per-project CAS replication on reference that
+loses content identity, provenance, or availability semantics
+([ADR-0012](../decisions/ADR-0012-federated-authority-roles.md), *Consequences*). It gates §7.1
+alone; the KCB re-run count above is unaffected and no delta is reopened.
+
 ## Changelog
 
+- **0.3.4** (2026-08-24) — **Candidate.** Applied
+  [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) to byte transport: **§9 open
+  question 3 (CAS operational model) is resolved by a new normative §7.1**, so the single shared
+  content-addressed store of §7 generalizes to **per-project stores that replicate on reference**.
+  What §7.1 fixes: the `asset` id is the hash of the bytes, so it is **byte-stable across stores**
+  and a store may never mint, rewrite, scope, or namespace an id for a copy — a replicated copy is
+  the same asset, which is what makes federation safe rather than a second identity regime;
+  *which* store to ask is a control-plane lookup answered by the registry (KCB §3.1) after which
+  the holder is dialed **directly**, so ADR-0001's route-by-lookup-not-proxy stance is preserved
+  and no store is a mandatory gateway; a receiver MUST verify bytes against the id and reject on
+  mismatch; provenance and lineage do **not** replicate implicitly — holding a copy is not a §3
+  edge and synthesizing an envelope or `prov` for a replicated blob is forbidden; replication is a
+  `fetch`, so the **serving** participant evaluates license/egress/trust-tier against its own
+  authority domain and fails closed, and an asset barred from leaving a domain is not replicated
+  across it; and an unreachable store yields a **pending fetch**, never a broken identifier — the
+  ADR's *an authority is a role, not a hard dependency* stated at this surface. *Classification:*
+  **patch** — the fold is additive (no envelope field, no lineage relation, no verb or grant
+  changed, nothing narrowed), a single-store deployment conformant at 0.3.3 is conformant
+  unchanged, and **0.4.0 is spoken for** by §4.4's removal of `application/vnd.koine.edl+json`,
+  which KCB §7.3c forbids folding into an unrelated publication. §9's numbering is deliberately
+  **not** shifted — question 3 is marked resolved in place, the way §9.5 already is — so every
+  existing §9.1/§9.4/§9.5 reference still resolves. Status: this is new normative text, so it adds
+  a **second** count to Candidate — the cross-authority break test in
+  [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), the same
+  test KINP 0.3.0 and KCB 0.4.6 name — gating §7.1 alone. The outstanding KCB re-run is restated
+  and does not move; no delta is reopened.
 - **0.3.3** (2026-08-20) — **Candidate.** Folded the only question forced by the adversarial
   [`kmi-otio-roundtrip.md`](../scenarios/kmi-otio-roundtrip.md) pressure-test leg (§9.5). A
   producer MUST detect a missing `metadata.koine.asset` on re-import, MAY re-attach only after
