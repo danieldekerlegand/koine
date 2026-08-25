@@ -1,0 +1,55 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/83-promote-kgp",
+  "description": "**KGP's only named gate shipped weeks ago and nobody promoted it.** This is the cheapest win in the portfolio.\n\nKGP 0.5.2 sits at `Candidate`. The single condition its own record gives for promotion is the RDF-star / PROV / JSON-LD round-trip fixture — which merged as `agora:77-kgp-projection-and-roundtrip-fixture` at `85eb207`, with every story passing. The koine-side marker (`64`) was retired on 2026-08-25 because the work was done downstream. Nothing else gates it.\n\n**Meanwhile the roadmap claims two specs are ratified and zero are.** Phase 1 — Candidate re-ratification — is the only phase in the audited portfolio that went BACKWARDS: its three edits merged, it produced no promotions, and KINP and KCS were each demoted since. So the count moved from a claimed 2 to an actual 0 while the phase was notionally in progress.\n\nPromoting KGP does not fix Phase 1. It does make the phase non-zero, and it removes the strangest fact in the fabric — a spec held at Candidate by a gate that has been satisfied since before the roadmap was last touched.\n\n**Be honest about what promotion means.** `ratified` is a claim other organizations rely on. If reading the fixture shows the round trip does not actually cover what §-level ratification requires, the correct outcome is to say so and leave KGP at Candidate with the real gate named — not to promote it because a tasklist expected that. A promotion that cannot be defended is worse than a stale Candidate.",
+  "crossRepo": [
+    "agora"
+  ],
+  "touches": [
+    "specs",
+    "docs"
+  ],
+  "iters": 5,
+  "warmup": [
+    "head -20 specs/knowledge-graph-protocol.md",
+    "grep -n 'Status\\|ratif\\|round-trip\\|fixture' specs/knowledge-graph-protocol.md | head -12",
+    "python3 -c \"import json;d=json.load(open('tasks/chief/completed/64-kgp-projection-roundtrip-fixture.json'));print(d.get('supersededBy'))\"",
+    "ls ../agora/tasks/chief/completed/77-*.json && python3 -c \"import json,glob;d=json.load(open(glob.glob('../agora/tasks/chief/completed/77-*.json')[0]));print(d.get('mergedToMain'))\"",
+    "grep -n 'ratified' specs/README.md | head"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "The gate is verified satisfied, or it is not",
+      "acceptanceCriteria": [
+        "The round-trip fixture `agora:77` delivered is read against what KGP's promotion actually requires — RDF-star, PROV and JSON-LD round trips — and the verdict is recorded either way.",
+        "If it does not cover the requirement, KGP stays Candidate and the REAL remaining gate is named in the spec. That is a valid and useful outcome for this tasklist; do not promote to satisfy the title.",
+        "The check reads the fixture as it exists in agora rather than assuming its tasklist notes are accurate. `passes: true` is a claim, not evidence — the portfolio has already been bitten by that distinction."
+      ],
+      "notes": null
+    },
+    {
+      "id": "US-2",
+      "title": "If satisfied, KGP is promoted and the ratification count is made true",
+      "acceptanceCriteria": [
+        "KGP's Status header moves to `ratified` with a changelog entry citing the fixture and its merge sha.",
+        "`specs/README.md`'s ratification statement is corrected. It currently asserts *\"no scenario has a KCS encoding, so no spec is currently promotable to `ratified`\"* — false since `agora:75`, and it is the sentence the whole ladder is read from.",
+        "`ROADMAP.md`'s claim is corrected to the real count. It says 2 of 6 ratified; the true figure before this tasklist is 0 of 6, and after it is at most 1.",
+        "The changelog records what ratification commits koine to for KGP, so a downstream reader knows what stability they just gained."
+      ],
+      "notes": null
+    },
+    {
+      "id": "US-3",
+      "title": "The other five specs get an honest promotability line",
+      "acceptanceCriteria": [
+        "For each of KINP, KMI, KCB, KCS and KFT, one line: what specifically blocks promotion today. Not a status glyph — the named gate.",
+        "Where a spec was DEMOTED, say when and by what. KINP fell to Candidate on the §11.1 federation edit and KCS on the 0.3.0 determinism fold; a reader currently cannot tell a spec that never rose from one that fell.",
+        "Where a gate is an unwritten fold (MA-1…MA-11 for KINP, V-1…V-8 for KCB), point at the tasklist that owns it rather than restating the gap.",
+        "This is a table, not a program. It exists so the next person can see which promotions are cheap and which are real work — the answer for KGP turned out to be 'already earned, nobody claimed it', and that should not be discoverable only by audit."
+      ],
+      "notes": null
+    }
+  ]
+}

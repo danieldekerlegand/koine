@@ -1,0 +1,55 @@
+{
+  "project": "koine",
+  "category": "feature",
+  "branchName": "chief/86-fold-the-capability-versioning-breaks",
+  "description": "**KCB 0.5.0's capability-versioning fold — V-1 through V-8 — has no tasklist anywhere.** Same shape as the federation fold, one phase over: `54`, `55` and `56` merged and produced eight findings, and the specs still describe the pre-finding design. An 18-repo audit on 2026-08-25 confirmed nothing in any repo owns it.\n\n**KCB is the most-implemented plane and the most-gated spec.** agora's `registry/`, `grants/` and both routers are built against it, and it carries three separate counts holding it at Candidate. So the divergence here is not theoretical: real routing code is running against a contract whose known gaps are unwritten.\n\n**Capability versioning is where a fabric quietly breaks.** A provider advertises a capability, a consumer resolves it, and the two disagree about what version means — that failure surfaces as a runtime mismatch far from its cause. koine `ADR-0001` puts discovery on the bus with the registry returning ADDRESSES rather than proxying, so version negotiation happens peer to peer with no hub to arbitrate. Whatever V-1…V-8 found about that has to end up in the clause, because there is no central component that could compensate for a vague one.\n\n**Same reactive discipline as `85`.** Fold each break to the extent it forces and no further; close the ones already covered or found to be scenario errors, with reasoning. Eight findings do not obligate eight clauses.\n\n**And check it against `85`.** Federation and capability versioning meet: a capability advertised across an authority boundary is both. The two folds must not contradict each other, and if they conflict, that conflict is itself a finding worth an ADR rather than a quiet reconciliation in one of them.",
+  "touches": [
+    "specs",
+    "scenarios",
+    "registry",
+    "docs"
+  ],
+  "iters": 8,
+  "warmup": [
+    "grep -n 'V-[1-8]\\b' scenarios/*.md specs/capability-bus.md | head -20",
+    "grep -n 'Status\\|0.5.0\\|version' specs/capability-bus.md | head -14",
+    "python3 -c \"import json,glob;[print(f.split('/')[-1], json.load(open(f)).get('mergedToMain')) for f in sorted(glob.glob('tasks/chief/completed/5[456]-*.json'))]\"",
+    "sed -n '/ADR-0001/,+14p' decisions/ADR-0001-control-plane-topology.md | head -20",
+    "grep -rn 'kcb' ../agora/registry/src/*.ts 2>/dev/null | head -5"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Each of the eight findings gets a disposition",
+      "acceptanceCriteria": [
+        "V-1 through V-8 are each classified FOLD, CLOSE (already covered, or the finding was wrong — with reasoning) or DEFER (with the future break that would force it).",
+        "Each disposition names the spec section it lands in, and whether it also touches the schema twin or the relation registry.",
+        "The three counts currently holding KCB at Candidate are identified and mapped against these findings, so it is clear which of them this fold clears and which it does not.",
+        "Table only — no clause changes in this story."
+      ],
+      "notes": null
+    },
+    {
+      "id": "US-2",
+      "title": "The folds land, and version negotiation is unambiguous",
+      "acceptanceCriteria": [
+        "Each FOLD is applied minimally to the named section, with a version bump, a reconsidered Status, and a changelog entry citing the V-id.",
+        "The resulting clause is specific enough that two independent implementations negotiate the same way without consulting each other. Under ADR-0001 the registry returns an address and peers dial directly — there is no hub to reconcile a disagreement, so a clause that leaves room for interpretation produces a runtime mismatch far from its cause.",
+        "A test or conformance case demonstrates the negotiated behaviour rather than only asserting the prose. Where KCS can encode it, encode it.",
+        "Schema twins updated where the shape moved; relation registry additions are new immutable names, never in-place signature edits."
+      ],
+      "notes": null
+    },
+    {
+      "id": "US-3",
+      "title": "This fold and the federation fold agree",
+      "acceptanceCriteria": [
+        "The result is read against `85-fold-the-federation-breaks`. A capability advertised across an authority boundary is governed by both, and the two must not specify different behaviour for it.",
+        "Any conflict is raised as an ADR rather than resolved silently inside one of the folds. A contradiction between two folds is a design finding about the fabric, and burying it in whichever fold merges second is how it becomes invisible.",
+        "agora's registry and grants are checked against the folded clause and any divergence is reported as an agora finding. koine specifies and agora implements — but a fold that the reference implementation already contradicts should be known before it ships, not after.",
+        "State whether KCB is now promotable. It is the most-implemented plane in the fabric and the answer matters to both organizations reading it."
+      ],
+      "notes": null
+    }
+  ]
+}

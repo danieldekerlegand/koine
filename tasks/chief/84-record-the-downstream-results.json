@@ -1,0 +1,55 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/84-record-the-downstream-results",
+  "description": "**Nine scenarios have a `## Downstream results` section and all nine are empty — while the runs that would fill them have already happened.**\n\nkoine's scenarios are pressure tests: each names participants, drives them over real links, and records what broke. The intake row `79` invented exists so a scenario can carry what happened when someone actually ran it downstream. `grep -c '## Downstream results' scenarios/*.md` returns **0 out of 9**.\n\nThe runs exist. `agora:75-encode-scenarios-as-kcs` and `agora:76-run-kcs-over-live-links` both merged; `console/evidence/kcs-live-run.json` holds the output, and koine's own ratification gate CITES that file. So koine is already depending on a downstream run whose results it never wrote down.\n\n**This is the cheap half of Phase 2.** Phase 2 — downstream adoption — is marked partial because the implementing surfaces are real but nothing came back. Recording the results is mechanical: read the evidence, write what each scenario's legs did, name what broke. It needs no new thinking and it is what the ratification ladder reads.\n\n**`scenarios/README.md` is wrong in the same direction and should be fixed here.** Its KCS-encoding column reads `⬜ planned` nine times; all nine encodings exist at `agora/console/src/kcs/scenarios/`. `ROADMAP.md` then restates the error — *\"today it reads `planned` eight times and `exists` zero\"* — so a false column propagated into a second document, which is exactly how the portfolio's roadmaps decayed.",
+  "crossRepo": [
+    "agora"
+  ],
+  "touches": [
+    "scenarios",
+    "docs"
+  ],
+  "iters": 6,
+  "warmup": [
+    "ls scenarios/*.md | head -12; grep -c '## Downstream results' scenarios/*.md | head -12",
+    "grep -n 'planned\\|exists' scenarios/README.md | head -12",
+    "ls ../agora/console/src/kcs/scenarios/ 2>/dev/null | head -12",
+    "python3 -c \"import json;d=json.load(open('../agora/console/evidence/kcs-live-run.json'));print(type(d), list(d)[:8] if isinstance(d,dict) else len(d))\"",
+    "grep -rn 'kcs-live-run' . --include='*.md' | head -3"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Each scenario records what its downstream run actually did",
+      "acceptanceCriteria": [
+        "Every scenario that has been run downstream gains a populated `## Downstream results` section — which participants ran, over what links, what passed, and what broke.",
+        "Content comes from `agora`'s recorded evidence, not from re-reasoning about what should have happened. A scenario that was never run says so plainly rather than being left blank, since blank is indistinguishable from unrun today.",
+        "A break found downstream is carried as a FINDING with an id, in the shape the scenarios already use for deltas. A pressure test whose breaks are not written down did not pressure-test anything.",
+        "Where the evidence is insufficient to say what a leg did, record that gap rather than inferring. The value here is that the section is trustworthy, not that it is full."
+      ],
+      "notes": null
+    },
+    {
+      "id": "US-2",
+      "title": "The KCS-encoding column stops lying, in both files",
+      "acceptanceCriteria": [
+        "`scenarios/README.md`'s KCS-encoding column reflects the nine encodings that exist at `agora/console/src/kcs/scenarios/`. It currently reads `⬜ planned` nine times.",
+        "`ROADMAP.md`'s restatement of that column is corrected too. The false value propagated from one document into another, which is the specific decay mode this portfolio has just spent an audit on.",
+        "Each entry points at the encoding it refers to, so the claim is checkable rather than asserted.",
+        "A note records that these two files must agree, and which is the source. Two registers disagreeing about the same fact is a failure this repo's own preamble says has already cost real decisions."
+      ],
+      "notes": null
+    },
+    {
+      "id": "US-3",
+      "title": "What the results change is followed through",
+      "acceptanceCriteria": [
+        "Any finding recorded in US-1 that bears on a spec's promotability is reflected in that spec's open questions or its named gate — the results are an input to the ratification ladder, not an archive.",
+        "Where a downstream run demonstrates a clause works as specified, say so. Ratification needs positive evidence and this is where it comes from.",
+        "Coordinate with `83-promote-kgp` rather than duplicating it: that tasklist owns KGP's promotion, this one owns the evidence trail. If the results change KGP's verdict, note it there rather than promoting from here."
+      ],
+      "notes": null
+    }
+  ]
+}

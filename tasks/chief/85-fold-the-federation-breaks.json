@@ -1,0 +1,54 @@
+{
+  "project": "koine",
+  "category": "feature",
+  "branchName": "chief/85-fold-the-federation-breaks",
+  "description": "**The federation pressure test found eleven breaks and nothing carries them into the specs.** `MA-1` through `MA-11` came out of `53-multi-authority-scenario` — two authorities in one world, hunting the break the shared federation pattern has to survive. `51` (the ADR), `52` (the §-edits) and `53` (the scenario) all merged. The FOLD did not, and an 18-repo audit on 2026-08-25 found **no tasklist in any repo** owning it.\n\nSo the sequence stalled one step from the end: the question was raised, the pattern was designed, the pressure test ran and broke it in eleven places, and the specs still describe the pre-break design.\n\n**This is why KINP sits at Candidate.** Its §11.1 federation edit is what demoted it, and MA-1/2/3/4 are recorded against it — the spec cannot be promoted while the breaks its own scenario found are unaddressed. KMI carries MA-5 as blocking for the same reason. The fold is therefore not housekeeping; it is the gate on two specs.\n\n**Fold reactively, which is this repo's own rule.** The scenarios' standing policy is that an open question is folded *only when a pressure break forces it*, never speculatively. Eleven breaks are eleven forcings — but each one should be folded to the extent the break requires and no further. A fold that answers more than the break asked is how a contract accretes clauses nobody needed, and koine is a cross-organizational contract where that cost is paid by two companies.\n\n**Some of the eleven may not need a clause at all.** A break that turns out to be a scenario error, or already covered by an existing clause read correctly, should be closed as such with the reasoning recorded. Eleven findings do not obligate eleven edits.",
+  "touches": [
+    "specs",
+    "scenarios",
+    "docs"
+  ],
+  "iters": 8,
+  "warmup": [
+    "grep -n 'MA-[0-9]' scenarios/*.md | head -20",
+    "python3 -c \"import json,glob;f=glob.glob('tasks/chief/completed/53-*.json')[0];d=json.load(open(f));print(d.get('mergedToMain'));print((d.get('description') or '')[:600])\"",
+    "grep -n 'Status\\|11.1\\|federation' specs/identity-protocol.md | head -12",
+    "sed -n '/decisions/,+10p' docs/README.md | head -14",
+    "ls decisions/ | head"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Each of the eleven breaks gets a disposition",
+      "acceptanceCriteria": [
+        "MA-1 through MA-11 are each classified: FOLD (a clause changes), CLOSE (already covered, or the scenario was wrong — with the reasoning), or DEFER (genuinely reactive, waiting on a further break that has not happened).",
+        "The disposition table names, per break, which spec and which section it lands in. MA-1/2/3/4 are recorded against KINP and MA-5 against KMI; verify that rather than inheriting it.",
+        "A DEFER must say what future break would force it. 'Not now' without a trigger is how an open question becomes permanent.",
+        "This story produces the table and changes no clause. Deciding what to fold and folding it are different acts and conflating them is how a fold overreaches."
+      ],
+      "notes": null
+    },
+    {
+      "id": "US-2",
+      "title": "The folds land, minimally",
+      "acceptanceCriteria": [
+        "Each FOLD is applied to the named spec section, to the extent the break requires and no further. koine is a contract two organizations implement; a clause added beyond the forcing is a cost paid twice.",
+        "Every touched spec gets a version bump, a Status reconsidered against its own ladder, and a changelog entry citing the MA-id and the scenario leg. A normative change re-enters validation — do not quietly leave a spec at its prior status.",
+        "Schema twins are updated where a fold has a schema shape, and the registry gets a note where a fold needs an immutable relation name. Never an in-place signature edit — that rule is already on the record.",
+        "The scenario is re-read against the folded specs and the breaks it no longer produces are marked resolved, with the ones that survive left visibly open."
+      ],
+      "notes": null
+    },
+    {
+      "id": "US-3",
+      "title": "What the fold does to promotability is stated",
+      "acceptanceCriteria": [
+        "For KINP and KMI, state plainly whether this fold clears the federation half of their promotion gate or whether something remains. These two specs are held at Candidate partly by these breaks and a reader should not have to infer the effect.",
+        "If a spec becomes promotable, hand off to `83-promote-kgp`'s promotability table rather than promoting from here — one place owns the ladder.",
+        "Coordinate with `86-fold-the-capability-versioning-breaks`: KCB's V-1…V-8 fold is the sibling of this one and the two must not contradict each other where federation and capability versioning meet.",
+        "Record what the pressure test taught about the FEDERATION PATTERN itself, not only about the clauses. Three specs independently deferred the same single-authority question and each promised it would 'likely resolve the same way' — whether that held is the finding worth keeping."
+      ],
+      "notes": null
+    }
+  ]
+}
