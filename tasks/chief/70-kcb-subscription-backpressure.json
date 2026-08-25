@@ -3,8 +3,7 @@
   "project": "koine",
   "category": "feature",
   "branchName": "chief/70-kcb-subscription-backpressure",
-  "description": "KCB §7 open question 3 (capability-bus.md ~line 256): subscription firehose backpressure / flow-control for high-volume-world subscriptions. Per-invoke cost is already handled by capability cost + grant spend ceilings (§2.1/§5); the spec currently parks firehose flow-control as 'an infra concern for the host's cost advisor.' This tasklist folds it into the contract ONLY on the next pressure break (ROADMAP.md Phase F6) — i.e. when a high-volume-world subscription scenario demonstrates that leaving flow-control purely to the host breaks a subscriber. PARKED: reactive by design; authored and held. KCB is candidate (0.3.0). Public-safe: bind roles.",
-  "parked": true,
+  "description": "KCB §7 open question 3 (capability-bus.md ~line 256): subscription firehose backpressure / flow-control for high-volume-world subscriptions. Per-invoke cost is already handled by capability cost + grant spend ceilings (§2.1/§5); the spec currently parks firehose flow-control as 'an infra concern for the host's cost advisor.' This tasklist folds it into the contract ONLY on the next pressure break (ROADMAP.md Phase F6) — i.e. when a high-volume-world subscription scenario demonstrates that leaving flow-control purely to the host breaks a subscriber. PARKED: reactive by design; authored and held. KCB is candidate (0.3.0). Public-safe: bind roles.\n\n**Unparked 2026-08-25 by operator decision.** The reactive-by-design discipline said to wait for a pressure test to force the question. US-1 IS that pressure test, and it is constructible today — so waiting was waiting for someone to do the work this tasklist describes. The trade is deliberate and worth stating: a manufactured pressure leg can force a question no real user has, so **US-2 folds a clause only if US-1 finds a CONCRETE break.** A leg that finds none closes the question as 'pressure applied, no break found', which is a real answer and a better one than an open note that never resolves.",
   "dependsOn": [],
   "touches": [
     "specs/capability-bus.md",
@@ -45,6 +44,5 @@
       "passes": false,
       "notes": ""
     }
-  ],
-  "parkedReason": "trigger-not-fired: same discipline as 69. KCB §7 open question 3 (firehose flow-control for high-volume-world subscriptions) is currently parked in the spec as 'an infra concern for the host's cost advisor', and per-invoke cost is ALREADY handled by capability cost plus grant spend ceilings (§2.1/§5). US-1 is a high-volume-subscription pressure leg that would force the question; nothing has produced that pressure. Reverses when a real subscriber saturates the bus."
+  ]
 }

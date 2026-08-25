@@ -3,8 +3,7 @@
   "project": "koine",
   "category": "feature",
   "branchName": "chief/69-kft-open-questions",
-  "description": "KFT's own §11 'Open questions' (fine-tuning.md ~line 481), folded only on the next pressure break, never speculatively (each note says 'unless a pressure test forces it into the contract'; ROADMAP.md Phase F6): (1) adapter-selection hint — whether the job manifest may carry an engine hint or it stays producer-internal (§9); (2) multi-node / distributed runs — cost metering + checkpoint lineage across GPUs (§5.3/§6), where the cost unit + checkpoint-asset shape must not preclude it; (3) resume-checkpoint ref — confirm the job manifest carries a resume checkpoint ref cleanly (a run based_on a prior finetuned model, §5 lineage); (4) eval-as-reward — how tightly method:dpo binds to a KCS scenario as its reward (§6.1) and whether reward scenarios need a distinct KCS profile. (Item 5, capability versioning, is resolved by Phase F2 / chief/54.) PARKED: reactive by design; authored and held. KFT is candidate (0.4.0). Public-safe: bind roles.",
-  "parked": true,
+  "description": "KFT's own §11 'Open questions' (fine-tuning.md ~line 481), folded only on the next pressure break, never speculatively (each note says 'unless a pressure test forces it into the contract'; ROADMAP.md Phase F6): (1) adapter-selection hint — whether the job manifest may carry an engine hint or it stays producer-internal (§9); (2) multi-node / distributed runs — cost metering + checkpoint lineage across GPUs (§5.3/§6), where the cost unit + checkpoint-asset shape must not preclude it; (3) resume-checkpoint ref — confirm the job manifest carries a resume checkpoint ref cleanly (a run based_on a prior finetuned model, §5 lineage); (4) eval-as-reward — how tightly method:dpo binds to a KCS scenario as its reward (§6.1) and whether reward scenarios need a distinct KCS profile. (Item 5, capability versioning, is resolved by Phase F2 / chief/54.) PARKED: reactive by design; authored and held. KFT is candidate (0.4.0). Public-safe: bind roles.\n\n**Unparked 2026-08-25 by operator decision.** The reactive-by-design discipline said to wait for a pressure test to force the question. US-1 IS that pressure test, and it is constructible today — so waiting was waiting for someone to do the work this tasklist describes. The trade is deliberate and worth stating: a manufactured pressure leg can force a question no real user has, so **US-2 folds a clause only if US-1 finds a CONCRETE break.** A leg that finds none closes the question as 'pressure applied, no break found', which is a real answer and a better one than an open note that never resolves.",
   "dependsOn": [],
   "touches": [
     "specs/fine-tuning.md",
@@ -46,6 +45,5 @@
       "passes": false,
       "notes": ""
     }
-  ],
-  "parkedReason": "trigger-not-fired: KFT §11's open questions are folded ONLY on the next pressure break — each note says 'unless a pressure test forces it into the contract' — and no such test exists. Folding them speculatively is the failure the discipline prevents: a contract clause written for a case nobody has met is a guess with a version number. US-1 IS the forcing leg; the tasklist cannot run before something needs it. Blocks formant/38. Reverses when a real KFT integration hits one of the questions."
+  ]
 }
