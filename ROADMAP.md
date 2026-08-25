@@ -6,7 +6,14 @@
 > *any two conformant AI systems interoperate on identity, knowledge, media, and capability
 > without a single point-to-point bridge.*
 
-**Status:** Contract layer complete — 2 of 6 specs ratified (KINP, KCS), 4 in candidate re-validation (KGP, KMI, KCB, KFT) · maintenance + ratification cadence, with a planned "second act" (Phases F1–F6 below) and an **in-progress prior-art/standards-hygiene pass (Phase F7)**. Ratification is now **conformance-gated** — no spec reaches `ratified` without a machine-replayable KCS scenario ([`specs/README.md`](specs/README.md#the-ratification-gate), Phase F7 · `79`), which puts **Phase F4 on the critical path** · **Last updated:** 2026-08-13
+**Status:** Contract layer complete — **0 of 6** specs ratified — all six are Candidate, 4 in candidate re-validation (KGP, KMI, KCB, KFT) · maintenance + ratification cadence, with a planned "second act" (Phases F1–F6 below) and an **in-progress prior-art/standards-hygiene pass (Phase F7)**. Ratification is now **conformance-gated** — no spec reaches `ratified` without a machine-replayable KCS scenario ([`specs/README.md`](specs/README.md#the-ratification-gate), Phase F7 · `79`), which puts **Phase F4 on the critical path** · **Last updated:** 2026-08-13
+
+> **Reconciled against the tree 2026-08-25.** `tasks/chief/completed/` holds **35** records — **25** merged, 10 retired by decision (no `mergedToMain`, which is the deliberate shape). `tasks/chief/` holds **3** active, **2** of them parked.
+>
+> The phase rows below were last revised **2026-08-13** and have not all been re-marked. A portfolio-wide
+> audit on 2026-08-25 found every roadmap here **understating** what shipped and none overstating it,
+> so treat an unticked row as unverified rather than as open work. Nothing gates this file — that
+> absence is the measured cause, and the drift rate is about a fortnight.
 
 This is the single canonical roadmap for koine. koine has no prior ROADMAP; this file
 synthesizes the contract program from the spec headers, the ADRs, the pressure-test scenarios,
