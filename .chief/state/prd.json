@@ -39,7 +39,8 @@
         "A test or conformance case demonstrates the negotiated behaviour rather than only asserting the prose. Where KCS can encode it, encode it.",
         "Schema twins updated where the shape moved; relation registry additions are new immutable names, never in-place signature edits."
       ],
-      "notes": null
+      "notes": "KCB 0.4.9 -> 0.5.0 (minor), Candidate. V-1..V-7 folded, V-8 closed: new §2.4 (transport binding, V-4), new §4.4 (version operand + granted major in the token + refuse-for-want-of-one, V-5; quoted_cost + quote-mismatch refusal, V-1), §2.1+§7.1 (payload_schema_id + bare-shape-is-no-cross-check, V-2; shape registry rejected on the record), §7.1 step 5 (canonicalization rule id, absent=kcb1, no published digest moves, V-3), §7.3c (floor per axis, V-6), §7.3g (successor/deprecated/removal frames on §4.2d's existing channel, V-7), plus §5/§6/§4.1/§7.2 cross-refs. §2.2's standalone manifest REMOVED at 0.5.0 (declared obligation now due, not a fold); §2.3's window untouched at 0.6.0. Conformance case: scenarios/e2e-live-schema-mutation.md gains F1-F13, the assertion set the KCS encoding must grow (DR-7: re-running today's encoding proves nothing); no scenario file added, so downstream set-equality is unaffected. Schema twins: none moved (no twin models the KCB card extension) — vacuous. Registry: none moved (V-2's registry route rejected). Verification: node scripts/check-doc-integrity.mjs OK (52 files, 1249 links, 3 status tables match headers); check-schemas.mjs OK; check-registry.mjs OK; check-tasklist-categories.mjs OK; .chief/verify.sh green (verify-test: 30 passed, 0 failed).",
+      "passes": true
     },
     {
       "id": "US-3",

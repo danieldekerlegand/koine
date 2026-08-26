@@ -72,3 +72,75 @@ touched, per the story's "table only" criterion.
 - **US-3's material is already staged** in the page's final section: four named places where this
   fold and `85`'s meet, two of which (V-2's rejection, V-5's refuse-for-want-of-one) were *decided*
   on federation grounds. US-3's job is to look for a contradiction, not to assume there is none.
+
+---
+
+## US-2 — The folds land, and version negotiation is unambiguous (2026-08-26)
+
+**KCB 0.4.9 → 0.5.0, minor, stays Candidate.** Every FOLD row of the US-1 disposition page applied
+and nothing else. V-8 stays closed.
+
+**Spec (`specs/capability-bus.md`):**
+- **§2.4 (new)** — optional per-entry transport `binding` (V-4). Two namespaces, only one governed:
+  the capability *name* stays version-free (§7.1 untouched), the transport id is local. A provider
+  serving two majors that resolve to one transport id is now non-conformant.
+- **§4.4 (new)** — V-5 + V-1 together. Optional `version` operand; granted major readable *in* the
+  token (grant NAME unchanged); resolution stated as an ordered, exhaustive rule — operand, else
+  grant, else **refuse for want of a version**, with *highest published* forbidden **by name**; one
+  published major still answers a bare call, which is what keeps it additive. Plus optional
+  `quoted_cost` and a *quote mismatch* refusal.
+- **§2.1 + §7.1** — optional knowledge-port `payload_schema_id`, and the rule that carries the fold:
+  a bare `shape` is **routing** identity, not payload identity, so a consumer MUST read it as *no
+  cross-check available*. Shape registry rejected on the record with a re-open trigger.
+- **§7.1 step 5** — canonicalization **rule id** in the prefix; **absent = `kcb1`**, this version
+  states `kcb2`, and a port declaring no `payload_schema_id` canonicalizes byte-identically under
+  both, so **no published digest moves**. Unknown rule id reads *incomparable*, never *mutated*.
+- **§7.3c** — floor split by axis (capability major → successor's next major; koine-spec axis keeps
+  one full minor, so §2.3 and KMI §4.4 do not move). **§7.3g** — three named frames on §4.2d's
+  *existing* channel, each before the fact it announces; the two binding forms it cannot reach are
+  stated (DEFER-D), not implied closed.
+- **§2.2** — the standalone manifest is **removed at this version**. Not a fold: an obligation
+  declared earlier and now due (§7.3f). §2.3's window untouched, still 0.6.0.
+- §5 / §6 / §4.1 / §7.2 carry the cross-references and the two new reader obligations; §7.5, the
+  status note, the Pressure test § and a full Changelog entry cite every V-id.
+
+**Scenario (`scenarios/e2e-live-schema-mutation.md`):** a *Fold status* section (per-finding re-read,
+85's shape) and a **Conformance case** section carrying **F1–F13** — the assertion set the KCS
+encoding must grow. Resolution notes and the "clean pass would license" conditions amended.
+
+**Mirrors:** README, specs/README, ECOSYSTEM (the three checked tables), CLAUDE.md *Current state*
+(NOT checked by CI — hand-edited and read back), ROADMAP F2 + the KCB re-ratify row,
+`docs/reference/promotability.md`, `scenarios/README.md` (encoding column + DR-7 framing),
+`docs/README.md` (the dispositions page was never indexed — added).
+
+**Verification:** `check-doc-integrity.mjs` OK (52 files, 1249 links, 3 tables match);
+`check-schemas.mjs` OK; `check-registry.mjs` OK; `check-tasklist-categories.mjs` OK;
+`.chief/verify.sh` green — *verify-test: 30 passed, 0 failed*.
+
+### Learnings for future iterations
+- **The anchor slug drops the em dash entirely, and collapses runs of whitespace once.**
+  `## Conformance case — the assertions…` → `#conformance-case-the-assertions…`, NOT
+  `…case--the-assertions…`. Compute it with the `slugify` in `scripts/check-doc-integrity.mjs`
+  rather than guessing; it is 10 lines and it is the authority.
+- **A "no digest moves" claim has to be *engineered*, not asserted.** Adding `payload_schema_id` to
+  §7.1's key set would fork every digest, so the fold had to make the rule id **optional with an
+  absent-means-`kcb1` default** AND forbid emitting `kcb2` for a port whose bytes are `kcb1`-identical.
+  The interop argument closes because a port that *does* declare the new key has also moved its
+  version, so an old consumer meets the moved digest on the ordinary re-discovery path.
+- **Fold order matters when one fold fires another.** V-2 grows §2.1's vocabulary, which is exactly
+  the event V-3 says breaks two conformant parties. Folding V-2 without V-3 would have fired V-3 on
+  publication day. Look for this pair shape in any fold that adds a hashed field.
+- **`python3` heredoc + `assert s.count(old)==1` is the right tool for these edits.** Several
+  search strings that *look* copy-exact fail to match (invisible char drift in long prose lines);
+  the assert catches it immediately, and nothing is written because the write is at the end. When one
+  fails, bisect the string with short probes rather than re-reading the whole file.
+- **US-3's material is staged but its answer is not.** The dispositions page names four places where
+  this fold and `85`'s meet, two decided ON federation grounds (V-2's rejection, V-5's
+  refuse-for-want-of-one). §2.4 makes one explicit claim US-3 must verify rather than repeat: a
+  `binding` is outside §3.1(d)'s three-part de-dup key `(provider KINP id, (name, version), schema_id)`.
+  Also unchecked: agora's `registry/` and `grants/` against §4.4c and §7.3g — criterion 3 requires
+  reporting divergence as an **agora finding**, and the worktree cannot reach that repo, so state that
+  limit rather than implying a check happened.
+- **KCB now has no minor left in reserve.** 0.5.0 spent the one that was held for §2.2's removal. The
+  next retirement (§2.3's legacy URI root, at 0.6.0) is the only scheduled one; any future additive
+  fold has to argue for patch, as 0.4.6–0.4.9 all did.
