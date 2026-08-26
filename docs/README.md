@@ -29,6 +29,7 @@ reference out of this repo resolves for nobody who has only this one —
 - [The KCS-encoding gate — what the downstream suite actually delivers](reference/kcs-encoding-gate-verification.md)
 - [Promotability — what stands between each spec and `ratified`](reference/promotability.md)
 - [The federation fold — a disposition for each of MA-1…MA-11](reference/federation-fold-dispositions.md) — and, after the fold landed, what it does to promotability and what the pass taught about the shared federation pattern itself
+- [The capability-versioning fold — a disposition for each of V-1…V-8](reference/capability-versioning-fold-dispositions.md) — the reasoning that decided each fold's *extent* before a clause moved, including the one alternative rejected on the record and the two remainders deferred with triggers; the fold itself landed at KCB 0.5.0
 
 ## Explanation
 

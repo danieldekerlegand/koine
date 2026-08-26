@@ -6,9 +6,12 @@
 break-test [KCB §7.5](../../specs/capability-bus.md#75-pressure-test-for-this-section) asked for by
 name, written and run by `chief/54`…`chief/56` — drove a capability through a full release cycle
 (widen, re-price, edit-without-a-bump, ship a successor, deprecate, remove) while a subscriber stayed
-live throughout, and came back with **eight findings, four of them blocking**. Nothing has been
-folded: [KCB](../../specs/capability-bus.md) still describes the pre-break design at 0.4.9, and
-**count (ii)** of the five holding it at `candidate` *is* these deltas.
+live throughout, and came back with **eight findings, four of them blocking**. When this page was
+written nothing had been folded and [KCB](../../specs/capability-bus.md) still described the
+pre-break design at 0.4.9; **count (ii)** of the five holding it at `candidate` *is* these deltas.
+**The fold has since landed — KCB 0.5.0, 2026-08-26** — and count (ii) is now a re-run of that pass
+against the folded text. This page is retained as the *reasoning* that decided each fold's extent,
+not as a record of the spec's state.
 
 This page is the **first half** of the fold: what each of the eight gets, decided and reasoned
 **before** a clause is touched. It changes **no clause and no version** — deciding what to fold and
@@ -356,7 +359,11 @@ in §5. That is a KCS question with a KCS record, and it is not a demand on KCB.
 
 ## Where each fold lands
 
-**Intent, not a record.** US-2's changelog entry is the record.
+**Intent, not a record.** US-2's changelog entry is the record — and it now exists: the fold landed
+**2026-08-26 at KCB 0.5.0**, exactly as the table below predicted, with the sections named below and
+no schema twin or registry file touched. What each fold says as published is the spec's; what follows
+is retained as the reasoning that decided its extent. Where the two ever disagree, the spec wins and
+this page is the bug.
 
 | # | Spec + section | Schema twin | Registry | New normative text? |
 |---|---|---|---|---|
@@ -383,7 +390,11 @@ rely on the standalone file being read and a registry is no longer obliged to cr
 that alongside the folds — not as a fold, as an obligation already declared and now due. §2.3's
 window is untouched and still runs to 0.6.0.
 
-**Status after the fold: still Candidate.** A fold does not close its own gate.
+**Status after the fold: still Candidate.** A fold does not close its own gate. *(As published:
+KCB 0.5.0 stays Candidate on all five counts; count (ii) reads as a re-run of Steps 3, 5, 7, 8, 9 and
+10 against the folded text, and the scenario's new* Conformance case *section carries the **F1–F13**
+assertion set that re-run needs — the extension DR-7 makes unavoidable and V-8 measures the cost of.
+Building it is unowned downstream work.)*
 
 ---
 
