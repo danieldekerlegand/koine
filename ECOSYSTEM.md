@@ -45,7 +45,7 @@ Six specs, versioned independently; each spec's own header is authoritative for 
 | [`specs/identity.md`](specs/identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.3.0 · 🟡 candidate |
 | [`specs/grounding-pack.md`](specs/grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / provenance / graph) | 0.5.2 · 🚧 candidate |
 | [`specs/media-interchange.md`](specs/media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.4 · 🚧 candidate |
-| [`specs/capability-bus.md`](specs/capability-bus.md) | **KCB** — Capability-Bus | control — discover / invoke / subscribe / fetch over MCP + A2A | 0.4.7 · 🚧 candidate |
+| [`specs/capability-bus.md`](specs/capability-bus.md) | **KCB** — Capability-Bus | control — discover / invoke / subscribe / fetch over MCP + A2A | 0.4.8 · 🚧 candidate |
 | [`specs/conformance-scenario.md`](specs/conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data over **N real** participants' own connections, with cross-plane assertions | 0.3.0 · 🚧 candidate |
 | [`specs/fine-tuning.md`](specs/fine-tuning.md) | **KFT** — Fine-Tuning | *profile* — composes the four planes into a `finetune` capability (not a fifth plane) | 0.6.0 · 🚧 candidate |
 
@@ -94,6 +94,15 @@ integrations rather than internal composition:
 A third boundary is upstream rather than lateral: **pinakes** (personal) supplies corpora to both
 companies, so an upstream license term — CC-BY-SA, CC-BY-NC-SA — propagates into two different
 commercial products from one source. KGP's egress gating is where that gets enforced.
+
+Since **KCB 0.4.8** the two lateral edges have a clause written for them:
+[`specs/capability-bus.md`](specs/capability-bus.md) **§4.3** states how a caller's **autonomy
+posture** — which classes of effect may proceed unattended — survives a dispatch to a callee under a
+different owner, by declaring an `effect` class on the callee's side and intersecting the two
+postures so *the restriction always wins*. It is role-scoped like every other clause and binds these
+edges only because they are the shape it was pressure-tested against
+([`scenarios/kcb-cross-owner-posture.md`](scenarios/kcb-cross-owner-posture.md),
+[ADR-0013](decisions/ADR-0013-autonomy-posture-boundary-clause.md)).
 
 ### Fine-tuning role assignments (KFT §8/§9, informative)
 

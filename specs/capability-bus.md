@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.4.7
+**Spec version:** 0.4.8
 **Status:** Candidate
 **Last updated:** 2026-08-26
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -66,7 +66,20 @@ carries.
 > not disturbed, and **0.5.0 stays spoken for** by §7.3's removal of §2.2's standalone manifest,
 > which §7.3c forbids folding into an unrelated publication. New normative text, so it adds a
 > **fourth** count to Candidate — a re-run of that leg, gating §4.2 alone. The three existing counts
-> are restated and none moves.
+> are restated and none moves. 0.4.8 adds normative **§4.3**, the autonomy-posture clause applying
+> [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md), after the pressure leg
+> [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md) returned
+> **AP-1…AP-8** (blocking **AP-5**). Before it, the fabric expressed **spend** (§5) and named
+> **irreversibility** nowhere, so a caller's posture across an ownership boundary had nothing on the
+> wire to read: §4.3 mints one operand — a capability/port **`effect`** class, absent reading
+> *unknown* and never *harmless* — plus a posture operand on the existing verbs, the
+> **monotone-restrictive intersection** rule that answers *which posture wins* with no arbitration and
+> no trust (and keeps ADR-0011's T3 from firing), a chain rule so a delegated leg cannot escape the
+> caller's posture, and a **floor** no posture may skip. *Classification:* **patch** on the same
+> grounds as 0.4.7 — every field optional, a dispatch declaring no posture behaves exactly as at
+> 0.4.7, no verb/plane/port kind/authority role added, §7.2 undisturbed, and 0.5.0 still spoken for.
+> New normative text, so a **fifth** count — a re-run of that leg, gating §4.3 alone; the four
+> existing counts are restated and none moves.
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
 > capability bus moves *capability*: how a participant advertises what it can do, how orgs and
@@ -326,6 +339,15 @@ is not shape: it sits **outside** the `schema_id` digest exactly as `cost` does,
 a subscriber tell a firehose from a trickle **before** it binds, which no other field on any plane
 could. Its shape and the rules that read it are fixed in **§4.2a**.
 
+A capability and a port MAY additionally carry an OPTIONAL **`effect`** — the class of effect an
+invocation over it causes: what the caller cannot undo (`reversibility`), and whether it is confined
+to the callee's authority domain or observable outside it once made (`visibility`). Effect is not
+shape either, and sits **outside** the `schema_id` digest exactly as `cost` and `volume` do. It is
+the operand a declared autonomy posture reads, and without it two capabilities that differ only by
+**permanence** are indistinguishable on every field the manifest and the registry carry. An absent
+declaration reads as *unknown*, never as harmless. Its shape and the rules that read it are fixed in
+**§4.3a**.
+
 ### 2.2 Migration — 0.2.0 standalone manifest → 0.3.0 card extension
 
 0.2.0 served a standalone `/.well-known/kcb-manifest.json`; 0.3.0 folds that payload onto the peer's
@@ -549,8 +571,8 @@ see that scenario's *Re-ratification — what this pass gates* section.
 |---|---|---|
 | **discover** | registry query (§3) | find providers by capability / interchange type / world |
 | **describe** | one A2A agent-card fetch (`/.well-known/agent-card.json`) + MCP `tools/list` for tool schemas | fetch the provider's AgentCard **including its KCB extension** (`capabilities.extensions[]`, §2) in a single fetch — there is no second `/.well-known/kcb-manifest.json` to retrieve |
-| **invoke** | MCP `tools/call` / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference |
-| **subscribe** | A2A streaming (MCP notifications only on the pre-2026-07-28 wire — §4.1) | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur. Rate, resumption, and the in-band control channel are §4.2. |
+| **invoke** | MCP `tools/call` / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference. A declared autonomy posture is an optional operand, and the capability's declared effect class is what it reads — §4.3. |
+| **subscribe** | A2A streaming (MCP notifications only on the pre-2026-07-28 wire — §4.1) | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur. Rate, resumption, and the in-band control channel are §4.2; posture is §4.3. |
 | **fetch** | CAS GET by `asset` id | retrieve asset bytes by their KINP id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant (§5). |
 
 `subscribe` is the control-plane half of KGP §6 subscriptions: KGP defines the delta payload,
@@ -799,6 +821,222 @@ note are restated and none of them moves.
 
 ---
 
+### 4.3 Autonomy posture across an ownership boundary (0.4.8)
+
+Which classes of effect a dispatch may cause **unattended**, and how two peers under different owners
+combine what each will allow. This section applies
+[ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md), which takes up the **G5 human
+escalation** carve-out [ADR-0011](../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)
+§4 left open and decides the half of it that crosses an organizational boundary — and only that half.
+The pressure leg that forced its shape is
+[`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md), whose eight
+findings **AP-1…AP-8** the clauses below answer one at a time.
+
+**Why it is here rather than left to implementers.** A posture gates two things: **spend** and
+**irreversibility**. Spend is fully expressed and enforced across an ownership boundary already — §5's
+grants, the `budget_units` ceiling, the projected cost path search returns before an `invoke`, and
+§4.2e's metered delivery. Irreversibility is expressed **nowhere**: before this section, no field on
+any capability or port in any of the six specs said what an invocation does that its caller cannot
+undo (AP-1). A caller's posture across a boundary was therefore not *weak*; it was **inapplicable** —
+there was nothing on the wire for it to read.
+
+This section is **additive at every surface**. Every field below is optional on read and on write; a
+dispatch that declares no posture behaves exactly as it did at 0.4.7; no verb, plane, port kind, media
+type or authority role is added; and a participant that implements none of it stays conformant and
+interoperable. It is also **not a supervision model, not an approval transport, and not a security
+control** — see (g), (h) and (i).
+
+**a. A capability and a port declare their effect class (AP-1).** Any entry in
+`params.capabilities[]`, and any port in `params.produces` / `params.consumes` / a capability's
+`inputs` / `outputs`, MAY carry an OPTIONAL `effect` object stating what an invocation over it does
+that the caller cannot undo, and whether that is confined to the callee's authority domain:
+
+```jsonc
+"effect": {
+  "reversibility": "irreversible",   // none | local | irreversible
+  "visibility":    "external",       // internal | external
+  "note":          "publishes findings to peers outside this authority domain"  // OPTIONAL, informative
+}
+```
+
+| Axis | Value | Meaning |
+|---|---|---|
+| `reversibility` | `none` | Changes no state that outlives the invocation. Reading bytes, computing, returning a payload. |
+| | `local` | Changes state inside the **callee's own authority domain**, and the callee offers an inverse reachable on this bus. |
+| | `irreversible` | Has no inverse on this bus, by anyone. |
+| `visibility` | `internal` | Observable only inside the callee's authority domain. |
+| | `external` | Observable outside it once made — publication, egress across an authority boundary, a dispatch to a third participant, or an act with a referent off the fabric entirely. |
+
+Normative:
+
+- The class is declared by the participant that **implements** the capability, on its own card
+  ([ADR-0007](../decisions/ADR-0007-self-describing-participant.md) — participants are
+  self-describing). No registry holds it, no central policy file overrides it, and no third party
+  asserts it on another's behalf.
+- **An absent `effect` reads as `unknown`, never as harmless.** `unknown` is a class like any other and
+  is admitted only where a posture names it explicitly (b). This is the fail-safe direction §4.2a took
+  for `volume`, for the same reason: a default that reads as benign converts a missing declaration into
+  a silent grant, and here it would convert it into a silent grant of permanence.
+- `effect` is **not shape**. It sits **outside** the port's `schema_id` digest (§7.1) exactly as `cost`
+  (§2.1) and `volume` (§4.2a) do, and re-declaring it MUST NOT be read as a payload break. Changing it
+  is a **minor** bump on the capability that carries it (§7.2), so the version moves and a pinned
+  consumer can see it.
+- Where a capability's class changes while a `subscribe` binding is live, the producer signals it on the
+  **§4.2d control channel** — the single in-band channel that section specifies in both directions.
+  This section mints **no** second signalling path, and a fold of **V-7** carries deprecation and
+  removal on that same channel.
+- A class is a property of what an `invoke` or a `subscribe` does. **`fetch` gets none:** serving bytes
+  across an authority boundary is already gated by the participant that holds them, in its own domain
+  and fail-closed (KMI §7.1 over KGP §7's classes), which is both adequate and correctly placed. A
+  second control over the same act would be two gates disagreeing.
+
+**b. A posture is a set of admitted classes, not a rung (AP-2, AP-4).** A posture is stated as the set
+of effect classes the declaring party will allow to proceed **without a person**. It is an OPTIONAL
+operand on the existing verbs — `invoke` and `subscribe` — in the operand shape §4.2b established, and
+MAY equally be published on a card as the standing posture a participant executes under:
+
+```jsonc
+"posture": {
+  "admits": [ { "reversibility": "none",  "visibility": "internal" },
+              { "reversibility": "local", "visibility": "internal" } ]
+}
+```
+
+Normative:
+
+- **Postures are named by what they GUARANTEE.** The vocabulary is the effect classes of (a) and
+  nothing else. **koine adopts no rung names** — no `autonomous`, no `plan-first`, no `ask-first`. A
+  product's ladder is a **projection** onto these classes, declared and mapped by that product with its
+  lossy edges named, in the same relationship KMI's lineage relations have to C2PA and OMC
+  ([ADR-0010](../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md)) and a KFT job has to a
+  trainer's native config (KFT §3.3). A rung is uninterpretable at a peer that does not run that
+  console; a class is not.
+- **`admits` is a set, and this specification defines NO total order over classes.** The two axes are
+  independent, so two postures may each be stricter than the other on a different axis and neither is
+  *"higher"*. Ranking classes on a single ladder would silently discard one of two ordinary rules
+  (AP-4); a product that needs an ordering supplies it in its own projection.
+- A dispatch carrying **no** `posture` operand gates on nothing and is served exactly as it was at
+  0.4.7. Declaring a posture is what opts a caller into (c).
+
+**c. Posture is monotone-restrictive; the effective posture is the intersection (AP-3).** This is the
+load-bearing rule, and it is what makes the surface safe to cross a boundary with:
+
+- The **caller's** posture bounds what the caller will dispatch. The **callee's** posture bounds what
+  the callee will execute.
+- **The effective posture of a dispatch is the intersection of the two**, and each side enforces its own
+  half against its own gates.
+- **No posture presented by a peer may widen any gate.** A caller cannot raise a callee's autonomy by
+  asserting a posture, and a callee cannot lower a caller's by publishing one. A declaration a peer
+  presents can only ever cause the reader to do **less**.
+
+Two consequences are normative rather than commentary. First, *"which posture wins"* has an answer that
+requires **no arbitration and no trust**: **the restriction wins, always**, because neither side is
+asked to honour the other's declaration — each reads it and withholds. There is no third party to
+arbitrate and none is wanted: the host is off the dispatch path (§3,
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md)) and under §3.1 federation no single host
+has jurisdiction over both ends, the same structural fact **BP-5** established for flow control.
+Second, because both sides still decide alone, **every gate in this fabric stays unilateral** and
+ADR-0011's trigger **T3 does not fire**. That is a design constraint on this section, not an
+observation about it: a posture rule that made any gate joint would be non-conformant with the record
+that permits this one.
+
+**d. The floor — what no posture may skip (AP-8).** The only part of a posture a caller may rely on
+when the callee is another organization is the part the callee enforces unilaterally, so the floor is
+written there. It is NORMATIVE and it is not negotiable per deployment:
+
+- **No posture relaxes a mandatory gate.** KGP §7 license and egress, §5's grant and spend ceiling, and
+  KFT §4 admission and §8.1 graded refusal fire identically at every posture. The most permissive
+  posture expressible in (b) is not licence to omit one, and a participant that omits one is
+  non-conformant regardless of what either side declared.
+- **An effect the effective posture does not admit is a REFUSAL** — never a silent proceed, and **never
+  a silent substitution** of a lesser effect, which is the disposition KFT §3.3 already fixes for an
+  unexpressible adaptation axis.
+- **An undeclared class is not admitted** wherever a posture gates on class (a).
+- **Refusal remains available to both sides, unconditionally.** Declaring a posture never removes it.
+
+**e. A delegated leg carries the posture; a class covers the leg, not the code (AP-5).** A callee that
+re-dispatches to fulfil an invocation is the ordinary case on this bus — §5's ceiling exists precisely
+because a *"cross-participant chain (knowledge producer → media producer → paid model)"* is normal
+traffic. Spend propagates along that chain because the credential does; a posture computed pairwise
+would evaporate at the second hop, and a caller cannot enumerate the parties behind its callee.
+NORMATIVE:
+
+- **A declared `effect` covers the leg.** It states what the invocation causes, **including every
+  dispatch the callee makes to fulfil it** — not what the callee's own code does in isolation. A callee
+  whose downstream provider publishes the caller's inputs declares `external`, whatever its own code
+  does.
+- **A re-dispatch MUST NOT present a posture wider than the effective posture it was invoked under.** It
+  MAY narrow further. This is monotone-restrictive along the chain, in the same shape §5's ceiling
+  already has for spend, and it is what makes (c) a boundary rule rather than a one-hop rule.
+- A callee that cannot bound its downstream legs to the effective posture MUST refuse (d) rather than
+  dispatch and hope. Fail closed, as everywhere else on this bus.
+
+**f. Where the posture is evaluated.** For `invoke`, at the call, before any effect. For `subscribe`,
+at registration — a stream is registered once, so a posture is evaluated once, exactly as §5's ceiling
+was until §4.2e gave it a delivery-time evaluation point; where the classes of what a stream delivers
+change, (a)'s control-channel signal is what reaches a live binding. A `fetch` is not evaluated against
+a posture at all (a).
+
+**g. This section names no person, and requires no console (NORMATIVE conformance requirement).**
+Nothing above defines an interface, a timeout, a correlation id, an approval message, a queue, or a
+human authority. What crosses the wire is a declaration, a set, and a refusal. **A participant with no
+console at all is fully conformant**: a headless provider declares its classes and executes under a
+fixed posture with no person anywhere in it, and a headless caller computes the intersection, dispatches
+what is admitted and refuses what is not. A refused dispatch is not parked, held, or resumable — a
+subsequent dispatch under a widened posture is a **new** invocation, which is why this section needs no
+verb, no state and no resumption operand. koine fixes **when a stop is required**, never how a stop is
+served; the latter is the implementer's ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)).
+
+**h. What a posture refusal carries (AP-6).** A refusal under (d) is a refusal like any other on this
+bus, and KCB states its own minimum rather than discharging it onto a profile:
+
+- It MUST name **which gate refused** — this section — and **which class** was not admitted.
+- It MUST NOT disclose the contents behind the class. Naming the class is enough; the same rule KFT
+  §8.1 states for a `local-only` corpus.
+- It MAY carry the richer graded form where the caller is on a surface that defines one. A posture
+  refusal on a KFT job is `refused-policy` in **KFT §8.1**'s table, and that section's standing rule —
+  *a route MUST NOT breach the gate it just enforced* — reads over posture without amendment: a
+  `route_to[]` naming a provider whose posture is **wider** than the one that just refused converts a
+  correct refusal into the breach it prevented. KFT is a profile composed over KCB, so the citation runs
+  this way and not the other: no caller on this bus needs to read a fine-tuning spec to learn what a
+  refusal carries.
+
+**i. What a declaration is worth across a boundary (AP-7).** Stated plainly, because a clause that
+leaves it unsaid reads as a security control it is not. A declared class is an **assertion by its
+declarant**, and no protocol mechanism here verifies it: a callee may declare `none`/`internal` and do
+something permanent. Three things nonetheless separate this from an advisory hint, and they are what a
+caller actually holds:
+
+- **Silence costs the declarant, not the caller.** Absent reads `unknown`, and `unknown` is not admitted
+  (a, d) — a participant that declines to classify loses the traffic. An advisory hint defaults to
+  benign and puts the cost on the reader.
+- **A misdeclaration is a breach of a stated term, not a disappointed expectation.** The declaration
+  rides the participant's own card, which §5's `signing` shape makes cryptographically attributable
+  rather than merely asserted, and conformance to it is assertable by a scenario (KCS §5).
+- **Posture composes with the grant, and the grant binds.** Posture states which classes may proceed
+  *unattended*; the grant (§5) states what may be invoked *at all*, is issued by the caller's own side,
+  and is not an assertion by the peer. A caller that will not accept an irreversible effect should also
+  not hold a grant that reaches one.
+
+What this section deliberately does not do: it is **not a decision record**. Whether a fired gate must
+leave a trace is **GOV-2** ([`../docs/reference/governance-taxonomy-map.md`](../docs/reference/governance-taxonomy-map.md)),
+open, on koine's own axis, and this clause's companion rather than part of it — a stop that leaves no
+trace is one the other organization cannot verify afterwards, which is the audit question and not the
+escalation one.
+
+**Re-ratification.** This section is new normative text, and it is candidate on a **re-run of the leg
+that forced it** —
+[`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md) — against the
+folded text: Step 1 must distinguish the two capabilities *before* dispatch, Step 3's disagreement must
+resolve by a stated rule with no arbitration, Step 4's delegated leg must not escape the caller's
+posture, Step 5's refusal must have a shape stated in KCB, and Step 8 must still complete with no
+console anywhere. That is a **fifth** count on this spec's status, gating §4.3 alone; the four existing
+counts in the status note are restated and none of them moves. ADR-0013 additionally carries a
+**second-independent-implementation** condition on ratification (its **W3**), which is a condition of
+that record rather than a finding of this leg.
+
+---
+
 ## 5. Trust & authorization
 
 - **Capability grants.** Invocation requires a capability token naming the granted verb + scope
@@ -833,6 +1071,14 @@ note are restated and none of them moves.
   receives — a producer approaching it signals on the §4.2d control channel first, because on a
   stream *"fails at the gate"* can only mean stopping, and a ceiling is a cliff where backpressure is
   a brake.
+- **A grant says what may be invoked; a posture says what may proceed unattended** (§4.3). The two
+  compose and neither substitutes for the other: a grant is issued by the caller's own side and
+  **binds**, while a posture is read off a peer's declaration and can only ever cause its reader to do
+  **less** (§4.3c). Nothing in §4.3 widens a grant, raises a ceiling, or relaxes any gate in this
+  section — a posture that admits an effect the grant does not authorize changes nothing, and the
+  invoke still fails closed. A caller unwilling to accept an irreversible effect should also not hold a
+  grant that reaches one; the `signing` shape below is what makes the peer's declaration attributable
+  rather than merely asserted (§4.3i).
 - **Signing.** Manifests and KGP packs share one signing shape (`{key_id, alg}`); inter-project
   packs and invocations SHOULD be signed so provenance (KINP §7 `prov.agent`) is
   cryptographically attributable, not merely asserted.
@@ -1122,8 +1368,23 @@ and none of the first three is moved by this fold. One convergence is deliberate
 documents: **V-7** and **BP-5** want the *same* push channel, so §4.2d specifies one channel in both
 directions and requires V-7's fold to ride it rather than mint a second.
 
+**0.4.8 — a fifth gate.** The autonomy-posture fold (§4.3) reopens no delta either: it adds an
+optional `effect` to a capability and a port (§2.1), an optional `posture` operand to verbs that
+already exist, a conflict rule, a chain rule and a floor written over gates that already exist — so
+F/G/J/K/L, V-1…V-8, MA-6/MA-8/MA-9 and BP-1…BP-6 are all untouched, and §4.2d's control channel is
+what an effect-class change on a live binding rides rather than a second mechanism. Its own break-test
+is the leg that forced it,
+[`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md), whose eight
+findings **AP-1…AP-8** (blocking **AP-5**, the delegated leg that escapes the caller's posture) §4.3
+answers clause by clause. **Re-ratifying KCB now needs five passes:** the extension-shape re-run, a
+clean mutate-live-schema pass, a clean cross-authority pass for §3.1, a clean re-run of the firehose
+leg for §4.2, and a clean re-run of the cross-owner-posture leg for §4.3. Each is independent and none
+of the first four is moved by this fold. ADR-0013 additionally carries a
+**second-independent-implementation** condition on ratifying §4.3 (its **W3**); that is a condition of
+the record, not a finding of the leg.
+
 **Downstream evidence (2026-08-24) — and this spec is where reading it wrong costs the most.** The
-KCS encodings of three of the four gating scenarios were run over real MCP/A2A links and all three
+KCS encodings of three of the five gating scenarios were run over real MCP/A2A links and all three
 came back `green` (`kcs:media-transform`, `kcs:live-schema-mutation`, `kcs:multi-authority`; recorded
 in each scenario's `## Downstream results`). **No count above moves**, and the reason is the single
 most important thing an owner citing this run must understand:
@@ -1141,17 +1402,57 @@ most important thing an owner citing this run must understand:
   leg that F exists for; and delta **L**'s dangling-reference tolerance and **G**'s `fetch` grant
   refusal both ran as encoded, the refusal as an `expect: reject` step. §7's compatibility surface
   was *replayed* but, per DR-7, not asserted.
-- **The fourth count has no encoding at all — DR-12.**
+- **The fourth and fifth counts have no encoding at all — DR-12, DR-13.**
   [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) is
-  koine's eleventh scenario against a downstream set of nine and was written after that set was
-  frozen, so **every clause of §4.2 — a through g — has no machine-replayable document citing it**.
-  Under [the ratification gate](README.md#the-ratification-gate) a clean re-run of that leg would
-  therefore be *necessary but not sufficient* for the fourth count; the encoding is downstream work
-  under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**. The first
-  three counts are unaffected — their scenarios are all encoded — and this adds no fifth count, it
-  qualifies the fourth.
+  koine's eleventh scenario and
+  [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md) its twelfth,
+  both against a downstream set of nine and both written after that set was frozen, so **every clause
+  of §4.2 — a through g — and every clause of §4.3 — a through g — has no machine-replayable document
+  citing it**. Under [the ratification gate](README.md#the-ratification-gate) a clean re-run of either
+  leg would therefore be *necessary but not sufficient* for its count; both encodings are downstream
+  work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and both are **unowned**. The
+  first three counts are unaffected — their scenarios are all encoded — and this adds no count, it
+  qualifies the fourth and the fifth.
 
 ## Changelog
+
+- **0.4.8** (2026-08-26) — **Candidate.** **Normative §4.3 — autonomy posture across an ownership
+  boundary**, applying [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md), which
+  takes up the **G5** carve-out
+  [ADR-0011](../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md) §4 left open and
+  decides the half that crosses an organizational boundary. Forced by the pressure leg
+  [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md), which returned
+  **AP-1…AP-8**, blocking **AP-5**. The structural finding: a posture gates **spend** and
+  **irreversibility**; §5 expresses spend exactly, and *no field on any capability or port in any of
+  the six specs said what an invocation does that its caller cannot undo* — so a cross-owner posture
+  was not weak but **inapplicable** (**AP-1**). What §4.3 fixes, clause by clause: a capability/port MAY
+  declare an **`effect`** class — `reversibility` × `visibility` — outside the `schema_id` digest as
+  `cost` and `volume` are, absent reading *unknown* and never *harmless*, and `fetch` deliberately
+  getting none because KMI §7.1 already gates it fail-closed in the right domain (**AP-1**); a posture
+  is a **set of admitted classes**, named by what it guarantees, with **no rung names adopted** and
+  **no total order defined** — a product ladder is a projection with its lossy edges named, ADR-0010's
+  discipline (**AP-2**, **AP-4**); posture is **monotone-restrictive**, so the effective posture is the
+  **intersection** and *the restriction always wins* — no arbitration, no trust, no host on the path
+  (the **BP-5** fact), and every gate stays unilateral so ADR-0011's **T3 does not fire** (**AP-3**); a
+  **floor** no posture may skip — KGP §7, §5, KFT §4/§8.1 fire identically at every posture, an
+  unadmitted effect is a refusal and never a silent proceed *or substitution*, an undeclared class is
+  not admitted (**AP-8**); a declared class **covers the leg, not the callee's own code**, and a
+  re-dispatch MUST NOT present a posture wider than the one it was invoked under — the chain rule that
+  keeps §4.3c from being a one-hop rule, modelled on §5's spend ceiling (**AP-5**); KCB states the
+  **minimum a posture refusal carries** in its own terms and cites KFT §8.1 as the profile's richer
+  form rather than discharging onto it (**AP-6**); and the section says plainly **what a declaration is
+  worth across a boundary** — silence costs the declarant, a misdeclaration is a breach of a signed,
+  KCS-assertable term, and the grant binds where the posture is read (**AP-7**). §4.3g is a NORMATIVE
+  conformance requirement: the section names **no person and requires no console**, and a refused
+  dispatch is not parked or resumable — a widened re-dispatch is a new invocation, which is why no verb
+  or state is added. *Classification:* **patch** — every field optional on read and on write, a dispatch
+  declaring no posture behaves exactly as it did at 0.4.7, no verb / plane / port kind / media type /
+  authority role is added, §7.2's compatibility table is undisturbed so no live subscriber breaks, and
+  **0.5.0 remains spoken for** by §7.3's removal of §2.2's standalone manifest. Status: new normative
+  text, so a **fifth** count on Candidate — a re-run of that leg against the folded text — gating §4.3
+  alone; the four existing counts are restated and none moves. ADR-0013's retained
+  second-independent-implementation condition (**W3**) additionally gates §4.3's ratification. **§8
+  still holds no open questions:** this fold answers an ADR, not a parked question.
 
 - **Editorial** (2026-08-26) — Recorded the **downstream results** of the gating scenarios in
   *Pressure test*, and this spec is where reading them wrong costs the most. Three of the four
@@ -1173,7 +1474,6 @@ most important thing an owner citing this run must understand:
   [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**; it qualifies the
   fourth count rather than adding a fifth. **No clause changes and the status does not move** — KCB
   stays **Candidate** on all four counts.
-
 - **0.4.7** (2026-08-26) — **Candidate.** **§8's last open question (subscription backpressure) is
   resolved and promoted to a normative §4.2**, after the focused pressure leg
   [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) attacked

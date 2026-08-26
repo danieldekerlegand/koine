@@ -425,6 +425,27 @@ never *lossless*.
 
 ---
 
+## Amendment log
+
+- **2026-08-26 — the clause is written.** This record authorized a normative surface and did not
+  perform it; that work has now landed as **KCB §4.3** ([`../specs/capability-bus.md`](../specs/capability-bus.md),
+  0.4.8, patch), pressure-tested first by
+  [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md) (deltas
+  **AP-1…AP-8**, blocking **AP-5**). Every verdict above survived the leg **except by addition**: the
+  leg confirmed verdicts 1–4 and 6 as written, and found one hole none of them covered — a posture
+  computed **pairwise** evaporates at the second hop, so a truthfully-declared read-only capability can
+  re-dispatch to a third owner and make the caller's data permanent (**AP-5**). §4.3e closes it with a
+  chain rule modelled on §5's spend ceiling: a declared class covers the **leg** rather than the
+  callee's own code, and a re-dispatch may narrow but never widen the posture it was invoked under.
+  Verdict 5's floor is §4.3d verbatim in substance; verdict 3's intersection is §4.3c, and **T3 still
+  does not fire**. **W1 did not fire:** every capability in the leg was classifiable by its
+  implementer without knowing the caller's context. **The retained
+  second-independent-implementation condition (W3) is unchanged** and is now recorded as a
+  ratification gate on §4.3 in the spec itself, alongside the re-run of the leg — which is KCB's
+  **fifth** re-ratification count.
+
+---
+
 ## Appendix — the prior-art sweep, as observed 2026-08-26
 
 The record that option (b) was tried first. Every row was examined for the same thing: *does it

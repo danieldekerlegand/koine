@@ -186,7 +186,37 @@ vocabulary.
   live subscriber breaks, and **0.5.0 stays spoken for** by §2.2's removal. §8 is resolved **in place**
   (numbering deliberately unshifted, like KFT §11.3 and KMI §9 q3) and **now holds no open questions**.
   New normative text, so a **fourth** candidate count: a re-run of that leg against the folded text,
-  gating §4.2 alone; the three existing counts are restated and none moves.
+  gating §4.2 alone; the three existing counts are restated and none moves. 0.4.8 (patch) adds
+  normative **§4.3**, the autonomy-posture clause applying **ADR-0013**, after the pressure leg
+  `scenarios/kcb-cross-owner-posture.md` returned **AP-1…AP-8** (blocking **AP-5**). The measured
+  reason it could not stay downstream: a posture gates **spend and irreversibility**; §5 expresses
+  spend exactly and *no field on any capability or port in any of the six specs* said what an
+  invocation does that its caller cannot undo — so a cross-owner posture was **inapplicable**, not
+  weak (AP-1). §4.3 mints one operand — an optional capability/port **`effect`** class
+  (`reversibility` × `visibility`), outside the `schema_id` digest as `cost` and `volume` are, absent
+  reading *unknown* and never *harmless*, with `fetch` deliberately getting none because KMI §7.1
+  already gates it fail-closed in the right domain — plus a **posture** operand on the existing verbs
+  that is a **set of admitted classes**, never a rung name (**koine adopts no rung names and defines
+  no total order**; a product ladder is a projection with lossy edges named, ADR-0010's discipline),
+  the **monotone-restrictive intersection** rule that answers *which posture wins* with **the
+  restriction, always** — no arbitration, no trust, no host on the path (the BP-5 fact) and every gate
+  still unilateral, so ADR-0011's **T3 does not fire** — a **floor** no posture may skip (KGP §7, §5,
+  KFT §4/§8.1 fire identically at every posture; an unadmitted effect is a refusal, never a silent
+  proceed *or substitution*; an undeclared class is not admitted), a **chain rule** (a declared class
+  covers the **leg**, not the callee's own code, and a re-dispatch may narrow but never widen the
+  posture it was invoked under — modelled on §5's spend ceiling, and the fix for blocking AP-5), KCB's
+  **own** minimum refusal shape (AP-6 — KFT §8.1's grades are cited as the profile's richer form, not
+  discharged onto), and a plain statement of **what a declaration is worth across a boundary** (AP-7 —
+  silence costs the declarant, a misdeclaration breaches a signed and KCS-assertable term, and the
+  grant binds where the posture is read). §4.3g is a NORMATIVE conformance requirement: the section
+  names **no person and requires no console**, and a refused dispatch is not parked or resumable — a
+  widened re-dispatch is a new invocation. Patch, not minor: every field optional on read and write,
+  a dispatch declaring no posture behaves exactly as at 0.4.7, no verb/plane/port kind/authority role
+  added, §7.2 undisturbed, and **0.5.0 still spoken for** by §2.2's removal. §8 still holds no open
+  questions — this fold answers an ADR, not a parked question. New normative text, so a **fifth**
+  candidate count: a re-run of that leg, gating §4.3 alone (the four existing counts are restated and
+  none moves), with ADR-0013's retained **second-independent-implementation** condition (W3) gating
+  §4.3's ratification alongside it.
 - `specs/media-interchange.md` — KMI 0.3.4, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
@@ -387,7 +417,8 @@ vocabulary.
   no posture relaxes KGP §7, KCB §5 or KFT §4/§8.1; an unadmitted effect is a refusal, never a silent
   proceed or substitution. No new plane, verb or authority role, and it MUST be expressible with **no
   console at all**. The second-independent-implementation condition is kept as a **ratification** gate
-  beside the pressure-test scenario; withdrawal triggers W1–W3 are stated; the approval mechanism, the
+  beside the pressure-test scenario — both now recorded in KCB §4.3, which is where the clause landed
+  the same day (0.4.8), so the ADR's "no spec version moves" applies to the record and not to the day; withdrawal triggers W1–W3 are stated; the approval mechanism, the
   human authority, intra-org supervision and GOV-2's decision record are explicitly out of scope. No
   spec version moves).
   `decisions/README.md` carries the full table — keep this list and that table in step. The deployment-history ADRs (ADR-0002/0003/0004 — bridge
