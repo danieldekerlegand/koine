@@ -1,211 +1,78 @@
-# Chief Progress — 70-kcb-subscription-backpressure
-Started: Wed Aug 26 10:53:27 CDT 2026
+# Chief Progress — 84-record-the-downstream-results
+Started: Wed Aug 26 11:04:48 CDT 2026
 ---
 
 ## Codebase Patterns
-
-- **A "pressure leg" is the unit of work here.** koine is a contracts repo: a spec clause only moves
-  after a `scenarios/` document breaks it. The newest and tightest model is
-  `scenarios/kft-resume-checkpoint.md` — read it before writing a new leg. Shape:
-  Purpose (name the spec + version + the exact open question, quoted) → Setup (roles table +
-  abridged manifest + the numbers) → numbered Steps each tagged ✅ held / 🔴🟡 broke → **What held**
-  (so the fold stays narrow) → **Findings** table (severity · gap · forced question · spec) →
-  **Only §X is forced** (explicitly *not* reopening other legs' deltas) → **Re-ratification — what
-  this pass gates** (per-spec table + a dated `> **Resolution:**` blockquote).
-- **Delta prefixes are per-leg and must be fresh.** F–L (media-transform), V-1…V-8 (live-schema-
-  mutation), MA-1…MA-11 (multi-authority), FT-A…V (finetune legs), BP-1…BP-6 (this one). Grep the
-  scenarios dir before picking one.
-- **Every leg must add a row to `scenarios/README.md`'s table** *and* a paragraph to the narrative
-  below it. `check-doc-integrity.mjs` will not catch a missing row — it only checks links and the
-  three spec status tables.
-- **Verify prose changes with the real gate, not just the script:**
-  `bash .chief/verify.sh --run <changed files…>` — a bare `.chief/verify.sh` reports
-  "no changed files" under an agent shell (it reads stdin for the file list). For `scenarios/*.md`
-  it selects `guard-doc-integrity` + `guard-doc-links`.
-- **Roles, never products** (CLAUDE.md), and the KINP §3.4 placeholder namespaces are fixed:
-  `worldsim` (world producer) · `analyzer` (knowledge producer/consumer) · `refkb` (identity
-  authority) · `mediastore` (media producer / CAS) · `orchestrator` (control-plane host) ·
-  `provider:org:…` (capability providers).
+- **Verify with:** `node scripts/check-doc-integrity.mjs` (links + 3 status-table mirrors; a wall)
+  and `node scripts/check-doc-links.mjs --ratchet --base main` (ratchet). `.chief/verify.sh --plan`
+  shows which gates a changed-path set selects; any `*.md` selects both doc gates.
+- **Anchor slugs** (check-doc-integrity `slugify`, scripts/check-doc-integrity.mjs:65): strip
+  backticks/`*`/`_`, drop link syntax, lowercase, delete every non-`[\w\s-]` char (so em dashes and
+  apostrophes vanish), then collapse whitespace runs to ONE hyphen. So
+  `## Findings — from the downstream run` → `#findings-from-the-downstream-run` (single hyphen, not
+  double) and `## Downstream results — where a real run's result lands` →
+  `#downstream-results-where-a-real-runs-result-lands`. Getting this wrong is a silent dead link
+  that the integrity gate does catch — run it.
+- **The downstream repo is `~/Development/agora`**, a sibling checkout, NOT under the worktree.
+  Read-only from here (ADR-0001: agora runs, koine records). Key artifacts:
+  `console/evidence/kcs-live-run.json` (the committed run), `console/src/kcs/scenarios/` (the nine
+  encodings + their gates), `console/src/kcs/assertions.ts` (the §5 predicate vocabulary),
+  `schemas/src/versions.ts` (`SPEC_VERSIONS` — what spec versions the run was pinned at).
+- **Reading an encoding's real content** beats grepping it. From
+  `~/Development/agora/console/src/kcs/scenarios`:
+  `node --experimental-strip-types -e "import('./index.ts').then(m=>{...})"` works and gives you
+  every step/assertion/predicate/title. That is how the per-scenario prose in this branch was
+  written without guessing.
 
 ---
 
-## Iteration 1 — US-1 (2026-08-26)
+## US-1 — Each scenario records what its downstream run actually did (2026-08-26)
 
-**Story:** A high-volume-subscription pressure leg forcing the backpressure question. **Done.**
+**Done.** Commit `8375dd2`.
 
-**Files changed**
-- `scenarios/kcb-subscription-firehose.md` — new, the pressure leg (8 steps, 6 findings BP-1…BP-6).
-- `scenarios/README.md` — table row + a narrative paragraph recording that this is a **fourth**
-  count against the KCB 0.4.6 candidate.
+Files changed (all under `scenarios/`): all ten `*.md` gained a `## Downstream results` section, and
+`README.md` gained a `### The run of record — 2026-08-24` + `### Findings from the run — DR-1…DR-11`
+pair at the end of its existing *Downstream results* section.
 
-**Verification observed:** `check-doc-integrity.mjs` OK (45 markdown files, 780 relative links,
-all 3 status tables match); `.chief/verify.sh --run` → `guard-doc-integrity` + `guard-doc-links`
-both green, `doc-links: 0 dead vs 0 on main`, "all selected gates green — allowing merge";
-`schemas ok`.
+Source of every claim: `agora/console/evidence/kcs-live-run.json` (`evidence_id`
+`sha256-2d9e6c43…c17bb3`, `generated_at` 2026-08-24T22:00:37Z, `kcs_version` 0.3.0, nine scenarios,
+19/32 participant slots live = 59%, `green: true`, `live_pass: false`, verdict `partial-live`,
+`transport_failures: []`) plus the encodings themselves, plus koine's own
+`docs/reference/kcs-encoding-gate-verification.md`.
 
-**What the leg found (this is US-2's input — read the Findings table, not just this):**
-- **BP-5, blocking.** §8.1 parks flow control on "the host's cost advisor", but §3 / ADR-0001 keep
-  the host **off the stream path** (returns addresses; no traffic flows through it), its four
-  instruments (grant, revocation, ranking, the optional facade) all fail to reach a running
-  subscription, and under §3.1 federation no single host has jurisdiction over both ends. **The
-  assignment is void, not deferred** — so the question cannot be discharged downstream by anyone.
-- **BP-3, blocking.** Disconnect is the only working lever; `subscribe` has no resumption operand,
-  KGP delta `basis` chains break across the gap, KCB publishes no range-pull verb, and a missed
-  **retraction** leaves a claim asserted forever. §4's idempotency argument covers *redelivery*,
-  not *non-delivery* — content-addressing makes a duplicate a no-op and a gap invisible.
-- **BP-2.** `cost` is on `params.capabilities[]`; a subscription scopes to a **world**, which has no
-  manifest object to price, and §5 evaluates the ceiling *"at invoke"* — a stream has no second
-  invoke, so `budget_units` never decrements. Extending it does not help: enforcement *"fails at the
-  gate"*, so **a ceiling is a cliff and backpressure is a brake.**
-- **BP-1** (no volume/rate field on any port ⇒ firehose and trickle are identical to discovery),
-  **BP-4** (delta L's lazy `fetch` amplifies onto a third participant's CAS), **BP-6** (cleanup,
-  evidence for KCS open question 1 — a stalled transport window is unassertable).
+**Findings opened — DR-1…DR-11.** New id namespace (no collision with A–E / F–L / FT-* / V-* / MA-* /
+M-1 / KGP-* / INT-11). Each is defined ONCE, in the document it bites; `scenarios/README.md` holds
+only an index. The load-bearing ones:
+- **DR-4** — `kcs:kmi-otio-roundtrip` is `kcs:media-transform` spread into a new object with a new
+  `id`/`title` and the SAME fixture. It asserts nothing OTIO-specific, so M-1 and the KMI 0.3.3 fold
+  are unexercised: KMI's artefact gate is met by count, not by content.
+- **DR-10** — the downstream §5 vocabulary has drifted from KCS §5 **both ways**: no
+  `structure_matches` (KCS 0.3.0 delta Q) and an extra `media_map_complete` that koine names
+  nowhere. The check meant to catch it is `expect(ASSERTION_NAMES).toHaveLength(18)` — a hardcoded
+  count, and 18 is coincidentally what both lists hold. Every document declares `kcs_version: 0.3.0`
+  while being replayed by a 0.2.0-shaped vocabulary.
+- **DR-5** — the suite pins **KFT 0.5.0** (`SPEC_VERSIONS.kft`), so §3.3's conversion round-trip and
+  §8.1's graded refusals have no encoded assertion at all; every refusal is the ungraded `refused`.
+- **DR-11** — `kft-resume-checkpoint.md` (KFT 0.6.0) has no encoding and no run.
+- **DR-7 / DR-8** — the reading hazard: `kcs:live-schema-mutation` and `kcs:multi-authority` both come
+  back `green` over passes with four and six blocking deltas open, because the encodings deliberately
+  do not assert an unfolded delta.
 
 **Learnings for future iterations**
-
-1. **The PRD's section numbers are stale — trust the spec header, not the tasklist.** The PRD
-   description says "KCB §7 open question 3 (~line 256)" and US-2's criteria say "§7.3 / subscribe
-   clause". Both are wrong against KCB 0.4.6: **§7.3 is Deprecation**, and the backpressure question
-   is **§8.1** (renumbered twice — ADR-0009 took the old q2 into §7, ADR-0012 took the old q1 into
-   §3.1). US-2 should fold into a **new normative section** and update §8, *not* edit §7.3. The
-   `touches`/AC intent is clearly right; only the numbering drifted.
-2. **US-2's version bump needs a decision, and the leg records both readings.** All six deltas are
-   additive. KCB's own precedent (§3.1 landed as **0.4.6, a patch**, on "additive + 0.5.0 is already
-   spent on §2.2's removal") points at **0.4.7**. The alternative is folding into the V-1…V-8 minor
-   at **0.5.0**. The leg's *Re-ratification* section states both and leaves the choice to the fold.
-3. **Step 8's convergence note is the most useful thing for US-2.** V-7 (from
-   `e2e-live-schema-mutation.md`) already needs an **in-band control frame on the subscription
-   stream** — the push channel §7's preamble concedes is missing. BP-5 needs a frame in that same
-   direction and BP-3 needs one in the other. **These two folds want one channel, not two.** A fold
-   that mints a second, parallel signalling mechanism is the wrong answer.
-4. **Status is already Candidate and stays there.** US-2's AC says "Status set to candidate" — it is
-   candidate now, on three counts; this leg makes a **fourth**. The fold must *restate* the existing
-   three (media-transform extension re-run, §7.5 live-schema-mutation re-run, multi-authority for
-   §3.1) and move none of them, then add the re-run of this leg. That restate-and-do-not-move
-   discipline is house style — see how KCB 0.4.6 and KFT 0.6.0 word it.
-5. **The status-note block at the top of a spec is where a fold's rationale goes**, and it is long
-   and cumulative by design. CLAUDE.md's *Current state* prose is a **fourth mirror that CI does not
-   check** — a stale version there passes green. US-2 must update it by hand along with the three
-   checked tables.
-
----
-
-## Iteration 2 — US-2 (2026-08-26)
-
-**Story:** Fold subscription backpressure into KCB. **Done.** Tasklist complete.
-
-**Files changed**
-- `specs/capability-bus.md` — **0.4.6 → 0.4.7**, new normative **§4.2** (~185 lines), plus the
-  surfaces it touches: §2 example card (`volume` on a produces port), §2.1 (the `volume` paragraph),
-  §4 verb table + delta-L paragraph pointers, §5 (a metering bullet), §8 (**resolved in place**,
-  numbering unshifted — §8 now holds **no** open questions), *Pressure test* (a fourth gate), status
-  note, changelog.
-- `scenarios/kcb-subscription-firehose.md` — Resolution blockquote **amended** with a per-delta
-  closure table, as the leg itself instructed.
-- `README.md` · `specs/README.md` (2 places) · `ECOSYSTEM.md` · `CLAUDE.md` — the four mirrors.
-- `schemas/` — **byte-unchanged** (see learning 3).
-
-**Verification observed:** `check-doc-integrity.mjs` OK — 45 markdown files, **790** relative links,
-all 3 status tables match (`capability-bus 0.4.7 candidate`); `.chief/verify.sh --run` over the 6
-changed files → `guard-doc-integrity` + `guard-doc-links` green, `doc-links: 0 dead vs 0 on main`,
-"all selected gates green — allowing merge"; `schemas ok` (9 files parse);
-`check-tasklist-categories.mjs` green.
-
-**What §4.2 says** (so a later fold does not re-derive it): (a) optional port `volume` envelope
-`{unit, rate, payload_bytes, references, resume_horizon}`, **outside** the `schema_id` digest exactly
-as `cost` is, absent reads *unknown* never *low*, §3 ranking untouched; (b) optional `subscribe`
-`max_rate`/`max_in_flight`/`window`/`on_overflow` under the normative rule that the contract governs
-**lossless vs lossy**, not *how fast* — and **a retraction is never shed**; (c) optional
-content-addressed `resume.after` operand (**not** a sixth verb) a producer MUST answer resumed /
-`gap-unavailable` / `resume-unsupported`, **never with silence**, plus never-silently-merge-past-an-
-unseen-`basis`; (d) **one** in-band control channel, both directions, and **V-7's fold MUST ride it**;
-(e) `volume.cost` is the operand §5's "at invoke" ceiling never had + an exhausted ceiling MUST NOT be
-the *first* signal; (f) the fan-out is the **subscriber's** traffic and a CAS refusal lands on delta
-L's existing pending-fetch tolerance; (g) shape, never QoS.
-
-**Learnings for future iterations**
-
-1. **Iteration 1's learning 1 was right and saved the story.** The PRD's "§7.3" is stale — §7.3 is
-   Deprecation. The fold went to a **new §4.2**, under the verb it constrains. When a PRD names a
-   section number, verify it against the spec header before editing; koine renumbers on every fold.
-2. **Version classification is a judgement recorded in prose, not a rule.** §7 governs *capability*
-   versions, not the *spec's* own. KCB's two precedents disagree on the surface — 0.4.0 added optional
-   manifest fields as a **minor**, 0.4.6 added a normative section as a **patch** — but the operative
-   criterion 0.4.6 states is *additive + prior-conformant-stays-conformant + 0.5.0 is spoken for*.
-   0.4.7 meets all three, so it is a patch and the changelog says so explicitly rather than glossing it.
-   **0.5.0 is still reserved** for §2.2's removal + the V-1…V-8 and MA-6/8/9 folds.
-3. **Check `schemas/` before concluding "no twin".** `participant-self-description.schema.json`
-   *looks* like it might model the KCB manifest — it does not: it is pointers-only, and its
-   `capability` block says the payload is "deliberately NOT restated here" with
-   `additionalProperties:false` to stop it creeping in. So an added KCB manifest field needs **no**
-   schema change. CLAUDE.md's `schemas/` bullet does not list that file — a small doc gap, not a defect.
-4. **The extension URI does not move for an added optional field** (§2, stated as the anti-pattern
-   `compose-v2`-at-the-document-level). `…/manifest/0.3` is correct at 0.4.7. Do not bump it.
-5. **`resolved in place` is now the house pattern for open questions** — KFT §11.3, KMI §9 q3, and
-   now KCB §8. Strike the text, keep the entry and its number, say what decided it and (here) that
-   its second clause was *wrong* rather than incomplete. Never renumber; existing §8.1 references
-   must still resolve.
-6. **KCB now has four re-ratification counts** and they are independent: the media-transform
-   extension re-run, the §7.5 live-schema-mutation re-run, the multi-authority pass for §3.1, and
-   the firehose re-run for §4.2. Any future fold must restate all four and move only its own.
-
----
-
-## Iteration 3 — base integration (2026-08-26)
-
-**Not a user story.** Both US-1 and US-2 were already `passes: true`; this iteration discharged the
-`⚠️ BASE INTEGRATION REQUIRED` note (branch was 11 commits behind `main` @9ade99a, auto-rebase
-conflicted).
-
-**The rebase.** `git rebase main` conflicted on `.chief/state/prd.json` + `.chief/state/progress.txt`
-only — never on a spec, scenario, or doc. Both are per-branch **runtime state**, and the `main` side
-was a *different, retired* tasklist's state (`83-promote-kgp`), so the resolution is
-`git checkout --theirs` (in a rebase, "theirs" = the commit being replayed = **our** branch) for both
-files. Nothing of `main`'s real work was discarded — its 11 commits replayed underneath untouched.
-Branch is now `main` + 4 commits, working tree clean.
-
-**What the base brought that this branch had to answer.** `main` @`b67f50c` added a CLAUDE.md rule
-that did not exist when US-1 wrote the leg: **adding a file to `scenarios/` is a cross-repo
-obligation with no local red light.** The downstream KCS encoding set is held to *set-equality* with
-`scenarios/*.md` by a test in the implementing repo; no koine guard checks it, so a new scenario
-silently breaks that test and silently costs its spec [the ratification gate](specs/README.md#the-ratification-gate).
-`kcb-subscription-firehose.md` is koine's **eleventh** scenario against a downstream set of nine, so
-**KCB now joins KFT in failing the conformance gate — for §4.2 only** (its other three counts re-run
-scenarios that *are* encoded). Recorded in the four places a reader meets it:
-
-- `scenarios/README.md` — the leg's row now names the 0.4.7 fold, the fourth gate, and that no
-  encoding exists and none is owned.
-- `ROADMAP.md` — the status line excepts KCB alongside KFT; the KCB re-ratification row records all
-  **four** counts (it still said "two") and the encoding gap.
-- `docs/reference/kcs-encoding-gate-verification.md` — new **§6.2** amendment mirroring §6.1's
-  shape; §7's re-run comment now says ELEVEN.
-- the scenario's own Resolution amendment closes with the obligation, so a clean re-run is not
-  mistaken for sufficiency.
-
-No spec clause, version, or status moves — KCB stays 0.4.7 Candidate.
-
-**Files changed:** `ROADMAP.md`, `scenarios/README.md`, `scenarios/kcb-subscription-firehose.md`,
-`docs/reference/kcs-encoding-gate-verification.md` (+ the two rebase-resolved `.chief/state/` files).
-
-**Verification observed (post-rebase, post-edit):** `bash .chief/verify.sh --run <12 changed files>`
-→ `guard-doc-integrity` **OK** (48 markdown files, 875 relative links checked, all 3 status tables
-match their headers, capability-bus 0.4.7 candidate), `guard-doc-links` **0 dead vs 0 on main**,
-`guard-categories` **OK — 6 tasklists categorized**, `verify-selftest` **30 passed, 0 failed**,
-`✓ all selected gates green — allowing merge`. Also green standalone: `check-schemas.mjs` OK,
-`check-registry.mjs` OK, and the PRD's own two verify commands (`schemas ok`; the
-backpressure/flow-control grep hits).
-
-### Learnings for future iterations
-
-7. **Chief's base-integration note REPLACES `.chief/state/progress.txt` in the working tree** — the
-   committed history is still in `HEAD`, so `git checkout -- .chief/state/progress.txt` restores it
-   before you rebase (the note itself survives at `.chief/state/INTEGRATE-BASE.md`, which is
-   gitignored). Do that first or the rebase conflict is against a truncated file.
-8. **`.chief/state/` is gitignored yet tracked**, so `git add` on those paths prints an
-   "ignored by one of your .gitignore files" hint — the paths are already staged by the
-   `git checkout --theirs`, and `git rebase --continue` proceeds correctly. Do not add `-f`; verify
-   with `grep -c '<<<<<<<'` and `git status` instead.
-9. **Integrating `main` in a contracts repo is rarely a text conflict — it is a *convention*
-   conflict.** Diff `main`'s CLAUDE.md conventions section against the merge-base and ask what your
-   branch's new files now owe. Here a clean rebase still left the branch violating a rule that
-   landed on `main` two commits before it, and no gate in the repo would ever have said so.
+- The PRD's premise ("nine scenarios have an empty `## Downstream results` section") was **wrong in
+  the reader's favour**: there were no such sections at all, and there are **ten** scenarios, not
+  nine. `kft-resume-checkpoint.md` landed after the encodings were built. Do not assume the count.
+- `green` in the evidence artifact means *every encoded step and assertion passed with no transport
+  failure* — it does NOT mean the pressure test came out clean. Two of nine green scenarios have
+  blocking deltas open. Any prose written off that field must say so or it repeats the `passes: true`
+  mistake this portfolio already audited.
+- The evidence artifact records **per-scenario aggregates only** — no per-assertion result, no
+  clause field (KCS defines none). So every clause named in the new sections was read by hand off the
+  encoding. That is DR-2, and it is a KCS re-open input, not a defect in the run.
+- Remaining for this tasklist: **US-2** (the `⬜ planned` column in `scenarios/README.md` — note the
+  stale-warning block at its § *The KCS encodings* explicitly defers the flip to this tasklist, and
+  the sentence *"it says `planned` eight times and `exists` zero times"* is itself wrong twice over:
+  it is nine `planned` rows and there are ten scenarios; plus `ROADMAP.md`'s restatement) and
+  **US-3** (feed DR-3/DR-5/DR-10/DR-11 into the specs' open questions or named gates, and record the
+  positive evidence; coordinate with `83-promote-kgp` on KGP rather than promoting from here — note
+  DR-3 says this run does NOT discharge KGP's fixture gate).
