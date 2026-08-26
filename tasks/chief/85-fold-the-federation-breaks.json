@@ -26,7 +26,8 @@
         "A DEFER must say what future break would force it. 'Not now' without a trigger is how an open question becomes permanent.",
         "This story produces the table and changes no clause. Deciding what to fold and folding it are different acts and conflating them is how a fold overreaches."
       ],
-      "notes": null
+      "notes": "Disposition table written as docs/reference/federation-fold-dispositions.md and linked from docs/README.md (repo rule: a doc not in that map does not exist). All 11 classified: 10 FOLD, 1 CLOSE (MA-11 — KCS §7 q1 already cites it by name as escape-hatch evidence), 0 whole-finding DEFER, 3 deferred remainders (DEFER-A/B/C) each with a stated forcing trigger. Attributions verified against each spec's own text rather than inherited: KINP §11 decision 1 + changelog records MA-1..MA-4 blocking AND MA-7; KMI §7.1 records MA-5 blocking + MA-10; KCB §3.1 records MA-6 blocking + MA-8/MA-9 — all three confirmed. Two corrections to the scenario's framing found by reading clauses: KMI §2 also has an optional `excerpt` (MA-5's field list is one short), and §3.1(d) already covers the differing-schema_id half of MA-9. No clause and no version changed. Guards: check-doc-integrity OK (49 files, 1036 links, 3 status tables match), check-tasklist-categories OK, .chief/verify.sh --run over the 3 changed files: all selected gates green (doc-links 0 dead vs 1 on main, retired 1 — fixed a pre-existing stale link in promotability.md to the retired task 84).",
+      "passes": true
     },
     {
       "id": "US-2",

@@ -1,45 +1,55 @@
 {
   "project": "koine",
   "category": "feature",
-  "branchName": "chief/71-autonomy-posture-clause",
-  "description": "PARKED — raised 2026-08-19, deliberately not scheduled. Recorded so the question is not lost.\n\ncuneiform/362 is building a SAFETY-MODE vocabulary for the default export console: a declared posture (roughly ask-for-approval → approve-edits → plan-first → autonomous) that the runtime enforces and the run records, gating spend and irreversibility rather than every action. It is being built locally, in cuneiform, in a shape that could become a contract without being rewritten.\n\nThe question this tasklist holds: **should autonomy posture be a koine clause?**\n\nThe case for is the ownership boundary. Two organizations run products over this fabric, and the two edges that cross it — `talos → argos` (Tier-B/C A/V analysis) and `insimul → lugh` (world-derived SLM training) — are inter-organizational integrations. If Overpowered dispatches work to an Ontolo service, 'autonomous' has to mean the same thing on both sides, or the posture the caller believes it selected is not the posture the callee enforces. That is exactly the class of problem koine exists for, and it is why the role-scoped, product-agnostic clause style is right here rather than fussy.\n\nThe case against is prematurity. One console's vocabulary is not yet evidence of a shared need, and a clause written before two independent implementations exist tends to encode the first one's accidents.\n\nDo not start this until cuneiform/362 has shipped and a SECOND consumer wants the same vocabulary. Re-ask then.",
-  "dependsOn": [],
+  "branchName": "chief/85-fold-the-federation-breaks",
+  "description": "**The federation pressure test found eleven breaks and nothing carries them into the specs.** `MA-1` through `MA-11` came out of `53-multi-authority-scenario` — two authorities in one world, hunting the break the shared federation pattern has to survive. `51` (the ADR), `52` (the §-edits) and `53` (the scenario) all merged. The FOLD did not, and an 18-repo audit on 2026-08-25 found **no tasklist in any repo** owning it.\n\nSo the sequence stalled one step from the end: the question was raised, the pattern was designed, the pressure test ran and broke it in eleven places, and the specs still describe the pre-break design.\n\n**This is why KINP sits at Candidate.** Its §11.1 federation edit is what demoted it, and MA-1/2/3/4 are recorded against it — the spec cannot be promoted while the breaks its own scenario found are unaddressed. KMI carries MA-5 as blocking for the same reason. The fold is therefore not housekeeping; it is the gate on two specs.\n\n**Fold reactively, which is this repo's own rule.** The scenarios' standing policy is that an open question is folded *only when a pressure break forces it*, never speculatively. Eleven breaks are eleven forcings — but each one should be folded to the extent the break requires and no further. A fold that answers more than the break asked is how a contract accretes clauses nobody needed, and koine is a cross-organizational contract where that cost is paid by two companies.\n\n**Some of the eleven may not need a clause at all.** A break that turns out to be a scenario error, or already covered by an existing clause read correctly, should be closed as such with the reasoning recorded. Eleven findings do not obligate eleven edits.",
   "touches": [
-    "specs/",
-    "scenarios/"
+    "specs",
+    "scenarios",
+    "docs"
   ],
-  "iters": 4,
+  "iters": 8,
   "warmup": [
-    "ls specs/",
-    "grep -rn 'autonomy\\|posture\\|approval' specs/*.md | head",
-    "sed -n '/Ownership/,/Consequences/p' ../CLAUDE.md | head -30"
-  ],
-  "verify": [
-    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\""
+    "grep -n 'MA-[0-9]' scenarios/*.md | head -20",
+    "python3 -c \"import json,glob;f=glob.glob('tasks/chief/completed/53-*.json')[0];d=json.load(open(f));print(d.get('mergedToMain'));print((d.get('description') or '')[:600])\"",
+    "grep -n 'Status\\|11.1\\|federation' specs/identity-protocol.md | head -12",
+    "sed -n '/decisions/,+10p' docs/README.md | head -14",
+    "ls decisions/ | head"
   ],
   "userStories": [
     {
       "id": "US-1",
-      "title": "Decide whether posture is a contract at all",
+      "title": "Each of the eleven breaks gets a disposition",
       "acceptanceCriteria": [
-        "An ADR answers it either way, with the cross-org edges named as the concrete case rather than argued in the abstract.",
-        "If the answer is no, the ADR says what would change the answer, and this tasklist is retired against it. A parked question with no closing condition is just a backlog entry.",
-        "The answer must account for the fact that the two edges cross an ownership boundary — a posture that is only advisory across that line provides no guarantee to either side."
+        "MA-1 through MA-11 are each classified: FOLD (a clause changes), CLOSE (already covered, or the scenario was wrong — with the reasoning), or DEFER (genuinely reactive, waiting on a further break that has not happened).",
+        "The disposition table names, per break, which spec and which section it lands in. MA-1/2/3/4 are recorded against KINP and MA-5 against KMI; verify that rather than inheriting it.",
+        "A DEFER must say what future break would force it. 'Not now' without a trigger is how an open question becomes permanent.",
+        "This story produces the table and changes no clause. Deciding what to fold and folding it are different acts and conflating them is how a fold overreaches."
       ],
-      "notes": "ADR-0013 written and Accepted (2026-08-26): answers YES-in-the-boundary-half, with the console ladder rejected (option c). AC1 — the two cross-owner edges are named concretely from ECOSYSTEM.md §3 (talos→argos Tier-B/C analysis, insimul→lugh corpora) and the decision is argued against them, not in the abstract. AC3 — advisory-across-the-line is answered head-on: measurement 1 greps all six specs and finds NO clause/field/enum naming irreversibility anywhere (spend is covered by KCB §5, so a posture gating 'spend and irreversibility' is inapplicable, not merely weak), and measurement 2 fixes that only the callee's unilateral gates plus the caller's narrowed grant bind across an ownership boundary — hence a monotone-restrictive intersection rule rather than a trusted mode flag. AC2 — the answer is not 'no', so the closing condition is stated in both directions: withdrawal triggers W1/W2/W3 are checkable, the parked second-implementation condition is retained as a ratification gate, and this tasklist is retired against the record. Guards: check-doc-integrity green (49 markdown files, 910 relative links checked, all 3 status tables match headers), check-schemas green, check-registry green, check-tasklist-categories green, schemas json-parse ok. No spec version moves.",
+      "notes": "Disposition table written as docs/reference/federation-fold-dispositions.md and linked from docs/README.md (repo rule: a doc not in that map does not exist). All 11 classified: 10 FOLD, 1 CLOSE (MA-11 — KCS §7 q1 already cites it by name as escape-hatch evidence), 0 whole-finding DEFER, 3 deferred remainders (DEFER-A/B/C) each with a stated forcing trigger. Attributions verified against each spec's own text rather than inherited: KINP §11 decision 1 + changelog records MA-1..MA-4 blocking AND MA-7; KMI §7.1 records MA-5 blocking + MA-10; KCB §3.1 records MA-6 blocking + MA-8/MA-9 — all three confirmed. Two corrections to the scenario's framing found by reading clauses: KMI §2 also has an optional `excerpt` (MA-5's field list is one short), and §3.1(d) already covers the differing-schema_id half of MA-9. No clause and no version changed. Guards: check-doc-integrity OK (49 files, 1036 links, 3 status tables match), check-tasklist-categories OK, .chief/verify.sh --run over the 3 changed files: all selected gates green (doc-links 0 dead vs 1 on main, retired 1 — fixed a pre-existing stale link in promotability.md to the retired task 84).",
       "passes": true
     },
     {
       "id": "US-2",
-      "title": "If it is a clause, it is role-scoped and product-agnostic",
+      "title": "The folds land, minimally",
       "acceptanceCriteria": [
-        "The vocabulary names postures by what they GUARANTEE, not by what a particular console calls its buttons.",
-        "It states the floor — the stops no posture may skip — since that is the only part a caller can rely on when the callee is another organization.",
-        "A scenario covers a cross-org dispatch where caller and callee postures disagree, and states which wins.",
-        "It is expressible by an implementation that has no console at all."
+        "Each FOLD is applied to the named spec section, to the extent the break requires and no further. koine is a contract two organizations implement; a clause added beyond the forcing is a cost paid twice.",
+        "Every touched spec gets a version bump, a Status reconsidered against its own ladder, and a changelog entry citing the MA-id and the scenario leg. A normative change re-enters validation — do not quietly leave a spec at its prior status.",
+        "Schema twins are updated where a fold has a schema shape, and the registry gets a note where a fold needs an immutable relation name. Never an in-place signature edit — that rule is already on the record.",
+        "The scenario is re-read against the folded specs and the breaks it no longer produces are marked resolved, with the ones that survive left visibly open."
       ],
-      "notes": "KCB 0.4.8 §4.3 written + the pressure leg scenarios/kcb-cross-owner-posture.md (426 lines, deltas AP-1…AP-8, blocking AP-5). AC1 — postures are named by GUARANTEE: §4.3b makes a posture a SET of admitted effect classes (reversibility x visibility), states that koine adopts NO rung names and defines NO total order, and makes a product ladder a projection with lossy edges named (ADR-0010's discipline); the console's four rungs appear nowhere in the clause. AC2 — the floor is §4.3d, normative and non-negotiable: no posture relaxes KGP §7, KCB §5 or KFT §4/§8.1; an unadmitted effect is a refusal, never a silent proceed or substitution; an undeclared class is not admitted; refusal always available to both sides. AC3 — Step 3 of the scenario is the cross-org disagreement (caller strict on permanence, callee strict on spend), tests four candidate rules and states which wins: the INTERSECTION governs, the restriction always wins, no arbitration and no trust needed (§4.3c) — and Step 4's blocking AP-5 found the pairwise rule evaporates on a delegated leg to a third owner, closed by §4.3e's chain rule. AC4 — Step 8 re-runs the whole leg headless and §4.3g is a NORMATIVE conformance requirement: no person, interface, timeout or approval message anywhere; a refused dispatch is not parked or resumable, a widened re-dispatch is a new invocation, so no verb or state is added. Guards: check-doc-integrity green (50 markdown files, 938 relative links checked, all 3 status tables match headers), check-schemas green, check-registry green, check-tasklist-categories green (5 tasklists), schemas json-parse ok, .chief/verify.sh green. Version moves 0.4.7 -> 0.4.8 (patch, every field optional); mirrors updated in README/specs-README/ECOSYSTEM/CLAUDE.md/ROADMAP/scenarios-README/decisions-README/ADR-0013 amendment log/governance map G5 (Partial narrow -> Partial). Cross-repo obligation recorded: this is the TWELFTH scenario against a downstream encoding set of nine, so agora's coverage set-equality test goes red — named in the scenario row, the scenario itself and ROADMAP.",
-      "passes": true
+      "notes": null
+    },
+    {
+      "id": "US-3",
+      "title": "What the fold does to promotability is stated",
+      "acceptanceCriteria": [
+        "For KINP and KMI, state plainly whether this fold clears the federation half of their promotion gate or whether something remains. These two specs are held at Candidate partly by these breaks and a reader should not have to infer the effect.",
+        "If a spec becomes promotable, hand off to `83-promote-kgp`'s promotability table rather than promoting from here — one place owns the ladder.",
+        "Coordinate with `86-fold-the-capability-versioning-breaks`: KCB's V-1…V-8 fold is the sibling of this one and the two must not contradict each other where federation and capability versioning meet.",
+        "Record what the pressure test taught about the FEDERATION PATTERN itself, not only about the clauses. Three specs independently deferred the same single-authority question and each promised it would 'likely resolve the same way' — whether that held is the finding worth keeping."
+      ],
+      "notes": null
     }
   ]
 }
