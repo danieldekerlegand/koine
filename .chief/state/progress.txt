@@ -97,3 +97,82 @@ status table needed touching.
   Decision is written so **no verdict depends on it**. Do that rather than asserting a version.
 - **GOV-2 (gates decide and record nothing) is the natural companion** to any escalation/posture
   work and keeps coming up. It stays open; do not fold it in sideways.
+
+---
+
+## Iteration 2 — US-2 "If it is a clause, it is role-scoped and product-agnostic"
+
+**What I did.** Wrote the clause ADR-0013 authorized, and the pressure leg that shapes it.
+
+1. `scenarios/kcb-cross-owner-posture.md` (new, 426 lines) — an **adversarial** leg against the
+   ADR's own design, run at the two cross-owner edges of `ECOSYSTEM.md` §3. Eight deltas
+   **AP-1…AP-8**, blocking **AP-5**. It is written against **KCB 0.4.7** (pre-clause), so the fold
+   is earned rather than asserted — the repo's method (firehose → 0.4.7, resume → KFT 0.6.0).
+2. `specs/capability-bus.md` → **0.4.8** (patch): normative **§4.3** (nine lettered clauses a–i),
+   an `effect` paragraph in §2.1 beside `volume`/`cost`, a posture bullet in §5, verb-table
+   pointers, status note, fifth re-ratification gate in *Pressure test*, changelog entry.
+
+**The design, and why each piece is there** (read this before any follow-up touching §4.3):
+- **`effect` = `reversibility` (none|local|irreversible) × `visibility` (internal|external)**, on a
+  capability *or* a port, **outside** the `schema_id` digest exactly as `cost` and `volume` are.
+  Absent ⇒ *unknown*, never *harmless*. `fetch` deliberately gets **no** class — KMI §7.1 already
+  gates it fail-closed in the holder's own domain, and two gates over one act would disagree.
+- **A posture is a SET of admitted classes**, not a rung. The sharpest argument found while writing:
+  the two axes are independent, so two postures can each be stricter on a different axis —
+  **no total order exists**, and any single ladder silently discards one of two ordinary rules.
+  That is what makes "koine adopts no rung names" a *derivation* rather than a preference.
+- **Monotone-restrictive intersection** answers "which wins" with *the restriction, always* — and
+  needs no arbitration because no host is on the path (the **BP-5** fact, reused).
+- **AP-5 is the finding that mattered.** A pairwise posture **evaporates at the second hop** while
+  spend propagates (the grant carries it). Fix: a declared class covers the **leg**, not the
+  callee's own code, and a re-dispatch may narrow but never widen — modelled on §5's chain rule.
+- **AP-7** forced the clause to say *what a declaration is worth*: silence costs the declarant
+  (fail-safe default), a misdeclaration breaches a **signed**, KCS-assertable term, and the grant
+  binds where the posture is only read. Without that paragraph the clause reads as a security
+  control it is not — which is exactly the advisory-hint defect it was written to avoid.
+
+**Files changed.** `scenarios/kcb-cross-owner-posture.md` (new) · `specs/capability-bus.md` ·
+`scenarios/README.md` (row + twelfth-scenario amendment + the KCB paragraph) · `README.md`,
+`specs/README.md`, `ECOSYSTEM.md` (three status tables + an informative §3 pointer) · `ROADMAP.md`
+(status line, Phase 1 KCB row → five counts, a ✅ F7 row, ADR list) · `CLAUDE.md` (Current state) ·
+`decisions/README.md` + `decisions/ADR-0013-…md` (**Amendment log**) ·
+`docs/reference/governance-taxonomy-map.md` (G5 **Partial (narrow) → Partial**, re-derived from
+text that now exists) · `.chief/state/prd.json` + `tasks/chief/71-autonomy-posture-clause.json`.
+
+**Verification observed.** `check-doc-integrity` OK — *50 markdown files, 938 relative links*, all 3
+status tables match their headers. `check-schemas`, `check-registry`, `check-tasklist-categories`
+(5 tasklists) all exit 0; schemas JSON-parse ok. `.chief/verify.sh` after commit: **verify-test 30
+passed, 0 failed → "all selected gates green — allowing merge."**
+
+### Learnings for future iterations
+- **Write the scenario against the PRE-fold spec, then fold.** Writing it against the folded text
+  would make it a walkthrough, and this repo's gate is adversarial: the leg must be able to say
+  *"and here is what the spec could not do."* It also produces the Findings table the changelog,
+  the status note and the ROADMAP row all cite — those four documents are much easier to write when
+  a numbered delta exists for each.
+- **Let the leg beat the ADR.** ADR-0013 was thorough and still missed AP-5 (the delegated leg),
+  because a decision record reasons about *a dispatch* and a scenario is forced to walk *a chain*.
+  Budget for at least one blocking finding against your own authorizing record, and record in the
+  ADR's amendment log which verdicts survived — a fold that reports "everything held" is a fold
+  that did not attack.
+- **A version bump's "patch, not minor" argument has a fixed template here** and it is worth
+  copying verbatim: every field optional on read *and* write · a participant declaring nothing
+  behaves exactly as at the prior version · no verb/plane/port kind/media type/authority role added
+  · §7.2's table undisturbed so no live subscriber breaks · **0.5.0 is already spoken for** by
+  §7.3's removal of §2.2's standalone manifest (and §7.3c forbids folding a removal into an
+  unrelated publication). That last clause is what keeps KCB on patch bumps.
+- **Reuse the push channel, never mint one.** §4.2d specifies *one* in-band control channel in both
+  directions and binds any future V-7 fold to it. Anything needing a producer→subscriber signal
+  (here: an effect-class change on a live binding) must ride it and say so.
+- **New scenario ⇒ two mirrors and one cross-repo red light.** `scenarios/README.md` (row + the
+  count in the amended note + the intro's "these N documents") and `ROADMAP.md`; and downstream
+  `agora/console/src/kcs/scenarios/coverage.test.ts` asserts set-equality with `scenarios/*.md`, so
+  the addition goes red there with no local guard to warn you. Say it in the row, the scenario and
+  the ROADMAP — this leg is the **twelfth** against a downstream set of **nine**.
+- **A ROADMAP row must not link a live tasklist JSON.** It moves to `tasks/chief/completed/` on
+  retirement and the link rots; doc-integrity will then fail for a later, unrelated iteration.
+  Reference it as plain `` `chief/NN-name` `` — the existing rows' convention.
+- **When a measured grade changes, re-derive it, don't edit it.** `governance-taxonomy-map.md`'s G5
+  moved only because clauses now exist; the note says so explicitly and keeps the *not Complete*
+  reasons (intra-org half out of scope, GOV-2 still open). Grades in that file are measurements
+  with dates, not opinions.
