@@ -140,3 +140,59 @@ stories themselves are really done.
 
 base: main @140e79f · behind: 7 commit(s) · branch: chief/85-fold-the-federation-breaks
 (full note: .chief/state/INTEGRATE-BASE.md)
+
+## Base integration — rebase onto `main` @140e79f (2026-08-26, before US-3)
+
+**The conflict was not cosmetic: it was a VERSION COLLISION.** `main` landed `chief/71`
+(autonomy posture) while this branch was open, and **that fold took KCB 0.4.8** — the exact number
+this branch's federation fold had already taken for a completely different change. Both were
+legitimate patches off 0.4.7. `main` is already-merged work, so **this fold renumbered to KCB 0.4.9**.
+
+**Renumbered everywhere** (spec header line 3, the 0.4.7→0.4.8→0.4.9 status note, the changelog
+entry, §3.1's "At 0.4.9 the fold of MA-6", §3.1's "All three are folded at 0.4.9", the three checked
+mirrors, `CLAUDE.md`, `ROADMAP.md`'s ✅ fold row, `docs/reference/federation-fold-dispositions.md`
+(incl. its from-version cell 0.4.7→0.4.8), `scenarios/e2e-multi-authority.md` (7 refs incl. two
+line-wrapped ones), `scenarios/README.md`).
+
+**Count arithmetic changed with it and had to be chased.** KCB now carries **five** re-ratification
+counts, not four — §4.3 accrued one the same day. Every "the other three are restated" sentence in
+this fold's own text became false and now reads **four**: the status note, the changelog entry,
+`CLAUDE.md`, and the disposition doc's "three of its four counts are untouched" → "four of its five".
+The scenario's *What a clean pass would license* item 2 said "one count of four closes"; that was
+true when written, so it is **retained and amended in the parenthetical** (house style here) rather
+than rewritten.
+
+**Conflicts resolved keeping both sides:**
+- `specs/capability-bus.md` ×2 (status note, changelog) — main's §4.3 paragraph/entry kept intact,
+  mine appended as 0.4.9. Changelog is newest-first, so 0.4.9 sits **above** 0.4.8.
+- `README.md` / `specs/README.md` / `ECOSYSTEM.md` — table rows; mine (KMI 0.3.5) taken, KCB cell
+  then hand-set to 0.4.9. `ECOSYSTEM.md:98` "Since **KCB 0.4.8**" is main's §4.3 sentence — left.
+- `CLAUDE.md` — both fold narratives kept; the two sides' conflict hunks **overlapped mid-sentence**
+  (one line carried the tail of 0.4.7's sentence *and* the head of 0.4.8's), so a naive take-both
+  dropped a clause opener. Check the seam sentence reads whole after resolving this file.
+- `.chief/state/prd.json` + `progress.txt` — took **ours**. These are per-run state: main's copy is
+  `71`'s, already merged and retired to `tasks/chief/completed/`, and this file's git history shows
+  it is wholly replaced per tasklist. Note `.chief/state` is **gitignored but tracked** — staging
+  needs `git add -f`.
+- §5 merged clean and reads coherently: my issuer-named-grant bullets, then main's
+  *a grant says what may be invoked; a posture says what may proceed unattended* bullet. No
+  contradiction — a posture can only cause its reader to do less, so it never widens a grant.
+
+US-2's `notes` in both `.chief/state/prd.json` and `tasks/chief/85-*.json` were amended with the
+correction rather than left claiming 0.4.8.
+
+**Verification after rebase:** `check-doc-integrity` OK (51 markdown files, 1181 relative links, all
+3 status tables match headers — KCB 0.4.9 candidate), `check-schemas` OK (9 schemas, 278 positions,
+80 $refs, 3 fixtures), `check-registry` OK (15 rows, 29 unique names), `check-tasklist-categories`
+OK (3 tasklists). Branch is 0 behind `main`.
+
+**Learnings for future iterations**
+- **A long-lived fold branch can collide on a VERSION NUMBER, and no guard catches it.**
+  `check-doc-integrity` only diffs the mirrors against the header — it is perfectly happy when two
+  branches both say 0.4.8. The reserved-minor convention (0.5.0 spoken for) pushes every fold onto
+  the same next patch, so the collision is *likely*, not freak. On any rebase touching a spec,
+  diff the version cell against `git show main:<spec>` before assuming the merge is textual.
+- **Renumbering a version is a whole-repo sweep, not a header edit.** `grep -rn "0\.4\.8" --include='*.md'`
+  and triage every hit by *which* fold it belongs to — main's §4.3 hits must stay.
+- **The count language is the load-bearing part.** Version numbers are easy to chase; "the other
+  three are restated" is the sentence that silently goes wrong.
