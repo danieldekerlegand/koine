@@ -1,49 +1,56 @@
 {
-  "name": null,
   "project": "koine",
-  "category": "feature",
-  "branchName": "chief/69-kft-open-questions",
-  "description": "KFT's own §11 'Open questions' (fine-tuning.md ~line 481), folded only on the next pressure break, never speculatively (each note says 'unless a pressure test forces it into the contract'; ROADMAP.md Phase F6): (1) adapter-selection hint — whether the job manifest may carry an engine hint or it stays producer-internal (§9); (2) multi-node / distributed runs — cost metering + checkpoint lineage across GPUs (§5.3/§6), where the cost unit + checkpoint-asset shape must not preclude it; (3) resume-checkpoint ref — confirm the job manifest carries a resume checkpoint ref cleanly (a run based_on a prior finetuned model, §5 lineage); (4) eval-as-reward — how tightly method:dpo binds to a KCS scenario as its reward (§6.1) and whether reward scenarios need a distinct KCS profile. (Item 5, capability versioning, is resolved by Phase F2 / chief/54.) PARKED: reactive by design; authored and held. KFT is candidate (0.4.0). Public-safe: bind roles.\n\n**Unparked 2026-08-25 by operator decision.** The reactive-by-design discipline said to wait for a pressure test to force the question. US-1 IS that pressure test, and it is constructible today — so waiting was waiting for someone to do the work this tasklist describes. The trade is deliberate and worth stating: a manufactured pressure leg can force a question no real user has, so **US-2 folds a clause only if US-1 finds a CONCRETE break.** A leg that finds none closes the question as 'pressure applied, no break found', which is a real answer and a better one than an open note that never resolves.",
-  "dependsOn": [],
+  "category": "unblock",
+  "branchName": "chief/83-promote-kgp",
+  "description": "**KGP's only named gate shipped weeks ago and nobody promoted it.** This is the cheapest win in the portfolio.\n\nKGP 0.5.2 sits at `Candidate`. The single condition its own record gives for promotion is the RDF-star / PROV / JSON-LD round-trip fixture — which merged as `agora:77-kgp-projection-and-roundtrip-fixture` at `85eb207`, with every story passing. The koine-side marker (`64`) was retired on 2026-08-25 because the work was done downstream. Nothing else gates it.\n\n**Meanwhile the roadmap claims two specs are ratified and zero are.** Phase 1 — Candidate re-ratification — is the only phase in the audited portfolio that went BACKWARDS: its three edits merged, it produced no promotions, and KINP and KCS were each demoted since. So the count moved from a claimed 2 to an actual 0 while the phase was notionally in progress.\n\nPromoting KGP does not fix Phase 1. It does make the phase non-zero, and it removes the strangest fact in the fabric — a spec held at Candidate by a gate that has been satisfied since before the roadmap was last touched.\n\n**Be honest about what promotion means.** `ratified` is a claim other organizations rely on. If reading the fixture shows the round trip does not actually cover what §-level ratification requires, the correct outcome is to say so and leave KGP at Candidate with the real gate named — not to promote it because a tasklist expected that. A promotion that cannot be defended is worse than a stale Candidate.",
+  "crossRepo": [
+    "agora"
+  ],
   "touches": [
-    "specs/fine-tuning.md",
-    "schemas/finetune-job.schema.json",
-    "scenarios/"
+    "specs",
+    "docs"
   ],
-  "iters": 6,
+  "iters": 5,
   "warmup": [
-    "sed -n '481,496p' specs/fine-tuning.md",
-    "sed -n '1,40p' scenarios/e2e-finetune.md",
-    "python3 -c \"import json; json.load(open('schemas/finetune-job.schema.json')); print('ok')\""
-  ],
-  "verify": [
-    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
-    "python3 -c \"import json; json.load(open('schemas/finetune-job.schema.json')); print('finetune-job schema ok')\""
+    "head -20 specs/knowledge-graph-protocol.md",
+    "grep -n 'Status\\|ratif\\|round-trip\\|fixture' specs/knowledge-graph-protocol.md | head -12",
+    "python3 -c \"import json;d=json.load(open('tasks/chief/completed/64-kgp-projection-roundtrip-fixture.json'));print(d.get('supersededBy'))\"",
+    "ls ../agora/tasks/chief/completed/77-*.json && python3 -c \"import json,glob;d=json.load(open(glob.glob('../agora/tasks/chief/completed/77-*.json')[0]));print(d.get('mergedToMain'))\"",
+    "grep -n 'ratified' specs/README.md | head"
   ],
   "userStories": [
     {
       "id": "US-1",
-      "title": "New KFT pressure-test leg forcing the open question",
-      "description": "Add the scenario leg that FORCES whichever §11 question demands an answer, before folding — KFT folds each open question only under pressure (each note is explicit).",
+      "title": "The gate is verified satisfied, or it is not",
       "acceptanceCriteria": [
-        "A scenarios/ leg (extending scenarios/e2e-finetune.md / e2e-finetune-multimodal.md / e2e-producer-exhaust-finetune.md, or a new focused scenario) forces one §11 question: adapter-selection hint (§11.1), distributed-run cost metering + checkpoint lineage (§11.2), resume-checkpoint ref (§11.3), or eval-as-reward KCS profile for method:dpo (§11.4).",
-        "The leg is adversarial and shows the concrete break that forces a contract answer; only the forced question is carried into US-2.",
-        "It uses the KINP §3.4 placeholder namespaces and names no product."
+        "The round-trip fixture `agora:77` delivered is read against what KGP's promotion actually requires — RDF-star, PROV and JSON-LD round trips — and the verdict is recorded either way.",
+        "If it does not cover the requirement, KGP stays Candidate and the REAL remaining gate is named in the spec. That is a valid and useful outcome for this tasklist; do not promote to satisfy the title.",
+        "The check reads the fixture as it exists in agora rather than assuming its tasklist notes are accurate. `passes: true` is a claim, not evidence — the portfolio has already been bitten by that distinction."
       ],
-      "passes": true,
-      "notes": "scenarios/kft-resume-checkpoint.md added — focused adversarial leg forcing KFT §11.3 only. Step 1 confirms the warm-start half HELD (base_model takes a finetuned model entity; lineage, §5.4 inheritance and §5.1.1 publication all compose transitively). The resume half broke five ways: FT-R (high/structural — no slot names a checkpoint; schema is additionalProperties:false; FT-C's reproducibility anchor stops determining the run), FT-S (high/gate — the only permissive slot hyperparams is read by no normative clause, and §5.4 leaves a mid-run checkpoint with no egress class, so a continued-pre-training resume cloud-places weights that memorized a local-only corpus), FT-T (high — activity identity: no continues/resumes relation, retrains means re-train-from-scratch), FT-U (high — §6's job+step idempotency collides on re-executed steps), FT-V (med — FT-E's estimate cannot net out completed steps). Blocking FT-R, FT-S. Closing section states §11.1/§11.2/§11.4/§11.6 are untouched by construction. Placeholder namespaces only (refkb/mediastore/orchestrator/provider), no product named. Verification: node scripts/check-doc-integrity.mjs green (44 markdown files, 752 relative links, 0 errors, 3 status tables match); check-schemas OK (9 schemas, 274 positions, 78 $refs, 3 fixtures); check-registry OK (27 relation names); check-tasklist-categories OK (7 tasklists); .chief/verify.sh: all selected gates green — allowing merge. Note: doc-integrity was red with 9 PRE-EXISTING dangling links to tasks/chief/53-multi-authority-scenario.json (retired into completed/) — confirmed identical on a clean baseline — and verify.sh path-selects that guard from any changed doc, so it blocked this branch; repointed in a separate commit, link target only."
+      "notes": "VERDICT: gate NOT satisfied — KGP stays 0.5.2 Candidate. Read the artifact, not the flag: agora 85eb207 (merge of chief/77) is 4 files / 2 commits, BOTH US-1 — projection.ts (223 lines, emitter only), projection.test.ts (55 lines, 2 cases over one hand-written single-claim pack), index.ts (+13 re-exports), tasklist (+2/-1). agora US-2 (round-trip) and US-3 (evidence artifact) were flipped to passes:true with notes:null by retire commit a73b967 AFTER the merge — bookkeeping, no code. Confirmed at agora main 9fe2ee5 that nothing was added since: grep over knowledge/src finds no reader, no unproject/parse-back; index.ts exports projectPack and no inverse. So §4.1 rule 2 (re-derive the claim id from the recovered canonical, reject on disagreement) has never run and is untestable without a reader. G1 met narrowly, G2/G3/G4 not met. Recorded in docs/reference/kgp-projection-gate-verification.md; §4.1 now states the verdict + the 4 remaining items and names owner 87-kgp-projection-reader-and-roundtrip (the retired marker 64 is no longer cited). Editorial only — §3/§3.1/§3.3/§4.1 tables/§5/§6/§7 byte-unchanged, no claim id moves. CHECKS: .chief/verify.sh green — doc-integrity OK (746 links, all 3 status tables match headers), doc-links 0 dead vs 1 on main, tasklist-categories OK, 8 tasklists categorized. Also repaired 9 pre-existing dead links to 53-multi-authority-scenario.json (moved to completed/) that this branch's docs/README.md touch made merge-blocking.",
+      "passes": true
     },
     {
       "id": "US-2",
-      "title": "Fold the forced §11 question into the KFT contract + schema",
-      "description": "Reflect only the pressure-forced question into fine-tuning.md and, where it touches job shape, schemas/finetune-job.schema.json — keeping the 0.3.0 fold's additive discipline — bumping the version and staying candidate.",
+      "title": "If satisfied, KGP is promoted and the ratification count is made true",
       "acceptanceCriteria": [
-        "fine-tuning.md §11 (and the relevant §5/§6 clause) is edited to fold the forced question — e.g. allow an adapter-selection hint in the manifest, confirm the resume-checkpoint ref, or define the eval-as-reward KCS profile — and schemas/finetune-job.schema.json is updated in lockstep if the job shape changes, keeping the golden fixture valid.",
-        "The change is strictly additive where possible (0.3.0/0.4.0 manifests stay valid) per KFT's additive-fold precedent; the schema stays role-scoped with KINP §3.4 placeholder CURIEs.",
-        "The KFT version header is bumped and Status set to candidate with a changelog entry citing the leg; the remaining §11 questions stay open, and item 5 (capability versioning) is noted as resolved by Phase F2 (chief/54)."
+        "KGP's Status header moves to `ratified` with a changelog entry citing the fixture and its merge sha.",
+        "`specs/README.md`'s ratification statement is corrected. It currently asserts *\"no scenario has a KCS encoding, so no spec is currently promotable to `ratified`\"* — false since `agora:75`, and it is the sentence the whole ladder is read from.",
+        "`ROADMAP.md`'s claim is corrected to the real count. It says 2 of 6 ratified; the true figure before this tasklist is 0 of 6, and after it is at most 1.",
+        "The changelog records what ratification commits koine to for KGP, so a downstream reader knows what stability they just gained."
       ],
-      "passes": true,
-      "notes": "KFT 0.5.0 -> 0.6.0, Status Candidate. Folded FT-R...FT-V from scenarios/kft-resume-checkpoint.md, additively. NEW NORMATIVE §3.4 (optional top-level `resume` {checkpoint, of_job, at_step}: a pinned input entering §5.2 used[] so FT-C's anchor holds; the ONLY slot for a resume ref, one in the permissive `hyperparams` is refused `invalid`; never corpus). §4.2 effective egress over {data u base u resume.checkpoint}; §4.3 union license/tier likewise. §5.4 binds a mid-run checkpoint's class AT PUBLICATION (the hole that existed independently of resume, on §6's subscribe stream). §5.2 makes a continuation leg a NEW activity linked by the new core relation `continues` (registry/relations.tsv, distinct from retrains/supersedes). §6 keeps job+step idempotency sound, `step` counts from the root leg, NORMATIVE curve-join rule + optional non-authoritative `attempt`. §7 estimates the REMAINDER with at_step verified against prior provenance, against the ceiling net of cumulative spent_units across the chain. §3.3.1 gating set + §3.3.2 two rows + a fifth normative consequence. §11.3 marked RESOLVED IN PLACE (numbering deliberately unshifted, like §11.5); §11.1/§11.2/§11.4/§11.6 stay open; item 5 already resolved by ADR-0009/KCB §7 (chief/54) and restated as such. Schema in lockstep: `resume` object, additionalProperties:false, NOT in `required` -> every 0.4.0/0.5.0 manifest still validates; golden fixture schemas/fixtures/finetune-job.json exercises it (one-fixture-per-schema is enforced by check-schemas, so a second fixture is not expressible). Placeholder CURIEs only, no product named. Changelog entry + Pressure test section cite the leg and record the second, narrow gate. All four status mirrors updated (README, specs/README x2, ECOSYSTEM, plus the unchecked CLAUDE.md prose). VERIFICATION: node scripts/check-doc-integrity.mjs OK (44 markdown files, 765 relative links, 3 status tables match); check-schemas OK (9 schemas, 278 schema positions, 80 $refs, 3 fixtures); check-registry OK (28 relation names, unique across core + every domain file); check-tasklist-categories OK (7 tasklists); PRD verify cmds: 'schemas ok' + 'finetune-job schema ok'; bash .chief/verify.sh: 16 changed files, 6 selected gates, verify-test 30 passed 0 failed, 'all selected gates green - allowing merge'."
+      "notes": null
+    },
+    {
+      "id": "US-3",
+      "title": "The other five specs get an honest promotability line",
+      "acceptanceCriteria": [
+        "For each of KINP, KMI, KCB, KCS and KFT, one line: what specifically blocks promotion today. Not a status glyph — the named gate.",
+        "Where a spec was DEMOTED, say when and by what. KINP fell to Candidate on the §11.1 federation edit and KCS on the 0.3.0 determinism fold; a reader currently cannot tell a spec that never rose from one that fell.",
+        "Where a gate is an unwritten fold (MA-1…MA-11 for KINP, V-1…V-8 for KCB), point at the tasklist that owns it rather than restating the gap.",
+        "This is a table, not a program. It exists so the next person can see which promotions are cheap and which are real work — the answer for KGP turned out to be 'already earned, nobody claimed it', and that should not be discoverable only by audit."
+      ],
+      "notes": null
     }
   ]
 }
