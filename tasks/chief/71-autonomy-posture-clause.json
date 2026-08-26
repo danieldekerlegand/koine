@@ -26,7 +26,8 @@
         "If the answer is no, the ADR says what would change the answer, and this tasklist is retired against it. A parked question with no closing condition is just a backlog entry.",
         "The answer must account for the fact that the two edges cross an ownership boundary — a posture that is only advisory across that line provides no guarantee to either side."
       ],
-      "notes": null
+      "notes": "ADR-0013 written and Accepted (2026-08-26): answers YES-in-the-boundary-half, with the console ladder rejected (option c). AC1 — the two cross-owner edges are named concretely from ECOSYSTEM.md §3 (talos→argos Tier-B/C analysis, insimul→lugh corpora) and the decision is argued against them, not in the abstract. AC3 — advisory-across-the-line is answered head-on: measurement 1 greps all six specs and finds NO clause/field/enum naming irreversibility anywhere (spend is covered by KCB §5, so a posture gating 'spend and irreversibility' is inapplicable, not merely weak), and measurement 2 fixes that only the callee's unilateral gates plus the caller's narrowed grant bind across an ownership boundary — hence a monotone-restrictive intersection rule rather than a trusted mode flag. AC2 — the answer is not 'no', so the closing condition is stated in both directions: withdrawal triggers W1/W2/W3 are checkable, the parked second-implementation condition is retained as a ratification gate, and this tasklist is retired against the record. Guards: check-doc-integrity green (49 markdown files, 910 relative links checked, all 3 status tables match headers), check-schemas green, check-registry green, check-tasklist-categories green, schemas json-parse ok. No spec version moves.",
+      "passes": true
     },
     {
       "id": "US-2",

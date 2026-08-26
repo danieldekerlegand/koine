@@ -370,7 +370,26 @@ vocabulary.
   dissent preservation are **non-goals** — koine specifies what crosses an organizational boundary,
   not how one organization decides; every gate it defines is unilateral, nothing exists to profile as
   of 2026-08-18, and the record states the trigger that re-opens the verdict, while leaving G1/G5/G6
-  measured *Partial* with findings GOV-1…GOV-3 open).
+  measured *Partial* with findings GOV-1…GOV-3 open), ADR-0012 (authority roles may **federate**
+  without becoming dependencies — one holder stays conformant, several peer; applied by KINP §11
+  decision 1, KCB §3.1 and KMI §7.1), and ADR-0013 (**autonomy posture is a contract clause, in the
+  boundary half only** — decided against the two cross-owner edges in `ECOSYSTEM.md` §3, it takes up
+  the **G5** carve-out ADR-0011 §4 left open: a posture governing a cross-owner dispatch is
+  interchange, but the console **ladder is not adopted** — postures are named by the classes of
+  effect they permit unattended, and a product's rungs are a *projection* onto them. The measured
+  reason is that a posture gates spend **and** irreversibility, and while KCB §5 expresses spend,
+  **nothing in the fabric names irreversibility**, so a cross-owner posture is not weak but
+  *inapplicable*; and since only the callee's unilateral gates plus the caller's narrowed grant bind
+  across the line, an advisory mode flag buys nothing. Mints one operand — a port **effect class**,
+  absent reading *unknown*, never *harmless* — plus a posture operand on existing verbs, and one rule:
+  posture is **monotone-restrictive**, so the effective posture is the **intersection** and the
+  restriction always wins, which is also why ADR-0011's trigger T3 does **not** fire. The **floor**:
+  no posture relaxes KGP §7, KCB §5 or KFT §4/§8.1; an unadmitted effect is a refusal, never a silent
+  proceed or substitution. No new plane, verb or authority role, and it MUST be expressible with **no
+  console at all**. The second-independent-implementation condition is kept as a **ratification** gate
+  beside the pressure-test scenario; withdrawal triggers W1–W3 are stated; the approval mechanism, the
+  human authority, intra-org supervision and GOV-2's decision record are explicitly out of scope. No
+  spec version moves).
   `decisions/README.md` carries the full table — keep this list and that table in step. The deployment-history ADRs (ADR-0002/0003/0004 — bridge
   reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
   integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently

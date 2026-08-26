@@ -73,7 +73,7 @@ KFT 0.5.0.
 | **G2** | Deliberation | **Absent** (decided: [non-goal](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)) | — | No koine clause encodes argument exchange, turn-taking, or challenge/response. |
 | **G3** | Voting | **Absent** (decided: [non-goal](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)) | — | No koine clause encodes preference aggregation, quorum, or rounds. |
 | **G4** | Dissent preservation | **Absent** (decided: [non-goal](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)) | — | No koine clause encodes a minority position; nothing in the fabric produces a "decision output" to preserve one in. |
-| **G5** | Human escalation | **Partial (narrow)** | KINP §11 decision 2 · KCB §5 · KGP §7 · KMI §3 | **One** route to a human exists — the hybrid merge **review queue** — and it is a knowledge-contamination control, not a decision-escalation mechanism. |
+| **G5** | Human escalation | **Partial (narrow)** (boundary half decided **in scope**: [ADR-0013](../../decisions/ADR-0013-autonomy-posture-boundary-clause.md)) | KINP §11 decision 2 · KCB §5 · KGP §7 · KMI §3 | **One** route to a human exists — the hybrid merge **review queue** — and it is a knowledge-contamination control, not a decision-escalation mechanism. The grade is unchanged: ADR-0013 decides that the cross-owner half *belongs* in the contracts and authorizes a clause; it writes none, so nothing measured here has moved yet. |
 | **G6a** | Audit | **Partial** | KGP §2/§7 · KINP §7 · KMI §3 · KFT §3.3.1, §5.2 · KCB §5 | **Artifacts** are provenanced and tamper-evident by construction; **events and decisions** are not recorded at all. |
 | **G6b** | Replay | **Partial** | KCS §1, §4 · KGP §6 · KCB §4 | KCS replays a **scenario** against live participants; nothing reconstructs a past run from a log. |
 
@@ -131,6 +131,25 @@ human authority or how the decision returns.
 **Do not read KFT §8.1 as escalation.** Graded refusal routing hands a caller `route_to[]` —
 resolvable addresses of *other providers* — and the spec is explicit that this is a hint and not a
 delegation. It routes machine → machine. It never reaches a person.
+
+**Decided in scope, not yet covered (2026-08-26).**
+[ADR-0013](../../decisions/ADR-0013-autonomy-posture-boundary-clause.md) takes up the carve-out
+[ADR-0011](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md) §4 left open
+— *"G5 in particular is not decided here"* — and splits G5 on the ownership boundary. The half that
+crosses one is **in scope**: where a caller under one owner dispatches to a callee under another, a
+declared **autonomy posture** — which classes of effect may proceed without a person — is
+interchange, and ADR-0013 authorizes a clause for it (a port **effect class**, a posture operand on
+the existing verbs, a monotone-restrictive intersection rule, and a floor that no posture may skip).
+The half that does not cross one — who the human authority is, how the approval is served, how the
+answer returns, and how an organization supervises agents it assembled itself — stays out by
+ADR-0011's boundary sentence, so *"no clause names the human authority or how the decision returns"*
+above is a **stated boundary**, not a gap.
+
+Two things this does **not** change, stated so the measurement stays honest. The grade above stays
+**Partial (narrow)**: ADR-0013 decides and authorizes, it does not specify, and a future measurement
+re-derives the grade from the clauses that actually exist rather than inheriting one. And **GOV-2**
+stays open and is the companion finding — a stop that fires and leaves no trace is a stop the other
+organization cannot verify afterwards, which is the audit question, not the escalation one.
 
 ### G6a Audit — Partial
 
