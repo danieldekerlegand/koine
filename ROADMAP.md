@@ -108,17 +108,22 @@ so it cannot collide. **Every F-phase proposal is now authored as a `tasks/chief
 ### Phase 0 — Contract authoring, ratification & hardening — ✅ complete
 
 The four data/control planes are specified and each is validated by at least one concrete pressure
-test; two specs *were* ratified in this phase, and four ADR-driven hardening passes landed via Chief.
-Both of those ratifications have since been undone by a normative change — **KINP** fell back to
-`candidate` on its 0.3.0 federation fold and **KCS** on its 0.3.0 determinism fold — so the rows
-below are the historical record of Phase 0, not the current count. That count is **0 of 6**, and
-Phase 1 holds each spec's remaining gate.
+test, and four ADR-driven hardening passes landed via Chief. **All six specs were ratified in this
+phase, and all six have since been demoted** by a later normative change of koine's own making —
+KCB 0.3.0 (2026-07-22), KMI 0.3.0 and KGP 0.5.0 (2026-08-02), KFT 0.4.0 (2026-08-06), KCS 0.3.0
+(2026-08-20), KINP 0.3.0 (2026-08-23). Not one is a spec that never rose. (This paragraph used to
+say *two* were ratified here, counting only the two still ratified when the rows below were written;
+the rows likewise record ratification for only those two. Corrected 2026-08-26 — the changelogs of
+all six carry a `**Ratified.**` entry.) So the rows below are the historical record of Phase 0, not
+the current count. That count is **0 of 6**; Phase 1 holds the remaining gate for four of the six,
+and the per-spec ranking for all six — rose-and-fell history, the named gate, and what a promotion
+costs from here — is [`docs/reference/promotability.md`](docs/reference/promotability.md).
 
 | Status | Milestone | Tasklist |
 |---|---|---|
 | ✅ | **KINP 0.2.1** ratified — identity keystone; deltas A–E folded, three design forks decided (single identity **authority role**, hybrid merge, `@world(W)` arg); the namespace every other spec references (identity.md §11) | gated by `scenarios/e2e-worlds-to-fabric.md` · — (pre-Chief) · **demoted to candidate at 0.3.0** (federation fold) |
 | ✅ | **KCS 0.2.0** ratified — declarative, replayable scenarios over participants' real MCP/A2A links; observer, not hub (conformance-scenario.md) | gated by `scenarios/kcs-format-stress.md` · — (pre-Chief) · **demoted to candidate at 0.3.0** (determinism fold) |
-| ✅ | **KGP / KMI / KCB / KFT** first-authored & pressure-tested — all four planes covered by an e2e scenario | `scenarios/` · — (pre-Chief) |
+| ✅ | **KGP / KMI / KCB / KFT** first-authored, pressure-tested **and ratified** — all four planes covered by an e2e scenario; KGP 0.2.0, KMI 0.2.0, KCB 0.2.0 (all 2026-07-17) and KFT 0.3.0 (2026-07-23) each reached `ratified` here | `scenarios/` · — (pre-Chief) · **all four since demoted** — KCB at 0.3.0, KMI at 0.3.0, KGP at 0.5.0, KFT at 0.4.0 |
 | ✅ | Adopt **OTIO** as KMI's canonical timeline; demote bespoke `edl+json` to deprecated; ADR-0005; KMI → 0.3.0 | `chief/10-kmi-adopt-otio` |
 | ✅ | **KGP standards alignment** — RDF-star / W3C PROV / JSON-LD as a specified, round-trip-tested projection; bespoke TSV canonical retained; ADR-0006; KGP → 0.5.0 | `chief/20-kgp-standards-alignment` |
 | ✅ | **Self-describing participant** — namespace + KCB AgentCard-extension manifest + egress policy + bridge maps published at the edge; ADR-0007; `schemas/participant-self-description.schema.json` + [`docs/explanation/self-describing-participant.md`](docs/explanation/self-describing-participant.md) | `chief/30-self-describing-participant` |
@@ -149,6 +154,13 @@ is unchanged; what changed is that clearing it no longer finishes the job.
 | ⬜ | **Doc-sync the index tables** — bring `specs/README.md` + root `README.md` status columns in line with the spec headers (KGP 0.5.0, KFT 0.4.0, KMI/KCB 0.3.0 all candidate). *Its ECOSYSTEM.md story context is already resolved* — the file exists since `2e228c6` (see Loose wishlist ✅), so `50`'s remaining scope is the index tables + link integrity · S | `chief/50-doc-sync-status-tables` *(proposed, koine)* |
 | ⬜ | **KFT dependency re-pin** — re-pin or explicitly justify KFT §1/header's plane-version pins (KGP 0.4.0 / KMI 0.2.0 / KCB 0.2.0 — the last-ratified versions — vs current 0.5.0 / 0.3.0 / 0.3.0 candidates) as part of the 0.4.0 re-ratification; reconcile the in-body cross-plane citations (esp. §2's KCB manifest shape) · S | `chief/71-kft-dep-repin` *(proposed, koine)* |
 | ⬜ | **KGP findings closure** — the normative §4/§4.1 spec edits closing KGP-1 (one ProbLog fact per admitted prov record; aggregation is consumer policy) and KGP-2 (name the annotation predicates: a koine-owned term namespace, reusing external terms where they exist) + the §4.1 reference to the downstream round-trip fixture — the spec-edit work `chief/50` is barred from · S | `chief/72-kgp-findings-closure` *(proposed, koine)* |
+
+**Two of the six specs have no row here.** Phase 1 was scoped to the four candidates of its day;
+**KINP** and **KCS** were still ratified then and were demoted later (2026-08-23 and 2026-08-20).
+Their gates are real and unowned — KINP's is the MA-1…MA-4 fold (`85`), KCS's is a re-validation of
+its own determinism fold — and both are carried in
+[`docs/reference/promotability.md`](docs/reference/promotability.md), which is the six-row view this
+four-row table is the program half of.
 
 *Depended on* **Phase F4** — every row needs the KCS encoding of the scenario it re-runs. That dependency is **discharged**: `agora chief/75` encoded all nine scenarios and `agora chief/76` ran them over live links, both merged 2026-08-19 ([`docs/reference/kcs-encoding-gate-verification.md`](docs/reference/kcs-encoding-gate-verification.md)). No row here is blocked by F4 any more; each is blocked by its own outstanding pass. KMI's *prose* half clears the moment KCB's re-run passes. One caveat that reads the other way: a downstream result becomes **citable** evidence only once it is recorded in the scenario it ran (`## Downstream results`), and all nine of those sections are empty — owner `84-record-the-downstream-results`.
 
@@ -364,6 +376,7 @@ stems and the Phase-1 stems — the doc-sync (`chief/50`) plus the two ratificat
 **Guides & positioning:**
 - [`docs/reference/positioning.md`](docs/reference/positioning.md) — how koine relates to A2A, MCP, and mature domain standards (the semantic gaps it fills — and, since the 2026-08-18 correction, what the Kang & Diponegoro *governance*-gap analysis does and does not corroborate; what it builds on rather than replaces), and the **prior art it cites and dismisses** — nanopublications/Trusty URIs, C2PA, Croissant, Frictionless, Pact, DIDs/VCs.
 - [`docs/reference/governance-taxonomy-map.md`](docs/reference/governance-taxonomy-map.md) — the six governance dimensions of Kang & Diponegoro (arXiv:2606.31498) measured against the specs, section by section: which are **partial** and precisely what is missing from each (including the scenario-replay vs decision-replay distinction), which are **absent**, and the three shortfalls filed as findings **GOV-1…GOV-3**. The three absences are decided in [ADR-0011](decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md) as **non-goals**, with the trigger that re-opens the verdict.
+- [`docs/reference/promotability.md`](docs/reference/promotability.md) — **one line per spec on what stands between it and `ratified`**: which specs rose and fell (all six did) and when, the named gate each waits on today, who owns it, and the six ranked by what a promotion actually costs. The status view of what Phase 1 above holds as a program.
 - [`docs/reference/upstream-standards.md`](docs/reference/upstream-standards.md) — the **pin table**: which version or dated revision of each external standard koine was validated against, and the drift-check cadence that keeps it honest.
 - [`docs/explanation/self-describing-participant.md`](docs/explanation/self-describing-participant.md) — the adopter checklist (namespace, capability manifest, egress policy, vocabulary mappings).
 - [`docs/guides/walkthrough-capability-bus.md`](docs/guides/walkthrough-capability-bus.md) — a KCB advertise → discover → direct-dial walkthrough with real payloads.

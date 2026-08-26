@@ -165,9 +165,12 @@ content-addressed run record that koine has verified **exists and covers all nin
 
 So the **artefact gate is met for every spec in the fabric**, and what a promotion waits on is no
 longer this rule. It is each spec's own outstanding pass — an unfolded delta set, an un-re-run
-scenario, a missing downstream fixture — enumerated per spec in
-[`../ROADMAP.md`](../ROADMAP.md) *Phase 1*. **Six of six specs remain `candidate` and zero are
-promotable today**, but for spec-specific reasons that this section no longer supplies.
+scenario, a missing downstream fixture. **Six of six specs remain `candidate` and zero are
+promotable today**, but for spec-specific reasons that this section no longer supplies. One line per
+spec naming that reason — and ranking the six by what a promotion actually costs from here — is
+[`../docs/reference/promotability.md`](../docs/reference/promotability.md); the *program* view, with
+tasklists and phases, stays in [`../ROADMAP.md`](../ROADMAP.md) *Phase 1*, which covers four of the
+six (KINP and KCS have no Phase 1 row).
 
 Two things this correction deliberately does **not** do:
 
