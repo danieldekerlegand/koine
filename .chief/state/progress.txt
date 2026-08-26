@@ -99,3 +99,111 @@ OK (8 categorized).
   unearned flips live.
 - Cross-repo verification means reading the other repo's working tree at HEAD as well as at the
   cited sha, so "nothing was added since" is a checked fact rather than an assumption.
+
+---
+
+## 2026-08-26 — US-2: If satisfied, KGP is promoted and the ratification count is made true
+
+**KGP is NOT promoted, and the story still delivered — because checking criterion 2 turned up the
+mirror image of US-1's finding.** US-1 found a tasklist claiming more than it shipped. US-2 found
+koine claiming *less* than it had been given.
+
+### What was executed, and what was refused
+
+- **Criteria 1 and 4 — refused.** They presuppose the promotion US-1 disproved. No Status header,
+  version, or status mirror moved; KGP is 0.5.2 **Candidate**. The PRD is explicit that promoting
+  to satisfy the title is worse than a stale Candidate, so this is compliance, not a shortfall.
+- **Criterion 2 — executed, and the sentence was false in the direction nobody was watching.**
+  `specs/README.md`'s *"no scenario has a KCS encoding, so no spec is currently promotable to
+  `ratified`"* has been false since **2026-08-19**.
+- **Criterion 3 — executed.** ROADMAP's headline already read `0 of 6` (fixed 2026-08-13). The
+  false claims still in it were Phase 0's present-tense *"two specs are ratified"* — both since
+  demoted — and Phase F4 sitting at ⬜ **planned** when it had delivered five days earlier.
+
+### The evidence (read at agora `main` = `9fe2ee5`, 2026-08-25)
+
+- `agora chief/75-encode-scenarios-as-kcs` — merge **`f853240`**, 2026-08-19. **Nine**
+  `ScenarioDocument` encodings at `console/src/kcs/scenarios/` (5,096 lines with tests). The set is
+  machine-enforced, not asserted: `coverage.test.ts` reads a sibling koine checkout's
+  `scenarios/*.md` and requires set-equality with every entry's `source`, **skipping loudly** when
+  no koine sibling is reachable. All nine `source` values match koine's nine `.md` files exactly.
+- `agora chief/76-run-kcs-over-live-links` — merge **`f32508e`**, 2026-08-19. The same documents
+  over live MCP **and** A2A, preferring a live registration over a delta-N `standin`.
+  `console/evidence/kcs-live-run.json`: `evidence_id` `sha256-2d9e6c43…`, generated 2026-08-24,
+  `kcs_version` 0.3.0, `green` true, `live_pass` false, `verdict` **partial-live**, **19/32**
+  participant slots live (59%), `transport_failures` `[]`. `kcs:worlds-to-fabric` — the one that
+  gates KINP and carries KGP's re-validation — is **3/3 live** and **live-pass**.
+- `8e737f9` (2026-08-24) added the ninth encoding, `kcs:multi-authority`.
+- Both tasklists' stories carry **substantive notes**. That is why they were trusted where `77`'s
+  were not — `notes: null` on a `passes: true` story is the tell, and neither has it.
+
+### Two caveats recorded rather than laundered
+
+1. **`green` is the downstream artifact's own claim.** koine verified *existence and shape* (files,
+   ids, sources, the coverage gate, the artifact's fields); the suite was **not** re-run here, and
+   under ADR-0001 it should not be. The record says so in as many words.
+2. **`green` is not a gate verdict.** `kcs:live-schema-mutation` (V-1…V-8, four blocking) and
+   `kcs:multi-authority` (MA-1…MA-11, six blocking) both come back green — because the encodings
+   *deliberately* do not assert an unfolded delta, and say so in their own module notes
+   (*"asserting a fold koine has not made"*). A reader who takes green for "the deltas are
+   resolved" repeats the `passes: true` mistake one level up.
+
+### Where the count landed
+
+**0 of 6 before, 0 of 6 after.** What changed is the *reason*: the artefact gate is now met for
+every spec, so no promotion is blocked by the ratification rule any more — each is blocked by its
+own outstanding pass. And the run is **not yet citable**: under specs/README.md's own rule a result
+becomes evidence only once recorded in the scenario it ran, and all nine `## Downstream results`
+sections are empty.
+
+**Files changed**
+
+- `specs/README.md` — the statement corrected and dated; the F4-mechanism paragraph repointed at
+  `agora chief/75`/`76` (the ids it named, `62`/`63`, were koine markers, now `supersededBy` those
+  two); KCS's grandfathered debt marked **paid 2026-08-19**; the cost paragraph's "the encodings do
+  not yet exist" fixed.
+- `docs/reference/kcs-encoding-gate-verification.md` — **new.** Obligations E1–E3, the merges, the
+  file inventory, the run record, verified-vs-trusted, and §5 *"green does not mean the spec's gate
+  is met"*. Indexed in `docs/README.md`. Modelled on US-1's KGP record.
+- `ROADMAP.md` — headline; Phase 0 marked history with both demotions named; Phase 1's KGP row and
+  its depends-on line; **Phase F4 → ✅ delivered** with real tasklists and shas; Phase F5's fixture
+  row → `87` with the 2026-08-26 verdict.
+- `specs/grounding-pack.md` — §4.1 records that KGP's **other** gate is met, making the round-trip
+  fixture literally the last item. Editorial; no normative change, no claim id moves.
+- `scenarios/README.md` — a dated stale-banner **only**.
+- `docs/reference/implementability-audit.md` — the stale `chief/62`/`63` ids.
+
+**Checks:** `.chief/verify.sh` — **all 4 selected gates green.** doc-integrity OK (45 files, 765
+links, all 3 status tables match their headers), doc-links 0 dead vs 1 on main,
+tasklist-categories OK (8 categorized), verify-selftest **30 passed / 0 failed**.
+
+### Consequences for US-3
+
+- **The promotability table's shape changed.** Before this story every line would have read "the
+  KCS encoding (F4)". That gate is now met for all six, so each line must name the spec's *own*
+  blocker. Known: KGP → the §4.1 reader (`87`); KINP → MA-1…MA-11 (`85`); KCB → V-1…V-8 (`86`) and
+  MA-* via §3.1; KMI → rides with KCB's re-run, plus MA-* via §7.1; KCS → its own 0.3.0 determinism
+  fold, with §7.1/§7.3 open; KFT → the owner's re-run of `e2e-producer-exhaust-finetune.md`'s
+  *Re-validation — KFT 0.4.0*, with §3.3/§8.1 unexercised normative surface.
+- **Demotion dates:** KINP fell on the 0.3.0 federation fold, KCS on the 0.3.0 determinism fold.
+  Both are now stated in ROADMAP Phase 0's rows — reuse, don't re-derive.
+- **A cross-cutting row belongs in that table:** *no scenario carries a `## Downstream results`
+  section*, so no owner may cite the live run as evidence for any spec. Owner
+  `84-record-the-downstream-results`, which also owns `scenarios/README.md`'s stale column.
+- `53-multi-authority-scenario` being in `completed/` while three specs name it as a live gate is
+  still the wrinkle US-1 flagged; the encoding `kcs:multi-authority` existing does **not** resolve
+  it, since the deltas are unfolded.
+
+**Learnings for future iterations**
+
+- **Verification cuts both ways.** US-1's discipline is usually framed as catching over-claims; the
+  same two commands (`git log --oneline`, `git show --stat`, then read the files) caught koine
+  **under**-claiming and gating six specs on an artefact it already had. Check a blocking claim
+  with the same suspicion as a completion claim.
+- **A tasklist already owns most stale surfaces — look before rewriting one.**
+  `tasks/chief/84-record-the-downstream-results.json` already claims `scenarios/README.md`'s column
+  *and* the nine empty results sections. Doing it here would have duplicated its work and conflicted
+  with it; a dated banner plus a pointer was the right size.
+- **`notes: null` on a `passes: true` story is the tell, and it generalizes.** agora's `78` and `79`
+  carry it too — their ROADMAP F5 rows were deliberately left ⬜ rather than flipped on a flag.
+  Understating is the safe direction when you have not read the artifact.
