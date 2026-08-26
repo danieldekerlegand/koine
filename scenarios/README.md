@@ -71,6 +71,17 @@ carries the per-spec table, what a clean re-run would license, and the dated **R
 
 ## The KCS encodings — none exists yet, and that is the ratification tail
 
+> ⚠️ **Stale as of 2026-08-19; correcting it is owned by `84-record-the-downstream-results`.** This
+> section and the **KCS encoding** column below are both out of date: all **nine** encodings exist,
+> built downstream at `agora/console/src/kcs/scenarios/` (`agora chief/75`, merged `f853240`), and
+> the suite was run over live MCP/A2A links (`agora chief/76`, merged `f32508e`). Verified against
+> the artifacts rather than a `passes` flag in
+> [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
+> The column is left untouched here because flipping it belongs with the same pass that fills the
+> nine empty `## Downstream results` sections — the two are one job, and a column that says `exists`
+> above nine empty result sections would trade one wrong reading for another. Everything below is
+> historically accurate and no longer current.
+
 Read the **KCS encoding** column honestly: it says `planned` eight times and `exists` zero times.
 Every pressure test in this directory is prose that a person walked; not one of them is a document a
 participant can be handed. That gap *is* the ratification tail, and since

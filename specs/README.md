@@ -67,12 +67,13 @@ mechanism — and the reason it works — is theirs. It is cited here rather tha
 with how this repo treats prior art everywhere else
 ([`../docs/reference/positioning.md`](../docs/reference/positioning.md)).
 
-**The cost, stated rather than glossed.** This rule makes ratification **harder**, and it will hold
-specs at `candidate` longer — possibly much longer, since as of this writing every one of the
-fabric's pressure tests is prose and the machine-replayable encodings do not yet exist. That trade
-is deliberate. A spec that is honestly `candidate` tells an implementer something true; a `ratified`
-status that flips back twice a year tells them nothing, and quietly costs them the one thing
-ratification is supposed to buy. Slower promotion is the price of a status that means what it says.
+**The cost, stated rather than glossed.** This rule makes ratification **harder**, and it holds
+specs at `candidate` longer. It did so absolutely between 2026-08-13, when the rule landed, and
+2026-08-19, when the first machine-replayable encodings landed downstream: over that window no spec
+in the fabric was promotable at all, because the artefact the rule requires did not exist anywhere.
+That trade is deliberate. A spec that is honestly `candidate` tells an implementer
+something true; a `ratified` status that flips back twice a year tells them nothing, and quietly
+costs them the one thing ratification is supposed to buy. Slower promotion is the price of a status that means what it says.
 
 **The spec ratified before the rule — grandfathered, with the debt named.** KCS 0.2.0 reached
 `ratified` under the previous rule on a hand-walked prose pass and nothing else. It is now back at
@@ -81,12 +82,17 @@ ratification is supposed to buy. Slower promotion is the price of a status that 
 act taken on a spec's own merits — never a consequence of a governance amendment — and a normative
 change does not retain grandfathered ratification.
 
-Grandfathered is not forgiven. KCS carries a named debt — the missing machine-replayable encoding
-of the prose pass that gated it — and the debt is tracked, not merely noted:
+Grandfathered is not forgiven. KCS carried a named debt — the missing machine-replayable encoding
+of the prose pass that gated it — and the debt was tracked, not merely noted. It has since been
+**discharged**:
 
-| Spec | Gated by (prose) | Outstanding debt | Tracked in |
+| Spec | Gated by (prose) | Debt | Status |
 |---|---|---|---|
-| **KCS 0.2.0** | [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md) | the encodings that pass *attempts* in prose, produced for real (see the self-reference note below) | same two Phase F4 tasklists |
+| **KCS 0.2.0** | [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md) | the encodings that pass *attempts* in prose, produced for real (see the self-reference note below) | **paid 2026-08-19** — all nine encodings exist downstream, `kcs:format-stress` among them (Phase F4 below) |
+
+Paying the debt does not by itself promote KCS: it is at `candidate` on its own 0.3.0 determinism
+fold, so it re-enters at the ordinary gate — which the discharged debt now satisfies, leaving that
+fold's own re-validation as what remains.
 
 **What forces the debt to be paid.** The grandfather clause does not survive a demotion. When a
 grandfathered spec's model shape changes and its status returns to `candidate`, it re-enters the
@@ -95,7 +101,9 @@ no second grandfathering. That is the event, and it is the only one — a grandf
 never moves never owes the artefact. The corollary above buys an ordinarily demoted spec a cheap
 re-ratification because it replays the scenario it earned; a grandfathered spec has none, so its
 first demotion is where it pays the full price at the worst moment. That asymmetry is a reason to
-settle the debt under Phase F4 ahead of need, not a reason to weaken the rule.
+settle the debt under Phase F4 ahead of need, not a reason to weaken the rule. It played out exactly
+that way: KCS was demoted by its 0.3.0 fold and the debt had already been settled, so the demotion
+cost it a re-validation rather than a build.
 
 **KCS's self-reference, and why it is not circular.** KCS is the format
 the rule's artefact is written in, so "KCS needs a KCS scenario" reads as a loop. It is not one,
@@ -111,19 +119,27 @@ work discharges KCS's debt as a by-product of discharging every other spec's: a 
 cannot express a scenario is a KCS defect, surfaced by the attempt to write it. KCS is the one spec
 whose conformance artefact is earned by **use** rather than by a run.
 
-**How a spec earns the artefact — Phase F4 is the mechanism.** The rule would be empty without a
-defined path from the prose pass a spec already has to the runnable document it now needs, and that
-path exists: [`../ROADMAP.md`](../ROADMAP.md) **Phase F4** — `agora chief/62-encode-scenarios-as-kcs`
-encodes each [`../scenarios/`](../scenarios/) pressure test as a machine-replayable KCS document, and
-`agora chief/63-run-kcs-over-live-links` runs the suite over real MCP/A2A connections (with delta-N
-`standin` fixtures for roles nobody has adopted yet). Both are built downstream, not here
+**How a spec earns the artefact — Phase F4 is the mechanism, and it has delivered.** The rule would
+be empty without a defined path from the prose pass a spec already has to the runnable document it
+now needs. That path is [`../ROADMAP.md`](../ROADMAP.md) **Phase F4**, and as of **2026-08-19** it
+has been walked: `agora chief/75-encode-scenarios-as-kcs` encoded every
+[`../scenarios/`](../scenarios/) pressure test as a machine-replayable KCS document, and
+`agora chief/76-run-kcs-over-live-links` ran the suite over real MCP/A2A connections (with delta-N
+`standin` fixtures for roles nobody has adopted yet), leaving a committed evidence artifact. Both
+were built downstream, not here
 ([`../decisions/ADR-0001-control-plane-topology.md`](../decisions/ADR-0001-control-plane-topology.md)):
 koine specifies the format and holds the prose; the console that replays a document is runtime. What
-this rule changes is that pair's standing. Encoding the scenarios used to be the KCS payoff — nice to
-have, scheduled behind everything with a delivery date. It is now the **only** route to `ratified`
-for every spec in the table above, which puts it on the critical path. The per-scenario state of that
-work is tracked where a reader already looks: the **KCS encoding** column of
-[`../scenarios/README.md`](../scenarios/README.md).
+this rule changed is that pair's standing. Encoding the scenarios used to be the KCS payoff — nice to
+have, scheduled behind everything with a delivery date. It became the **only** route to `ratified`
+for every spec in the table above, which put it on the critical path, and it is the reason that path
+is now clear. The per-scenario state of that work is tracked where a reader already looks: the
+**KCS encoding** column of [`../scenarios/README.md`](../scenarios/README.md) — which still reads
+`planned` for all nine and is stale as of 2026-08-19; correcting it, together with recording the run
+itself (below), is owned by `84-record-the-downstream-results` in [`../tasks/chief/`](../tasks/chief/).
+
+(The two tasklist ids this paragraph used to name — `agora chief/62` / `chief/63` — were koine-side
+*markers* for work that could only run downstream. They were retired when the downstream tasklists
+that did the work were authored; `75` / `76` are those tasklists, and they are what to read.)
 
 **Where a run's result lands, and which gate consumes it.** A run is only evidence if it is recorded
 somewhere a gate reads, so: a downstream conformance result is recorded in the scenario it ran, as a
@@ -137,13 +153,33 @@ a finding that a recorded failure contradicts. A recorded result never promotes 
 promotion stays a deliberate act — but no spec may be promoted *past* a recorded failure without
 answering it.
 
-**What a ratification does in the meantime.** Nothing, and that is the intended reading. As of this
-writing no scenario has a KCS encoding, so no spec is currently promotable to `ratified` — the four
-at `candidate` stay there until Phase F4 delivers, and their outstanding prose re-validations
-(ROADMAP Phase 1) are now necessary-but-not-sufficient rather than the last step. There is no
-provisional status, no waiver, and no "ratified pending encoding": the rule has one exception, the
-grandfather clause above, and it is closed to new entrants. If that holds specs at `candidate` for a
-year, the roadmap is telling the truth about where this repo is.
+**What this gate blocks today — corrected 2026-08-26.** This paragraph used to read *"no scenario
+has a KCS encoding, so no spec is currently promotable to `ratified`"*. That has been false since
+**2026-08-19**. All nine [`../scenarios/`](../scenarios/) pressure tests now have machine-replayable
+KCS encodings, built downstream and checked in at `agora/console/src/kcs/scenarios/`
+(`agora chief/75`), and the suite was run over real MCP/A2A links with delta-N stand-ins for
+unadopted roles (`agora chief/76`), leaving `agora/console/evidence/kcs-live-run.json` — a
+content-addressed run record that koine has verified **exists and covers all nine**, and whose
+`green` verdict is that artifact's own claim rather than something re-run here
+([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)).
+
+So the **artefact gate is met for every spec in the fabric**, and what a promotion waits on is no
+longer this rule. It is each spec's own outstanding pass — an unfolded delta set, an un-re-run
+scenario, a missing downstream fixture — enumerated per spec in
+[`../ROADMAP.md`](../ROADMAP.md) *Phase 1*. **Six of six specs remain `candidate` and zero are
+promotable today**, but for spec-specific reasons that this section no longer supplies.
+
+Two things this correction deliberately does **not** do:
+
+- It does not promote anything. The encoding is a **precondition**, never a promotion: a status
+  change stays the owner's deliberate act on the spec's own merits.
+- It does not let an owner cite the downstream run yet. Under the paragraph above, a citable result
+  is one recorded **here**, in the scenario it ran, as a `## Downstream results` section. All nine
+  of those sections are still empty, so the run is real, referenced, and not yet evidence any gate
+  may read. Recording it is owned by `84-record-the-downstream-results`.
+
+There is still no provisional status, no waiver, and no "ratified pending encoding": the rule has
+one exception, the grandfather clause above, and it is closed to new entrants.
 
 ## External standards — the pin rule
 

@@ -43,7 +43,8 @@ whose support is unavailable:
   egress class and as where a relation's egress class is *actually declared*. See **IMP-15**.
 - **The operator's node/edge ontology and bridge mappings** — named in
   [`../../registry/README.md`](../../registry/README.md) as the home of instance data.
-- **`agora` tasklists** — `agora chief/62`, `chief/63`, `agora:72-kcb-extension-uri-migration`,
+- **`agora` tasklists** — `agora chief/75`, `chief/76` (the ids `chief/62` / `chief/63` named before
+  koine's markers were superseded), `agora:72-kcb-extension-uri-migration`,
   cited in [`../../specs/README.md`](../../specs/README.md) and
   [`../../specs/capability-bus.md`](../../specs/capability-bus.md) as where obligations are
   discharged. A third party can read the obligation and cannot observe its discharge.

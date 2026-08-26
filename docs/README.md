@@ -26,6 +26,7 @@ reference out of this repo resolves for nobody who has only this one —
 - [Implementability audit — what a third party receives, and what they cannot build from it](reference/implementability-audit.md)
 - [Interop trial — a spec-only producer, and what the receiving side does with it](reference/interop-trial.md)
 - [KGP §4.1 round-trip gate — what the downstream artifact actually delivers](reference/kgp-projection-gate-verification.md)
+- [The KCS-encoding gate — what the downstream suite actually delivers](reference/kcs-encoding-gate-verification.md)
 
 ## Explanation
 

@@ -402,6 +402,17 @@ points at it. The open remainder is owned by `87-kgp-projection-reader-and-round
 `../tasks/chief/`), a cross-repo marker on the same ADR-0001 terms. Until it lands, this spec stays
 **candidate**.
 
+**And it is now the only thing between this spec and `ratified`.** KGP's promotion answers to a
+second gate as well — [`README.md`](README.md#the-ratification-gate) requires a machine-replayable
+KCS encoding of the scenario that gates the spec — and that one has been **met** since 2026-08-19:
+`kcs:worlds-to-fabric`, the encoding of
+[`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) whose *Re-validation*
+section carries KGP's pass, exists downstream and returned `live-pass` on a fully live three-role
+cast ([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)).
+Two riders, neither of which promotes anything: a `green` run is *the encoded assertions held*, not
+a verdict on this spec, and the run has not yet been recorded in koine as a `## Downstream results`
+section, so no owner may cite it as evidence yet (owner `84-record-the-downstream-results`).
+
 ---
 
 ## 5. Dialect & portability tiers
@@ -577,7 +588,10 @@ Ratified 2026-07-17.
   canonical, §3.1's hashed set, §3.3's convergence, §4/§4.1's mapping and annotation-vocabulary
   tables — every term, value and reused-or-minted verdict — §5, §6, §7.1's six classes and §7.2 are
   byte-unchanged, and **no claim id moves**. Stays **0.5.2 Candidate**; the gate is narrowed, not
-  moved, and emphatically not closed.
+  moved, and emphatically not closed. Same date, §4.1 also records that KGP's **other** gate — the
+  KCS encoding [`README.md`](README.md#the-ratification-gate) requires — has been met since
+  2026-08-19 (`kcs:worlds-to-fabric`, `live-pass`), which makes the round-trip fixture literally the
+  last item. Informative pointer; no normative change and no status change.
 
 - **Editorial** (2026-08-18) — Two corrections found by the third-party implementability audit
   ([`../docs/reference/implementability-audit.md`](../docs/reference/implementability-audit.md),
