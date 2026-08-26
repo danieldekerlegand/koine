@@ -6,7 +6,7 @@
 > *any two conformant AI systems interoperate on identity, knowledge, media, and capability
 > without a single point-to-point bridge.*
 
-**Status:** Contract layer complete — **0 of 6** specs ratified — all six are Candidate, 4 in candidate re-validation (KGP, KMI, KCB, KFT) · maintenance + ratification cadence, with a planned "second act" (Phases F1–F6 below) and an **in-progress prior-art/standards-hygiene pass (Phase F7)**. Ratification is now **conformance-gated** — no spec reaches `ratified` without a machine-replayable KCS scenario ([`specs/README.md`](specs/README.md#the-ratification-gate), Phase F7 · `79`), which puts **Phase F4 on the critical path** · **Last updated:** 2026-08-13
+**Status:** Contract layer complete — **0 of 6** specs ratified — all six are Candidate, 4 in candidate re-validation (KGP, KMI, KCB, KFT) · maintenance + ratification cadence, with a planned "second act" (Phases F1–F6 below) and an **in-progress prior-art/standards-hygiene pass (Phase F7)**. Ratification is now **conformance-gated** — no spec reaches `ratified` without a machine-replayable KCS scenario ([`specs/README.md`](specs/README.md#the-ratification-gate), Phase F7 · `79`). **Phase F4 delivered that artefact on 2026-08-19** for all nine scenarios of that date, so the conformance gate no longer blocks five of the six — **KFT excepted since 2026-08-26**, when 0.6.0 added a tenth scenario (`kft-resume-checkpoint.md`) that has no encoding; **0 of 6** remains the true count because each spec's own pass is still outstanding (Phase 1) · **Last updated:** 2026-08-26
 
 > **Reconciled against the tree 2026-08-25.** `tasks/chief/completed/` holds **35** records — **25** merged, 10 retired by decision (no `mergedToMain`, which is the deliberate shape). `tasks/chief/` holds **3** active, **2** of them parked.
 >
@@ -108,13 +108,22 @@ so it cannot collide. **Every F-phase proposal is now authored as a `tasks/chief
 ### Phase 0 — Contract authoring, ratification & hardening — ✅ complete
 
 The four data/control planes are specified and each is validated by at least one concrete pressure
-test; two specs are ratified, and four ADR-driven hardening passes landed via Chief.
+test, and four ADR-driven hardening passes landed via Chief. **All six specs were ratified in this
+phase, and all six have since been demoted** by a later normative change of koine's own making —
+KCB 0.3.0 (2026-07-22), KMI 0.3.0 and KGP 0.5.0 (2026-08-02), KFT 0.4.0 (2026-08-06), KCS 0.3.0
+(2026-08-20), KINP 0.3.0 (2026-08-23). Not one is a spec that never rose. (This paragraph used to
+say *two* were ratified here, counting only the two still ratified when the rows below were written;
+the rows likewise record ratification for only those two. Corrected 2026-08-26 — the changelogs of
+all six carry a `**Ratified.**` entry.) So the rows below are the historical record of Phase 0, not
+the current count. That count is **0 of 6**; Phase 1 holds the remaining gate for four of the six,
+and the per-spec ranking for all six — rose-and-fell history, the named gate, and what a promotion
+costs from here — is [`docs/reference/promotability.md`](docs/reference/promotability.md).
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ✅ | **KINP 0.2.1** ratified — identity keystone; deltas A–E folded, three design forks decided (single identity **authority role**, hybrid merge, `@world(W)` arg); the namespace every other spec references (identity.md §11) | gated by `scenarios/e2e-worlds-to-fabric.md` · — (pre-Chief) |
-| ✅ | **KCS 0.2.0** ratified — declarative, replayable scenarios over participants' real MCP/A2A links; observer, not hub (conformance-scenario.md) | gated by `scenarios/kcs-format-stress.md` · — (pre-Chief) |
-| ✅ | **KGP / KMI / KCB / KFT** first-authored & pressure-tested — all four planes covered by an e2e scenario | `scenarios/` · — (pre-Chief) |
+| ✅ | **KINP 0.2.1** ratified — identity keystone; deltas A–E folded, three design forks decided (single identity **authority role**, hybrid merge, `@world(W)` arg); the namespace every other spec references (identity.md §11) | gated by `scenarios/e2e-worlds-to-fabric.md` · — (pre-Chief) · **demoted to candidate at 0.3.0** (federation fold) |
+| ✅ | **KCS 0.2.0** ratified — declarative, replayable scenarios over participants' real MCP/A2A links; observer, not hub (conformance-scenario.md) | gated by `scenarios/kcs-format-stress.md` · — (pre-Chief) · **demoted to candidate at 0.3.0** (determinism fold) |
+| ✅ | **KGP / KMI / KCB / KFT** first-authored, pressure-tested **and ratified** — all four planes covered by an e2e scenario; KGP 0.2.0, KMI 0.2.0, KCB 0.2.0 (all 2026-07-17) and KFT 0.3.0 (2026-07-23) each reached `ratified` here | `scenarios/` · — (pre-Chief) · **all four since demoted** — KCB at 0.3.0, KMI at 0.3.0, KGP at 0.5.0, KFT at 0.4.0 |
 | ✅ | Adopt **OTIO** as KMI's canonical timeline; demote bespoke `edl+json` to deprecated; ADR-0005; KMI → 0.3.0 | `chief/10-kmi-adopt-otio` |
 | ✅ | **KGP standards alignment** — RDF-star / W3C PROV / JSON-LD as a specified, round-trip-tested projection; bespoke TSV canonical retained; ADR-0006; KGP → 0.5.0 | `chief/20-kgp-standards-alignment` |
 | ✅ | **Self-describing participant** — namespace + KCB AgentCard-extension manifest + egress policy + bridge maps published at the edge; ADR-0007; `schemas/participant-self-description.schema.json` + [`docs/explanation/self-describing-participant.md`](docs/explanation/self-describing-participant.md) | `chief/30-self-describing-participant` |
@@ -140,13 +149,20 @@ is unchanged; what changed is that clearing it no longer finishes the job.
 |---|---|---|
 | ⬜ | **Re-ratify KCB 0.4.1** — **two** gates now (KCB pressure-test §): re-run the media-transform scenario against the 0.3.0 AgentCard-extension shape (`capabilities.extensions[]`, `https://w3id.org/koine/kcb/manifest/0.3`), **and** a *clean* §7.5 break-test. The second gate's scenario has landed and run (`scenarios/e2e-live-schema-mutation.md`) and is **not clean** — V-2/V-4/V-5/V-7 blocking — so re-ratification now waits on the KCB **0.5.0** fold (Phase F2) plus a re-run — **and**, like every row here, on the KCS encodings of both scenarios (F4 · `62`/`63`) | re-run `scenarios/e2e-media-transform.md` + `scenarios/e2e-live-schema-mutation.md` · — |
 | 🚧 | **Re-ratify KMI 0.3.0** — OTIO half already re-validated clean; the prose half is blocked only because the same scenario also gates KCB's manifest change (media-interchange.md pressure-test §), and the promotion additionally needs `kcs:media-transform` (F4) | rides with KCB re-run · — |
-| 🚧 | **Re-ratify KGP 0.5.2** — projection findings **KGP-1** (which confidence a multi-provenance merged claim projects to ProbLog) and **KGP-2** (name the §4.1 annotation predicates) are ✅ **closed** by the normative §4/§4.1 edits of `chief/72` (KGP 0.5.1, 2026-08-13), and 0.5.2 (2026-08-13) is rationale-only (§3.4 prior art + the ADR-0006 amendment); the remaining gates are the missing round-trip fixture (Phase F5) and `kcs:worlds-to-fabric` (F4) | `scenarios/e2e-worlds-to-fabric.md` *(Re-validation — KGP 0.5.0)* · — |
-| 🚧 | **Re-ratify KFT 0.4.0** — owner re-ratification of the strictly-additive FT-M…FT-Q intake fold (already walked clean; fine-tuning.md pressure-test §); the header's stale plane-version pins are a named precondition, closed by `chief/71` (below); `kcs:producer-exhaust-finetune` (F4) is the second gate | `scenarios/e2e-producer-exhaust-finetune.md` *(Re-validation — KFT 0.4.0)* · — |
+| 🚧 | **Re-ratify KGP 0.5.2** — projection findings **KGP-1** (which confidence a multi-provenance merged claim projects to ProbLog) and **KGP-2** (name the §4.1 annotation predicates) are ✅ **closed** by the normative §4/§4.1 edits of `chief/72` (KGP 0.5.1, 2026-08-13), and 0.5.2 (2026-08-13) is rationale-only (§3.4 prior art + the ADR-0006 amendment); `kcs:worlds-to-fabric` (F4) **exists and ran live-pass** as of 2026-08-19, so that gate is met and **one** remains: the §4.1 round-trip fixture, **verified 2026-08-26 as NOT delivered** — the merged downstream work is an emitter with no reader, so rule 2 has never run ([`docs/reference/kgp-projection-gate-verification.md`](docs/reference/kgp-projection-gate-verification.md)); owner `87-kgp-projection-reader-and-roundtrip`. **Not promoted.** | `scenarios/e2e-worlds-to-fabric.md` *(Re-validation — KGP 0.5.0)* · `chief/83-promote-kgp` |
+| 🚧 | **Re-ratify KFT 0.6.0** — **two** gates now (fine-tuning.md pressure-test §). (i) The standing one: owner re-ratification of the strictly-additive FT-M…FT-Q intake fold, which walks clean *as written* but has not been executed; its stale-plane-pin precondition is ✅ closed by `chief/71`, and `kcs:producer-exhaust-finetune` (F4) **exists** as of 2026-08-19, so the conformance gate is met *for this gate*. (ii) Added by **0.6.0** (2026-08-26, `chief/69`): a re-run of the new resume-checkpoint leg against the folded text. Unlike 0.5.0, 0.6.0 **does** move §4's admission inputs — where a job carries `resume`, `resume.checkpoint` joins §4.2's aggregate and §4.3's union — so §3.4/§4.2/§4.3/§5.4/§6/§7 are *changed* normative surface, not re-validated text. A cold job admits exactly as before, which is why (i) is unaffected. **(ii) also fails the conformance gate today** — the tenth scenario has no KCS encoding, so 0.6.0's clauses have no runnable document citing them ([`docs/reference/kcs-encoding-gate-verification.md`](docs/reference/kcs-encoding-gate-verification.md) §6.1); that encoding is downstream work and **unowned** | `scenarios/e2e-producer-exhaust-finetune.md` *(Re-validation — KFT 0.4.0)* + `scenarios/kft-resume-checkpoint.md` · — |
 | ⬜ | **Doc-sync the index tables** — bring `specs/README.md` + root `README.md` status columns in line with the spec headers (KGP 0.5.0, KFT 0.4.0, KMI/KCB 0.3.0 all candidate). *Its ECOSYSTEM.md story context is already resolved* — the file exists since `2e228c6` (see Loose wishlist ✅), so `50`'s remaining scope is the index tables + link integrity · S | `chief/50-doc-sync-status-tables` *(proposed, koine)* |
 | ⬜ | **KFT dependency re-pin** — re-pin or explicitly justify KFT §1/header's plane-version pins (KGP 0.4.0 / KMI 0.2.0 / KCB 0.2.0 — the last-ratified versions — vs current 0.5.0 / 0.3.0 / 0.3.0 candidates) as part of the 0.4.0 re-ratification; reconcile the in-body cross-plane citations (esp. §2's KCB manifest shape) · S | `chief/71-kft-dep-repin` *(proposed, koine)* |
 | ⬜ | **KGP findings closure** — the normative §4/§4.1 spec edits closing KGP-1 (one ProbLog fact per admitted prov record; aggregation is consumer policy) and KGP-2 (name the annotation predicates: a koine-owned term namespace, reusing external terms where they exist) + the §4.1 reference to the downstream round-trip fixture — the spec-edit work `chief/50` is barred from · S | `chief/72-kgp-findings-closure` *(proposed, koine)* |
 
-*Depends on:* **Phase F4** — every row needs the KCS encoding of the scenario it re-runs (`agora chief/62`, then `63`), which is the one hard external dependency this phase has; the prose re-runs themselves need nothing external. KMI's *prose* half clears the moment KCB's re-run passes; both still wait on F4.
+**Two of the six specs have no row here.** Phase 1 was scoped to the four candidates of its day;
+**KINP** and **KCS** were still ratified then and were demoted later (2026-08-23 and 2026-08-20).
+Their gates are real and unowned — KINP's is the MA-1…MA-4 fold (`85`), KCS's is a re-validation of
+its own determinism fold — and both are carried in
+[`docs/reference/promotability.md`](docs/reference/promotability.md), which is the six-row view this
+four-row table is the program half of.
+
+*Depended on* **Phase F4** — every row needs the KCS encoding of the scenario it re-runs. That dependency is **discharged**: `agora chief/75` encoded all nine scenarios and `agora chief/76` ran them over live links, both merged 2026-08-19 ([`docs/reference/kcs-encoding-gate-verification.md`](docs/reference/kcs-encoding-gate-verification.md)). No row here is blocked by F4 any more; each is blocked by its own outstanding pass. KMI's *prose* half clears the moment KCB's re-run passes. One caveat that reads the other way: a downstream result becomes **citable** evidence only once it is recorded in the scenario it ran (`## Downstream results`), and all nine of those sections are empty — owner `84-record-the-downstream-results`.
 
 ### Phase 2 — Downstream adoption (tracked, built in siblings) — 🚧 rolling
 
@@ -216,40 +232,58 @@ client's live end-to-end run is externally blocked until **≥1 real provider** 
 
 *Depends on:* the client (`59`) live-run is blocked until `57` **or** `58` ships a real provider. The semantic admission rules the validator (`60`) can't express are Phase F5. Source: fine-tuning.md §9.1.
 
-### Phase F4 — Conformance console (the ratification critical path) — ⬜ planned (scale: L, cross-repo)
+### Phase F4 — Conformance console (the ratification critical path) — ✅ delivered 2026-08-19 (scale: L, cross-repo)
 
-⚠️ **This phase is no longer optional payoff — it is the gate every other spec promotion waits
-behind.** All eight scenarios are hand-walked **prose**, and under the
-[ratification gate](specs/README.md#the-ratification-gate) a prose pass no longer promotes anything
-to `ratified`. Encoding each scenario as a machine-replayable KCS document and running it over real
-MCP/A2A links (KCS §6 names this a downstream conformance-console tasklist) is therefore the **only**
-route by which any spec earns `ratified` — it gates all four Phase 1 re-ratifications, and it is what
-settles the grandfathered debt KINP 0.2.1 and KCS 0.2.0 carry. Partly blocked because the media
-producer is still a *planned* KCB provider — bridged by the KCS **delta-N stand-in** already in the
-format. Per-scenario state lives in the **KCS encoding** column of
-[`scenarios/README.md`](scenarios/README.md); today it reads `planned` eight times and `exists` zero.
+This phase was the gate every other spec promotion waited behind: under the
+[ratification gate](specs/README.md#the-ratification-gate) a hand-walked prose pass no longer
+promotes anything to `ratified`, so encoding each scenario as a machine-replayable KCS document and
+running it over real MCP/A2A links (KCS §6 names this a downstream conformance-console tasklist) was
+the **only** route by which any spec could earn `ratified`.
+
+✅ **It delivered on 2026-08-19, and koine had not noticed.** All **nine** scenarios are encoded at
+`agora/console/src/kcs/scenarios/`, the suite ran over live links with **delta-N stand-ins** for the
+roles nobody has adopted, and `agora/console/evidence/kcs-live-run.json` is the content-addressed run
+record (19 of 32 participant slots live, 0 transport failures, `verdict: partial-live`). Verified
+here rather than taken from a `passes` flag:
+[`docs/reference/kcs-encoding-gate-verification.md`](docs/reference/kcs-encoding-gate-verification.md).
+**No spec's promotion is blocked by this phase any more.**
+
+Two things it did *not* settle, both of which matter more now that the artefact exists:
+
+- **`green` is not a gate verdict.** The two scenarios koine records as *not clean*
+  (`e2e-live-schema-mutation.md` V-1…V-8, `e2e-multi-authority.md` MA-1…MA-11) both come back green,
+  because the encodings deliberately do not assert a fold koine has not made.
+- **Nothing was recorded back into koine.** All nine `## Downstream results` sections are still
+  empty, so under the gate's own rule no owner may yet cite the run — owner
+  `84-record-the-downstream-results`, which also owns the stale `planned`-nine **KCS encoding**
+  column in [`scenarios/README.md`](scenarios/README.md).
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | Encode the eight `scenarios/` as machine-replayable **KCS documents** (`kcs:worlds-to-fabric`, `kcs:media-transform`, the three finetune passes, `kcs:live-schema-mutation`, `kcs:multi-authority`, the format-stress) — **the artefact `candidate → ratified` now requires**; each one that lands flips its row in `scenarios/README.md` from `planned` to `exists` · L | agora `chief/62-encode-scenarios-as-kcs` *(proposed, cross-repo)* |
-| ⬜ | Run the KCS suite over **real MCP/A2A connections**, using **delta-N `standin`** fixtures for not-yet-adopted providers (the still-*planned* media KCB provider); each run is recorded back into its scenario's `## Downstream results` section (Phase 2 row D), which is what a ratification gate reads · L | agora `chief/63-run-kcs-over-live-links` *(proposed, cross-repo)* |
+| ✅ | Encode the nine `scenarios/` as machine-replayable **KCS documents** (`kcs:worlds-to-fabric`, `kcs:media-transform`, the three finetune passes, `kcs:live-schema-mutation`, `kcs:multi-authority`, the format-stress) — **the artefact `candidate → ratified` now requires**; all nine landed; the `scenarios/README.md` column has not been flipped yet (`84`) · L | agora `chief/75-encode-scenarios-as-kcs` *(merged `f853240`, 2026-08-19)* |
+| ✅ | Run the KCS suite over **real MCP/A2A connections**, using **delta-N `standin`** fixtures for not-yet-adopted providers (the still-*planned* media KCB provider); each run is recorded back into its scenario's `## Downstream results` section (Phase 2 row D), which is what a ratification gate reads — **the run happened, the recording did not** (`84`) · L | agora `chief/76-run-kcs-over-live-links` *(merged `f32508e`, 2026-08-19)* |
 
-*Depends on:* Phase 2 adoption (real participants to drive) and Phase F3 for the finetune legs; KCS 0.2.0 (ratified, delta N folded) already expresses the stand-ins. **Depended on by:** all four Phase 1 re-ratifications and every future promotion to `ratified`. Source: conformance-scenario.md §6, scenarios/kcs-format-stress.md (delta N), specs/README.md (the ratification gate).
+*Depended on:* Phase 2 adoption (real participants to drive) and Phase F3 for the finetune legs — neither complete, which is why the run is `partial-live` rather than fully live; KCS's delta-N stand-ins bridged the gap. **Depended on by:** all four Phase 1 re-ratifications and every future promotion to `ratified` — that dependency is now discharged. Source: conformance-scenario.md §6, scenarios/kcs-format-stress.md (delta N), specs/README.md (the ratification gate).
 
 ### Phase F5 — Downstream validator obligations (explicit, un-owned) — ⬜ planned (scale: M, cross-repo)
 
-Concrete validator behaviors the specs *require* but koine deliberately does not hold (ADR-0001) —
-today un-owned. One of them (the KGP round-trip fixture) also unblocks Phase 1's KGP re-ratification.
+Concrete validator behaviors the specs *require* but koine deliberately does not hold (ADR-0001).
+One of them (the KGP round-trip fixture) is the whole of Phase 1's KGP re-ratification now that F4 has
+delivered. **Read this table with the 2026-08-26 lesson in hand:** the KGP row was marked closed on a
+downstream tasklist reading `passes: true`, and checking the artifact found two of its three stories
+flipped by a retire commit with `notes: null` and no code. The other two rows have merged downstream
+(`agora chief/78`, `chief/79`) and carry the **same tell** — stories at `passes: true` with `notes: null`.
+They are left ⬜ here deliberately: unverified is the honest mark, and understating is the safe direction.
 
 | Status | Milestone | Tasklist |
 |---|---|---|
-| ⬜ | The missing **RDF-star / PROV / JSON-LD round-trip fixture** for KGP §4 — proves a projection is lossless back to the canonical pack; also closes the last *contract-side* KGP 0.5.0 re-ratification blocker, leaving only the F4 encoding · M | agora `chief/64-kgp-projection-roundtrip-fixture` *(proposed, cross-repo)* |
+| 🚧 | The missing **RDF-star / PROV / JSON-LD round-trip fixture** for KGP §4 — proves a projection is lossless back to the canonical pack; with F4's encoding now in hand this is **KGP's last remaining gate**. Half-delivered: `agora chief/77` merged an **emitter** (`85eb207`) and the marker `64` was retired on the strength of it, but no reader exists in any repo, so §4.1 rule 2 has never run — verified 2026-08-26, [`docs/reference/kgp-projection-gate-verification.md`](docs/reference/kgp-projection-gate-verification.md) · M | `87-kgp-projection-reader-and-roundtrip` *(parked marker, cross-repo)* |
 | ⬜ | **Rejection of a manifest-less pack** — a bare projection arriving without its manifest is not a unit of transfer; the validator must refuse it (schemas/README.md) · S | agora `chief/65-manifestless-pack-rejection` *(proposed, cross-repo)* |
 | ⬜ | The **finetune-job SEMANTIC admission rules** the schema can't express — `modality × method` compatibility (FT-F), egress/license aggregation over `{data ∪ base}` (FT-B), inline-header checks (FT-N…P); pinned by the finetune scenarios · M | agora/lugh `chief/66-finetune-semantic-admission` *(proposed, cross-repo)* |
 
-*Depends on:* `64` feeds Phase 1 (KGP); `66` lives with the F3 providers (a)/(b). Source: scenarios/e2e-worlds-to-fabric.md, scenarios/e2e-finetune.md, schemas/README.md, registry/README.md.
+*Depends on:* the KGP fixture (`87`) feeds Phase 1 (KGP) and is the only thing left between KGP 0.5.2 and `ratified`; the finetune admission rules live with the F3 providers (a)/(b). Source: scenarios/e2e-worlds-to-fabric.md, scenarios/e2e-finetune.md, schemas/README.md, registry/README.md.
 
-### Phase F6 — Per-spec deferred design questions — ⬜ planned (scale: S–M each, koine)
+### Phase F6 — Per-spec deferred design questions — 🚧 in progress (scale: S–M each, koine)
 
 Each spec's own §"Open questions" — folded **on the next pressure break**, not speculatively (each
 note says "unless a pressure test forces it into the contract"). Grouped by spec; each is a koine
@@ -259,7 +293,7 @@ note says "unless a pressure test forces it into the contract"). Grouped by spec
 |---|---|---|
 | ⬜ | **KMI §9** — OTIO schema-version pinning, profile-vocabulary granularity, perceptual-hash backend for `media:perceptual_match`, id re-attach after a third-party OTIO round-trip drops `metadata.koine` · M | `chief/67-kmi-open-questions` *(proposed, koine)* |
 | ⬜ | **KCS §7** — assertion extensibility (fixed vocab vs predicate DSL), determinism strictness (assert structure/invariants, not generated content), observation-log fidelity · S | `chief/68-kcs-open-questions` *(proposed, koine)* |
-| ⬜ | **KFT §11** — adapter-selection hint, distributed-run metering + checkpoint lineage, resume-checkpoint ref, eval-as-reward KCS profile for `method: dpo` · M | `chief/69-kft-open-questions` *(proposed, koine)* |
+| ✅ | **KFT §11** — adapter-selection hint, distributed-run metering + checkpoint lineage, resume-checkpoint ref, eval-as-reward KCS profile for `method: dpo` · M — **delivered 2026-08-26**: a new pressure leg ([`scenarios/kft-resume-checkpoint.md`](scenarios/kft-resume-checkpoint.md)) forced question 3 and its FT-R…FT-V folded into **KFT 0.6.0** (§3.4 `resume` ref, read by §4.2/§4.3) | [`chief/69-kft-open-questions`](tasks/chief/completed/69-kft-open-questions.json) *(merged, koine)* |
 | ⬜ | **KCB §8.1** — subscription firehose backpressure / flow-control for high-volume-world subscriptions · S | `chief/70-kcb-subscription-backpressure` *(proposed, koine)* |
 
 *Depends on:* a new pressure-test leg for each before it folds — these are intentionally reactive. Source: media-interchange.md §9, conformance-scenario.md §7, fine-tuning.md §11, capability-bus.md §8.1 (renumbered from §8.2 in KCB 0.4.6).
@@ -342,6 +376,7 @@ stems and the Phase-1 stems — the doc-sync (`chief/50`) plus the two ratificat
 **Guides & positioning:**
 - [`docs/reference/positioning.md`](docs/reference/positioning.md) — how koine relates to A2A, MCP, and mature domain standards (the semantic gaps it fills — and, since the 2026-08-18 correction, what the Kang & Diponegoro *governance*-gap analysis does and does not corroborate; what it builds on rather than replaces), and the **prior art it cites and dismisses** — nanopublications/Trusty URIs, C2PA, Croissant, Frictionless, Pact, DIDs/VCs.
 - [`docs/reference/governance-taxonomy-map.md`](docs/reference/governance-taxonomy-map.md) — the six governance dimensions of Kang & Diponegoro (arXiv:2606.31498) measured against the specs, section by section: which are **partial** and precisely what is missing from each (including the scenario-replay vs decision-replay distinction), which are **absent**, and the three shortfalls filed as findings **GOV-1…GOV-3**. The three absences are decided in [ADR-0011](decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md) as **non-goals**, with the trigger that re-opens the verdict.
+- [`docs/reference/promotability.md`](docs/reference/promotability.md) — **one line per spec on what stands between it and `ratified`**: which specs rose and fell (all six did) and when, the named gate each waits on today, who owns it, and the six ranked by what a promotion actually costs. The status view of what Phase 1 above holds as a program.
 - [`docs/reference/upstream-standards.md`](docs/reference/upstream-standards.md) — the **pin table**: which version or dated revision of each external standard koine was validated against, and the drift-check cadence that keeps it honest.
 - [`docs/explanation/self-describing-participant.md`](docs/explanation/self-describing-participant.md) — the adopter checklist (namespace, capability manifest, egress policy, vocabulary mappings).
 - [`docs/guides/walkthrough-capability-bus.md`](docs/guides/walkthrough-capability-bus.md) — a KCB advertise → discover → direct-dial walkthrough with real payloads.

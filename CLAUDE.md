@@ -47,6 +47,12 @@ vocabulary.
   in `specs/README.md` § *External standards — the pin rule*.
 - Specs are validated by concrete pressure-test scenarios in `scenarios/` before ratification
   (status: `draft` → `candidate` → `ratified`). Prefer finding breaks over asserting correctness.
+- **Adding a file to `scenarios/` is a cross-repo obligation with no local red light.** The
+  downstream KCS encoding set is held to **set-equality** with `scenarios/*.md` by a test in the
+  implementing repo; no guard in koine checks it, so a new scenario silently breaks that test and
+  silently costs its spec the [ratification gate](specs/README.md#the-ratification-gate) (a folded
+  clause with no encoding citing it is not promotable). Say so in the scenario's row and in
+  `ROADMAP.md` when you add one — do not leave it to be found downstream.
 - Identifiers, envelopes, and resolution semantics are defined once in `specs/identity.md`
   (KINP) and referenced — never redefined — by other specs.
 - Write clauses against **roles**, never against a named product. Product names may appear only

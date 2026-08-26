@@ -1,155 +1,378 @@
-# Chief Progress — 69-kft-open-questions
+# Chief Progress — 83-promote-kgp
 Started: Wed Aug 26 10:34:58 CDT 2026
 ---
 
 ## Codebase Patterns
 
-- **Two kinds of scenario.** A full `e2e-*.md` pass walks a whole story across participants and
-  emits a delta series; a **focused pressure leg** (`kmi-otio-roundtrip.md`, now
-  `kft-resume-checkpoint.md`) attacks ONE open question of ONE spec and says explicitly which
-  questions it does *not* force. Use the focused shape when a tasklist names a single §-numbered
-  open question. Copy `kmi-otio-roundtrip.md`'s skeleton: Purpose → Setup (roles + KINP §3.4
-  placeholders) → numbered Steps each marked ✅/🟡/🔴 → Findings table → an explicit
-  "only §N is forced" section listing every sibling question left alone.
-- **Prove the leg is not rigged.** Both finetune-adjacent precedents open with a step that *holds*
-  and close with a "what held" section. A leg that only breaks reads as manufactured; a leg that
-  confirms the half of the question that already works, then breaks the other half, is what earns
-  the fold.
-- **Adding a scenario means editing `scenarios/README.md`.** Add a table row. The counts in that
-  file ("eight documents", "`planned` eight times") refer to the **KCS-encoding-gated** rows only —
-  a focused leg carries `⬜ **focused pressure leg** — follow-up to <parent>` in the last column
-  and moves none of those counts.
-- **`.chief/verify.sh` path-selects its guards from the CHANGED files.** Touch any `.md` and
-  `guard-doc-integrity` + `guard-doc-links` become merge blockers for your branch — even if they
-  were already red for reasons predating it. Run `bash .chief/verify.sh` after committing (it
-  diffs committed state, so it reports "no changed files" on an uncommitted tree). To tell a
-  pre-existing failure from one you caused, stash with a unique tag and re-run on baseline.
-- **Quote the spec verbatim when asserting a break.** Every finding in these scenarios cites the
-  clause it breaks by section number and quoted phrase. `sed -n` the clause before writing the
-  claim — a paraphrased gap is not a delta.
+- **`.chief/verify.sh` selects gates from CHANGED PATHS.** Touching `docs/**` or `specs/**`
+  selects `guard-doc-integrity`, which fails on ANY dead relative link in the whole tree — not
+  just yours. Latent breakage on main becomes YOUR merge blocker. Run
+  `node scripts/check-doc-integrity.mjs` early, and compare against a clean HEAD checkout
+  (`git archive HEAD | tar -x -C $(mktemp -d)`) to tell inherited from introduced.
+- **`verify.sh` diffs against the base branch, so it reports "no changed files" until you commit.**
+  Commit first, then run it.
+- **Not every spec edit bumps the version.** KGP's changelog has `**Editorial** (date)` entries
+  that leave version + status alone — use that form for pointer/tracking-prose corrections. It
+  keeps the four status mirrors (README.md, specs/README.md, ECOSYSTEM.md §2, CLAUDE.md
+  *Current state*) untouched, which is the expensive part of a bump.
+- **`docs/README.md` says "a document not linked here does not exist."** A new file under `docs/`
+  must be added to that index or it is dead weight.
+- **When a tasklist moves to `tasks/chief/completed/`, links to it in `specs/` break.** There were
+  9 such links on main for `53-multi-authority-scenario.json`.
+- **Green gates do not mean a rebase is integrated.** `verify.sh` checks links, the three status
+  mirrors, schemas and the registry — never whether a *claim* you wrote is still true about text the
+  base branch moved. After any rebase, re-read every statement your branch made about anything main
+  touched.
+- **Adding a `scenarios/*.md` breaks a downstream set-equality test, with no red light here.** See
+  the CLAUDE.md *Conventions* bullet. It also silently costs that spec the ratification gate.
+- **`.chief/state/` is gitignored with two force-tracked files**, so `git add` on them exits
+  non-zero while still staging correctly — never chain it with `&&`.
 
 ---
 
-## Iteration 1 — US-1 (New KFT pressure-test leg forcing the open question)
+## 2026-08-26 — US-1: The gate is verified satisfied, or it is not
 
-**Chose §11.3 (resume-checkpoint ref)** over §11.1/§11.2/§11.4/§11.6. Reasoning: §11.3 is the only
-one where the spec already makes a *contract claim* that can be taken at face value and falsified —
-§6 annotates the telemetry `checkpoint` field "optional KMI asset (**resumable**)" while §3 has no
-slot that can name one. That makes the break demonstrable from the spec's own text rather than
-manufactured, which is what the tasklist's unpark note demanded ("US-2 folds a clause only if US-1
-finds a CONCRETE break").
+**VERDICT: the gate is NOT satisfied. KGP stays 0.5.2 Candidate.** The tasklist premise — that
+`agora:77` closed KGP §4.1's round-trip gate — is false, and this is exactly the
+`passes: true`-is-a-claim trap US-1's third criterion warned about.
+
+What the evidence shows (read at `agora` `85eb207`, re-read at that repo's main `9fe2ee5`):
+
+- The merge is **4 files, 2 commits, both US-1**: `knowledge/src/projection.ts` (223 lines, the
+  emitter), `projection.test.ts` (55 lines, 2 cases over ONE hand-written single-claim pack),
+  `index.ts` (+13 re-exports), the tasklist json (+2/−1).
+- agora's US-2 (*round-trips back byte-lossless*) and US-3 (*the evidence artifact*) were flipped
+  to `passes: true` with `notes: null` by the **retire** commit `a73b967`, after the merge. No
+  commit implements either.
+- **There is no reader.** `projectPack()` is the only entry point; `index.ts` exports no inverse;
+  a grep over the repo for parse-back / unproject / RDF-star-to-pack returns only types and
+  comments. So §4.1 **rule 2** — re-derive the `claim` id from the recovered canonical and reject
+  on disagreement — has never run and cannot run.
+- Obligation by obligation: **G1** (emit) met narrowly, **G2** (read back) not met, **G3**
+  (re-derive + reject) not met and vacuous without G2, **G4** (complete-or-reported) not met as
+  specified — an arity>2 claim throws and aborts the whole pack, where §4.1 permits reification
+  or omit-with-a-report.
+- Also unexercised: §3.3 two-producer convergence, the §7 confidence/license/`local-only` filters
+  per encoding, `valid_time` → OWL-Time (declared in the emitter's `@context`, never emitted),
+  and any mutation test.
 
 **Files changed**
-- `scenarios/kft-resume-checkpoint.md` (new, ~200 lines) — the leg. Findings **FT-R…FT-V**
-  (FT-A…FT-Q were already spent by the three earlier passes; FT-R was free).
-- `scenarios/README.md` — one table row, focused-leg form.
-- `specs/{identity,capability-bus,media-interchange}.md` — nine dangling links repointed (separate
-  commit, see below).
 
-**What the leg found** (all five carried to US-2; blocking are FT-R + FT-S):
-FT-R no slot / FT-C anchor fails · FT-S the only permissive slot is unread by every gate AND §5.4
-never binds a mid-run checkpoint (the privacy hole) · FT-T activity identity, no `continues`
-relation · FT-U `job+step` idempotency collides on re-executed steps · FT-V the estimate cannot net
-out completed work.
+- `specs/grounding-pack.md` — §4.1's gate paragraph now records the verdict, states the four
+  remaining items (reader · rule 2 · a corpus wider than one binary claim · a mutation test per
+  encoding), and names the owner; stops citing the retired marker `64`. Changelog gains an
+  **Editorial** (2026-08-26) entry; `Last updated` → 2026-08-26. **Version and status unchanged**
+  (0.5.2 Candidate), so no mirror update was needed.
+- `docs/reference/kgp-projection-gate-verification.md` — **new.** The evidence record: the four
+  obligations G1–G4, what the merge contains, the verdict per obligation, and the commands to
+  re-run the check. Informative, binds no clause; modelled on `interop-trial.md`.
+- `docs/README.md` — indexes it.
+- `tasks/chief/87-kgp-projection-reader-and-roundtrip.json` — **new**, parked cross-repo marker
+  (`project: agora`, `category: unblock`) so the open remainder has a named owner and is not
+  retired a second time on a passes flag. Successor to the retired `64`.
+- `specs/{capability-bus,media-interchange,identity}.md` — 9 dead links to
+  `53-multi-authority-scenario.json` repointed at `completed/`. Pre-existing on main; link target
+  only.
 
-**Verification.** `check-doc-integrity` OK (44 files, 752 links, 3 status tables match) ·
-`check-schemas` OK (9 schemas, 274 positions, 78 $refs, 3 fixtures) · `check-registry` OK (27
-relations) · `check-tasklist-categories` OK (7 tasklists) · `.chief/verify.sh` **all selected gates
-green — allowing merge**.
+**Checks:** `.chief/verify.sh` — **all selected gates green**. doc-integrity OK (44 files, 746
+links, all 3 status tables match their headers), doc-links 0 dead vs 1 on main, tasklist-categories
+OK (8 categorized).
 
-### Learnings for future iterations
+### Consequences for the remaining stories
 
-- **A pre-existing red gate became this branch's merge blocker.** `tasks/chief/53-multi-authority-scenario.json`
-  had been retired into `tasks/chief/completed/`, leaving 9 dangling links across KINP/KCB/KMI.
-  `check-doc-integrity` was already failing on `main`, but `verify.sh` only *selects* that guard when
-  a doc changes — so the moment this branch touched `scenarios/README.md` it inherited the failure.
-  Fixed as a link-target-only repoint in its own commit. **Expect this class of breakage whenever a
-  tasklist is retired**: any spec citing it by `../tasks/chief/<name>.json` goes dangling.
-- **FT-S is the finding US-2 should lead with.** FT-R is the missing field, but FT-S is the one with
-  teeth: §5.4's inheritance is scoped to "the finetuned model entity and every weight/export asset
-  **it generates**", and §5.2 mints the model at *completion* — so nothing in KFT today assigns an
-  egress class or license to a mid-run checkpoint, even though §6 publishes its id on a `subscribe`
-  stream and tells consumers to `fetch` it lazily. That hole exists **independently of resume** and
-  a fold that only adds a `resume` field would leave it open.
-- **The fold must stay additive and must touch §3.3.2.** §3.3.1 forbids leaving any §3 field
-  unclassified, so a new top-level field needs a row in §3.3.2's matrix with a disposition. Its own
-  gating test ("changing it changes what the run is") is met, so the disposition is REFUSE-if-pinned
-  unless the target expresses it.
-- **`schemas/finetune-job.schema.json` is `additionalProperties: false` at the top level and inside
-  `dataset`.** There is no vendor escape hatch by design — so any US-2 job-shape change is a real
-  schema edit, and `schemas/fixtures/finetune-job.json` must stay valid.
-- **The research map was not provided for this tasklist**; everything above was derived by reading
-  `specs/fine-tuning.md` (§2, §3, §3.1–§3.3, §4.2, §5.1–§5.4, §6, §7, §8.1, §11), the three existing
-  finetune scenarios, `registry/relations.tsv`, and the schema. Future iterations can start from
-  this note instead.
+- **US-2's premise is dead.** KGP is not promoted, so its criteria 1 and 4 (Status → `ratified`,
+  changelog of what ratification commits to) must NOT be executed — the PRD is explicit that
+  promoting to satisfy the title is the wrong outcome. Criteria **2 and 3 remain valid and are
+  still worth doing**: `specs/README.md`'s *"no spec is currently promotable"* sentence and
+  `ROADMAP.md`'s *2 of 6 ratified* claim are both false independently of KGP, and the true count
+  is **0 of 6, and stays 0 after this tasklist**. Re-scope US-2 to those two corrections plus a
+  plain statement of the verdict.
+- **`ROADMAP.md:246`** (Phase F5) still points at `agora chief/64-kgp-projection-roundtrip-fixture`
+  and **`ROADMAP.md:143`** still calls the fixture merely "missing". Both should be repointed at
+  `87` / the verification record in US-2.
+- **US-3 is unaffected** and now more valuable: KGP's own line in that table is *"the reader half
+  of the §4.1 round trip — owner `87`"*, not *"already earned, nobody claimed it."* Useful facts
+  already gathered: `85-fold-the-federation-breaks` owns KINP's MA-1…MA-11, and
+  `86-fold-the-capability-versioning-breaks` owns KCB's V-1…V-8. Note the wrinkle that
+  `53-multi-authority-scenario` — named as a live gate by KINP 0.3.0, KCB §3.1 and KMI §7.1 — is
+  already in `tasks/chief/completed/`; that discrepancy belongs in US-3's table.
+
+**Learnings for future iterations**
+
+- **Read the commits, not the tasklist.** `git log --oneline <base>..<head>` and
+  `git show --stat <merge>` settled this in two commands. A retire step can blanket-flip stories
+  it never ran; the tell is `notes: null` on a `passes: true` story, and chief's own
+  UNVERIFIED rule exists precisely because that happens.
+- **Check the retire commit's diff**, not just the final tasklist state — that is where the
+  unearned flips live.
+- Cross-repo verification means reading the other repo's working tree at HEAD as well as at the
+  cited sha, so "nothing was added since" is a checked fact rather than an assumption.
 
 ---
 
-## Iteration 2 — US-2 (Fold the forced §11 question into the KFT contract + schema)
+## 2026-08-26 — US-2: If satisfied, KGP is promoted and the ratification count is made true
 
-Folded **FT-R…FT-V** from `scenarios/kft-resume-checkpoint.md` into **KFT 0.5.0 → 0.6.0**
-(*Candidate*), additively. §11.3 is marked **resolved in place** — numbering deliberately unshifted,
-the precedent KMI §9.5 and KFT §11.5 already set — so every existing §11.x reference still resolves;
-§11.1/§11.2/§11.4/§11.6 stay open, and item 5 stays recorded as resolved by ADR-0009 / KCB §7.
+**KGP is NOT promoted, and the story still delivered — because checking criterion 2 turned up the
+mirror image of US-1's finding.** US-1 found a tasklist claiming more than it shipped. US-2 found
+koine claiming *less* than it had been given.
 
-**The shape of the fold.** The leg's five findings are five faces of one question, so they folded as
-one clause set rather than five patches:
-- **§3.4 (new, NORMATIVE)** — the optional top-level `resume` `{checkpoint, of_job, at_step}`, with a
-  table separating **warm start** (`base_model`, confirmed as needing no new surface) from
-  **resumption** (a mid-run checkpoint). Four rules: pinned input (enters §5.2 `used[]`, so FT-C's
-  anchor keeps determining the run) · **the only slot** (a ref in the permissive `hyperparams` is
-  refused `invalid`, not executed) · never corpus (gates without being priced) · a new activity.
-- **§4.2 / §4.3** — the checkpoint joins the effective-egress aggregate and the union license/tier.
-- **§5.4** — a checkpoint inherits **at publication**, not at completion. This was FT-S's real teeth
-  and it is a hole that exists **with or without resume**, on the §6 `subscribe` stream.
-- **§5.2** — a continuation leg is a NEW activity linked by the new core relation **`continues`**.
-- **§6** — `job+step` idempotency stays sound (distinct legs ⇒ distinct `job` ids), `step` counts from
-  the root leg so legs overlap deliberately, plus a NORMATIVE curve-**join rule** and an optional
-  non-authoritative `attempt` ordinal.
-- **§7** — estimate the **remainder**, verify `at_step` against the prior leg's provenance, check
-  against the ceiling **net of cumulative `spent_units` across the chain**.
-- **§3.3.1/§3.3.2** — gating set gains `resume.checkpoint`; two matrix rows and a **fifth** normative
-  consequence (converts to a local *path*, so id/`of_job`/`at_step` go out of band; a target with no
-  resume surface is refused rather than handed a cold run).
+### What was executed, and what was refused
 
-**Files changed.** `specs/fine-tuning.md` (+275/-… — §3 intro/example, §3.3.1, §3.3.2, §3.4, §4.2,
-§4.3, §5.2, §5.4, §6, §7, §11.3, *Pressure test*, changelog, header) · `registry/relations.tsv`
-(`continues`) · `schemas/finetune-job.schema.json` (+ `resume`) · `schemas/fixtures/finetune-job.json`
-· `scenarios/kft-resume-checkpoint.md` (a *Fold — KFT 0.6.0* section) · `scenarios/README.md` ·
-`README.md` · `specs/README.md` · `ECOSYSTEM.md` · `CLAUDE.md`.
+- **Criteria 1 and 4 — refused.** They presuppose the promotion US-1 disproved. No Status header,
+  version, or status mirror moved; KGP is 0.5.2 **Candidate**. The PRD is explicit that promoting
+  to satisfy the title is worse than a stale Candidate, so this is compliance, not a shortfall.
+- **Criterion 2 — executed, and the sentence was false in the direction nobody was watching.**
+  `specs/README.md`'s *"no scenario has a KCS encoding, so no spec is currently promotable to
+  `ratified`"* has been false since **2026-08-19**.
+- **Criterion 3 — executed.** ROADMAP's headline already read `0 of 6` (fixed 2026-08-13). The
+  false claims still in it were Phase 0's present-tense *"two specs are ratified"* — both since
+  demoted — and Phase F4 sitting at ⬜ **planned** when it had delivered five days earlier.
 
-**Verification.** `check-doc-integrity` OK (44 files, **765** links, 3 status tables match) ·
-`check-schemas` OK (9 schemas, 278 positions, 80 $refs, 3 fixtures) · `check-registry` OK (**28**
-relation names) · `check-tasklist-categories` OK (7 tasklists) · both PRD `verify` commands print
-`schemas ok` / `finetune-job schema ok` · `bash .chief/verify.sh` — 16 changed files, 6 selected
-gates, `verify-test: 30 passed, 0 failed`, **all selected gates green — allowing merge**.
+### The evidence (read at agora `main` = `9fe2ee5`, 2026-08-25)
 
-### Learnings for future iterations
+- `agora chief/75-encode-scenarios-as-kcs` — merge **`f853240`**, 2026-08-19. **Nine**
+  `ScenarioDocument` encodings at `console/src/kcs/scenarios/` (5,096 lines with tests). The set is
+  machine-enforced, not asserted: `coverage.test.ts` reads a sibling koine checkout's
+  `scenarios/*.md` and requires set-equality with every entry's `source`, **skipping loudly** when
+  no koine sibling is reachable. All nine `source` values match koine's nine `.md` files exactly.
+- `agora chief/76-run-kcs-over-live-links` — merge **`f32508e`**, 2026-08-19. The same documents
+  over live MCP **and** A2A, preferring a live registration over a delta-N `standin`.
+  `console/evidence/kcs-live-run.json`: `evidence_id` `sha256-2d9e6c43…`, generated 2026-08-24,
+  `kcs_version` 0.3.0, `green` true, `live_pass` false, `verdict` **partial-live**, **19/32**
+  participant slots live (59%), `transport_failures` `[]`. `kcs:worlds-to-fabric` — the one that
+  gates KINP and carries KGP's re-validation — is **3/3 live** and **live-pass**.
+- `8e737f9` (2026-08-24) added the ninth encoding, `kcs:multi-authority`.
+- Both tasklists' stories carry **substantive notes**. That is why they were trusted where `77`'s
+  were not — `notes: null` on a `passes: true` story is the tell, and neither has it.
 
-- **`schemas/fixtures/` allows exactly ONE fixture per schema, by filename.** `check-schemas.mjs`
-  derives `<fixture>.schema.json` from each fixture's name and errors if it does not exist, so
-  `finetune-job-resume.json` is rejected outright — there is no way to ship a second, contrasting
-  fixture for one schema. A new optional field is therefore exercised by **editing the golden
-  fixture** (what 0.5.0 did for `descriptor[]` / `base_model_descriptor[]`), and the additivity claim
-  is carried by the schema's `required` list plus prose, never by a second artifact. Don't spend a
-  round discovering this.
-- **A version bump touches FOUR mirrors, and only three are checked.** `README.md`,
-  `specs/README.md` (**two** places — the table *and* the candidate-count sentence around line 195,
-  which names every candidate spec by version) and `ECOSYSTEM.md` §2 are diffed by
-  `check-doc-integrity`; `CLAUDE.md`'s *Current state* prose is not. The prose sentence in
-  `specs/README.md` is inside the checked file but is **not** part of the table diff — a stale
-  version there passes CI just like CLAUDE.md's.
-- **Match the changelog's own register.** Each KFT entry is a titled bullet list where every
-  sub-bullet names a section and states what moved *and why it is not a redesign*. Two things the
-  precedent always does and that reviewers look for: say explicitly whether §4's **admission
-  behaviour** moved (0.5.0 said byte-unchanged; 0.6.0 says it *does* move — but only for a job
-  carrying `resume`, never for a cold one), and restate the outstanding gate rather than replacing it.
-- **A fold that adds normative text adds a gate.** KCB 0.4.6 and KMI 0.3.4 both did this ("a third
-  candidate count", "a second candidate count"). 0.6.0 follows: the leg itself becomes the second
-  gate, since it was written against 0.5.0 and each finding is now answered — Steps 2–6 must walk
-  clean where they broke, Steps 1 and 7 must stay held.
-- **A new relation is cheap and additive; editing one is forbidden.** `continues` slotted into
-  `registry/relations.tsv` beside `retrains`/`supersedes` with no guard friction (`check-registry`
-  went 27 → 28 names). What the immutability rule forbids is changing a **published signature** — so
-  when a lifecycle question needs a verb the registry lacks, mint a new name rather than widening an
-  existing description.
+### Two caveats recorded rather than laundered
+
+1. **`green` is the downstream artifact's own claim.** koine verified *existence and shape* (files,
+   ids, sources, the coverage gate, the artifact's fields); the suite was **not** re-run here, and
+   under ADR-0001 it should not be. The record says so in as many words.
+2. **`green` is not a gate verdict.** `kcs:live-schema-mutation` (V-1…V-8, four blocking) and
+   `kcs:multi-authority` (MA-1…MA-11, six blocking) both come back green — because the encodings
+   *deliberately* do not assert an unfolded delta, and say so in their own module notes
+   (*"asserting a fold koine has not made"*). A reader who takes green for "the deltas are
+   resolved" repeats the `passes: true` mistake one level up.
+
+### Where the count landed
+
+**0 of 6 before, 0 of 6 after.** What changed is the *reason*: the artefact gate is now met for
+every spec, so no promotion is blocked by the ratification rule any more — each is blocked by its
+own outstanding pass. And the run is **not yet citable**: under specs/README.md's own rule a result
+becomes evidence only once recorded in the scenario it ran, and all nine `## Downstream results`
+sections are empty.
+
+**Files changed**
+
+- `specs/README.md` — the statement corrected and dated; the F4-mechanism paragraph repointed at
+  `agora chief/75`/`76` (the ids it named, `62`/`63`, were koine markers, now `supersededBy` those
+  two); KCS's grandfathered debt marked **paid 2026-08-19**; the cost paragraph's "the encodings do
+  not yet exist" fixed.
+- `docs/reference/kcs-encoding-gate-verification.md` — **new.** Obligations E1–E3, the merges, the
+  file inventory, the run record, verified-vs-trusted, and §5 *"green does not mean the spec's gate
+  is met"*. Indexed in `docs/README.md`. Modelled on US-1's KGP record.
+- `ROADMAP.md` — headline; Phase 0 marked history with both demotions named; Phase 1's KGP row and
+  its depends-on line; **Phase F4 → ✅ delivered** with real tasklists and shas; Phase F5's fixture
+  row → `87` with the 2026-08-26 verdict.
+- `specs/grounding-pack.md` — §4.1 records that KGP's **other** gate is met, making the round-trip
+  fixture literally the last item. Editorial; no normative change, no claim id moves.
+- `scenarios/README.md` — a dated stale-banner **only**.
+- `docs/reference/implementability-audit.md` — the stale `chief/62`/`63` ids.
+
+**Checks:** `.chief/verify.sh` — **all 4 selected gates green.** doc-integrity OK (45 files, 765
+links, all 3 status tables match their headers), doc-links 0 dead vs 1 on main,
+tasklist-categories OK (8 categorized), verify-selftest **30 passed / 0 failed**.
+
+### Consequences for US-3
+
+- **The promotability table's shape changed.** Before this story every line would have read "the
+  KCS encoding (F4)". That gate is now met for all six, so each line must name the spec's *own*
+  blocker. Known: KGP → the §4.1 reader (`87`); KINP → MA-1…MA-11 (`85`); KCB → V-1…V-8 (`86`) and
+  MA-* via §3.1; KMI → rides with KCB's re-run, plus MA-* via §7.1; KCS → its own 0.3.0 determinism
+  fold, with §7.1/§7.3 open; KFT → the owner's re-run of `e2e-producer-exhaust-finetune.md`'s
+  *Re-validation — KFT 0.4.0*, with §3.3/§8.1 unexercised normative surface.
+- **Demotion dates:** KINP fell on the 0.3.0 federation fold, KCS on the 0.3.0 determinism fold.
+  Both are now stated in ROADMAP Phase 0's rows — reuse, don't re-derive.
+- **A cross-cutting row belongs in that table:** *no scenario carries a `## Downstream results`
+  section*, so no owner may cite the live run as evidence for any spec. Owner
+  `84-record-the-downstream-results`, which also owns `scenarios/README.md`'s stale column.
+- `53-multi-authority-scenario` being in `completed/` while three specs name it as a live gate is
+  still the wrinkle US-1 flagged; the encoding `kcs:multi-authority` existing does **not** resolve
+  it, since the deltas are unfolded.
+
+**Learnings for future iterations**
+
+- **Verification cuts both ways.** US-1's discipline is usually framed as catching over-claims; the
+  same two commands (`git log --oneline`, `git show --stat`, then read the files) caught koine
+  **under**-claiming and gating six specs on an artefact it already had. Check a blocking claim
+  with the same suspicion as a completion claim.
+- **A tasklist already owns most stale surfaces — look before rewriting one.**
+  `tasks/chief/84-record-the-downstream-results.json` already claims `scenarios/README.md`'s column
+  *and* the nine empty results sections. Doing it here would have duplicated its work and conflicted
+  with it; a dated banner plus a pointer was the right size.
+- **`notes: null` on a `passes: true` story is the tell, and it generalizes.** agora's `78` and `79`
+  carry it too — their ROADMAP F5 rows were deliberately left ⬜ rather than flipped on a flag.
+  Understating is the safe direction when you have not read the artifact.
+
+---
+
+## 2026-08-26 — US-3: The other five specs get an honest promotability line
+
+**Delivered as [`docs/reference/promotability.md`](../../docs/reference/promotability.md)** — six
+rows, one per spec, plus a *Cheapest first* ranking. Indexed in `docs/README.md` and reachable from
+the two places a reader actually asks the question: `specs/README.md`'s ratification-gate section
+and `ROADMAP.md` (Phase 0, Phase 1, Related Docs).
+
+### The premise turned over — again
+
+US-3's second criterion assumes *"a reader currently cannot tell a spec that never rose from one
+that fell."* Grepping every changelog for a `**Ratified.**` entry says there is no such distinction
+to draw: **all six specs were ratified, and all six were demoted.**
+
+| Spec | Ratified | Demoted at | By |
+|---|---|---|---|
+| KCB | 0.2.0, 2026-07-17 | **0.3.0**, 2026-07-22 | §2 manifest → A2A AgentCard extension |
+| KMI | 0.2.0, 2026-07-17 | **0.3.0**, 2026-08-02 | OTIO adoption (ADR-0005) |
+| KGP | 0.2.0, 2026-07-17 (held through 0.4.0) | **0.5.0**, 2026-08-02 | retained canonical + specified projection (ADR-0006) |
+| KFT | 0.3.0, 2026-07-23 | **0.4.0**, 2026-08-06 | FT-M…FT-Q producer-exhaust intake fold |
+| KCS | 0.2.0, 2026-07-18 (grandfathered) | **0.3.0**, 2026-08-20 | determinism fold (delta Q) |
+| KINP | 0.2.0, 2026-07-17 (held through 0.2.1) | **0.3.0**, 2026-08-23 | §11.1 federation fold (ADR-0012) |
+
+Every demotion was caused by **koine's own next normative edit** — not an implementer's defect
+report, not an upstream break — and five landed within five weeks of the promotion. That is
+`specs/README.md`'s *ratification treadmill* seen from the other end, with dates.
+
+`ROADMAP.md` Phase 0 said *"two specs were ratified in this phase"* and its KGP/KMI/KCB/KFT row said
+only *"first-authored & pressure-tested"*. Both were counting **the two still ratified when the rows
+were written**, not what happened. Corrected in place, with the correction dated so a reader can see
+it was a correction.
+
+### The gates, per spec
+
+- **KINP** — the MA-1…MA-4 fold. Its **only** count, so `e2e-multi-authority.md` is the whole gate. `85`.
+- **KGP** — the §4.1 round-trip fixture (US-1's verdict). Downstream; **zero koine edits**. `87` (agora).
+- **KMI** — two counts: MA-5 (+MA-10) fold `85`, and KCB's media-transform re-run, which is not KMI's work.
+- **KCB** — three counts: the media-transform re-run **outstanding since 2026-07-22**, V-2/V-4/V-5/V-7 → 0.5.0 (`86`), MA-6 (+MA-8/MA-9) (`85`).
+- **KCS** — a re-validation of its own additive 0.3.0 fold. Grandfathered debt **paid 2026-08-19**. §7.1/§7.3 are open **questions**, not gates.
+- **KFT** — the owner's re-run of `e2e-producer-exhaust-finetune.md`'s *Re-validation — KFT 0.4.0*. Dep-pin precondition closed by `chief/71-kft-dep-repin`. §3.3/§8.1 are unexercised normative surface.
+
+**Three gates are recorded as UNOWNED** — KCB's media-transform re-run, KCS's re-validation, KFT's
+re-run. Saying so is the point of the page; a blank cell would have read as "handled".
+
+### Design decisions worth reusing
+
+- **No current-version column, deliberately.** `check-doc-integrity.mjs` machine-checks exactly three
+  mirror files (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) against the spec headers. `docs/` is
+  not one of them, so a version column there would be a **fourth, unchecked mirror** — the same trap
+  `CLAUDE.md`'s *Current state* prose sits in. Only *historical* versions appear (the release that
+  ratified, the release that demoted); those are immutable and cannot rot. The page says this in as
+  many words so the next editor does not "helpfully" add the column.
+- **Program view vs status view kept separate.** `ROADMAP.md` Phase 1 is the program (tasklists,
+  phases, scale) and covers **four** of six — KINP and KCS were still ratified when it was scoped and
+  have no row. Rather than widen Phase 1, the new page is the six-row status view and Phase 1 now
+  says which two it omits and why.
+- **The `53` wrinkle is explained, not repeated.** Three specs cite
+  `chief/53-multi-authority-scenario` as a live gate while it sits in `completed/`. Not a bookkeeping
+  error: `53`'s scope was to **write and run** the break test and it did. What the specs wait on is
+  the **fold**, which is `85`. The page says the three status notes should be repointed when that
+  fold lands.
+
+**Files changed:** `docs/reference/promotability.md` (new), `docs/README.md` (index),
+`specs/README.md` (the per-spec pointer, replacing a ROADMAP-Phase-1 pointer that covered four of
+six), `ROADMAP.md` (Phase 0 paragraph + the KGP/KMI/KCB/KFT row, a Phase 1 note on the two missing
+specs, Related Docs).
+
+**Checks:** `.chief/verify.sh` — **all 4 selected gates green.** doc-integrity OK (46 files, 805
+links, all 3 status tables match their headers), doc-links 0 dead vs 0 on main, tasklist-categories
+OK (8 categorized), verify-selftest **30 passed / 0 failed**.
+
+**Learnings for future iterations**
+
+- **Three for three: every story in this tasklist overturned its own premise.** US-1 found a
+  downstream tasklist claiming more than it shipped, US-2 found koine claiming less than it had been
+  given, US-3 found a distinction ("never rose" vs "fell") that does not exist in this repo. The
+  cheap check each time was reading the primary artifact — the merge diff, the evidence file, the
+  changelog — rather than the summary that pointed at it.
+- **`grep '\*\*Ratified\.\*\*' specs/*.md` is the status-history query.** Each spec's changelog
+  carries its own promotions and demotions in entries that never change. That is a better source
+  than any roadmap paragraph, and it is machine-greppable.
+- **Before adding a table, check which files the integrity guard actually verifies.**
+  `MIRRORS` in `scripts/check-doc-integrity.mjs` is a three-element literal. A table outside those
+  three files is unguarded, which is fine for immutable facts and a liability for mutable ones.
+
+---
+
+## 2026-08-26 — Base integration (NOT a user story)
+
+`chief/83-promote-kgp` was 7 commits behind `main` @`2809f00` and chief's automatic rebase
+conflicted. Rebased by hand; **no story's `passes` was touched** — all three were already done.
+
+**The rebase itself was small.** One conflict stop, on `.chief/state/prd.json` +
+`.chief/state/progress.txt` — main carried `69-kft-open-questions`'s retired runtime state and
+this branch carries `83`'s live state, so the branch side is the only correct resolution. Git
+also **dropped `003817b`** (this branch's nine-link `chief/53` repoint) as already applied: main
+landed the equivalent `123f341` independently. That is the right outcome, not a loss.
+
+**The integration's real work was semantic, not textual.** Main merged `chief/69`, which folded
+KFT §11 question 3 into **KFT 0.6.0** and landed a new pressure leg. Four statements this branch
+had authored became false, and every one of them was in a deliverable whose whole purpose is being
+accurate about what blocks promotion:
+
+1. **ROADMAP Phase 1's KFT row** named *Re-ratify KFT 0.4.0* with one gate. There are now two, and
+   the new one is not cosmetic: 0.5.0 left §4's admission inputs byte-unchanged and **0.6.0 does
+   not** — a `resume` ref joins §4.2's aggregate and §4.3's union — so §3.4/§4.2/§4.3/§5.4/§6/§7
+   are *changed* normative surface. A cold job admits exactly as before, which is why the standing
+   FT-M…FT-Q re-run is unaffected.
+2. **ROADMAP Phase F6** sat `⬜ planned` with its KFT §11 row unticked — the identical defect class
+   US-2 corrected for Phase F4 five commits earlier. Marked delivered, section moved to 🚧.
+3. **`docs/reference/promotability.md`'s KFT row + ranking entry** described one re-run of
+   already-walked text.
+4. **The big one: *"the conformance gate is met for all six and blocks nothing"* is now false for
+   KFT.** 0.6.0 added a **tenth** scenario (`scenarios/kft-resume-checkpoint.md`) a week *after*
+   the nine encodings were built downstream, so the clauses 0.6.0 folded have no machine-replayable
+   document citing them — precisely what `specs/README.md`'s ratification gate forbids promoting on.
+
+**Item 4 was verified, not inferred.** Read `agora` at `9fe2ee5`:
+`console/src/kcs/scenarios/coverage.test.ts` asserts `KOINE_SCENARIOS.length === 9` **and**
+set-equality with koine's `scenarios/*.md`. koine now holds ten, so that test goes **red** against
+this commit and names the unencoded document. Its own docstring says that is the design — *"a
+partial encoding cannot go green quietly."*
+
+**Files changed** (docs only — no spec text, version, or status header moved; no claim id moves):
+
+- `ROADMAP.md` — headline conformance-gate claim narrowed to five of six; Phase 1 KFT row rewritten
+  to 0.6.0 + two gates + the missing encoding; Phase F6 KFT §11 row marked ✅ delivered and the
+  section header moved to 🚧.
+- `docs/reference/promotability.md` — KFT row (two counts + the conformance gap), *Cheapest first*
+  entry 3, and the *Two facts that apply to every row* bullet corrected.
+- `docs/reference/kcs-encoding-gate-verification.md` — new **§6.1**, a *dated amendment* rather
+  than an edit over the original verdict: the nine encodings are untouched (E1/E2 stand, the
+  evidence content address is unchanged), what moved is **coverage**.
+- `scenarios/README.md` — the stale-banner amended: ten scenarios, nine encodings, and the
+  `⬜` on the `kft-resume-checkpoint` row is the one entry in that column that is *not* stale.
+
+**Checks:** `.chief/verify.sh` — **all 4 selected gates green.** doc-integrity OK (47 files, 841
+links, all 3 status tables match their headers), doc-links **0 dead vs 0 on main**,
+tasklist-categories OK (7 categorized), verify-selftest **30 passed / 0 failed**.
+
+**Learnings for future iterations**
+
+- **`.chief/state/` is gitignored but its two files are force-tracked.** So `git add .chief/state/…`
+  prints an "ignored by .gitignore" hint and **exits non-zero** even though it stages the file
+  correctly. In an `&&` chain that silently swallows the next command — it ate a
+  `git rebase --continue`. Run the `add` and the `continue` as separate statements.
+- **A rebase conflict on those two files is never a real conflict.** Main carries the *previous*
+  tasklist's runtime state; your branch carries the live one. Resolve with
+  `git show <the-commit-being-replayed>:<path> > <path>` — exact, and it survives the later commits
+  in the replay because the base is then yours.
+- **Green gates do not mean an integration is done.** `verify.sh` passed the instant the rebase
+  finished; all four falsehoods above sailed through it, because a link that resolves to a spec
+  saying something different is still a valid link. After a rebase, re-read every claim your branch
+  made about anything the base branch touched.
+- **koine has no local gate on scenario/encoding coverage, and structurally cannot.** Adding a
+  `scenarios/*.md` here breaks a downstream set-equality test with **no red light in this repo**.
+  If a future tasklist adds a scenario, that is a cross-repo obligation to record explicitly.
+- **Check `git log --oneline HEAD..main` for work that duplicates yours** before assuming a dropped
+  commit is a problem. `003817b` and `123f341` were the same fix authored twice.
