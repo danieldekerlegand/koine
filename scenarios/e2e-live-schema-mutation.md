@@ -587,3 +587,76 @@ is sound and its *perimeter* is not, and the perimeter is repairable additively.
 > untouched. When a fold lands, amend this note to name the version that closed each delta — as
 > [`e2e-media-transform.md`](e2e-media-transform.md)'s Resolution does for F–L — after which this
 > document stands as the historical record of what the break-test found.
+
+---
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes. Instance-free, role-scoped, and it **promotes nothing**.
+
+**Run of 2026-08-24** · encoding `kcs:live-schema-mutation` · KCS 0.3.0 · evidence
+`sha256-2d9e6c43…c17bb3`, verified in
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
+
+| | |
+|---|---|
+| Participants, by role | knowledge **producer** / live subscriber (`analyzer`, live) · control-plane **host** (`orchestrator`, live) · media **provider** (`mediastore` composer, **stand-in**) · capability **provider** holding the archival pin (**stand-in**) |
+| Over what links | **2 of 4 live** (50%) |
+| Encoded as | 15 steps + **16** assertions, of which **4** are `expect: reject`. Five predicates are declared **console extensions**, not KCS §5 vocabulary — `capability_digest_stable`, `capability_digest_moved`, `silent_mutation_detected`, `successor_offered_beside`, `deprecation_visible` |
+| Result | `green` · verdict **`partial-live`** · `transport_failures: []` |
+
+**`green` here does not mean this pass came out clean.** It did not: **V-1…V-8** are open, four of
+them blocking, and none is folded. The encoding deliberately does not assert an unfolded delta —
+*"asserting a fold koine has not made"* is the phrase in its own module note — so what went green is
+the subset of the §Assertions table that today's contracts actually support. Read the two lists
+below together or not at all.
+
+**What passed**, by the row of the §Assertions table it encodes:
+
+| Row | Assertion | Held as |
+|---|---|---|
+| 1 | The v1 binding still resolves after a minor widening | `capability_path_exists` |
+| 2 | An unknown output field does not reject the frame | `dangling_ref_tolerated` — the prose's own *"nearest available; not the same predicate"* |
+| 3 | A raise beyond the ceiling is refused, not billed | `cost_within_ceiling` + `refused` |
+| 4 | The digest moves on a shape edit and not on a re-price | `capability_digest_moved` + `capability_digest_stable` (ext) |
+| 5 | A digest change at an unchanged version is caught | `silent_mutation_detected` (ext) |
+| 6 | The successor is discoverable beside the predecessor | `successor_offered_beside` (ext) |
+| 7 | The v1 grant does not reach v2 | `refused` over `expect: reject` |
+| 8 | The deprecated entry is returned, marked, ranked below | `deprecation_visible` (ext) |
+| 9 | The live stream survives to the declared removal | `completes` — inverted, as the prose says: it asserts liveness, not notice |
+| 10 | The archival pin still resolves past removal | `resolves_to` |
+
+**What was replayed but deliberately not asserted.** Two of the blocking deltas cannot honestly
+become assertions in a runtime, and the encoding records the exposure instead:
+
+- **V-2** (Step 5, high/structural) — the re-serialization probe ran and shows the `schema_id`
+  genuinely **unchanged** across a redefined knowledge payload, because §2.1's shape key holds a
+  free-form *name* and koine has no shape registry. No assertion claims the mutation was *caught*,
+  because on today's contract it is not. Asserting either candidate fold — register the shape, or
+  add a `payload_schema_id` — would be the implementing repo asserting a contract koine has not
+  ratified.
+- **V-7** (Step 10, the headline) — what the document *can* show is the exposure: the subscriber's
+  cached binding is compared against the provider's current card and is **two minors stale**, having
+  had no obligation to re-`describe`. That the removal itself would be learned by a dead stream is a
+  property of **absence**, which no observation log can carry.
+
+V-8 is not a runtime failure at all: it is the record that KCS §5's control-plane group predates
+KCB §7, which is why five predicates above are extensions. That finding is now **corroborated by
+construction** — the encoding could not be written without them.
+
+**What the run does not say.** The **provider** — the participant that widens, re-prices, mutates
+and retires — was a stand-in, as was the archival-pin holder. Every mutation above was staged from a
+recording rather than performed by a live provider. Given that this scenario's whole subject is what
+a provider does to a subscriber over a release cycle, that is the more consequential half of
+**DR-1** here than the raw 50%.
+
+### Findings — from the downstream run
+
+| # | Severity | Gap | Consequence |
+|---|---|---|---|
+| DR-7 | **High** (reading hazard, not a new break) | `kcs:live-schema-mutation` returns **`green`** over a pass koine records as **not clean** — V-1…V-8 open, V-2/V-4/V-5/V-7 blocking. The green is honest and the encoding is right to be silent, but nothing in the evidence artifact says which deltas were skipped. | A green line here may **not** be cited as evidence that KCB §7 holds. It is evidence that the *ten supportable rows* of the §Assertions table hold, over a half-recorded cast, **while the four blocking deltas remain open**. This run therefore does not move either KCB gate: the *Re-ratification — what this pass gates* section above stands unchanged, and the clean §7.5 re-run it demands has still not happened. |
+
+Suite-wide limits **DR-1** and **DR-2** are recorded in
+[`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).

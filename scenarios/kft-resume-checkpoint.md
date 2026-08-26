@@ -336,3 +336,41 @@ gate is **additional to** the outstanding re-run of
 [`e2e-producer-exhaust-finetune.md`](e2e-producer-exhaust-finetune.md)'s *Re-validation — KFT 0.4.0*,
 which 0.6.0 restates and does not move — a **cold** job (no `resume`) is admitted and refused on
 exactly the inputs it was before.
+
+---
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes. Instance-free, role-scoped, and it **promotes nothing**.
+
+**This scenario has never been run downstream, and has no encoding.** Recorded as a statement
+rather than left blank, because a blank section is indistinguishable from an unread one.
+
+| | |
+|---|---|
+| Encoding | **none.** `agora/console/src/kcs/scenarios/` holds nine `KOINE_SCENARIOS` entries and none has `source: 'scenarios/kft-resume-checkpoint.md'` |
+| Runs | **none.** The committed evidence artifact (`sha256-2d9e6c43…c17bb3`, generated 2026-08-24) contains nine scenarios and this is not one of them |
+| Why | This document landed with `chief/69` on **2026-08-26**, a week after the nine encodings were built (`agora chief/75`, merged 2026-08-19) |
+
+**The gap has a red light, and it is downstream.** `coverage.test.ts` asserts set-equality between
+`KOINE_SCENARIOS` and this directory's `*.md`, so against a koine checkout at this commit that gate
+goes **red** and the failure names this file. That is the gate working as designed — a partial
+encoding cannot go green quietly — and it is the only place the obligation is enforced: koine's own
+`.chief/verify.sh` checks links, status mirrors, schemas and the registry, and has nothing that
+could notice. Adding a file to `scenarios/` is a cross-repo obligation with no local red light.
+
+The full verification, with the merges and the artifacts it was read off, is
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+§6.1; it is not restated here.
+
+### Findings — from the absence of a downstream run
+
+| # | Severity | Gap | Consequence |
+|---|---|---|---|
+| DR-11 | **Blocking** (for KFT alone) | The KFT 0.6.0 fold this leg forced — §3.4's `resume {checkpoint, of_job, at_step}`, §4.2's effective egress over `{data ∪ base ∪ resume.checkpoint}`, §4.3's union license/tier, §5.4's bind-at-publication, §5.2's `continues` relation, §6's curve-join rule, §7's remainder net of cumulative `spent_units` — has **no machine-replayable document citing any of it**, and neither does FT-R…FT-V. | [The ratification gate](../specs/README.md#the-ratification-gate) forbids promoting a spec whose scenario has no KCS encoding, so **KFT alone loses the artefact gate** that the other five specs hold. This is on top of, not instead of, KFT's two named re-run gates. The other five specs are unaffected — their scenarios are all encoded. Building the encoding is downstream runtime work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned** as of 2026-08-26. |
+
+Suite-wide limits **DR-1** and **DR-2** are recorded in
+[`README.md`](README.md#downstream-results-where-a-real-runs-result-lands); neither applies to a
+scenario that was never run.

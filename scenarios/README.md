@@ -162,3 +162,72 @@ re-ratification (ROADMAP Phase 1) **MAY** cite a recorded downstream pass as evi
 hand-walked re-validation, and **MUST** reopen a finding that a recorded downstream failure
 contradicts. A recorded result never promotes a spec on its own — promotion stays the owner's
 deliberate act — but an owner may no longer promote *past* a recorded failure without answering it.
+
+### The run of record — 2026-08-24
+
+One downstream run has happened and it is recorded, per scenario, in the scenario it ran. The
+suite-level facts, so no scenario has to restate them:
+
+| | |
+|---|---|
+| Evidence | `sha256-2d9e6c43b36f4aac9c4caafa8baa17cb58dc05be8612dd15b2d24bb6f0c17bb3`, generated **2026-08-24T22:00:37Z**, held downstream at `console/evidence/kcs-live-run.json` and regenerable by one committed command |
+| Verified by | [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md) — read off the artifacts, not off a status line |
+| KCS version | 0.3.0 (as declared by every document — but see **DR-10**) |
+| Scope | **nine** scenarios, **32** participant slots, **19 live** / 13 delta-N stand-in (**59%**) |
+| Suite verdict | `green: true` · `live_pass: false` · **`partial-live`** · `transport_failures: []` |
+| Fully live | **one** — `kcs:worlds-to-fabric` (3/3). Every other scenario stood in for at least one participant. |
+
+**What `green` means and does not mean.** Per the runner, a scenario is `green` when every step and
+every assertion it encodes passed with no transport failure. It does **not** mean the pressure test
+came out clean: two of the nine replay scenarios koine records as *not* clean
+([`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md), V-1…V-8 · four blocking;
+[`e2e-multi-authority.md`](e2e-multi-authority.md), MA-1…MA-11 · six blocking) and both come back
+green, because the encodings deliberately do not assert an unfolded delta. Reading `green` as "the
+spec holds" is a larger version of the mistake this repo already made once with `passes: true`.
+
+### Findings from the run — DR-1…DR-11
+
+Each is defined **once**, in the document it bites, in that document's `## Downstream results`
+section. This table is the index, not a second copy.
+
+| # | Severity | Where it is defined | In one line |
+|---|---|---|---|
+| DR-1 | Minor | *here* | 13 of 32 participant slots were stand-ins; only one scenario ran fully live |
+| DR-2 | Minor | *here* | The evidence artifact records a per-scenario aggregate, not pass/fail per assertion with its cited clause |
+| DR-3 | High | [`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md#findings-from-the-downstream-run) | The KGP **R3** projection round-trip is not encoded, so the fully-live pass does not touch KGP's outstanding fixture gate |
+| DR-4 | High | [`kmi-otio-roundtrip.md`](kmi-otio-roundtrip.md#findings-from-the-downstream-run) | Its encoding is `kcs:media-transform` re-titled; **M-1** and the KMI 0.3.3 fold are unexercised |
+| DR-5 | High | [`e2e-finetune.md`](e2e-finetune.md#findings-from-the-downstream-run) | The suite pins KFT 0.5.0 and asserts nothing over §3.3's conversion round-trip or §8.1's graded refusals |
+| DR-6 | Minor | [`e2e-finetune.md`](e2e-finetune.md#findings-from-the-downstream-run) | The **training-provider** role is a stand-in in all three KFT passes; no live participant has held it |
+| DR-7 | High | [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md#findings-from-the-downstream-run) | `green` over a pass with four blocking deltas open; V-2/V-7 are replayed but deliberately unasserted |
+| DR-8 | High | [`e2e-multi-authority.md`](e2e-multi-authority.md#findings-from-the-downstream-run) | `green` over a pass with six blocking deltas open; MA-1…MA-5 and MA-8/MA-9 are replayed but unasserted |
+| DR-9 | Minor | [`e2e-multi-authority.md`](e2e-multi-authority.md#findings-from-the-downstream-run) | Every live slot sits in domain **A** — the federation was tested against a recorded far side |
+| DR-10 | High | [`kcs-format-stress.md`](kcs-format-stress.md#findings-from-the-downstream-run) | The downstream §5 vocabulary drifted from KCS §5 both ways: no `structure_matches`, plus a `media_map_complete` koine does not name |
+| DR-11 | **Blocking** (KFT) | [`kft-resume-checkpoint.md`](kft-resume-checkpoint.md#findings-from-the-absence-of-a-downstream-run) | The tenth scenario has no encoding and no run, so KFT alone loses the artefact gate |
+
+#### DR-1 — 59% live, and the stand-ins are not randomly placed
+
+Nineteen of thirty-two participant slots were live over real MCP/A2A links; the other thirteen were
+delta-N `standin` recordings for roles nobody has adopted. Promotion of a slot from stand-in to live
+is a **cast change, not a document change**, so this closes by adoption and never by an edit.
+
+What matters more than the percentage is *which* slots. In every scenario but one, the stand-in is
+the participant the scenario is about on the far side — the composer in the media passes, the
+trainer in all three KFT passes (**DR-6**), the provider that mutates in the KCB §7 break-test, the
+entire second domain in the federation break-test (**DR-9**). A recorded counterparty answers the
+way the fixture author expected, which is the one thing an adversarial pressure test is trying not
+to rely on.
+
+#### DR-2 — the artifact records aggregates, not clause-cited assertions
+
+The shape this section asks for is *pass/fail per assertion, each assertion carrying the spec clause
+it cites*. What the committed artifact carries is per **scenario**: `green`, live/stand-in coverage,
+the cast, and `transport_failures`. Per-assertion results exist in the run's own conformance report
+but are not what koine can cite, and there is no `clause` field on an assertion — **KCS does not
+define one**; traceability today is by step title and by the §5 predicate's own citation.
+
+Consequence: a recorded result can tell an owner *this scenario's encoded assertions held*, and
+cannot tell them *this clause was exercised and passed*. Every `## Downstream results` section in
+this directory therefore names the clauses by hand, read off the encoding — which is honest but is
+prose, and will drift. Closing it properly is a **KCS** question (a per-assertion `clause` field, or
+a report shape that carries one), which makes it a re-open input for KCS's owner alongside `INT-11`
+and the V-8/MA-11 extension evidence — not a defect in the run.

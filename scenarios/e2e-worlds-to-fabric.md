@@ -372,3 +372,61 @@ declined option would have broken the merge this scenario exists to protect.
 > annotation vocabulary (KGP-2), each landed as directed above and neither touching §3, §3.3, or an
 > already-minted claim id. The **only** gate still outstanding is the downstream round-trip
 > fixture: KGP remains **candidate** until that fixture lands and this pass is re-run against it.
+
+---
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes: the run date, the participants **by role**, what passed, what broke. It is instance-free —
+> the namespaces below are the KINP §3.4 illustrative placeholders this document already uses, not
+> any deployment's cast. It **promotes nothing**: a spec owner MAY cite a recorded pass as evidence
+> alongside a hand-walked re-validation, and MUST answer a recorded failure.
+
+**Run of 2026-08-24** · encoding `kcs:worlds-to-fabric` · KCS 0.3.0 · evidence
+`sha256-2d9e6c43…c17bb3`, held downstream at `console/evidence/kcs-live-run.json` and verified
+against the artifacts in
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
+
+| | |
+|---|---|
+| Participants, by role | world **producer** (`worldsim`) · knowledge **producer** (`analyzer`) · identity **authority** (`refkb`) |
+| Over what links | **3 of 3 live** (100%) over real MCP/A2A connections — the **only** scenario in the suite with no delta-N stand-in |
+| Encoded as | 12 steps + **17** assertions, of which **2** are `expect: reject` |
+| Result | `green` · verdict **`live-pass`** · `transport_failures: []` |
+
+**What passed.** Every encoded assertion, over a fully live cast. The load-bearing ones, by the
+delta or step they carry:
+
+- **Step 1 / §4.3** — `claim_in_world` on the authored claim, and `based_on_exists` (not `same_as`)
+  from the NPC to the real figure. The firewall edge is the one this pass exists to protect.
+- **Delta A** — `source_world_is` on the ingested footage: the source world travels *with* the
+  asset, which is the precondition for the Step 3 extraction scoping itself at all.
+- **Delta B / R1** — `claims_converge`: post-reconciliation the extraction reduces onto the
+  claim the world producer already published rather than minting a second hash. Run against
+  KGP 0.5.1, so this is the **byte-unchanged convergence** R1 asserted, now observed by a machine
+  rather than desk-checked.
+- **Delta C** — `based_on_exists` across a non-identity-inheriting world.
+- **Q2, the core property** — `firewall_holds` plus two `no_sameas_across_worlds` probes, the
+  second running the full path *npc → e-8842 → napoleon-i → external anchor*. No `same_as` path
+  joins the fiction to the real figure through either hop.
+- **R2** — both egress legs are `expect: reject` steps carrying `refused`: the `local-only`
+  shot was refused **before transfer**, and the share-alike record was rejected per record with a
+  report rather than swallowed.
+
+**What the run does not say.** R3 — the RDF-star / W3C PROV / JSON-LD **projection round-trip** of
+the *Re-validation — KGP 0.5.0* pass above — has no encoded counterpart: KCS §5 has no predicate for
+a round-trip and the encoding declares none. A green run here is therefore **not** evidence for the
+one gate KGP still carries. See **DR-3**.
+
+### Findings — from the downstream run
+
+| # | Severity | Gap | Consequence |
+|---|---|---|---|
+| DR-3 | **High** (for KGP's gate only) | The encoding covers R1 (convergence) and R2 (the §7 filters) but **not R3**, the §4.1 projection round-trip. No KCS §5 predicate expresses a round-trip and the encoding mints no extension for one. | KGP's single outstanding gate — the downstream RDF-star / PROV / JSON-LD round-trip **fixture** ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)) — is **untouched** by this run. KGP stays candidate on exactly the same terms as before it. A reader who takes `live-pass` here as discharging KGP's gate has misread it. |
+
+Suite-wide limits that also apply to this run — **DR-1** (stand-in coverage; not binding here, this
+scenario was fully live) and **DR-2** (the evidence artifact records a per-scenario aggregate, not
+pass/fail per assertion) — are recorded once in
+[`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).

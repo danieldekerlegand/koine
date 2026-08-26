@@ -128,3 +128,66 @@ exact generated content.
 ✅ **Held:** the observation model records both invocations and their responses, and the existing
 media assertions can name each runtime-bound asset. Only the determinism question is carried
 forward; assertion extensibility and recording fidelity remain open.
+
+---
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes. Instance-free, role-scoped, and it **promotes nothing**.
+
+**Run of 2026-08-24** · encoding `kcs:format-stress` · KCS 0.3.0 · evidence
+`sha256-2d9e6c43…c17bb3`, verified in
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
+
+| | |
+|---|---|
+| Participants, by role | knowledge **producer** (`analyzer`, live) · media **provider** (`mediastore` composer, **stand-in**) |
+| Over what links | **1 of 2 live** (50%) |
+| Encoded as | 8 steps + **11** assertions, of which **2** are `expect: reject` |
+| Result | `green` · verdict **`partial-live`** · `transport_failures: []` |
+
+**The run is the smaller half of the evidence here, and deliberately so.** This document's subject
+is the format, so KCS's conformance artefact is earned by **use** — the attempt to encode the other
+scenarios *in* it — not by a run of this one. The load-bearing downstream fact is therefore not the
+green line below but the thing that made every other section in this directory possible: **nine
+documents were written in KCS 0.3.0 and all nine parse, replay and produce a content-addressed
+report.** That is positive evidence for the format at a scale no single scenario supplies.
+
+**What passed.** Every encoded assertion, each one carrying a delta this document produced:
+
+- **Delta M** (bind a step's output and assert over it) — three assertions name values that did not
+  exist when the document was written: `claim_in_world` over a minted claim id, `based_on_exists`
+  over what the extraction produced (Attempt 1's exact broken line, now writable), and
+  `asset_attaches_to` with **both** operands bound at once.
+- **Delta O** (`expect: reject` + `refused(step)`) — both negative paths ran as negative paths
+  rather than aborting the run: a refused `fetch` on the media plane and an over-ceiling `invoke` on
+  the control plane. Without delta O neither KCB security property was testable at all.
+- **Delta P** (a timing bound) — `completes` on a step and `always_completes` on the scenario, which
+  is what makes the liveness assertion about liveness rather than about patience.
+- Held from Attempt 2 unchanged: `capability_path_exists` (cross-plane path planning is expressible
+  as the format stands — which is what let the media-transform encoding exist), `cost_within_ceiling`
+  and `source_world_is` over a bound asset id, and a concurrent branch running beside its sibling.
+
+**What the run does not say.** Attempt 3 — the generated-output determinism leg that produced delta
+**Q** and KCS **0.3.0**'s `structure_matches(a, b)` — has no encoded counterpart, because the
+predicate does not exist downstream. See **DR-10**; it is a vocabulary-drift finding, not a failure
+of this pass.
+
+**Corroboration from two neighbours.** KCS §7 open question 1 (*a fixed core plus an escape hatch*)
+now has two independent pieces of evidence produced by construction rather than by argument:
+`e2e-live-schema-mutation.md`'s **V-8** needed five predicates §5 cannot express, and
+`e2e-multi-authority.md`'s **MA-11** needed four more, and both sets were built as **declared console
+extensions** and reported as such rather than smuggled into §5. The escape hatch was used exactly
+as the open question imagines it, twice, by different authors of different scenarios. That is a
+re-open input for KCS's owner against a **ratified** spec, alongside `INT-11`.
+
+### Findings — from the downstream run
+
+| # | Severity | Gap | Consequence |
+|---|---|---|---|
+| DR-10 | **High** | The downstream §5 vocabulary has drifted from KCS §5 **in both directions**. It omits `structure_matches(a, b)` — the fixed-core predicate KCS **0.3.0** added as delta **Q**, from Attempt 3 above — and it declares `media_map_complete`, a name KCS §5 does not contain and koine holds nowhere. Every encoded document nonetheless declares `kcs_version: 0.3.0`. The check that was supposed to catch this is a **hardcoded count of 18**, not a comparison against koine's text, and 18 is coincidentally what both lists happen to hold. | Two consequences. (1) KCS 0.3.0's determinism fold is **unexercised**: no document can assert `structure_matches`, so the normative rule that generated-output scenarios test stable structure rather than exact bytes has no machine-replayable evidence, and Attempt 3 is unclosed downstream. (2) A document declaring `kcs_version: 0.3.0` is being replayed by a **0.2.0-shaped** vocabulary, which is precisely the silent-version-drift hazard KCB §7.2 names one plane over. Fixing the count gate into a drift gate against koine's §5 is downstream work ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)); unowned today. |
+
+Suite-wide limits **DR-1** and **DR-2** are recorded in
+[`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).

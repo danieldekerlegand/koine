@@ -106,3 +106,50 @@ identity evidence. If exact verification fails, `analyzer` rejects or
 quarantines the clip and reports it unresolved; it does not guess. A verified
 re-attachment restores `metadata.koine.asset` before the timeline is accepted
 as canonical KMI. M-1 is therefore resolved without folding §9.1–§9.4.
+
+---
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes. Instance-free, role-scoped, and it **promotes nothing**.
+
+**Run of 2026-08-24** · encoding `kcs:kmi-otio-roundtrip` · KCS 0.3.0 · evidence
+`sha256-2d9e6c43…c17bb3`, verified in
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
+
+| | |
+|---|---|
+| Participants, by role | world **producer** (live) · knowledge **producer** (live) · identity **authority** (live) · media **provider** (`mediastore` composer, **stand-in**) |
+| Over what links | **3 of 4 live** (75%) |
+| Encoded as | 11 steps + 16 assertions, of which 3 are `expect: reject` — **all of them inherited** (see below) |
+| Result | `green` · verdict **`partial-live`** · `transport_failures: []` |
+
+**Read this result narrowly.** The encoding registered under this scenario's name is not an
+encoding *of this scenario*. It is the `kcs:media-transform` document spread into a new object with
+a different `id` and `title`, backed by the **same** `media-transform` composer fixture; its own
+module note says so — *"the KMI round-trip is a media-plane replay, not a console-local
+interpretation of OTIO bytes … the scenario remains observer-only."* So the sixteen assertions that
+came back green are the media-transform assertions, run twice.
+
+**What that means for what this document hunts.** Nothing here exercised the property this pressure
+test exists to find. **M-1** — a third-party OTIO round-trip drops the KINP asset-id carrier and
+leaves only stale or local paths, so an adversarial relink has nothing safe to key on — has no
+assertion in the suite. There is no export leg, no re-import leg, no probe of the metadata carrier's
+survival, and no counterpart to the Step 3 relink attempt. The finding is **folded** (KMI 0.3.3, per
+the Resolution above), and the fold is what a machine-replayable document would now be checking; no
+document checks it.
+
+**So the artefact gate is met here by count, not by content.** `scenarios/*.md` has an entry with a
+matching `source`, the coverage gate is satisfied, and the run is green — and none of that is
+evidence about §4.2a / §9.5. Recorded as **DR-4** rather than left to be inferred from a green line.
+
+### Findings — from the downstream run
+
+| # | Severity | Gap | Consequence |
+|---|---|---|---|
+| DR-4 | **High** | `kcs:kmi-otio-roundtrip` is `kcs:media-transform` under a different id and title, sharing its fixtures. It contains no OTIO export, no re-import, and no assertion over the asset-id carrier, so **M-1 and the KMI 0.3.3 fold that closed it are unexercised**. | KMI's coverage of this pressure test is nominal. A green `kcs:kmi-otio-roundtrip` may **not** be cited as downstream evidence for §4.2a or §9.5 — it is evidence for the media-plane exchange, which `kcs:media-transform` already carries. Closing it is downstream work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md): a real encoding of these three steps. Unowned today. |
+
+Suite-wide limits **DR-1** and **DR-2** are recorded in
+[`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).

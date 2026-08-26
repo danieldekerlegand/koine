@@ -607,3 +607,85 @@ is the fold.
 > the version that closed each delta — as [`e2e-media-transform.md`](e2e-media-transform.md)'s
 > Resolution does for F–L — after which this document stands as the historical record of what the
 > break-test found.
+
+---
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes. Instance-free, role-scoped, and it **promotes nothing**.
+
+**Run of 2026-08-24** · encoding `kcs:multi-authority` · KCS 0.3.0 · evidence
+`sha256-2d9e6c43…c17bb3`, verified in
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
+This is the encoding that landed last, with the follow-up merge that also re-captured the run.
+
+| | |
+|---|---|
+| Participants, by role | domain **A** identity **authority** (`refkb`, live) · knowledge **producer** (`analyzer`, live) · control-plane **host** (`orchestrator`, live) · domain **B** identity **authority** (`archivekb`, **stand-in**) · domain A **store** (**stand-in**) · domain B **store** (**stand-in**) |
+| Over what links | **3 of 6 live** (50%) — and the split runs along the domain boundary: every live slot is in domain **A**, every domain-**B** participant and both CAS stores are recordings |
+| Encoded as | 17 steps + **13** assertions, of which **4** are `expect: reject`. Four predicates are declared **console extensions** — `peer_entries_unreconciled`, `asset_id_stable_across_holders`, `replicated_bytes_verified`, `copy_is_not_lineage` |
+| Result | `green` · verdict **`partial-live`** · `transport_failures: []` |
+
+**`green` here does not mean this pass came out clean.** It did not: **MA-1…MA-11** are open,
+**MA-1…MA-6** blocking, none folded, and all three specs ADR-0012 licensed stay candidate. The
+encoding replays **every** step, including the ones that broke, and asserts only the federation
+properties the pass attacked and could not break — *"a document that asserted the broken properties
+would be asserting a fold koine has not made."*
+
+**What passed**, by the row of the §Assertions table:
+
+| Row | Step | Property | Held as |
+|---|---|---|---|
+| 1 | 1 | Minting works with **both** authorities dark — ADR-0012's central invariant | `always_completes` |
+| 2 | 2 | Domain A's firewall edge, the half that held | `based_on_exists` |
+| 4 | 4 | Normalization converges **within** a domain | `claims_converge` |
+| 5 | 5 | The merged `find` set is ranked and **both** authorities are returned | `capability_path_exists` + `peer_entries_unreconciled` (ext) |
+| 7 | 7 | A cross-domain grant is not honoured | `refused` over `expect: reject` |
+| 8 | 8 | The three KMI §7.1 clauses that held: byte-stable id, verified bytes, a copy is not a lineage edge | `asset_id_stable_across_holders`, `replicated_bytes_verified`, `copy_is_not_lineage` (ext) + `refused` |
+| 9 | 9 | The **outbound** egress leg — store A deciding at its own boundary | `refused` |
+| 10 | 10 | An unreachable store invalidates nothing | `dangling_ref_tolerated` + `source_world_is` |
+
+**What was replayed but deliberately not asserted.** Each of these is a step whose answer the run
+records — so the exposure is visible — with no assertion claiming the property holds, because on
+today's contracts it does not:
+
+- **MA-2** — KINP §4.5's relation-choice rule needs the candidate's world and its
+  inherit-as-identity mode; both are published in the *other* domain, no KCB verb returns them, and
+  §4.5's third branch covers low **confidence**, not a **missing operand**. The firewall is not
+  over-merged, it is **absent on the second authority**, so a `no_sameas_across_worlds` here would
+  assert a fail-closed branch §4.5 does not have.
+- **MA-1** — §4.1's merged closure is governed by its weakest link, and the weakest was above *its
+  issuer's* threshold for *its issuer's* purposes. Nothing scopes a closure to an authority, so the
+  run records the closure and its weakest issuer and asserts nothing about it.
+- **MA-3 / MA-4** — two authorities means two canonical entities and two default real worlds, so one
+  fact mints two claim ids even when both anchor to the same external authority. There is no
+  cross-domain convergence target, which is why `claims_converge` above is scoped to domain **A**
+  only — precisely the scope the property still has.
+- **MA-5** — KMI §7.1(e)'s egress gate has no operand: the §2 envelope carries no `license` and no
+  `egress`, and §7.1(d) forbids synthesizing one. The **outbound** refusal is asserted because store
+  A decides at its own boundary; nothing asserts the policy **travelled** with the copy, because it
+  did not.
+- **MA-8 / MA-9** — three of §3.1's six clauses have no carrier in the §3 response: no field for the
+  serving peer's KINP id, and none marking an entry peered rather than local.
+
+**MA-11** is the same shape as V-8 one spec over: every §5 predicate was written for a fabric with
+one holder of each authority role, which is why four predicates above are extensions. Like V-8, this
+run **corroborates it by construction** — the encoding could not be written inside §5.
+
+**What the run does not say.** The domain-boundary split above is the finding underneath the
+percentage: a federation pressure test whose **entire second domain** is a recording exercised
+peering and replication against a cooperative fixture, never against an independently operated
+authority. That is the property ADR-0012 is staked on — *"neither was built with the other in
+mind"* — and it is the one a stand-in cannot supply.
+
+### Findings — from the downstream run
+
+| # | Severity | Gap | Consequence |
+|---|---|---|---|
+| DR-8 | **High** (reading hazard, not a new break) | `kcs:multi-authority` returns **`green`** over a pass with MA-1…MA-11 open and six blocking. The encoding is right to be silent on the broken properties, but the evidence artifact records only the aggregate, so nothing in it says which properties were skipped — and the skipped set is where every blocking delta lives. | A green line here may **not** be cited as evidence for KINP §11.1, KCB §3.1 or KMI §7.1. All three stay candidate on exactly the terms the *Re-ratification — what this pass gates* section above sets, and this run moves none of them. What it **does** support is the eight rows above, most usefully ADR-0012's central invariant (minting with both authorities dark) and the three §7.1 CAS clauses. |
+| DR-9 | Minor | Every live slot sits in domain **A**; domain **B**'s authority and both CAS stores are delta-N stand-ins. The federation was therefore tested across a boundary with a **recorded** counterparty on the far side. | The properties that depend on the far authority being *independently operated* — MA-2's missing operands, MA-8/MA-9's peer attribution — cannot be distinguished here from a fixture that simply did not model them. Closing this needs a second adopter, not a document change. |
+
+Suite-wide limits **DR-1** and **DR-2** are recorded in
+[`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).

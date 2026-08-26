@@ -213,3 +213,56 @@ rather than re-broken — the same gap, in the adopted model, with the same fix.
 > claimed here: **KCB 0.3.0** redefines the §2 manifest as an A2A AgentCard extension, which this
 > scenario's Steps 1/3/8 exercise and which has not been re-run. Both specs stay **candidate**
 > until that pass lands.
+
+---
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes: the run date, the participants **by role**, what passed, what broke. Instance-free — the
+> namespaces are the KINP §3.4 placeholders, not any deployment's cast. It **promotes nothing**: an
+> owner MAY cite a recorded pass and MUST answer a recorded failure.
+
+**Run of 2026-08-24** · encoding `kcs:media-transform` · KCS 0.3.0 · evidence
+`sha256-2d9e6c43…c17bb3`, verified in
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
+
+| | |
+|---|---|
+| Participants, by role | world **producer** (`worldsim`, live) · knowledge **producer** (`analyzer`, live) · identity **authority** (`refkb`, live) · media **provider** (`mediastore` composer, **stand-in**) |
+| Over what links | **3 of 4 live** (75%). The composer answered from a delta-N `standin` recording, not over a live link. |
+| Encoded as | 11 steps + **16** assertions, of which **3** are `expect: reject` |
+| Result | `green` · verdict **`partial-live`** · `transport_failures: []` |
+
+**What passed.** Every encoded assertion.
+
+- **Step 1 / delta F** — three `capability_path_exists` probes: discovery plans the cross-plane
+  mood→score path, which is the leg delta F opened.
+- **Steps 2/5/7** — three `source_world_is` probes plus `asset_attaches_to`: world scoping survives
+  every hop of the media plane, and media hangs off entities by identifier (KMI §7.2).
+- **Steps 3/5 / delta G** — `cost_within_ceiling` and two `refused` steps: the spend ceiling is
+  demonstrated by a refusal that actually happened, not by a number sitting in a manifest.
+- **Step 6 / delta L** — `dangling_ref_tolerated`: an unresolvable reference narrows the answer and
+  breaks nothing.
+- **Step 7 / KMI §5** — `analysis_attributed_to_constituent` plus `claim_in_world` and
+  `provenance_present`: the composite's analysis lands in the **constituent clip's** world, which is
+  the media→knowledge bridge property, and the firewall holds across it.
+
+**What the run does not say.** The one participant this scenario is *about on the provider side* —
+the composer that performs the transform — was a stand-in. The cross-participant `invoke` of Step 3
+and the CAS byte-`fetch` of Step 4 therefore exercised the **consumer** half over a live link and
+the **provider** half against a recording. Promotion of that role from stand-in to live is a cast
+change only, not a document change, so re-running it needs an adopter and not an edit. See **DR-1**.
+
+**What this leaves for KCB and KMI.** Both remain candidate. This run is evidence that the encoded
+discovery legs hold **against a recorded card**, and the outstanding re-run named in
+[`README.md`](README.md) — this scenario against KCB's §2 AgentCard-extension manifest shape — asks
+whether they hold against a *live* one. That is exactly the half the stand-in did not answer.
+
+### Findings — from the downstream run
+
+None local to this scenario: every encoded assertion held and the run opened no new break. The
+suite-wide limits **DR-1** (stand-in coverage — binding here, 1 of 4 slots) and **DR-2**
+(aggregate-only evidence) are recorded in
+[`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).
