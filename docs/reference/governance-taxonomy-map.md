@@ -73,7 +73,7 @@ KFT 0.5.0.
 | **G2** | Deliberation | **Absent** (decided: [non-goal](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)) | — | No koine clause encodes argument exchange, turn-taking, or challenge/response. |
 | **G3** | Voting | **Absent** (decided: [non-goal](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)) | — | No koine clause encodes preference aggregation, quorum, or rounds. |
 | **G4** | Dissent preservation | **Absent** (decided: [non-goal](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)) | — | No koine clause encodes a minority position; nothing in the fabric produces a "decision output" to preserve one in. |
-| **G5** | Human escalation | **Partial (narrow)** | KINP §11 decision 2 · KCB §5 · KGP §7 · KMI §3 | **One** route to a human exists — the hybrid merge **review queue** — and it is a knowledge-contamination control, not a decision-escalation mechanism. |
+| **G5** | Human escalation | **Partial** (boundary half **specified**: KCB §4.3, [ADR-0013](../../decisions/ADR-0013-autonomy-posture-boundary-clause.md)) | KINP §11 decision 2 · **KCB §4.3** · KCB §5 · KGP §7 · KMI §3 | **Two** mechanisms now, on different axes. The hybrid merge **review queue** routes a knowledge-contamination decision to a person. **KCB §4.3** (0.4.8) states, for a dispatch crossing an ownership boundary, *which classes of effect may proceed unattended* — a declared port/capability `effect` class, a posture that is a set of admitted classes, a monotone-restrictive **intersection** rule, and a floor no posture may skip. It fixes **when a stop is required** and deliberately not how one is served, so *"no clause names the human authority or how the decision returns"* is now a stated boundary rather than a gap. Still **Partial**, not Complete: the intra-organizational half is out of scope by [ADR-0011](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md), and a fired stop still leaves no required trace (**GOV-2**). |
 | **G6a** | Audit | **Partial** | KGP §2/§7 · KINP §7 · KMI §3 · KFT §3.3.1, §5.2 · KCB §5 | **Artifacts** are provenanced and tamper-evident by construction; **events and decisions** are not recorded at all. |
 | **G6b** | Replay | **Partial** | KCS §1, §4 · KGP §6 · KCB §4 | KCS replays a **scenario** against live participants; nothing reconstructs a past run from a log. |
 
@@ -113,7 +113,7 @@ The rest of this section says, for each **Partial**, what is covered and what is
 - **No role assignment.** Roles are self-declared and descriptive — clauses are written *against*
   roles, and no clause checks that a participant is entitled to the one it claims.
 
-### G5 Human escalation — Partial (narrow)
+### G5 Human escalation — Partial
 
 **What koine covers.** Exactly one path routes a decision to a human, and it is specified: KINP §11
 decision 2's **hybrid merge policy** auto-applies `same_as`/`based_on` above a confidence threshold
@@ -131,6 +131,40 @@ human authority or how the decision returns.
 **Do not read KFT §8.1 as escalation.** Graded refusal routing hands a caller `route_to[]` —
 resolvable addresses of *other providers* — and the spec is explicit that this is a hint and not a
 delegation. It routes machine → machine. It never reaches a person.
+
+**Decided in scope, and now specified (2026-08-26).**
+[ADR-0013](../../decisions/ADR-0013-autonomy-posture-boundary-clause.md) takes up the carve-out
+[ADR-0011](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md) §4 left open
+— *"G5 in particular is not decided here"* — and splits G5 on the ownership boundary. The half that
+crosses one is **in scope**: where a caller under one owner dispatches to a callee under another, a
+declared **autonomy posture** — which classes of effect may proceed without a person — is
+interchange, and ADR-0013 authorizes a clause for it (a port **effect class**, a posture operand on
+the existing verbs, a monotone-restrictive intersection rule, and a floor that no posture may skip).
+The half that does not cross one — who the human authority is, how the approval is served, how the
+answer returns, and how an organization supervises agents it assembled itself — stays out by
+ADR-0011's boundary sentence, so *"no clause names the human authority or how the decision returns"*
+above is a **stated boundary**, not a gap.
+
+**The clause landed the same day**, so the measurement is re-derived here from text that exists
+rather than from a record that authorizes it. **KCB §4.3** (0.4.8), forced by the pressure leg
+[`../../scenarios/kcb-cross-owner-posture.md`](../../scenarios/kcb-cross-owner-posture.md) (deltas
+**AP-1…AP-8**), mints a capability/port **`effect`** class — `reversibility` × `visibility`, absent
+reading *unknown* and never *harmless* — makes a posture a **set of admitted classes** rather than a
+rung name, and fixes the conflict rule: a posture is **monotone-restrictive**, the effective posture
+is the **intersection**, and the restriction always wins, so *which posture wins* needs no arbitration
+and no trust. Its floor (§4.3d) is what a caller may assume of a callee it has never met, and its
+chain rule (§4.3e) is what keeps a delegated leg from escaping the caller's posture. The grade moves
+from **Partial (narrow)** to **Partial**: a real cross-plane mechanism now exists on the escalation
+axis, and it is unilateral at both ends — which is why
+[ADR-0011](../../decisions/ADR-0011-governance-deliberation-voting-dissent-non-goal.md)'s trigger
+**T3 does not fire**.
+
+Two things this does **not** change, stated so the measurement stays honest. It is not **Complete**:
+the intra-organizational half stays out by ADR-0011's boundary sentence, and §4.3g is explicit that
+the contract names no person, interface or timeout — a headless participant is fully conformant. And
+**GOV-2** stays open and is the companion finding — a stop that fires and leaves no trace is a stop
+the other organization cannot verify afterwards, which is the audit question, not the escalation one.
+KCB §4.3i names that adjacency and folds nothing for it.
 
 ### G6a Audit — Partial
 

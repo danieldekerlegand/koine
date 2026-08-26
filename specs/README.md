@@ -14,7 +14,7 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 | [`identity.md`](identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.3.0 · 🟡 candidate |
 | [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.5.2 · 🚧 candidate |
 | [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.4 · 🚧 candidate |
-| [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.4.7 · 🚧 candidate |
+| [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.4.8 · 🚧 candidate |
 | [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data that drives **N real** participants over their actual MCP/A2A connections, asserting cross-plane properties, each cited to the clause it checks | 0.3.0 · 🚧 candidate |
 | [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.6.0 · 🚧 candidate |
 
@@ -168,10 +168,11 @@ So the **artefact gate is met for four of the six specs**, and for those four wh
 waits on is no longer this rule. It is each spec's own outstanding pass — an unfolded delta set, an
 un-re-run scenario, a missing downstream fixture. **Two are still blocked by this rule**, both since
 2026-08-26 and both narrowly: KFT, whose 0.6.0 fold is gated by
-[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), and KCB's §4.2
-count, gated by [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md);
-each is a scenario written **after** the nine encodings were built, neither has an encoding, and
-neither encoding is owned (findings **DR-11** and **DR-12**). Adding a document to
+[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), and KCB on **two**
+counts — §4.2, gated by [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md),
+and §4.3, gated by [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md);
+each is a scenario written **after** the nine encodings were built, none has an encoding, and no
+encoding is owned (findings **DR-11**, **DR-12** and **DR-13**). Adding a document to
 [`../scenarios/`](../scenarios/) incurs this gate, and no koine guard notices — the red light is
 downstream. **Six of six specs remain `candidate` and zero are promotable today**, but otherwise for
 spec-specific reasons that this section no longer supplies. One line per
@@ -200,7 +201,7 @@ Two things this correction deliberately does **not** do:
     KFT's §3.3 and §8.1 (**DR-5**) — and the artifact records a per-scenario aggregate rather than
     pass/fail per assertion with its cited clause (**DR-2**), so the mapping from a green line to a
     discharged clause is read off the encoding by hand. The index of all twelve findings is
-    [`../scenarios/README.md`](../scenarios/README.md#findings-from-the-run-dr-1dr-12).
+    [`../scenarios/README.md`](../scenarios/README.md#findings-from-the-run-dr-1dr-13).
 
 There is still no provisional status, no waiver, and no "ratified pending encoding": the rule has
 one exception, the grandfather clause above, and it is closed to new entrants.
@@ -252,7 +253,7 @@ that no SPDX release has ever defined — which no amount of careful reading wou
 - **Status is a lifecycle:** `draft → candidate → ratified`, and the two promotions are gated
   differently — the second is **conformance-gated** ([The ratification gate](#the-ratification-gate)
   above). A spec is also demoted back to **candidate** when a later change touches its model shape.
-  Four sit there now — KGP 0.5.2, KMI 0.3.4, KCB 0.4.7, KFT 0.6.0 — each for its own reason; which
+  Four sit there now — KGP 0.5.2, KMI 0.3.4, KCB 0.4.8, KFT 0.6.0 — each for its own reason; which
   re-validation is outstanding for which spec is tracked in [`../ROADMAP.md`](../ROADMAP.md).
 - **Clauses are §-numbered and normative.** MUST / SHOULD / MAY carry RFC-2119 weight; other specs
   and the schemas cite these section numbers (e.g. "KGP §7.2", "KINP §4.3"), so the numbering is a
