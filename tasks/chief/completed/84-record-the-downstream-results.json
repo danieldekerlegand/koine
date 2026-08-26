@@ -29,7 +29,17 @@
         "Where the evidence is insufficient to say what a leg did, record that gap rather than inferring. The value here is that the section is trustworthy, not that it is full."
       ],
       "notes": "All 10 scenarios now carry a populated `## Downstream results` section; `grep -c '## Downstream results' scenarios/*.md` went 0/9 -> 10 scenario files + README. Content read off agora/console/evidence/kcs-live-run.json (evidence_id sha256-2d9e6c43..., generated 2026-08-24, kcs_version 0.3.0, 9 scenarios, 19/32 live = 59%, verdict partial-live, transport_failures []) plus the encodings at agora/console/src/kcs/scenarios/. 11 findings recorded as DR-1...DR-11, each defined once in the document it bites and indexed in scenarios/README.md; kft-resume-checkpoint.md states plainly it was never encoded and never run. Gates: node scripts/check-doc-integrity.mjs green (47 files, 896 relative links, 3 status tables match); node scripts/check-doc-links.mjs --ratchet --base main green (0 dead vs 0 on main).",
-      "passes": true
+      "passes": true,
+      "diffSize": {
+        "files": 11,
+        "lines": 660,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": true
+      }
     },
     {
       "id": "US-2",
@@ -41,7 +51,17 @@
         "A note records that these two files must agree, and which is the source. Two registers disagreeing about the same fact is a failure this repo's own preamble says has already cost real decisions."
       ],
       "notes": "scenarios/README.md KCS-encoding column now reads exists 9x + absent 1x (was planned 9x); each cell names its encoding file under agora/console/src/kcs/scenarios/ (worlds-to-fabric.ts, media-transform.ts, kmi-otio-roundtrip.ts, finetune.ts, finetune-multimodal.ts, producer-exhaust-finetune.ts, live-schema-mutation.ts, multi-authority.ts, format-stress.ts) plus its scenario id, run date 2026-08-24, and any DR finding that qualifies it. kft-resume-checkpoint.md is 'absent' (no encoding, no owner, DR-11). ROADMAP.md Phase F4's two table rows + its 'nothing was recorded back' bullet + the Phase 1 'all nine sections are empty' caveat all corrected. New note: scenarios/README.md is the register of record, ROADMAP restates it, and both derive from the downstream artifacts. Gates: node scripts/check-doc-integrity.mjs green (47 files, 918 relative links, 3 status tables match); node scripts/check-doc-links.mjs --ratchet --base main green (0 dead vs 0 on main). Commit efeebed.",
-      "passes": true
+      "passes": true,
+      "diffSize": {
+        "files": 2,
+        "lines": 140,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": false
+      }
     },
     {
       "id": "US-3",
@@ -52,7 +72,18 @@
         "Coordinate with `83-promote-kgp` rather than duplicating it: that tasklist owns KGP's promotion, this one owns the evidence trail. If the results change KGP's verdict, note it there rather than promoting from here."
       ],
       "notes": "Every DR finding bearing on promotability is now in the spec's gate section or open questions, plus the positive evidence. KINP: kcs:worlds-to-fabric's fully-live 3/3 pass observed firewall_holds + two no_sameas_across_worlds probes + deltas A/C; predates ADR-0012 so MA-1..MA-4 unaffected. KGP: SS3.3 claims_converge and SS7's two egress refusals held, but DR-3 (R3 projection round-trip unencoded) leaves the fixture gate where it was - NOT promoted here, promotion stays with 87-kgp-projection-reader-and-roundtrip (AC-3). KMI: DR-4 - artefact gate met by count not content, M-1 unexercised. KCB: DR-7/DR-8 green-over-blocking-deltas stated as the reading rule; DR-12 - fourth count's scenario unencoded. KFT: five SS4.2 refusals observed; DR-5/DR-6/DR-11. KCS: nine documents parse+replay (deltas M/O/N/P); DR-10 into SS7.1/SS7.2 + pressure test as a qualification on the existing re-validation not a second gate, DR-2 into SS7.3. Six dated Editorial changelog entries, no clause/status/version moved. Registers updated: specs/README.md, docs/reference/promotability.md (6 rows + both cross-cutting facts + ranking), ROADMAP.md, CLAUDE.md. Gates observed GREEN: node scripts/check-doc-integrity.mjs OK - 48 markdown files, 1010 relative links checked, all 3 status tables match their headers; node scripts/check-doc-links.mjs --ratchet --base main -> 0 dead vs 0 on main; check-schemas OK; check-registry OK; check-tasklist-categories OK (5 tasklists); bash .chief/verify.sh --run over the 10 changed files -> 'all selected gates green - allowing merge'. Base integration done first this iteration: rebased 5 commits onto main @da48d29 (conflicts in .chief/state/* resolved to this run's state, scenarios/README.md table merged keeping main's 11th row + this branch's encoding column), then commit 2257748 gave the 11th scenario (kcb-subscription-firehose.md, landed on main) its own '## Downstream results' section as DR-12 and corrected every ten->eleven count.",
-      "passes": true
+      "passes": true,
+      "diffSize": {
+        "files": 10,
+        "lines": 448,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": true
+      }
     }
-  ]
+  ],
+  "mergedToMain": "a76ac9d"
 }
