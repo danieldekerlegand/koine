@@ -1,150 +1,155 @@
-# Chief Progress — 53-multi-authority-scenario
-Started: Mon Aug 24 16:24:34 CDT 2026
+# Chief Progress — 69-kft-open-questions
+Started: Wed Aug 26 10:34:58 CDT 2026
 ---
 
 ## Codebase Patterns
 
-- **Scenario documents follow a fixed shape.** Title + *Purpose* (naming the exact spec versions
-  under test and quoting the invariant) → *The story* → *Setup* table in KINP §3.4 placeholder
-  namespaces → numbered **Steps** each tagged ✅ *held* / 🔴 *broke* / 🟡 *noted* → *Assertions — as
-  KCS steps* (a table mapping each assertion to a KCS §5 predicate, with `— **none**` where the
-  format cannot express it) → *Findings* table (`# | Severity | Gap | Delta | Spec`) → a
-  *Not deltas — what this pass tried to break and could not* paragraph → *Verdict* →
-  *Re-ratification / Resolution*. `scenarios/e2e-live-schema-mutation.md` is the best model.
-- **Findings must be grounded in quoted clause text.** Read the actual §-text before writing a
-  break; every finding here cites the sentence it contradicts. Recording what *held* under a named
-  attack is as load-bearing as the breaks.
-- **Adding a scenario means four doc edits, not one.** The file, the row in `scenarios/README.md`'s
-  table (incl. the *KCS encoding* column), the prose counts in that README ("These N documents",
-  "`planned` N times", "encodes the N documents", "the attempt at the N above"), and the two count
-  sentences + the F4 milestone row in `ROADMAP.md`. None of those counts is machine-checked.
-- **Verify with the real gate, not just the guard.** `git diff --name-only <base>...HEAD |
-  .chief/verify.sh --plan` shows which gates the diff selects; `.chief/verify.sh --run <files>`
-  runs them. A prose branch selects guard-doc-integrity + guard-doc-links + verify-selftest.
+- **Two kinds of scenario.** A full `e2e-*.md` pass walks a whole story across participants and
+  emits a delta series; a **focused pressure leg** (`kmi-otio-roundtrip.md`, now
+  `kft-resume-checkpoint.md`) attacks ONE open question of ONE spec and says explicitly which
+  questions it does *not* force. Use the focused shape when a tasklist names a single §-numbered
+  open question. Copy `kmi-otio-roundtrip.md`'s skeleton: Purpose → Setup (roles + KINP §3.4
+  placeholders) → numbered Steps each marked ✅/🟡/🔴 → Findings table → an explicit
+  "only §N is forced" section listing every sibling question left alone.
+- **Prove the leg is not rigged.** Both finetune-adjacent precedents open with a step that *holds*
+  and close with a "what held" section. A leg that only breaks reads as manufactured; a leg that
+  confirms the half of the question that already works, then breaks the other half, is what earns
+  the fold.
+- **Adding a scenario means editing `scenarios/README.md`.** Add a table row. The counts in that
+  file ("eight documents", "`planned` eight times") refer to the **KCS-encoding-gated** rows only —
+  a focused leg carries `⬜ **focused pressure leg** — follow-up to <parent>` in the last column
+  and moves none of those counts.
+- **`.chief/verify.sh` path-selects its guards from the CHANGED files.** Touch any `.md` and
+  `guard-doc-integrity` + `guard-doc-links` become merge blockers for your branch — even if they
+  were already red for reasons predating it. Run `bash .chief/verify.sh` after committing (it
+  diffs committed state, so it reports "no changed files" on an uncommitted tree). To tell a
+  pre-existing failure from one you caused, stash with a unique tag and re-run on baseline.
+- **Quote the spec verbatim when asserting a break.** Every finding in these scenarios cites the
+  clause it breaks by section number and quoted phrase. `sed -n` the clause before writing the
+  claim — a paraphrased gap is not a delta.
 
 ---
 
-## US-1 — A two-authority pressure scenario hunting the shared-pattern break (2026-08-24)
+## Iteration 1 — US-1 (New KFT pressure-test leg forcing the open question)
 
-**What I did.** Wrote `scenarios/e2e-multi-authority.md` (522 lines), the ADR-0012 federation
-break-test that KINP 0.3.0 §11.1, KCB 0.4.6 §3.1 and KMI 0.3.4 §7.1 each name as their candidate
-gate. Two independently built authority domains compose into one fabric: domain A is the
-`e2e-worlds-to-fabric.md` deployment (`refkb` / `orchestrator` / `analyzer` / `worldsim` /
-`mediastore`), domain B is an archive (`archivekb` / `coordinator` / `assetstore` — three new
-placeholder registrations in KINP §3.4's illustrative style, since the existing set has exactly one
-of each authority-ish role). Ten steps, adversarial throughout.
+**Chose §11.3 (resume-checkpoint ref)** over §11.1/§11.2/§11.4/§11.6. Reasoning: §11.3 is the only
+one where the spec already makes a *contract claim* that can be taken at face value and falsified —
+§6 annotates the telemetry `checkpoint` field "optional KMI asset (**resumable**)" while §3 has no
+slot that can name one. That makes the break demonstrable from the spec's own text rather than
+manufactured, which is what the tasklist's unpark note demanded ("US-2 folds a clause only if US-1
+finds a CONCRETE break").
 
-**Files changed.**
-- `scenarios/e2e-multi-authority.md` (new)
-- `scenarios/README.md` — table row + the four prose counts
-- `ROADMAP.md` — two count sentences + the Phase F4 encoding milestone (`kcs:multi-authority`)
+**Files changed**
+- `scenarios/kft-resume-checkpoint.md` (new, ~200 lines) — the leg. Findings **FT-R…FT-V**
+  (FT-A…FT-Q were already spent by the three earlier passes; FT-R was free).
+- `scenarios/README.md` — one table row, focused-leg form.
+- `specs/{identity,capability-bus,media-interchange}.md` — nine dangling links repointed (separate
+  commit, see below).
 
-**Findings the pass produced.** MA-1…MA-11; six blocking.
-- MA-1 (H) query-time `same_as` closure (§4.1) unions two authorities' links, governed by its
-  weakest link — a merged identity no authority asserted and no review gate saw; re-running
-  `e2e-worlds-to-fabric.md`'s Q2 now leaks fiction.
-- MA-2 (H) §4.5's relation-choice rule needs the candidate's world + inherit-as-identity mode; both
-  are published in the *other* domain, no KCB verb returns them, and §4.5 has no branch for a
-  **missing operand** (its third branch is about confidence) → the firewall is absent on the second
-  authority.
-- MA-3 (H) §6 re-expresses claims against "**the** canonical entity" — singular; two holders means
-  two claim ids for one fact, and nominating a target reinstates ADR-0012's rejected option (a).
-- MA-4 (H) the world is *inside* the claim hash (§6) and §5 makes the default real world the
-  authority's own, so two consensus realities → two hashes even for a shared `wikidata:` anchor; §4.2
-  ranges over entities, so nothing can assert the two worlds are one. Also strands KGP §7's
-  `world = consensus-reality` filter.
-- MA-5 (H) KMI §7.1(e)'s egress gate has **no operand** — the §2 envelope carries no `license` /
-  `egress`, KGP §7's classes are record properties, and §7.1(d) forbids synthesizing the envelope
-  that would carry them. Both horns conformant, both wrong.
-- MA-6 (H) discovery federates, authorization does not: §5 grants come from one host; §3.1 returns
-  addresses nobody can authorize a call to. KMI §7.1(b)(e) inherits it for `fetch:asset`.
-- MA-7 (M-H) federation reintroduces one unfederated authority — §3.4's prefix registry.
-- MA-8 (M) three of §3.1's six clauses have no carrier in §3's `find` response.
-- MA-9 (M) peering has no horizon and no de-dup key. MA-10 (M) no durability floor: *pending fetch*
-  becomes unfalsifiable. MA-11 (cleanup) KCS §5 has no authority-boundary vocabulary (V-8's class).
+**What the leg found** (all five carried to US-2; blocking are FT-R + FT-S):
+FT-R no slot / FT-C anchor fails · FT-S the only permissive slot is unread by every gate AND §5.4
+never binds a mid-run checkpoint (the privacy hole) · FT-T activity identity, no `continues`
+relation · FT-U `job+step` idempotency collides on re-executed steps · FT-V the estimate cannot net
+out completed work.
 
-**What held under attack** (the three acceptance-criteria invariants, two of three):
-offline-first minting with both authorities gone — including the world-stamp back door — and asset
-id byte-stability across stores (re-minting forbidden, corrupted bytes rejected by the mandatory
-verify, C2PA/OMC projections gained no spurious derivation). The third invariant, *no query-time
-merge produces a false cross-authority identity*, **failed** — MA-1.
+**Verification.** `check-doc-integrity` OK (44 files, 752 links, 3 status tables match) ·
+`check-schemas` OK (9 schemas, 274 positions, 78 $refs, 3 fixtures) · `check-registry` OK (27
+relations) · `check-tasklist-categories` OK (7 tasklists) · `.chief/verify.sh` **all selected gates
+green — allowing merge**.
 
-**Verification.** `node scripts/check-doc-integrity.mjs` → OK, 43 markdown files, 705 relative links
-checked, all 3 status tables match their headers. `.chief/verify.sh --run` over the changed set →
-all selected gates green (guard-doc-integrity; guard-doc-links `0 dead vs 0 on main`;
-verify-selftest `30 passed, 0 failed`). `node scripts/check-tasklist-categories.mjs` → green.
-`schemas/*.json` all parse.
+### Learnings for future iterations
 
-**Learnings for future iterations.**
-- The research value is in *reading the clause before claiming the break*. Several findings only
-  exist because §2's envelope, §5's world default and §6's hash inputs were read literally — e.g.
-  the world being inside the claim hash is what makes MA-4 independent of MA-3.
-- The verdict shape matters: this pass is the **inverse** of `e2e-live-schema-mutation.md` (there,
-  one spec's model held and its perimeter leaked; here, three edits are each locally sound and every
-  break is at a seam none of them owns). Say which shape a pass has — it is what tells the owner
-  whether to fold or to reconsider.
-- US-2 must add the *Re-ratification — what this pass gates* section (a per-spec table + *what a
-  clean pass would license* + a dated Resolution note) and wire the three specs to cite the scenario
-  by name; the Verdict currently ends at the blocking summary with no pointer, which US-2 adds.
-- The research map in the PRD was accurate; no correction needed.
+- **A pre-existing red gate became this branch's merge blocker.** `tasks/chief/53-multi-authority-scenario.json`
+  had been retired into `tasks/chief/completed/`, leaving 9 dangling links across KINP/KCB/KMI.
+  `check-doc-integrity` was already failing on `main`, but `verify.sh` only *selects* that guard when
+  a doc changes — so the moment this branch touched `scenarios/README.md` it inherited the failure.
+  Fixed as a link-target-only repoint in its own commit. **Expect this class of breakage whenever a
+  tasklist is retired**: any spec citing it by `../tasks/chief/<name>.json` goes dangling.
+- **FT-S is the finding US-2 should lead with.** FT-R is the missing field, but FT-S is the one with
+  teeth: §5.4's inheritance is scoped to "the finetuned model entity and every weight/export asset
+  **it generates**", and §5.2 mints the model at *completion* — so nothing in KFT today assigns an
+  egress class or license to a mid-run checkpoint, even though §6 publishes its id on a `subscribe`
+  stream and tells consumers to `fetch` it lazily. That hole exists **independently of resume** and
+  a fold that only adds a `resume` field would leave it open.
+- **The fold must stay additive and must touch §3.3.2.** §3.3.1 forbids leaving any §3 field
+  unclassified, so a new top-level field needs a row in §3.3.2's matrix with a disposition. Its own
+  gating test ("changing it changes what the run is") is met, so the disposition is REFUSE-if-pinned
+  unless the target expresses it.
+- **`schemas/finetune-job.schema.json` is `additionalProperties: false` at the top level and inside
+  `dataset`.** There is no vendor escape hatch by design — so any US-2 job-shape change is a real
+  schema edit, and `schemas/fixtures/finetune-job.json` must stay valid.
+- **The research map was not provided for this tasklist**; everything above was derived by reading
+  `specs/fine-tuning.md` (§2, §3, §3.1–§3.3, §4.2, §5.1–§5.4, §6, §7, §8.1, §11), the three existing
+  finetune scenarios, `registry/relations.tsv`, and the schema. Future iterations can start from
+  this note instead.
 
 ---
 
-## US-2 — Record the re-ratification resolution across the three specs (2026-08-24)
+## Iteration 2 — US-2 (Fold the forced §11 question into the KFT contract + schema)
 
-**What I did.** Closed the loop from the scenario back to the three §-edits it gates.
+Folded **FT-R…FT-V** from `scenarios/kft-resume-checkpoint.md` into **KFT 0.5.0 → 0.6.0**
+(*Candidate*), additively. §11.3 is marked **resolved in place** — numbering deliberately unshifted,
+the precedent KMI §9.5 and KFT §11.5 already set — so every existing §11.x reference still resolves;
+§11.1/§11.2/§11.4/§11.6 stay open, and item 5 stays recorded as resolved by ADR-0009 / KCB §7.
 
-1. **`scenarios/e2e-multi-authority.md`** (+87 lines, 522 → 609): the Verdict now ends with
-   `> **Resolution:** — see *Re-ratification — what this pass gates*, below.`, and that section
-   follows, modelled exactly on `e2e-live-schema-mutation.md`'s (the only other pass younger than
-   the edits it tests, so the note runs "which version this pass gates" rather than "which version
-   folded these deltas"):
-   - *Which specs this pass gates* — 7 rows. **KINP 0.3.0 / KCB 0.4.6 / KMI 0.3.4** gated, each
-     with its delta set and which of its counts this is; **KGP 0.5.2** named as a *consequence
-     surface, not gated* (MA-3/MA-4/MA-5 each land partly in §3.3 / §7 / §7.1-2, no version moves);
-     **KCS 0.3.0** evidence-only (MA-11 → open question 1, the V-8 class); **ADR-0012** not
-     reopened; **`../schemas/`** no shape change by construction.
-   - *What a clean pass would license* — the honest per-spec split: this pass is the **whole** of
-     KINP's gate (0.3.0 → Ratified, the status 0.2.1 held), **one of three** counts on KCB, **one
-     of two** on KMI. Plus the second, fabric-wide condition no fold can satisfy — `specs/README.md`'s
-     ratification gate requires the machine-replayable KCS encoding, `kcs:multi-authority` reads
-     `planned`, and **MA-11 is why it cannot simply be written**.
-   - *What this pass does discharge* — ADR-0012's own "the later pressure test must actively seek
-     these hazards" requirement, hazard by hazard.
-   - A dated **Resolution (2026-08-24)**: MA-1…MA-11 **open, none folded**, all three stay Candidate.
-2. **The three specs cite the scenario by name** at every gate site (they previously linked only the
-   tasklist JSON), plus **one `**Editorial** (2026-08-24)` changelog entry each** stating what held,
-   what broke, and that *no clause changes and the status does not move*. Sites touched: KINP §11
-   decision 1 + changelog; KCB status note, §3.1 *Re-ratification*, changelog; KMI 0.3.4 status note,
-   §7.1 *Re-ratification*, *Second count (0.3.4)*, changelog.
-3. **`ROADMAP.md`** Phase F1 ⬜ planned → 🚧 in progress, with the F2-style prose sentence; rows for
-   `chief/51` and `chief/52` marked ✅ (both had landed and the table still said planned), `chief/53`
-   ✅ **run, not clean**, and a new ⬜ **Fold MA-1…MA-11** row mirroring F2's fold row.
-4. **`scenarios/README.md`** — a paragraph in the folds/resolutions block recording the federation
-   trio alongside the KGP / KMI / KCB ones.
+**The shape of the fold.** The leg's five findings are five faces of one question, so they folded as
+one clause set rather than five patches:
+- **§3.4 (new, NORMATIVE)** — the optional top-level `resume` `{checkpoint, of_job, at_step}`, with a
+  table separating **warm start** (`base_model`, confirmed as needing no new surface) from
+  **resumption** (a mid-run checkpoint). Four rules: pinned input (enters §5.2 `used[]`, so FT-C's
+  anchor keeps determining the run) · **the only slot** (a ref in the permissive `hyperparams` is
+  refused `invalid`, not executed) · never corpus (gates without being priced) · a new activity.
+- **§4.2 / §4.3** — the checkpoint joins the effective-egress aggregate and the union license/tier.
+- **§5.4** — a checkpoint inherits **at publication**, not at completion. This was FT-S's real teeth
+  and it is a hole that exists **with or without resume**, on the §6 `subscribe` stream.
+- **§5.2** — a continuation leg is a NEW activity linked by the new core relation **`continues`**.
+- **§6** — `job+step` idempotency stays sound (distinct legs ⇒ distinct `job` ids), `step` counts from
+  the root leg so legs overlap deliberately, plus a NORMATIVE curve-**join rule** and an optional
+  non-authoritative `attempt` ordinal.
+- **§7** — estimate the **remainder**, verify `at_step` against the prior leg's provenance, check
+  against the ceiling **net of cumulative `spent_units` across the chain**.
+- **§3.3.1/§3.3.2** — gating set gains `resume.checkpoint`; two matrix rows and a **fifth** normative
+  consequence (converts to a local *path*, so id/`of_job`/`at_step` go out of band; a target with no
+  resume surface is refused rather than handed a cold run).
 
-**Files changed.** `scenarios/e2e-multi-authority.md`, `scenarios/README.md`, `ROADMAP.md`,
-`specs/identity.md`, `specs/capability-bus.md`, `specs/media-interchange.md`.
+**Files changed.** `specs/fine-tuning.md` (+275/-… — §3 intro/example, §3.3.1, §3.3.2, §3.4, §4.2,
+§4.3, §5.2, §5.4, §6, §7, §11.3, *Pressure test*, changelog, header) · `registry/relations.tsv`
+(`continues`) · `schemas/finetune-job.schema.json` (+ `resume`) · `schemas/fixtures/finetune-job.json`
+· `scenarios/kft-resume-checkpoint.md` (a *Fold — KFT 0.6.0* section) · `scenarios/README.md` ·
+`README.md` · `specs/README.md` · `ECOSYSTEM.md` · `CLAUDE.md`.
 
-**Verification.** `node scripts/check-doc-integrity.mjs` → OK, 43 markdown files, **741** relative
-links checked, all 3 status tables match their headers. `.chief/verify.sh --run` over the changed
-set → green: guard-doc-integrity, guard-doc-links (`0 dead vs 0 on main`), guard-categories
-(`4 tasklists`), verify-selftest (`30 passed, 0 failed`). `schemas/*.json` all parse and are
-**byte-unchanged** (`git diff --stat schemas/` is empty) — which is AC-3 verified rather than
-asserted.
+**Verification.** `check-doc-integrity` OK (44 files, **765** links, 3 status tables match) ·
+`check-schemas` OK (9 schemas, 278 positions, 80 $refs, 3 fixtures) · `check-registry` OK (**28**
+relation names) · `check-tasklist-categories` OK (7 tasklists) · both PRD `verify` commands print
+`schemas ok` / `finetune-job schema ok` · `bash .chief/verify.sh` — 16 changed files, 6 selected
+gates, `verify-test: 30 passed, 0 failed`, **all selected gates green — allowing merge**.
 
-**Learnings for future iterations.**
-- **A "candidate pending X" line has three homes per spec, not one** — the top status note, the
-  §-level *Re-ratification* paragraph, and the changelog entry — and KMI has a fourth (its *Pressure
-  test* § *Second count* paragraph). Grep the branch name (`53-multi-authority-scenario`) rather
-  than the section number to find them all; that grep is what caught the KMI fourth site.
-- **Editorial changelog entries are the escape hatch for wiring evidence into a spec without moving
-  its version.** KINP already had one (`**Editorial** (2026-08-13)`), so a pointer-only change has
-  precedent and needs no version bump and no status-table edit — which is what keeps
-  `check-doc-integrity.mjs`'s three-table diff quiet.
-- **Say which of a spec's counts a pass closes.** KCB carries three and KMI two, so "a clean pass
-  re-ratifies the §-edits" is false as stated for two of the three specs; only KINP reaches Ratified
-  on this pass alone, and even it needs the KCS encoding first. Stating that split is the difference
-  between a Resolution note that is usable and one that over-promises.
-- The `../schemas/` **directory** link resolves fine under `check-doc-integrity.mjs` (741 links, OK),
-  so a table row may link a directory, not just a file.
+### Learnings for future iterations
+
+- **`schemas/fixtures/` allows exactly ONE fixture per schema, by filename.** `check-schemas.mjs`
+  derives `<fixture>.schema.json` from each fixture's name and errors if it does not exist, so
+  `finetune-job-resume.json` is rejected outright — there is no way to ship a second, contrasting
+  fixture for one schema. A new optional field is therefore exercised by **editing the golden
+  fixture** (what 0.5.0 did for `descriptor[]` / `base_model_descriptor[]`), and the additivity claim
+  is carried by the schema's `required` list plus prose, never by a second artifact. Don't spend a
+  round discovering this.
+- **A version bump touches FOUR mirrors, and only three are checked.** `README.md`,
+  `specs/README.md` (**two** places — the table *and* the candidate-count sentence around line 195,
+  which names every candidate spec by version) and `ECOSYSTEM.md` §2 are diffed by
+  `check-doc-integrity`; `CLAUDE.md`'s *Current state* prose is not. The prose sentence in
+  `specs/README.md` is inside the checked file but is **not** part of the table diff — a stale
+  version there passes CI just like CLAUDE.md's.
+- **Match the changelog's own register.** Each KFT entry is a titled bullet list where every
+  sub-bullet names a section and states what moved *and why it is not a redesign*. Two things the
+  precedent always does and that reviewers look for: say explicitly whether §4's **admission
+  behaviour** moved (0.5.0 said byte-unchanged; 0.6.0 says it *does* move — but only for a job
+  carrying `resume`, never for a cold one), and restate the outstanding gate rather than replacing it.
+- **A fold that adds normative text adds a gate.** KCB 0.4.6 and KMI 0.3.4 both did this ("a third
+  candidate count", "a second candidate count"). 0.6.0 follows: the leg itself becomes the second
+  gate, since it was written against 0.5.0 and each finding is now answered — Steps 2–6 must walk
+  clean where they broke, Steps 1 and 7 must stay held.
+- **A new relation is cheap and additive; editing one is forbidden.** `continues` slotted into
+  `registry/relations.tsv` beside `retrains`/`supersedes` with no guard friction (`check-registry`
+  went 27 → 28 names). What the immutability rule forbids is changing a **published signature** — so
+  when a lifecycle question needs a verb the registry lacks, mint a new name rather than widening an
+  existing description.

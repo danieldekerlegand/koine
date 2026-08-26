@@ -204,7 +204,7 @@ vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
   scenarios to assert stable structure/invariants rather than exact bytes/content; §7.1 and §7.3
   remain open.
-- `specs/fine-tuning.md` — KFT 0.5.0, **candidate** (ratified 2026-07-23 on two pressure passes:
+- `specs/fine-tuning.md` — KFT 0.6.0, **candidate** (ratified 2026-07-23 on two pressure passes:
   `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L; a **third**
   pass, `scenarios/e2e-producer-exhaust-finetune.md`, then pressure-tested a *producing application's*
   training exhaust arriving via ADR-0008 and found the §4 **intake** incomplete — FT-M `dataset.records[]`
@@ -256,6 +256,30 @@ vocabulary.
   candidate on the same restated gate — the owner's re-run of `e2e-producer-exhaust-finetune.md`'s
   *Re-validation — KFT 0.4.0* — with §3.3/§8.1 recorded as new normative surface no pass has
   exercised, not as a second gate.
+  0.6.0 folds the **focused** pressure leg `scenarios/kft-resume-checkpoint.md` (FT-R…FT-V), which
+  attacked **§11 open question 3 alone** and split its two claims. **Warm start needed no new
+  surface**: a prior finetuned model is a KINP `model` entity, so `base_model` already takes it and
+  §5 lineage / §5.4 inheritance / §5.1.1 publication compose transitively. **Resumption did not
+  carry** and is folded: NORMATIVE **§3.4** adds the optional top-level `resume`
+  `{checkpoint, of_job, at_step}` — a pinned input (it enters §5.2's `used[]`, so FT-C's anchor keeps
+  determining the run), the **only** slot for a resume ref (one carried in the permissive
+  `hyperparams`, which no gate reads, is refused `invalid`), and **never corpus** (it gates without
+  being priced). **§4.2** takes the effective egress over `{data ∪ base ∪ resume.checkpoint}` and
+  **§4.3** puts it in the union license/tier, closing the continued-pre-training hole; **§5.4** binds
+  a checkpoint's class **at publication** rather than at completion (that hole existed independently
+  of resume, on the §6 `subscribe` stream); **§5.2** makes a continuation leg a **new** activity
+  linked by the new core relation **`continues`** in `registry/relations.tsv` (distinct from
+  `retrains` = re-train-from-scratch and `supersedes` = replaces); **§6** keeps `job+step` idempotency
+  sound, counts `step` from the root leg so legs overlap deliberately, adds the NORMATIVE curve-**join
+  rule** (order by the chain, later leg wins on an overlap) and an optional non-authoritative
+  `attempt`; **§7** estimates the **remainder** with `at_step` verified against the prior leg's
+  provenance, checked against the ceiling **net of cumulative `spent_units` across the chain**.
+  §3.3.1's gating set and §3.3.2 (two rows + a fifth normative consequence) follow. §11.3 is marked
+  **resolved in place** — numbering deliberately unshifted, like §11.5 — and §11.1/§11.2/§11.4/§11.6
+  stay open. Strictly additive (a cold job with no `resume` is admitted and refused on exactly the
+  inputs it was before, and `resume` is not `required`), adopts no new external standard, and adds no
+  plane, artifact kind, media type, or KCB verb. It **does** add a **second** gate: a re-run of that
+  leg against the folded text, alongside the restated-and-unmoved *Re-validation — KFT 0.4.0* re-run.
 - `registry/` — shared **agnostic** vocabularies only: `relations.tsv` (core, **binary** relations
   only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
   `relations/social.tsv` (soc:), plus `entity-types.tsv`, `media-types.tsv`, and `enums/`.

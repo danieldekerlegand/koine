@@ -62,7 +62,7 @@ ratified only after passing a concrete pressure test.
 | [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | 0.3.4 | 🚧 candidate |
 | [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.4.6 | 🚧 candidate |
 | [Conformance-Scenario](specs/conformance-scenario.md) (KCS) | A declarative scenario — data, not code — that drives several **real** participants over their actual connections at once, and checks properties spanning all four planes, each tied to the clause it tests | 0.3.0 | 🚧 candidate |
-| [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 0.5.0 | 🚧 candidate |
+| [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 0.6.0 | 🚧 candidate |
 
 Each spec's header is the authority for its current version and status. The path from
 🚧 candidate back to ✅ ratified — which re-validations are outstanding and why — is tracked in

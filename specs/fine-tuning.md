@@ -1,8 +1,8 @@
 # Koine Fine-Tuning Protocol (KFT)
 
-**Spec version:** 0.5.0
+**Spec version:** 0.6.0
 **Status:** Candidate
-**Last updated:** 2026-08-13
+**Last updated:** 2026-08-26
 **Applies to:** `finetune` capability providers (general and specialized), the control-plane host
 (registry, grants, orgs), training-data producers, and finetuned-model consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for model/entity ids, lineage
@@ -212,7 +212,9 @@ The `invoke` payload. All data is referenced by KINP/KGP/KMI id — nothing is i
 has **two intakes** — a base model and a dataset — and each is a *reference plus, optionally, the
 document that describes it in its own standard's terms*, never an inlined description. That is the
 shape **Kubeflow `TrainJob`** already ships as `initializer.{model,dataset}.storageUri`, and §3.2
-states the correspondence field by field.
+states the correspondence field by field. A third, optional reference — `resume` (§3.4) — is not a
+third intake: it names neither a new base nor new data, but the interrupted leg of *this* training
+that the job picks up from.
 
 ```jsonc
 {
@@ -222,6 +224,11 @@ states the correspondence field by field.
   "base_model_descriptor": ["refkb:asset:blake3-mk1f…"],   // the base's published card / ModelKit, by reference (§3.2)
   "modality":   "text-generation",                         // §3.1
   "method":     "qlora",                                   // sft | lora | qlora | full | dpo
+  "resume": {                                              // OPTIONAL — a continuation leg (§3.4); absent = a cold run
+    "checkpoint": "orchestrator:asset:blake3-ck40…",       // the KMI checkpoint asset to resume from (§6)
+    "of_job":     "orchestrator:activity:ft-run/7c3d",     // the leg that published it — the `continues` target (§5.2)
+    "at_step":    4000                                     // the §6 step it was published at (§7 nets the estimate from here)
+  },
   "dataset": {                                             // intake 2 — data-plane refs (§4), never inline
     "knowledge": ["kgp:pack:sha256-7b1e…"],                // KGP GroundingPack ids
     "media":     ["analyzer:asset:blake3-a1b2…"],          // KMI asset ids (multimodal)
@@ -375,8 +382,9 @@ Every §3 field has exactly one disposition per target. A converter **MUST** cla
 **The gating set (NORMATIVE).** A field is *gating* if §4.2, §4.3, §5.4, or §7 reads it, or if
 changing it changes what the run is. Exhaustively: the **effective egress class** (§4.2), the **union
 license class** and **provenance trust tier** (§4.3, §5.4), the **budget ceiling** (§7), the
-**adaptation axis** of `method` (§1.1, §3.1) when the job pins one, and the `modality × method`
-compatibility FT-F validates. Dropping any of these silently is the failure mode this section exists
+**adaptation axis** of `method` (§1.1, §3.1) when the job pins one, the **resume ref**
+`resume.checkpoint` (§3.4 — §4.2 reads it, and it fixes what the run continues from), and the
+`modality × method` compatibility FT-F validates. Dropping any of these silently is the failure mode this section exists
 to forbid: every one of them is invisible in the emitted config, so the loss is undetectable at the
 far end and shows up only as a policy breach or a differently-trained model.
 
@@ -414,13 +422,15 @@ a registered `dataset_info.json`), **TRL** (Python config objects — `SFTConfig
 | `export[]` (§5.3) | `output_dir` + a post-hoc merge / convert step | `export_dir` / the export CLI | `save_pretrained` + external conversion | — (the platform retains the weights) | **REFUSE** if an export variant is requested |
 | `compute.class` | accelerate / DeepSpeed config | accelerate / DeepSpeed config | accelerate config | — (managed placement) | out of band |
 | `compute.egress` + the **effective egress class** (§4.2) | — | — | — | — **and structurally cross-boundary** | **REFUSE** — see below |
+| `resume.checkpoint` (§3.4) | a local checkpoint path, after the ref is `fetch`ed to bytes | a local checkpoint path, after the ref is `fetch`ed to bytes | a local checkpoint path on the constructed config object | **—** — its `model` accepts an already-finetuned model, which is §3.4's *warm start*, not resumption | **REFUSE** — gating |
+| `resume.{of_job,at_step}` (§3.4) | — | — | — | — | out of band — the leg identity (§5.2) and §7's netting operand |
 | license class · trust tier (§4.3) | — | — | — | — | out of band + §5.4 re-asserted on return |
 | budget ceiling / `spent_units` (§7) | — | — | — | — (account billing, not a per-job ceiling) | out of band |
 | `job`, `config_hash`, `signing` (§5.2, §7) | — | — | — | `metadata` (free-form, unverified) | out of band |
 | `seed` | `seed` | `seed` | `TrainingArguments.seed` | `seed` | n/a |
 | `eval[]` — KCS scenarios (§6.1) | — | — | — | — | out of band — **never** mapped onto `eval_dataset` / `validation_file` |
 
-Four consequences are normative:
+Five consequences are normative:
 
 - **A `local-only` job MUST NOT be converted to a managed cloud target.** The OpenAI fine-tuning API
   executes on the provider's infrastructure by construction, so converting a run whose effective
@@ -439,6 +449,15 @@ Four consequences are normative:
   against the finetuned model *as a capability* (§6.1). A held-out file is not that, and mapping one
   onto the other converts a conformance gate into a loss number. It is carried out of band and the
   scenarios run on the fabric after the run returns.
+- **A resume ref converts as bytes, never as a reference — and never into a cold run.** Every
+  target that can resume at all takes a **local path**, so a conversion resolves `resume.checkpoint`
+  to bytes through `fetch:asset` and the KINP id, the leg it continues (`of_job`), and the step it
+  resumes at (`at_step`) are all invisible on the far side — carried out of band, never dropped
+  silently. A target with **no** resume surface **MUST** be refused, not handed the job as a cold
+  run: a cold run over the same manifest trains a different model, at full cost, discarding work the
+  checkpoint already holds. And because §4.2 now reads the checkpoint, a leg resuming a
+  `local-only`-inheriting one carries a `local-only` effective class into the first consequence above
+  — the managed-cloud refusal — however `exportable` its new corpus is.
 - **License, trust tier and egress are re-asserted on the way back.** No target returns them, so the
   artifacts a conversion brings home carry **only** what §5.4 derives from the KFT-side inputs. A
   converter **MUST NOT** treat a target's silence as `exportable` or as an absent restriction.
@@ -486,6 +505,63 @@ original **only** in fields the record already names. KFT therefore mints no sch
 job — the target owns its own format — and the conversion **fixtures** are a downstream follow-up
 under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) (koine specifies, implementers
 validate), added to the §9.1 handoff list rather than built here.
+
+### 3.4 Resumption — the continuation leg (NORMATIVE)
+
+A training run is interrupted — a preempted host, a crashed process, an expired lease — and the work
+already done sits on disk as a **checkpoint**. §6 has always published that checkpoint's KMI asset id
+on the telemetry stream and annotated it *resumable*, and until 0.6.0 no §3 field could name one: the
+only slot that accepted the ref was `hyperparams`, which no normative clause reads
+([`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), FT-R/FT-S). This
+section closes that. A resume ref is a **first-class, gating input**, and a resumed run is a
+**continuation leg** of a training that began before it.
+
+**Resumption is not warm start.** The two cases §11.3 held in one sentence are different shapes, and
+they stay separate:
+
+| | Names | Is | Expressed by |
+|---|---|---|---|
+| **Warm start** — continued pre-training, sequential LoRA | a *released* model | a **new training** over a finished model | `base_model` — a finetuned model is a KINP `model` entity like any other (§5.1), so this needs no new surface and none is added |
+| **Resumption** — the same training, picked up | a *mid-run* checkpoint | the **same training**, one leg later | `resume` (this section) |
+
+`base_model` remains REQUIRED in both: a continuation leg has the same base as the leg it continues,
+and a resumed warm start simply carries both fields.
+
+**The `resume` object.** Optional. Absent ⇒ the job is a **cold** run and every clause below is
+inert — which is why every 0.5.0 manifest stays conformant and why §4 admits and refuses a cold job
+on exactly the inputs it did before. Present ⇒ the job is a continuation leg.
+
+| Field | | Meaning |
+|---|---|---|
+| `checkpoint` | REQUIRED | KMI asset id of the checkpoint to resume from — the same id §6 published. §5.3 already types it (`application/vnd.koine.model+…` bytes, byte-hash id, `fetch:asset`); no new artifact kind, media type, or plane is introduced here. |
+| `of_job` | REQUIRED | KINP activity id of the leg that published it (§5.2) — what makes the leg attributable and what §5.2's `continues` edge points at. |
+| `at_step` | REQUIRED | The §6 `step` the checkpoint was published at: §7's netting operand and the boundary §6's join rule turns on. |
+
+Four rules bind it:
+
+- **The ref is a pinned input of the run.** §5.2's `used[]` **MUST** include `resume.checkpoint`, and
+  the reproducibility anchor (FT-C) is the `job` activity with **its pinned input ids — the resume ref
+  among them —** `seed`, and `config_hash`. Without this, two legs agreeing on `job` shape, `seed` and
+  `config_hash` produce different models, and the anchor stops determining the run at exactly the
+  point resumption enters.
+- **`resume` is the only slot.** A provider **MUST NOT** accept a resume ref carried anywhere else in
+  the manifest. A checkpoint id appearing in `hyperparams` — permissive by §3, and read by no clause
+  of §4.2, §4.3, §5.2 or §7 — is **not** a resume ref: the provider **MUST refuse the job** with code
+  `invalid` (§8.1) rather than execute it, because executing it is the §4.2 bypass this fold exists to
+  close (a checkpoint of a `local-only` corpus placed on cross-boundary compute by a gate that never
+  saw it).
+- **A checkpoint is never corpus.** `resume.checkpoint` **MUST NOT** appear in
+  `dataset.{knowledge,media,records}[]`. Those slots are admitted *as training data* — folded into
+  §4.2's aggregate and §4.3's union as corpus, and priced by §7 as samples — and a checkpoint is not
+  data the run learns from. It **gates** (§4.2 reads it) without being **counted** (§7 does not price
+  it as samples), and the two are different things.
+- **The leg is a new activity.** A resumed run **MUST NOT** reuse the activity id it continues; §5.2
+  fixes what it mints instead and how the legs are linked.
+
+Where each remaining obligation lands: admission reads the ref in **§4.2/§4.3**, activity identity and
+the `continues` chain are **§5.2**, the class a mid-run checkpoint carries is **§5.4**, the telemetry
+stream and the curve-join rule are **§6**, and the remainder estimate against a chain-cumulative
+ceiling is **§7**. Conversion is **§3.3.2**'s two rows and its fifth normative consequence.
 
 ---
 
@@ -601,6 +677,14 @@ set**." KFT operationalizes that sentence:
   class (FT-B).** If any input — data *or* base — is `local-only`, the run's effective egress is
   `local-only`. (A can't-leave base pins an all-`exportable` corpus to local compute just as a
   `local-only` record does.)
+- **A resume ref joins the aggregate (§3.4).** Where the job carries `resume`, the effective egress
+  class is taken over `{training data ∪ base model ∪ resume.checkpoint}`. A checkpoint carries the
+  class §5.4 bound to it when it was published, and it *is* the weights that already absorbed the
+  earlier leg's corpus — so a leg resuming a `local-only`-inheriting checkpoint is `local-only`
+  however `exportable` its own new data is. Continued pre-training over a fresh corpus is precisely
+  the case this closes: without it the gate computes over `{new corpus ∪ base}`, finds everything
+  `exportable`, and admits a cross-boundary placement for bytes that memorized what §4.2 was
+  protecting.
 - **The gate reads the header, never the trust tier (FT-N).** For a record file the *only* descriptor
   available at admission is its `dataset-jsonl-header`, so that header MUST carry the class
   explicitly. A provider **MUST NOT** infer egress from the `tier` — KGP §7.2 makes the trust tier
@@ -645,6 +729,11 @@ the same axis that keeps private knowledge out of cross-project packs keeps it o
 - The **provenance trust tier** (KGP §7, `curated`/`acquired`/`synthetic`/`personal`) travels as a
   descriptive data-quality signal on the run — orthogonal to egress (§4.2) and license. It is not an
   admission gate here, but it is recorded so eval (§6) and model-selection can weigh it.
+- **A resume ref is in the union too (§3.4).** Where the job carries `resume`, the union license is
+  taken over the checkpoint's inherited license as well, and its trust tier travels the same way. The
+  earlier leg's corpus is *in the weights* whether or not this leg re-lists those records in its own
+  `dataset` — so a continuation leg that lists only a permissively-licensed new corpus does not
+  launder the restriction the leg it continues acquired.
 
 ---
 
@@ -748,6 +837,28 @@ linked to its predecessor with a `retrains` / `supersedes` lifecycle relation (K
 [`../registry/relations.tsv`](../registry/relations.tsv) — `retrains` is registered there alongside
 `supersedes` / `retracts`), never a silent id collision.
 
+**A resumed run is a NEW activity, linked by `continues` (NORMATIVE).** A run that resumes from a
+checkpoint (§3.4) **MUST** mint a new `job` activity and **MUST NOT** reuse or amend the record of the
+leg it continues. A KINP PROV activity is one occurrence with one `agent`, one `used[]`, and one
+`budget_units`/`spent_units` pair; a continuation leg differs in all of them, and §6's lifecycle has
+no transition back into `running` from a terminal state. The new leg is linked to the one it continues
+by **`continues`**, registered in [`../registry/relations.tsv`](../registry/relations.tsv) beside
+`retrains` and `supersedes` and distinct from both: `retrains` is a re-train **from scratch** over the
+same pinned inputs, `supersedes` **replaces** a prior record. A continuation leg re-trains nothing and
+replaces nothing — it picks up work in progress.
+
+- The edge runs from the new leg to `resume.of_job`. Legs form a chain; the training's **root** is the
+  leg with no outgoing `continues`.
+- **"What trained this model?" is answered over the chain, not over one leg.** The finetuned model
+  entity is minted by the leg that reaches `succeeded` and pins **that** leg's activity id (§5.1); the
+  corpus, spend, and placement history of the whole training is recovered by walking `continues` to
+  the root, with each leg's own `used[]`, `seed`, `config_hash`, and `spent_units` staying on its own
+  record. A model whose producing run resumed **MUST** leave that chain resolvable — an unresolvable
+  `continues` target is a broken lineage, the same defect as an unresolvable `used[]` id.
+- Every leg is separately attributable and separately signed (§7), so resumption on a different
+  provider, in a different tier, or under a different grant is **visible as such** rather than folded
+  into one record of a run that never happened that way.
+
 ### 5.3 Weights & exports are KMI assets — the export matrix *is* the lineage graph
 
 Model weights are large bytes → KMI assets (byte-hash id, `application/vnd.koine.model+…` media
@@ -821,6 +932,19 @@ published model would exfiltrate exactly what §4.2 protected).
   a cloud/Hub, or `fetch`ed across the tier boundary — the same enforcement KGP §7.2 applies to
   packs, now applied to model artifacts. The registry (§8) rejects a cross-boundary registration of a
   `local-only` model and reports it.
+- **Checkpoints inherit at publication, not at completion (NORMATIVE).** §5.2 mints the model entity
+  when the run *completes*, so scoping inheritance to the model "and every weight/export asset it
+  generates" would leave everything a **running** job emits unbound. It does not: every **checkpoint**
+  asset a run publishes (§6) inherits the run's effective egress class and union license **from the
+  moment it is published** — both are already computed at admission (§4.2/§4.3) — and carries them on
+  its KMI envelope. There is no window during which a checkpoint of a `local-only` run is unclassified,
+  and the rule holds whether or not the run is ever resumed.
+- **Publishing a checkpoint id is not widening its class.** §6 puts the checkpoint reference on a
+  `subscribe` stream and instructs consumers to `fetch` lazily; the reference is an **address**, and
+  the class on the envelope governs that fetch exactly as it governs a weight asset's. A
+  `local-only`-inheriting checkpoint **MUST NOT** be fetched across the tier boundary, pushed to a
+  cloud store, or replicated into a store outside the authority domain (KMI §7.1) — and a provider
+  offered such a ref by a resuming leg outside that boundary refuses it under §4.2.
 - Inheritance is carried on the model's provenance (§5.2) and on each weight asset's envelope, so it
   travels with the bytes and is answerable without re-deriving the corpus.
 
@@ -837,7 +961,7 @@ published model would exfiltrate exactly what §4.2 protected).
   training-record convention that already owns that term — FT-H.):
 
   ```jsonc
-  { "job": "orchestrator:activity:ft-run/9f2a", "step": 120,
+  { "job": "orchestrator:activity:ft-run/9f2a", "step": 120, "attempt": 1,
     "metrics": { "train_loss": 0.83, "eval_loss": 1.02, "lr": 1.7e-4, "grad_norm": 0.4 },
     "checkpoint": "orchestrator:asset:blake3-ck12…", // optional KMI asset (resumable)
     "samples":    ["analyzer:asset:blake3-pv3…"],     // optional preview assets — grids/clips (FT-L)
@@ -846,7 +970,23 @@ published model would exfiltrate exactly what §4.2 protected).
 
   Events are idempotent under redelivery (content-addressed job+step), so the stream needs no
   exactly-once guarantee (KCB §4). A `checkpoint` reference MAY arrive before its bytes propagate;
-  consumers tolerate the dangling ref and `fetch` lazily (KCB delta L).
+  consumers tolerate the dangling ref and `fetch` lazily (KCB delta L). The class that ref resolves
+  under is fixed at publication by §5.4 — a stream carrying a checkpoint id never widens what a
+  consumer may do with the bytes.
+- **A continuation leg streams under its own `job` id, and `step` keeps counting (NORMATIVE, §3.4).**
+  Because §5.2 requires a resumed run to mint a **new** activity, the `job+step` key above stays sound
+  across a resumption: two legs never collide on it, and the idempotency guarantee is unchanged and
+  unweakened. `step` is counted from the start of the **training** (the root leg), not from the resume
+  point, so the legs of one training share one continuous step axis — with a deliberate **overlap**,
+  since the steps between the last checkpoint and the interruption are re-executed and legitimately
+  produce different metric values the second time.
+- **The join rule (NORMATIVE).** A consumer reconstructing **one** training curve across legs orders
+  the legs by the §5.2 `continues` chain and, where two legs' `step` ranges overlap, takes the **later
+  leg as authoritative**: the earlier leg's events above its successor's `resume.at_step` describe work
+  that was discarded when the checkpoint was resumed from. `attempt` is an optional 1-based ordinal
+  along that chain, emitted as a convenience so a consumer can order legs without resolving lineage —
+  it is **not** authoritative, the chain wins on any disagreement, and a consumer that never sees one
+  loses nothing.
 - **Completion.** The terminal event carries the generated finetuned-model entity id, its weight
   asset ids (§5.3), the resolved eval results (§6.1), and `spent_units` (§7).
 - **Eval / reward** *(§6.1)*. `job.eval` names KCS conformance scenarios (a world producer's
@@ -885,6 +1025,24 @@ published model would exfiltrate exactly what §4.2 protected).
   before-you-fetch estimate this clause exists for. The header's **`recordCount`** carries it, and the
   provider **MUST** re-check the count when it fetches (§4.1) and **fail the run with a report** if
   the file exceeds the estimate the ceiling was granted against.
+- **A continuation leg is estimated on the remainder (NORMATIVE, §3.4).** Where the job carries
+  `resume`, resolving cardinality is not enough: the corpus and `epochs` are unchanged, so an
+  unmodified estimate prices the **whole** training again. The provider **MUST** estimate the
+  **remaining** work — the resolved total less the work completed at `resume.at_step` — and **MUST**
+  verify `at_step` against the prior leg's provenance (§5.2) and telemetry (§6) rather than trusting
+  the manifest, refusing with code `invalid` (§8.1) on disagreement. That is the same discipline §4.1
+  applies to an inline `dataset-jsonl-header`: the manifest states it up front so the gate can run
+  before any transfer, and the provider re-checks it against the artifact.
+- **The ceiling bounds the training, not the leg (NORMATIVE).** A continuation leg's estimate is
+  checked against the ceiling **net of the cumulative `spent_units` of every leg in its §5.2
+  `continues` chain**. Both failures this closes are real. Against a fresh full ceiling, one training
+  is authorized twice and §7's hard gate stops bounding a run at all — every preemption
+  re-authorizes it. Against the *remaining* ceiling with a *whole-run* estimate, the leg is refused
+  `over-budget` (§8.1) for work it will not do, with a truthfully empty `route_to[]` because no
+  provider can do it cheaper — making resumption impossible under any ceiling fitted to the job, the
+  tighter the grant the more certainly. A leg whose **remainder** genuinely exceeds the remaining
+  ceiling is still refused `over-budget`, unchanged; that refusal is now about the work left, which is
+  what the ceiling was granted against.
 - **Issuer.** Grants are issued by the control-plane host's workforce governance (KCB §5/§6); the
   host hosts the registry and provisions the training provider as an org.
 - **Signing.** The job manifest (§3) and the resulting model entity's provenance (§5.2) SHOULD be
@@ -1042,9 +1200,18 @@ configuration, not a dedicated wiring program.
    producer-internal (§9) unless a pressure test forces it into the contract.
 2. **Multi-node / distributed runs** — cost metering and checkpoint lineage (§5.3/§6) across GPUs;
    likely a producer concern, but the `cost` unit and checkpoint-asset shape must not preclude it.
-3. **Resumption & warm-start** — a run `based_on` a prior finetuned model (continued pre-training,
-   sequential LoRA) is expressible via §5 lineage; confirm the job manifest carries a resume
-   checkpoint ref cleanly.
+3. **Resumption & warm-start** — **resolved** (2026-08-26) by
+   [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), the focused
+   pressure leg this note's own *unless a pressure test forces it into the contract* clause was
+   waiting for. The question held two claims in one sentence and they turned out to be different
+   shapes. The **warm-start** half is **confirmed as written and needed no new surface**: a prior
+   finetuned model is a KINP `model` entity, so `base_model` takes it, and §5 lineage, §5.4
+   inheritance, and §5.1.1 publication all compose transitively (leg, Step 1). The **resume** half did
+   **not** carry cleanly — `hyperparams` was the only slot that accepted the ref and no normative
+   clause reads it — and is folded at **0.6.0**: **§3.4** adds the `resume` ref, **§4.2/§4.3** read it,
+   **§5.2** makes a continuation leg a new activity linked by `continues`, **§5.4** binds a mid-run
+   checkpoint's class at publication, **§6** fixes the leg's stream and the curve-join rule, and **§7**
+   estimates the remainder against a chain-cumulative ceiling. FT-R…FT-V.
 4. **Eval-as-reward coupling** — how tightly `method: dpo` binds to a KCS scenario as its reward
    (§6.1); whether reward scenarios need a distinct KCS profile.
 5. **Capability versioning** — **resolved** (2026-08-13), and resolved once for the whole fabric
@@ -1078,14 +1245,18 @@ configuration, not a dedicated wiring program.
 
 ## Pressure test
 
-**Exercised by three passes** — [`../scenarios/e2e-finetune.md`](../scenarios/e2e-finetune.md) (text,
+**Exercised by three end-to-end passes and one focused leg** —
+[`../scenarios/e2e-finetune.md`](../scenarios/e2e-finetune.md) (text,
 found FT-A…FT-H → folded into 0.2.0),
 [`../scenarios/e2e-finetune-multimodal.md`](../scenarios/e2e-finetune-multimodal.md) (fully-multimodal
 + multi-provider, found FT-I…FT-L → folded into 0.3.0), and
 [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md)
 (a producing application's **training exhaust** entering the fabric under
 [`../decisions/ADR-0008-fabric-producer-adapter.md`](../decisions/ADR-0008-fabric-producer-adapter.md),
-found FT-M…FT-Q → folded into 0.4.0).
+found FT-M…FT-Q → folded into 0.4.0). The focused leg is
+[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) — a single-accelerator
+run interrupted mid-training, attacking **§11.3 alone** and saying explicitly which sibling questions
+it leaves untouched, found FT-R…FT-V → folded into 0.6.0.
 
 The first two passes cleared with no redesign and KFT was **Ratified** on 2026-07-23 — the four-plane
 composition holds under both a text and a fully-multimodal, multi-provider pass. The third pass then
@@ -1103,6 +1274,11 @@ withdrawn or changed in meaning. The stressors exercised across the three passes
   union license class on the model provenance drives a downstream consumer's admit/reject correctly.
 - **Metrics idempotency (§6):** redelivered training-exhaust events converge (content-addressed
   job+step), and a checkpoint ref delivered before its bytes is tolerated (KCB delta L).
+- **Interruption and resumption (§3.4/§5.2/§6/§7, focused leg):** a run killed at step 4,180 whose
+  step-4,000 checkpoint is offered back as an input — verifying that the ref has a slot the gate
+  reads, that a mid-run checkpoint carries a class before any model entity exists, that the resumed
+  leg is a distinct activity reachable from the model it eventually produces, and that the budget
+  prices the remainder rather than the whole training twice.
 - **A producer's own exhaust (§4.1, third pass):** an application's run records — accepted NL edits,
   generations, preference pairs, QA labels — offered as a training set through a thin adapter
   (ADR-0008), verifying that a corpus which is neither KGP claims nor image/video/audio bytes has a
@@ -1128,10 +1304,83 @@ plane text moved, so the stale-pin loose end is closed rather than unstated. Wha
 standing obligation in the header's **re-check trigger**: a minor or major bump in a pinned plane
 obliges re-reading those same sections before KFT's next status transition.
 
+**0.6.0 adds a second gate, and it is narrow.** A re-run of
+[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) against the folded
+text: the leg was written against 0.5.0 and each of its five findings is now answered by normative
+clauses, so what it walked as breaks (its Steps 2–6) it must walk clean, and its Step 1 and Step 7
+*what held* sections must stay held. This gate is **additional to**, not a replacement for, the third
+pass's outstanding re-run, which is restated above and does not move. One honest difference from
+0.5.0's fold: 0.5.0 left §4's admission inputs byte-unchanged, and **0.6.0 does not** — where a job
+carries `resume`, `resume.checkpoint` joins §4.2's aggregate and §4.3's union. A **cold** job (no
+`resume`, which is every 0.4.0- and 0.5.0-era manifest) is admitted and refused on exactly the inputs
+it was before, which is why the third pass's re-run is unaffected; but the gate is no longer computed
+over one field set for every job, and the owner should read §3.4, §4.2, §4.3, §5.4, §6 and §7 as
+**changed** normative surface rather than as re-validated text.
+
 ---
 
 ## Changelog
 
+- **0.6.0 — resumption is a first-class, gating input** (2026-08-26) — Folds the focused pressure leg
+  [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) (FT-R…FT-V), which
+  attacked **§11 open question 3** alone and separated its two claims. **§11.3 is resolved in place**
+  — the numbering is deliberately not shifted, the way §11.5 already is, so every existing §11.x
+  reference still resolves — and §11.1, §11.2, §11.4 and §11.6 stay open, untouched by construction
+  (the leg records why for each). Status stays **Candidate**.
+  - **Warm start needed no new surface, and got none.** A prior finetuned model is a KINP `model`
+    entity, so `base_model` already takes it: §5 lineage, §5.4 inheritance and §5.1.1 publication
+    compose transitively across a chain of finetunes. The leg's Step 1 confirms this as written, and
+    §3.4 records it as a distinct shape from resumption rather than folding the two together.
+  - **Resumption did not carry, and is folded.** New NORMATIVE **§3.4** adds the optional top-level
+    **`resume`** object — `{checkpoint, of_job, at_step}` — with four rules: the ref is a **pinned
+    input** so §5.2's `used[]` carries it and FT-C's reproducibility anchor keeps determining the run;
+    `resume` is the **only** slot, and a checkpoint id smuggled through the permissive `hyperparams`
+    is refused `invalid` rather than executed (it is read by no gate, which was the whole defect); a
+    checkpoint is **never corpus**, so it gates without being priced as samples; and a continuation
+    leg is a **new activity**.
+  - **The gate now sees it.** **§4.2** takes the effective egress class over
+    `{training data ∪ base model ∪ resume.checkpoint}` and **§4.3** puts the checkpoint's license and
+    trust tier in the union — closing the continued-pre-training hole where a leg resuming a
+    `local-only` checkpoint over a fresh `exportable` corpus was cloud-placed by a gate computing over
+    `{new corpus ∪ base}`.
+  - **A mid-run checkpoint is no longer unclassified.** **§5.4** binds inheritance **at publication**
+    rather than at completion: §5.2 mints the model when a run *finishes*, so scoping inheritance to
+    "the model and every weight/export asset it generates" left every artifact a *running* job emits
+    with no egress class or license — on a `subscribe` stream §6 tells consumers to `fetch` from. That
+    hole existed independently of resume and is closed independently of it.
+  - **Activity identity is decided.** **§5.2** requires a continuation leg to mint a new `job`
+    activity (a closed PROV record is never rewritten, and §6's terminal states have no path back to
+    `running`) linked to the leg it continues by the new core relation **`continues`**, registered in
+    [`../registry/relations.tsv`](../registry/relations.tsv) — distinct from `retrains`
+    (re-train **from scratch**) and `supersedes` (**replaces**). "What trained this model?" is answered
+    by walking the chain to its root, and the chain MUST stay resolvable.
+  - **The stream and the budget follow.** **§6** keeps `job+step` idempotency sound (distinct legs,
+    distinct `job` ids), fixes `step` as counted from the root leg so legs overlap deliberately, adds
+    the NORMATIVE **join rule** (order by the `continues` chain; the later leg wins on an overlapping
+    range) and an optional non-authoritative **`attempt`** ordinal on the event. **§7** requires a
+    continuation leg to be estimated on the **remainder**, with `at_step` verified against the prior
+    leg's provenance, and checked against the ceiling **net of cumulative `spent_units` across the
+    chain** — so one training is neither authorized twice nor refused `over-budget` for work it will
+    not do.
+  - **Portability, in lockstep.** **§3.3.1**'s gating set gains `resume.checkpoint`; **§3.3.2** gains
+    two rows and a **fifth** normative consequence — a resume ref converts to a local **path**, so the
+    KINP id, `of_job` and `at_step` go out of band, and a target with no resume surface **MUST** be
+    refused rather than silently handed a cold run.
+  - **Schema, in lockstep:** [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json)
+    gains the optional `resume` object (required `checkpoint` · `of_job` · `at_step`,
+    `additionalProperties: false`, KINP-id slots like every other reference). **Strictly additive**: `resume` is
+    absent from the schema's `required` list, so a manifest without it is a cold run, validates
+    unchanged, and is admitted and refused on exactly the inputs it was before. The golden fixture
+    [`../schemas/fixtures/finetune-job.json`](../schemas/fixtures/finetune-job.json) exercises the new
+    object, as 0.5.0's fold did for its two.
+  - **No new plane, artifact kind, or media type.** A checkpoint was already a KMI asset under §5.3,
+    the `fetch:asset` grant already reached it, and no KCB verb, port, or grant changes — which is why
+    every delta is an additive field or an additive clause. **Adopts no new external standard**, so
+    [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) is unchanged.
+  - **Gates:** the third pass's *Re-validation — KFT 0.4.0* re-run is **restated and unmoved**; 0.6.0
+    adds a **second**, narrow gate — a re-run of this leg against the folded text. Unlike 0.5.0, this
+    fold *does* move §4's admission inputs for a job that carries `resume` (never for one that does
+    not), and *Pressure test* says so rather than claiming re-validated text.
 - **0.5.0 — adopt by reference, resemble the precedent, name what is left** (2026-08-13) — Roughly
   half of KFT's manifest surface was already standardized elsewhere and restated here; 0.5.0 replaces
   the restatement with citation, aligns the job's *shape* to the established precedent, and states

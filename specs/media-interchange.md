@@ -31,7 +31,7 @@ composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline
 > specified as an additive composition in which the KINP `asset` id — the hash of the bytes — is
 > **byte-stable across stores**, so a replicated copy is the same asset rather than a new one. It
 > adds a **second** re-ratification count, the cross-authority break test in
-> [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), which is
+> [`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), which is
 > the same test KINP 0.3.0 and KCB §3.1 name; it gates §7.1 alone and does not move the
 > KCB-re-run count below. That test is now written and run as
 > [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), and is **not clean**
@@ -713,7 +713,7 @@ broken identifier.
 
 **Re-ratification.** This section is new normative text and is candidate on the cross-authority
 break test in
-[`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), which must
+[`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), which must
 break-test the pattern ADR-0012 shares across all three planes — for this section specifically,
 *per-project CAS replication on reference that loses content identity, provenance, or availability
 semantics.* It is a **second** count on this spec's status and gates §7.1 alone; the outstanding
@@ -796,7 +796,7 @@ Promotion of both follows that pass.
 
 **Second count (0.3.4).** §7.1 is new normative text that this scenario does not exercise — it has
 one store. It is candidate on the cross-authority break test in
-[`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), the same
+[`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), the same
 test KINP 0.3.0 and KCB §3.1 name, which must hunt per-project CAS replication on reference that
 loses content identity, provenance, or availability semantics
 ([ADR-0012](../decisions/ADR-0012-federated-authority-roles.md), *Consequences*). It gates §7.1
@@ -844,7 +844,7 @@ identity and provenance held, **MA-5** and **MA-10** are open, and the count sta
   **not** shifted — question 3 is marked resolved in place, the way §9.5 already is — so every
   existing §9.1/§9.4/§9.5 reference still resolves. Status: this is new normative text, so it adds
   a **second** count to Candidate — the cross-authority break test in
-  [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), the same
+  [`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), the same
   test KINP 0.3.0 and KCB 0.4.6 name — gating §7.1 alone. The outstanding KCB re-run is restated
   and does not move; no delta is reopened.
 - **0.3.3** (2026-08-20) — **Candidate.** Folded the only question forced by the adversarial
