@@ -28,7 +28,17 @@
         "Table only — no clause changes in this story."
       ],
       "notes": "docs/reference/capability-versioning-fold-dispositions.md: all 8 findings dispositioned (7 FOLD incl. 3 splits, 1 CLOSE, 2 DEFER-D/E + 1 rejected-on-record). Each names its KCB section; no schema twin and no registry file moves (V-2's shape-registry route rejected on federation grounds). Counts: the tasklist said three, the spec now carries FIVE — all five enumerated and mapped; this fold clears NONE, count (ii) changes shape only. No clause or version touched. check-doc-integrity.mjs: OK, 1226 links, 3 status tables match; check-tasklist-categories.mjs: OK.",
-      "passes": true
+      "passes": true,
+      "diffSize": {
+        "files": 6,
+        "lines": 792,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": true
+      }
     },
     {
       "id": "US-2",
@@ -40,7 +50,17 @@
         "Schema twins updated where the shape moved; relation registry additions are new immutable names, never in-place signature edits."
       ],
       "notes": "KCB 0.4.9 -> 0.5.0 (minor), Candidate. V-1..V-7 folded, V-8 closed: new §2.4 (transport binding, V-4), new §4.4 (version operand + granted major in the token + refuse-for-want-of-one, V-5; quoted_cost + quote-mismatch refusal, V-1), §2.1+§7.1 (payload_schema_id + bare-shape-is-no-cross-check, V-2; shape registry rejected on the record), §7.1 step 5 (canonicalization rule id, absent=kcb1, no published digest moves, V-3), §7.3c (floor per axis, V-6), §7.3g (successor/deprecated/removal frames on §4.2d's existing channel, V-7), plus §5/§6/§4.1/§7.2 cross-refs. §2.2's standalone manifest REMOVED at 0.5.0 (declared obligation now due, not a fold); §2.3's window untouched at 0.6.0. Conformance case: scenarios/e2e-live-schema-mutation.md gains F1-F13, the assertion set the KCS encoding must grow (DR-7: re-running today's encoding proves nothing); no scenario file added, so downstream set-equality is unaffected. Schema twins: none moved (no twin models the KCB card extension) — vacuous. Registry: none moved (V-2's registry route rejected). Verification: node scripts/check-doc-integrity.mjs OK (52 files, 1249 links, 3 status tables match headers); check-schemas.mjs OK; check-registry.mjs OK; check-tasklist-categories.mjs OK; .chief/verify.sh green (verify-test: 30 passed, 0 failed).",
-      "passes": true
+      "passes": true,
+      "diffSize": {
+        "files": 11,
+        "lines": 797,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": true
+      }
     },
     {
       "id": "US-3",
@@ -52,7 +72,18 @@
         "State whether KCB is now promotable. It is the most-implemented plane in the fabric and the answer matters to both organizations reading it."
       ],
       "notes": "Cross-read landed as docs/reference/fold-coordination-federation-versioning.md (indexed in docs/README.md). AC1: eleven seams enumerated and read against the PUBLISHED text of both folds — the four the federation fold pre-registered plus seven added; TEN AGREE, one does not. The named near-miss is CLEAR: `version` is still in §3.1(d)'s de-dup key, §3.1(d) byte-unchanged at 0.5.0, so V-4 is not undone at discovery. AC2: the eleventh is a GAP AT THE SEAM (not a contradiction) and was escalated, not buried — ADR-0014 'a federated merge merges attributions, never contents': §7.3a/d's deprecated marking + removal version have NO carrier in §2 or §3 (MA-8's class, unreached), and §3.1(d)'s converse keys on (provider KINP id, (name, version), schema_id) — a marking moves none of the three (not shape, no §7.2 bump row), so two disagreeing attributions merge into one entry whose marking is undefined and §3.1(e) cannot fire; V-7/§7.3g is what makes it bite. Generalizes: of the five carriers outside the digest (cost, binding, volume, effect, marking) only two have a declared bump. NO KCB version moves and no count closes — the clause lands with counts (ii)+(iii). AC3: agora read read-only at commit 9fe2ee5 (2026-08-25), source only, no build/test run — six findings AG-1..AG-6 reported in §5 of the page (not filed there; koine cannot write to that repo and grows no dependency on it). AG-1 blocking and CREATED by publishing 0.5.0: /.well-known/kcb-manifest.json is still agora's only crawl path (registry/src/crawl.ts, grants/src/manifest.ts, apr_redirect_handler.erl 308). AG-2 blocking for §7: schemas/src/manifest.ts Capability has no `version` and no port carries `schema_id`. AG-3 Grant has no issuer/major/unit. AG-4 Capability.endpoint vs §2.4 binding.endpoint. AG-5 SPEC_VERSIONS.kcb pinned 0.4.6, four versions stale. AC4: KCB is NOT promotable — five counts, none closed, both folds clear zero of five; counts (ii)/(iv)/(v) also fail the artefact gate (DR-7/DR-12/DR-13); every re-run unowned. One correction folded in, not worked around: §3.1's 'three other counts' -> four (§4.3's count landed at 0.4.8 between that paragraph's planning and its writing); Editorial changelog entry, no version/clause/count moves. Mirrors: decisions/README (row + fixed a stray blank line that was splitting the table), ROADMAP ADR list, CLAUDE.md ADR list, promotability.md item 6, both dispositions pages amended to close the loop. Verification: check-doc-integrity.mjs OK (54 files, all relative links + 3 status tables match headers); check-schemas.mjs OK; check-registry.mjs OK; check-tasklist-categories.mjs OK; .chief/verify.sh green — verify-test: 30 passed, 0 failed.",
-      "passes": true
+      "passes": true,
+      "diffSize": {
+        "files": 10,
+        "lines": 477,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": true
+      }
     }
-  ]
+  ],
+  "mergedToMain": "2224aac"
 }
