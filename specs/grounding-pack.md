@@ -2,7 +2,7 @@
 
 **Spec version:** 0.5.2
 **Status:** Candidate
-**Last updated:** 2026-08-13
+**Last updated:** 2026-08-26
 **Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
 and control-plane hosts that broker packs on behalf of agents.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
@@ -374,8 +374,32 @@ emits the RDF-star / PROV / JSON-LD projection, reads it back, and shows the rec
 re-derives the same `claim` ids (rule 2). The round-trip is desk-verified in prose in that scenario
 and made a standing obligation by ADR-0006, but the fixture itself is a **downstream validator**
 artifact per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) — conformance fixtures and
-validators live with the implementing runtime, not in koine — and is tracked cross-repo as
-`64-kgp-projection-roundtrip-fixture` (see `../tasks/chief/`). Until it lands, this spec stays
+validators live with the implementing runtime, not in koine.
+
+**Gate status (verified 2026-08-26): the forward half has landed, the gate has not.** The downstream
+work merged, and reading what it delivered against the sentence above is recorded in
+[`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md).
+The emitter exists and uses the terms this section names; **no reader does**. Nothing downstream
+converts an RDF-star / PROV / JSON-LD projection back to a canonical pack, so rule 2 — re-derive the
+`claim` id from the recovered canonical and reject on disagreement — is untested and, without a
+reader, untestable. A `claim` id carried as an annotation and never parsed back proves nothing about
+losslessness. §3.3 convergence and the §7 filters are likewise unexercised across the projection,
+and no mutation test shows the check would bite.
+
+So what remains is **narrower than it was and still open**, and it is these four things:
+
+1. a **reader** — a §4.1 projection back to a canonical pack, for each of the three encodings;
+2. **rule 2** enforced on the result — every recovered claim's id re-derived per §3, and a
+   disagreement rejected rather than reported;
+3. a corpus wider than one binary claim — §3.3's two-producer convergence and §7's confidence,
+   license and `local-only` filters asserted **per encoding**, since a `local-only` claim that
+   round-trips into a shareable one is a containment breach;
+4. a **mutation** test per encoding, so a clean result is evidence rather than an untripped wire.
+
+The tracking marker `64-kgp-projection-roundtrip-fixture` was retired on 2026-08-22 on the
+understanding that the gate had closed; that retirement was premature and this section no longer
+points at it. The open remainder is owned by `87-kgp-projection-reader-and-roundtrip` (see
+`../tasks/chief/`), a cross-repo marker on the same ADR-0001 terms. Until it lands, this spec stays
 **candidate**.
 
 ---
@@ -538,6 +562,22 @@ Ratified 2026-07-17.
    attributable. Token issuance/rotation lives in the control-plane host's infra, not here.
 
 ## Changelog
+
+- **Editorial** (2026-08-26) — §4.1's gate paragraph corrected after the downstream artifact was
+  read against it. The tracking marker `64-kgp-projection-roundtrip-fixture` was retired on
+  2026-08-22 as shipped, and this section pointed at it; the work that closed it delivered the
+  **emitter only**. There is no reader for any of the three encodings, so rule 2 — re-derive the
+  `claim` id from the recovered canonical and reject on disagreement — has never run, and §3.3
+  convergence and the §7 filters are unexercised across the projection. §4.1 now records that
+  verdict, states the four things that remain (reader · rule 2 · a corpus wider than one binary
+  claim · a mutation test per encoding), and names the marker that owns them,
+  `87-kgp-projection-reader-and-roundtrip`. The evidence — files, shas and obligation-by-obligation
+  verdict — is [`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md).
+  **Gate-tracking prose and one new informative pointer only — no normative change:** §3 and its
+  canonical, §3.1's hashed set, §3.3's convergence, §4/§4.1's mapping and annotation-vocabulary
+  tables — every term, value and reused-or-minted verdict — §5, §6, §7.1's six classes and §7.2 are
+  byte-unchanged, and **no claim id moves**. Stays **0.5.2 Candidate**; the gate is narrowed, not
+  moved, and emphatically not closed.
 
 - **Editorial** (2026-08-18) — Two corrections found by the third-party implementability audit
   ([`../docs/reference/implementability-audit.md`](../docs/reference/implementability-audit.md),

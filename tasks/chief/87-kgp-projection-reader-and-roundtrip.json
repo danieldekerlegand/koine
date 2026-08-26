@@ -1,0 +1,60 @@
+{
+  "name": null,
+  "project": "agora",
+  "category": "unblock",
+  "branchName": "chief/87-kgp-projection-reader-and-roundtrip",
+  "description": "CROSS-REPO — owned and built in AGORA, not koine (ADR-0001: conformance fixtures and validators live with the implementing runtime). This is the OPEN REMAINDER of KGP §4.1's round-trip gate, and it replaces the retired marker 64-kgp-projection-roundtrip-fixture.\n\nWHAT ALREADY LANDED. agora:77-kgp-projection-and-roundtrip-fixture merged at 85eb207 (2026-08-20) and delivered the EMITTER: knowledge/src/projection.ts, 223 lines, one mapping core with RDF-star / PROV / JSON-LD views, using §4.1's normative annotation terms. That half is done and is not re-litigated here.\n\nWHAT DID NOT. The branch carries two commits, both US-1. US-2 (round-trip) and US-3 (the evidence artifact) were flipped to passes:true with notes:null by the retire commit a73b967 — bookkeeping, not work. There is no reader for any of the three encodings anywhere in the repo, so §4.1 rule 2 — re-derive the claim id from the recovered canonical and reject on disagreement — has never run. Verified 2026-08-26 and recorded in koine docs/reference/kgp-projection-gate-verification.md.\n\nWHY IT MATTERS. This is the ONLY thing holding KGP 0.5.2 at Candidate. A claim id that is carried as an annotation and never parsed back proves nothing about losslessness, so the gate cannot be waived on the emitter alone.",
+  "parked": true,
+  "dependsOn": [],
+  "touches": [
+    "agora:validators"
+  ],
+  "iters": 5,
+  "warmup": [
+    "echo 'Cross-repo: implement in agora against koine specs/grounding-pack.md §4.1 rules 1-2 + ADR-0006'",
+    "echo 'Read koine docs/reference/kgp-projection-gate-verification.md §1 (G1-G4) and §3 first'"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "A reader: a §4.1 projection back to a canonical pack",
+      "description": "In agora, the inverse of projectPack() for each of the three encodings. koine marker; work is downstream per ADR-0001.",
+      "acceptanceCriteria": [
+        "knowledge/src parses an RDF-star, a PROV and a JSON-LD projection back to a GroundingPack — 3 encodings, 3 readers or one reader over 3 inputs, exported alongside projectPack.",
+        "The recovered pack is compared to the original and the comparison is byte-identical, not equivalent-after-normalisation: a normalisation step is where losslessness quietly goes to die.",
+        "An annotation the reader does not recognise is carried through or reported, never silently dropped — §4.1's complete-or-reported obligation runs in BOTH directions.",
+        "GATES: agora's own checks are green."
+      ],
+      "passes": false,
+      "notes": null
+    },
+    {
+      "id": "US-2",
+      "title": "Rule 2 enforced: every recovered claim id is re-derived and disagreement is rejected",
+      "description": "koine marker; work is downstream per ADR-0001.",
+      "acceptanceCriteria": [
+        "For every claim in the recovered canonical, the §3 claim id is re-derived with the repo's existing claimId() and checked against the kgp:claimId annotation.",
+        "A disagreement is REJECTED with a named error, not reported and carried — §4.1 rule 2 says reject, and a reported-but-accepted mismatch is the same failure with a log line.",
+        "A mutation test per encoding proves the check bites: perturb one field, the round trip must FAIL. 3 mutations, 3 failures, 0 false passes.",
+        "GATES: agora's own checks are green."
+      ],
+      "passes": false,
+      "notes": null
+    },
+    {
+      "id": "US-3",
+      "title": "A corpus wider than one binary claim, and the evidence artifact",
+      "description": "koine marker; work is downstream per ADR-0001.",
+      "acceptanceCriteria": [
+        "§3.3 claim-id convergence survives every encoding: the same fact from two producers still mints one id and merges, and BOTH provenance records survive the round trip.",
+        "The §7 confidence, license and local-only filters are asserted PER ENCODING — a local-only claim that round-trips into a shareable one is a containment breach, so once is not enough.",
+        "valid_time round-trips through the OWL-Time shape §4.1's vocabulary table names (time:hasTime → ProperInterval), which the emitter declares in its context but never emits.",
+        "A committed artifact records the packs used, the encodings, the per-encoding result and the one command that regenerates it, and it runs in agora's standing checks — so losslessness stays proven rather than having been proven once.",
+        "No koine file is edited by this tasklist; the evidence flows back by citation, per ADR-0001. koine closes its own gate by reading the artifact, not by trusting a passes flag — that is the mistake this tasklist exists to correct."
+      ],
+      "passes": false,
+      "notes": null
+    }
+  ],
+  "parkedReason": "Cross-repo MARKER. The work belongs to agora (ADR-0001); koine holds this record only so KGP §4.1's gate has a named owner and is not retired a second time on a passes flag. Unpark only to author the agora-side tasklist from it."
+}
