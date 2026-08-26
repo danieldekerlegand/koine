@@ -2,7 +2,7 @@
 
 **Spec version:** 0.3.4
 **Status:** Candidate
-**Last updated:** 2026-08-24
+**Last updated:** 2026-08-26
 **Applies to:** media authorities (producer/authority for assets + timelines), media producers of
 any modality, and media consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP) for the `asset` id, `source_world`, and
@@ -804,7 +804,50 @@ alone; the KCB re-run count above is unaffected and no delta is reopened. That t
 run — [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), **not clean**:
 identity and provenance held, **MA-5** and **MA-10** are open, and the count stays open with them.
 
+**Downstream evidence (2026-08-24), and the one place it is thinner than it looks.** The KCS
+encodings of both scenarios above were run over real MCP/A2A links and both came back `green`
+([`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md#downstream-results),
+[`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md#downstream-results)).
+Neither closes a count, and one carries a caveat an owner must read before citing it:
+
+- **Positive.** On the media pass, delta **H**'s `source_world_is` and delta **I**'s asset-id ↔ path
+  media map were asserted over bound values a step produced, and the §5 analysis→KGP bridge
+  (`asset_attaches_to`) held with both operands bound at once. The composer role was a delta-N
+  stand-in, so this is the *requesting* side observed against a recorded provider.
+- **The caveat — DR-4, and it lands on this spec.**
+  [`../scenarios/kmi-otio-roundtrip.md`](../scenarios/kmi-otio-roundtrip.md), the focused leg that
+  produced **M-1** and gates §4.2a's re-attachment rule, is encoded downstream as
+  `kcs:kmi-otio-roundtrip` — which is `kcs:media-transform` re-titled over the **same fixture**.
+  It asserts nothing OTIO-specific and never drops a namespaced-metadata carrier, so **M-1 and the
+  0.3.3 fold answering it are unexercised**. The artefact gate is met for that document by
+  **count, not by content**. This opens no third count — M-1 is not one of the two above — but no
+  owner may cite that encoding as evidence for §4.2a, because the run never attempted it. Closing
+  it is downstream work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is
+  unowned.
+- **Reading rule.** `green` here means every encoded step and assertion passed with no transport
+  failure. The multi-authority pass came back green over **six** open blocking deltas, MA-5 among
+  them, because an encoding deliberately does not assert an unfolded delta. It is not a verdict on
+  §7.1.
+
 ## Changelog
+
+- **Editorial** (2026-08-26) — Recorded the **downstream results** of both gating scenarios in
+  *Pressure test*. The KCS encodings of
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) and
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) were run over real
+  MCP/A2A links on 2026-08-24 and both came back `green`; **neither count moves**. Positive: delta
+  **H**'s `source_world_is`, delta **I**'s media map and §5's analysis→KGP bridge were asserted over
+  bound values under machine replay. The caveat is **DR-4** and it lands here —
+  [`../scenarios/kmi-otio-roundtrip.md`](../scenarios/kmi-otio-roundtrip.md), the leg that produced
+  **M-1** and gates §4.2a, is encoded downstream as `kcs:media-transform` **re-titled over the same
+  fixture**, asserts nothing OTIO-specific, and never drops a namespaced-metadata carrier, so M-1
+  and the 0.3.3 fold answering it are **unexercised**: that document's artefact gate is met by
+  *count*, not by *content*, and no owner may cite the encoding as evidence for §4.2a. This opens no
+  third count (M-1 is not one of the two) and closing it is downstream work under
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md), unowned. The reading rule is stated
+  with it: the multi-authority pass came back green over **six** open blocking deltas, MA-5 among
+  them, because an encoding deliberately does not assert an unfolded delta. **No clause changes and
+  the status does not move** — KMI stays **Candidate** on both counts.
 
 - **Editorial** (2026-08-24) — The cross-authority break test §7.1 names as this spec's **second**
   re-ratification count has **landed and been run**:

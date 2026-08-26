@@ -137,3 +137,58 @@ failure, FT-K adds a selection rule to the registry.
 > unsatisfiable-pin failure, §6 `samples` previews, §8/§9 provider selection + specialist-as-provider
 > reframe). KFT remains **Candidate**: with two pressure passes clean of *unresolved* blockers, it is
 > ready for ecosystem-owner ratification sign-off. This document records the second pass.
+
+---
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes. Instance-free, role-scoped, and it **promotes nothing**.
+
+**Run of 2026-08-24** · encoding `kcs:finetune-multimodal` · KCS 0.3.0 · spec set pinned at
+**KFT 0.5.0** · evidence `sha256-2d9e6c43…c17bb3`, verified in
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
+
+| | |
+|---|---|
+| Participants, by role | knowledge **producer** (`analyzer`, live) · **general** training provider (**stand-in**) · **specialist** training provider (**stand-in**) |
+| Over what links | **1 of 3 live** (33%) — the lowest live coverage in the suite, together with the third KFT pass |
+| Encoded as | 11 steps + **13** assertions, of which **4** are `expect: reject` |
+| Result | `green` · verdict **`partial-live`** · `transport_failures: []` |
+
+**What passed.** Every encoded assertion. The four deltas this pass produced are all carried by a
+refusal that actually fired:
+
+- **FT-K** — a text-generation sibling matching **both** providers at equal specialization and equal
+  cost reaches the caller rather than being decided by registration order. KCB §3 only prefers
+  zero-cost routes, so nothing else breaks the tie; silence here is a provider chosen at random.
+- **FT-I** — the same corpus as two independent arrays is refused: two bags cannot express a
+  per-sample join. The records-carried form is then admitted and `completes`, so the profile stays
+  usable rather than merely strict.
+- **FT-J** — a gate that fires correctly and pins to a tier that **cannot run** text-to-video
+  diffusion fails admission **with a report**. Hang, silent cloud placement and silent downscope are
+  all refused; the re-submitted job then runs on the tier the gate pinned (`tier_resolved`).
+- **Step 5, the key multimodal result** — a LoRA trained on `local-only` player clips inherits
+  `local-only` and cannot be pushed to a shared registry. The FT-A fold does its job on a
+  media-trained model.
+
+Also held: `cost_within_ceiling` on a multimodal job as on a text one; `source_world_is` null +
+`asset_attaches_to` on both the FT-L preview grid and the weights (KMI delta H); and
+`capability_path_exists` for **Step 6** — the finetuned media model slots straight back into the
+any-to-any capability graph, which is the result that justifies calling this "full multimodal now".
+
+**What the run does not say.** Two of three slots were stand-ins, and both were **providers** — so
+the multi-provider topology this pass exists to test (a general trainer *and* a specialist, routed
+by the registry) was exercised entirely against recordings. FT-K's tie-break in particular is a
+statement about what happens when two live registrations collide; here the collision was staged.
+See **DR-6** (recorded in [`e2e-finetune.md`](e2e-finetune.md#downstream-results)) and **DR-1**.
+
+The KFT 0.5.0 pin applies here too: no §3.3 conversion round-trip and no §8.1 refusal grade — every
+refusal above is the ungraded §5 `refused`. See **DR-5**, same place.
+
+### Findings — from the downstream run
+
+None local to this scenario: every encoded assertion held and the run opened no new break. What it
+is limited by is recorded as **DR-5** / **DR-6** in [`e2e-finetune.md`](e2e-finetune.md#findings-from-the-downstream-run)
+and **DR-1** / **DR-2** in [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).

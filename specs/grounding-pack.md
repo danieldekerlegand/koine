@@ -409,9 +409,28 @@ KCS encoding of the scenario that gates the spec — and that one has been **met
 [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) whose *Re-validation*
 section carries KGP's pass, exists downstream and returned `live-pass` on a fully live three-role
 cast ([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)).
-Two riders, neither of which promotes anything: a `green` run is *the encoded assertions held*, not
-a verdict on this spec, and the run has not yet been recorded in koine as a `## Downstream results`
-section, so no owner may cite it as evidence yet (owner `84-record-the-downstream-results`).
+**That run is now recorded and citable** (2026-08-26,
+[`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) *Downstream results*),
+and it is positive evidence for two things this spec asserts:
+
+- **§3.3 claim-id convergence held under machine replay.** The `claims_converge` assertion fired on
+  the reconciliation leg: the knowledge producer's extraction reduces onto the claim the world
+  producer already published rather than minting a second hash. Run against KGP 0.5.1, so this is
+  the byte-unchanged convergence the *Re-validation — KGP 0.5.0* pass desk-checked, now observed.
+- **§7's egress filters refused, rather than passing silently.** Both legs ran as `expect: reject`
+  steps carrying `refused` — a `local-only` claim refused **before** transfer, and a share-alike
+  record rejected per record with a report. A filter that has never refused anything is a field in
+  a schema.
+
+**And two riders, neither of which promotes anything.** First, a `green` run is *the encoded
+assertions held*, not a verdict on this spec. Second and specific to KGP: the encoding covers R1
+and R2 of that pass but **not R3**, the §4.1 projection round-trip, because KCS §5 has no
+round-trip predicate and the encoding mints no extension for one (**DR-3**). So the fully-live pass
+above leaves the fixture gate of this section **exactly where it was** — an owner citing
+`live-pass` as evidence that the projection round-trips has cited a run that never attempted it.
+Promotion of this spec is not this section's to make and is owned by
+`87-kgp-projection-reader-and-roundtrip`; the audit that established the gate is still open is
+[`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md).
 
 ---
 
@@ -573,6 +592,20 @@ Ratified 2026-07-17.
    attributable. Token issuance/rotation lives in the control-plane host's infra, not here.
 
 ## Changelog
+
+- **Editorial** (2026-08-26) — Recorded the **downstream result** of `kcs:worlds-to-fabric` against
+  the §4.1 round-trip-fixture gate above (*Gate status*). The 2026-08-24 run is now recorded in
+  [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) and therefore
+  citable under [`README.md`](README.md#the-ratification-gate); it is **positive evidence** for two
+  clauses — §3.3 claim-id convergence held under machine replay (`claims_converge` on the
+  reconciliation leg, against KGP 0.5.1, so the convergence the *Re-validation — KGP 0.5.0* pass
+  desk-checked is now observed) and §7's license / `local-only` egress filters **refused** on both
+  legs as `expect: reject` steps. It is evidence for nothing else: finding **DR-3** records that the
+  encoding covers R1 and R2 but **not R3**, the §4.1 projection round-trip, because KCS §5 has no
+  round-trip predicate — so the fully-live pass leaves this spec's one outstanding gate exactly
+  where it was. **No clause changes and the status does not move**: KGP stays **Candidate**, the
+  fixture remains undelivered, and promotion is owned by `87-kgp-projection-reader-and-roundtrip`,
+  not by this entry.
 
 - **Editorial** (2026-08-26) — §4.1's gate paragraph corrected after the downstream artifact was
   read against it. The tracking marker `64-kgp-projection-roundtrip-fixture` was retired on

@@ -217,3 +217,64 @@ compatibility check (F), an external-anchor convention (G).
 > in-tier eval, §7 admission-time estimate, §3.1 compatibility check, registry note). KFT is now
 > **Candidate**, pending ecosystem-owner ratification and a second (fully-multimodal) pressure pass.
 > This document is the record of what the pressure test found.
+
+---
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes. Instance-free, role-scoped, and it **promotes nothing**.
+
+**Run of 2026-08-24** · encoding `kcs:finetune` · KCS 0.3.0 · spec set pinned at **KFT 0.5.0** ·
+evidence `sha256-2d9e6c43…c17bb3`, verified in
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
+
+| | |
+|---|---|
+| Participants, by role | identity **authority** (`refkb`, live) · knowledge **producer** (`analyzer`, live) · training **provider** (`provider` trainer, **stand-in**) |
+| Over what links | **2 of 3 live** (67%). The trainer answered from a delta-N `standin` recording. |
+| Encoded as | 14 steps + **15** assertions, of which **5** are `expect: reject` |
+| Result | `green` · verdict **`partial-live`** · `transport_failures: []` |
+
+**What passed — and the shape of it matters.** Five of this pass's fifteen assertions are `refused`
+over an `expect: reject` step, which is the point: *a gate that has never refused anything is a
+number in a manifest.* Each of KFT's four load-bearing refusals fired:
+
+- **Step 3, the headline** — one `local-only` record in the corpus kept the **whole run** off
+  rented compute. KGP §7.2's "…or training set" clause is real, observed rather than argued.
+- **FT-B** — and the aggregation reached the **base model's** own license and egress, not only the
+  training data: a job whose corpus is entirely `exportable` was still refused.
+- **FT-A** — §5.4's output inheritance held: local-only-trained weights could not be registered
+  across the tier boundary. This is the structural one — without it the gate protects the placement
+  and leaks the product.
+- **FT-D** — the same hole on the **eval** path is closed, and the eval still `completes` in the
+  tier the model is pinned to.
+- **FT-F** — `dpo` × `text-to-image` refused **at admission**, before compute was provisioned.
+
+Also held: `capability_path_exists` for a modality-typed `finetune` (FT-H) and its telemetry stream;
+`resolves_to` on the base model as a KINP node (FT-G); `cost_within_ceiling` on both projected and
+actual spend (FT-E); `tier_resolved` to the local tier the gate chose; `source_world_is` null on
+generated weights (KMI delta H) with `asset_attaches_to` the model; and `provenance_present` for
+FT-C's run-as-reproducibility-anchor.
+
+**What the run does not say.** Two gaps, both recorded rather than inferred.
+
+1. **The counterparty was never live.** The trainer is the role this entire profile is about, and it
+   was a stand-in — here and in both sibling passes. Every refusal above is therefore a *consumer
+   and authority side* refusal observed against a recorded provider. That is still worth having
+   (the gate lives on the admitting side), but it is not the same claim as "a live provider was
+   refused". See **DR-6**.
+2. **The suite runs at KFT 0.5.0.** Nothing in it exercises §3.3's conversion round-trip or §8.1's
+   graded refusals — every refusal here is an ungraded `refused`, with no `reason` class and no
+   `route_to[]`. See **DR-5**.
+
+### Findings — from the downstream run
+
+| # | Severity | Gap | Consequence |
+|---|---|---|---|
+| DR-5 | **High** | The encoded suite pins **KFT 0.5.0** and asserts nothing over §3.3 (the Axolotl / LLaMA-Factory / TRL / OpenAI conversion mapping, whose conformance criterion is the **round-trip**) or §8.1 (the six refusal grades and the SHOULD-level `route_to[]`). Every refusal is the ungraded §5 `refused` predicate. | KFT's two newest normative surfaces have **no** machine-replayable document citing them. `specs/fine-tuning.md` already records them as *"new normative surface no pass has exercised"*; this run confirms that from the other side and it is no longer a prediction. Neither can be cited in a re-ratification. Building the coverage is downstream work ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)); unowned today. |
+| DR-6 | Minor | Across **all three** KFT passes (`kcs:finetune` 2/3, `kcs:finetune-multimodal` 1/3, `kcs:producer-exhaust-finetune` 1/3) the **training-provider** role — general trainer and specialist alike — is a delta-N stand-in in every slot. No live participant has ever held it. | KFT's downstream evidence is asymmetric: the admitting side is live, the provider side is recorded. Promotion is a cast change, not a document change, so this closes when a provider adopts — no edit here or downstream. Stated so an owner citing this run knows which half it covers. |
+
+Suite-wide limits **DR-1** and **DR-2** are recorded in
+[`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).

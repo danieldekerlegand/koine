@@ -460,3 +460,45 @@ belongs to the fold, not to this pass.
 > machine-replayable **KCS encoding** of this document, which does not exist and is **unowned**.
 > Recorded in [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md) §6.2
 > and in [`../ROADMAP.md`](../ROADMAP.md).
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes. Instance-free, role-scoped, and it **promotes nothing**.
+
+**This scenario has never been run downstream, and has no encoding.** Recorded as a statement
+rather than left blank, because a blank section is indistinguishable from an unread one.
+
+| | |
+|---|---|
+| Encoding | **none.** `agora/console/src/kcs/scenarios/` holds nine `KOINE_SCENARIOS` entries and none has `source: 'scenarios/kcb-subscription-firehose.md'` |
+| Runs | **none.** The committed evidence artifact (`sha256-2d9e6c43…c17bb3`, generated 2026-08-24) contains nine scenarios and this is not one of them |
+| Why | This document landed with `chief/70` on **2026-08-26**, a week after the nine encodings were built (`agora chief/75`, merged 2026-08-19) and two days after they were run |
+
+This is the **second** document in this directory in that position, the first being
+[`kft-resume-checkpoint.md`](kft-resume-checkpoint.md#downstream-results). Both landed on the same
+day, both after the encoding set was frozen at nine, and neither is owned — so the same red light
+now names two files rather than one: `coverage.test.ts` asserts set-equality between
+`KOINE_SCENARIOS` and this directory's `*.md`, and its `KOINE_SCENARIOS.length === 9` assertion is
+**two short** of koine's eleven. That gate is downstream and it is the only enforcement there is;
+koine's own `.chief/verify.sh` checks links, status mirrors, schemas and the registry and has
+nothing that could notice. Adding a file to `scenarios/` is a cross-repo obligation with no local
+red light.
+
+The full verification, with the merges and the artifacts it was read off, is
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+§6.2; it is not restated here.
+
+### Findings — from the absence of a downstream run
+
+| # | Severity | Gap | Consequence |
+|---|---|---|---|
+| DR-12 | **Blocking** (for KCB §4.2 alone) | The KCB 0.4.7 fold this leg forced — §4.2a's port `volume` envelope, §4.2b's lossless-vs-lossy rule and never-shed-a-retraction clause, §4.2c's `resume` operand and its three required answers, §4.2d's bidirectional control channel, §4.2e's delivery-time ceiling evaluation and §4.2f's `volume.references` fan-out bound — has **no machine-replayable document citing any of it**, and neither does BP-1…BP-6. | [The ratification gate](../specs/README.md#the-ratification-gate) forbids promoting a spec whose scenario has no KCS encoding, so **KCB loses the artefact gate on this count**. It is narrow: KCB's other three re-ratification counts re-run [`e2e-media-transform.md`](e2e-media-transform.md), [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md) and [`e2e-multi-authority.md`](e2e-multi-authority.md), all of which **are** encoded, so those counts are unaffected — as are the four specs that touch neither of the two unencoded documents. This is on top of, not instead of, the fourth count's own re-run gate. Building the encoding is downstream runtime work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned** as of 2026-08-26. |
+
+Suite-wide limits **DR-1** and **DR-2** are recorded in
+[`README.md`](README.md#downstream-results-where-a-real-runs-result-lands); neither applies to a
+scenario that was never run. **DR-11** is the same finding against
+[`kft-resume-checkpoint.md`](kft-resume-checkpoint.md#findings-from-the-absence-of-a-downstream-run)
+and a different spec; the two are recorded separately because they cost different specs their gate
+and either could be discharged without the other.

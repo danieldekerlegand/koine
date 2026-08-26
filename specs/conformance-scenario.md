@@ -2,7 +2,7 @@
 
 **Spec version:** 0.3.0
 **Status:** Candidate
-**Last updated:** 2026-08-20
+**Last updated:** 2026-08-26
 **Applies to:** the conformance console (executor) and every participant it drives
 **Depends on:** [`identity.md`](identity.md) (KINP), [`grounding-pack.md`](grounding-pack.md)
 (KGP), [`capability-bus.md`](capability-bus.md) (KCB), [`media-interchange.md`](media-interchange.md)
@@ -154,12 +154,43 @@ Encoding them is a downstream conformance-console tasklist (see `../tasks/chief/
 
 1. **Assertion extensibility** — a fixed vocabulary (§5) vs. a small predicate DSL over the
    observation log. Leaning: fixed core + an escape hatch.
+   *Evidence from downstream use, 2026-08-24.* The escape hatch was used exactly as this question
+   imagines it, twice, by different authors of different scenarios:
+   [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md)'s **V-8**
+   needed five predicates §5 cannot express and
+   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md)'s **MA-11** needed
+   four more, and **both sets were built as declared console extensions and reported as such**
+   rather than smuggled into §5. That is the leaning working, produced by construction rather than
+   by argument. But the same run found the fixed core **drifting**: finding **DR-10** records that
+   the downstream §5 vocabulary omits `structure_matches` (question 2's own predicate) *and*
+   declares a `media_map_complete` this spec names nowhere, while every encoded document declares
+   `kcs_version: 0.3.0`. A fixed core is only fixed if something checks it, and the check
+   downstream is a hardcoded count of eighteen names, not a comparison against §5. **So this
+   question now carries a second half:** whether a fixed core needs a normative conformance
+   obligation on the *runner* — declare the vocabulary version you implement, and reject a document
+   declaring one you do not — rather than only on the document. Taking it up is a normal minor
+   revision gated by a pressure test.
 2. **Determinism** — **folded in 0.3.0:** model outputs vary; scenarios MUST assert
    *structure/invariants* (firewall, cost, world-scoping), not exact generated content, unless
    exact content is itself the contract. `structure_matches(a, b)` is the fixed-core predicate
    for comparing generated outputs without requiring byte equality.
+   *Unexercised downstream as of 2026-08-24* — per **DR-10**, no encoded document can assert
+   `structure_matches` because the predicate does not exist in the runner, so the fold has no
+   machine-replayable evidence and Attempt 3 is unclosed downstream. That is a drift finding, not a
+   reopening: the clause is unchanged and this spec's *Pressure test* records what it costs the
+   pending re-validation.
 3. **Recording fidelity** — how much stream payload the observation log retains vs. references by
    id (ties to KMI byte transport).
+   *Evidence from downstream use, 2026-08-24.* Finding **DR-2** records that the committed run
+   artifact carries a **per-scenario aggregate** — id, verdict, live/stand-in slot counts — and not
+   pass/fail per assertion with the clause that assertion cites. Nothing in this spec requires
+   otherwise: §2 has no per-assertion spec-section field (§8 *Traceability* says so), so a
+   conformant runner may report exactly this much. The consequence is that
+   [`README.md`](README.md#the-ratification-gate)'s consuming gate — which asks a recorded result
+   for *pass/fail per assertion with the clause each assertion cites* — cannot be satisfied from the
+   report alone, and every clause koine attributed to that run was read off the encoding by hand.
+   This question is where the fix belongs, and it is now a **report-shape** question as much as a
+   payload-retention one.
 
 ## 8. Prior art considered (rationale, INFORMATIVE)
 
@@ -240,7 +271,58 @@ remain in force: **M** (step `id` + `${id.path}` bindings, §2.1/§3), **O** (`e
 `refused`, §3/§5), **N** (`standin` participants, §2), **P** (`timeout_ms`, §2/§3/§4). Candidate
 pending re-validation; §7.1 assertion extensibility and §7.3 recording fidelity remain open.
 
+**Downstream evidence (2026-08-24), and the one thing it costs the pending re-validation.** KCS is
+the one spec whose conformance artefact is earned by **use** rather than by a run
+([`README.md`](README.md#the-ratification-gate)), and the use happened: **nine** scenario documents
+were written in KCS 0.3.0 downstream and all nine parse, replay over real MCP/A2A links, and produce
+a content-addressed report. That is positive evidence for the format at a scale no single scenario
+supplies, and the deltas it exercises are the ones this spec folded — **M** (three assertions naming
+values bound from a step's output, including one with *both* operands bound), **O** (both negative
+paths ran as negative paths instead of aborting the run — a refused `fetch` and an over-ceiling
+`invoke`, neither testable before delta O), **N** (`standin` recorded in the report on all thirteen
+stubbed slots), and **P** (`completes` on a step, `always_completes` on the scenario).
+
+**What it costs: delta Q is unexercised, and the vocabulary has drifted (DR-10).** The runner's §5
+vocabulary omits `structure_matches` — the predicate 0.3.0 *is* — and declares a
+`media_map_complete` this spec names nowhere, while every document it replays declares
+`kcs_version: 0.3.0`. So the pending re-validation cannot be discharged by a machine replay of the
+folded clause; a hand-walk of
+[`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md) Attempt 3 still can, which
+is why this is a **qualification on the existing re-validation and not a second gate**. Two riders:
+a document declaring 0.3.0 while being replayed by a 0.2.0-shaped vocabulary is the silent-version-
+drift hazard [`capability-bus.md`](capability-bus.md) §7.2 names one plane over, and the check meant
+to catch it is a hardcoded count rather than a comparison against §5 — recorded as the second half
+of §7.1. Fixing the runner is downstream work under
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**.
+
 ## Changelog
+
+- **Editorial** (2026-08-26) — Recorded what **downstream use** of this format produced, in
+  *Pressure test* and against §7's open questions. KCS is the one spec whose conformance artefact is
+  earned by use rather than by a run, and the use happened: **nine** scenario documents were written
+  in KCS 0.3.0 downstream and all nine parse, replay over real MCP/A2A links, and produce a
+  content-addressed report — positive evidence for the format at a scale no single scenario supplies,
+  exercising deltas **M**, **O**, **N** and **P**. Three findings from that run are recorded where
+  they bear. **DR-10** — the runner's §5 vocabulary omits `structure_matches`, the predicate the
+  0.3.0 fold *is*, and declares a `media_map_complete` this spec names nowhere, while every document
+  it replays declares `kcs_version: 0.3.0`: so delta **Q** is unexercised downstream and the pending
+  re-validation cannot be discharged by a machine replay of the folded clause, though a hand-walk of
+  Attempt 3 still can. That is a **qualification on the existing re-validation, not a second gate**.
+  §7.1 gains a recorded second half from it — whether a fixed core needs a conformance obligation on
+  the *runner* (declare the vocabulary version you implement; reject a document declaring one you do
+  not), since the check that was meant to catch the drift is a hardcoded count of eighteen names
+  rather than a comparison against §5 — and §7.1 also gains the positive counterpart: the escape
+  hatch this question leans toward was used exactly as imagined, twice, by different authors
+  (**V-8**, **MA-11**), both times as *declared* console extensions. **DR-2** is recorded against
+  §7.3: the run artifact carries a per-scenario aggregate rather than pass/fail per assertion with
+  its cited clause, which a conformant runner may do — §2 has no per-assertion spec-section field
+  (§8 *Traceability*) — but it means [`README.md`](README.md#the-ratification-gate)'s consuming gate
+  cannot be satisfied from the report alone, making §7.3 a **report-shape** question as much as a
+  payload-retention one. **Editorial, and deliberately so:** every normative surface is
+  byte-unchanged — §2's document shape, §2.1's bindings, §3's step vocabulary, §4's execution and
+  observation model, §5's assertion vocabulary — no MUST/SHOULD is added or altered, and what moved
+  is recorded evidence under two already-open §7 questions plus a *Pressure test* note. KCS stays
+  **0.3.0 Candidate** on the same single re-validation.
 
 - **0.3.0** (2026-08-20) — **Candidate.** Folded the determinism question forced by Attempt 3
   (`kcs:generated-output-invariants`) in [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md):

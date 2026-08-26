@@ -133,9 +133,10 @@ this rule changed is that pair's standing. Encoding the scenarios used to be the
 have, scheduled behind everything with a delivery date. It became the **only** route to `ratified`
 for every spec in the table above, which put it on the critical path, and it is the reason that path
 is now clear. The per-scenario state of that work is tracked where a reader already looks: the
-**KCS encoding** column of [`../scenarios/README.md`](../scenarios/README.md) — which still reads
-`planned` for all nine and is stale as of 2026-08-19; correcting it, together with recording the run
-itself (below), is owned by `84-record-the-downstream-results` in [`../tasks/chief/`](../tasks/chief/).
+**KCS encoding** column of [`../scenarios/README.md`](../scenarios/README.md) — corrected on
+**2026-08-26** by `84-record-the-downstream-results`, which flipped the nine stale `planned` cells
+and recorded the run itself (below) in the same pass. That column is the **register of record** for
+per-scenario encoding state; this section restates it and is the bug on disagreement.
 
 (The two tasklist ids this paragraph used to name — `agora chief/62` / `chief/63` — were koine-side
 *markers* for work that could only run downstream. They were retired when the downstream tasklists
@@ -163,10 +164,17 @@ content-addressed run record that koine has verified **exists and covers all nin
 `green` verdict is that artifact's own claim rather than something re-run here
 ([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)).
 
-So the **artefact gate is met for every spec in the fabric**, and what a promotion waits on is no
-longer this rule. It is each spec's own outstanding pass — an unfolded delta set, an un-re-run
-scenario, a missing downstream fixture. **Six of six specs remain `candidate` and zero are
-promotable today**, but for spec-specific reasons that this section no longer supplies. One line per
+So the **artefact gate is met for four of the six specs**, and for those four what a promotion
+waits on is no longer this rule. It is each spec's own outstanding pass — an unfolded delta set, an
+un-re-run scenario, a missing downstream fixture. **Two are still blocked by this rule**, both since
+2026-08-26 and both narrowly: KFT, whose 0.6.0 fold is gated by
+[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), and KCB's §4.2
+count, gated by [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md);
+each is a scenario written **after** the nine encodings were built, neither has an encoding, and
+neither encoding is owned (findings **DR-11** and **DR-12**). Adding a document to
+[`../scenarios/`](../scenarios/) incurs this gate, and no koine guard notices — the red light is
+downstream. **Six of six specs remain `candidate` and zero are promotable today**, but otherwise for
+spec-specific reasons that this section no longer supplies. One line per
 spec naming that reason — and ranking the six by what a promotion actually costs from here — is
 [`../docs/reference/promotability.md`](../docs/reference/promotability.md); the *program* view, with
 tasklists and phases, stays in [`../ROADMAP.md`](../ROADMAP.md) *Phase 1*, which covers four of the
@@ -176,10 +184,23 @@ Two things this correction deliberately does **not** do:
 
 - It does not promote anything. The encoding is a **precondition**, never a promotion: a status
   change stays the owner's deliberate act on the spec's own merits.
-- It does not let an owner cite the downstream run yet. Under the paragraph above, a citable result
-  is one recorded **here**, in the scenario it ran, as a `## Downstream results` section. All nine
-  of those sections are still empty, so the run is real, referenced, and not yet evidence any gate
-  may read. Recording it is owned by `84-record-the-downstream-results`.
+- It does not let a recorded run promote anything either — **corrected 2026-08-26**. Under the
+  paragraph above, a citable result is one recorded **here**, in the scenario it ran, as a
+  `## Downstream results` section. Every scenario now carries one, so the run *is* citable evidence
+  and the clause that consumes it is live rather than hypothetical. Two conditions on citing it,
+  both from the run's own findings, and an owner who skips them repeats the mistake the gate exists
+  to prevent:
+  - **`green` is not a gate verdict.** Per the runner, `green` means every encoded step and
+    assertion passed with no transport failure. Two scenarios came back green over passes koine
+    records as *not* clean, with four and six blocking deltas open (**DR-7**, **DR-8**), because an
+    encoding deliberately does not assert a delta that has not been folded. Citing `green` as "the
+    spec holds" is the `passes: true` error one layer down.
+  - **A green encoding is evidence only for what it encodes.** Three findings record a clause that
+    no assertion reaches — KGP's §4.1 projection round-trip (**DR-3**), KMI's **M-1** (**DR-4**),
+    KFT's §3.3 and §8.1 (**DR-5**) — and the artifact records a per-scenario aggregate rather than
+    pass/fail per assertion with its cited clause (**DR-2**), so the mapping from a green line to a
+    discharged clause is read off the encoding by hand. The index of all twelve findings is
+    [`../scenarios/README.md`](../scenarios/README.md#findings-from-the-run-dr-1dr-12).
 
 There is still no provisional status, no waiver, and no "ratified pending encoding": the rule has
 one exception, the grandfather clause above, and it is closed to new entrants.

@@ -294,3 +294,64 @@ that matters for a ratified spec: a 0.3.0 manifest (no `records[]`, single-objec
 `egress`/`recordCount`) still validates and still gates identically, because every added field is
 optional and the added defaults are KGP's own. What remains before re-ratification is the owner's
 call, not another break: this pass's own corrected walk is the evidence.
+
+---
+
+## Downstream results
+
+> **What this section is.** The recorded result of a **downstream run** of this pressure test's
+> KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
+> fixes. Instance-free, role-scoped, and it **promotes nothing**.
+
+**Run of 2026-08-24** · encoding `kcs:producer-exhaust-finetune` · KCS 0.3.0 · spec set pinned at
+**KFT 0.5.0** · evidence `sha256-2d9e6c43…c17bb3`, verified in
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
+
+| | |
+|---|---|
+| Participants, by role | producing application's **adapter** (`mediastore` adapter, live) · training **provider** (**stand-in**) · **specialist** training provider (**stand-in**) |
+| Over what links | **1 of 3 live** (33%) |
+| Encoded as | 14 steps + **15** assertions, of which **6** are `expect: reject` — the most refusal-heavy encoding in the suite |
+| Result | `green` · verdict **`partial-live`** · `transport_failures: []` |
+
+**What passed.** Every encoded assertion. The FT-M…FT-Q intake fold is carried end to end:
+
+- **FT-M, the structural one** — without `dataset.records[]` the exhaust fits neither slot the
+  manifest offered, and the refusal fires: a training row is not a GroundingPack assertion (forcing
+  one in would fabricate a claim) and a JSONL will not route to a media port advertising
+  image/video/audio. The folded form is then admitted — three files, three positional headers, one
+  computable aggregate (`completes`).
+- **FT-N** — the inline `egress` header is a claim made to *skip* the fetch, so it is verified **at**
+  the fetch, and an understatement is refused rather than resolved permissively.
+- **FT-O** — three files with two headers is refused: a partial aggregate is not a permissive one.
+- **FT-P** — a file that grew past the declared `recordCount` the ceiling was granted against is a
+  **budget breach**, not a bigger job; refused with a report rather than trained into the overage.
+  `cost_within_ceiling` then holds against a resolved estimate for all three corpus kinds.
+- **Step 6** — the gate holds hard on a producer-emitted corpus (nothing about the corpus arriving
+  from a producer rather than an authority weakened it), the §5.4 inheritance holds on the model and
+  its GGUF export, and the last leg still `completes` in the tier it is pinned to.
+- **Step 7 / ADR-0008 decision 5** — `based_on_exists` across the boundary and
+  `no_sameas_across_worlds`: the `same_as` the adapter did emit stayed inside its own authority. A
+  corpus of "records that mention things" is about as adversarial a test of the
+  no-`mentions`-relation decision as the vocabulary allows, and it held.
+
+Also held: `asset_attaches_to` on the byte-reproducible export as an ordinary KMI asset, and
+`source_world_is` null on a generated records file (KMI delta H).
+
+**What the run does not say.** The **producer** side — the adapter of
+[ADR-0008](../decisions/ADR-0008-fabric-producer-adapter.md), which is the participant this pass
+exists to admit — was the one live slot, which is the right half to have live. Both training
+providers were stand-ins, so every refusal above is an *admitting-side* refusal against a recorded
+provider (**DR-6**, in [`e2e-finetune.md`](e2e-finetune.md#findings-from-the-downstream-run)).
+
+**Bearing on this scenario's own gate.** KFT's restated gate is the owner's re-run of the
+*Re-validation — KFT 0.4.0* section above. This run is **not** that re-run: it is a machine replay of
+the encoded assertions at KFT 0.5.0, over a two-thirds-recorded cast, and it asserts nothing about
+§3.3 or §8.1 (**DR-5**). It may be cited as supporting evidence that the FT-M…FT-Q intake behaves as
+folded; it does not discharge the gate.
+
+### Findings — from the downstream run
+
+None local to this scenario: every encoded assertion held and the run opened no new break. Its
+limits are **DR-5** / **DR-6** in [`e2e-finetune.md`](e2e-finetune.md#findings-from-the-downstream-run)
+and **DR-1** / **DR-2** in [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).
