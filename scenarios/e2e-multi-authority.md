@@ -521,7 +521,45 @@ forward, MA-10 makes absence answerable. Every one is additive.
 **Not clean. KINP 0.3.0, KCB 0.4.6 and KMI 0.3.4 all stay Candidate** on the gate each of them names
 as this pass.
 
-> **Resolution:** — see *Re-ratification — what this pass gates*, below.
+> **Resolution:** — see *Fold status*, immediately below, and *Re-ratification — what this pass
+> gates*. The verdict above is the record of the **pass**, stated at the versions it ran against;
+> the deltas were folded on 2026-08-26 at KINP 0.4.0 / KMI 0.3.5 / KCB 0.4.9, and all three specs
+> are still Candidate — on a re-run, not on these findings.
+
+---
+
+## Fold status — MA-1…MA-11 re-read against the folded specs (2026-08-26)
+
+The fold landed as `chief/85-fold-the-federation-breaks`: **KINP 0.4.0**, **KMI 0.3.5**, **KCB
+0.4.9**, plus an Editorial entry in **KGP 0.5.2** stating its reading at no version cost. What each
+disposition is and *why it stops where it stops* is reasoned in
+[`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md);
+what follows is this document's own re-read — each step run again against the folded text, saying
+whether the break it recorded still reproduces.
+
+**A fold does not close a gate.** All three specs stay **Candidate**: each of the counts below is
+now a **re-run of the relevant steps against the folded text**, which has not happened. Nothing here
+may be cited as a pass.
+
+| # | Folded in | Does the step's break still reproduce? |
+|---|---|---|
+| **MA-1** | KINP 0.4.0 **§4.1** | **No.** Re-running Step 3's three-link closure: a consumer MUST now cut at the authority boundary or re-evaluate each imported link against its own threshold, so `archivekb`'s 0.72 link — below A's 0.90 — no longer enters A's closure, and any view over a multi-authority path carries its weakest issuer and lowest confidence. The false identity does not form, and the fix is independent of MA-2's: it holds even where a bad link exists. §4.1's non-destructive query-time model is unchanged, as Step 3's 🟡 note asked. |
+| **MA-2** | KINP 0.4.0 **§4.5** | **No.** Step 2's 0.93 match against an unresolvable world now meets the fourth branch and MUST NOT be emitted as `same_as`; it is `based_on` or nothing, queued under §11 decision 2. The conformant-looking *"I see no other world, so it is mine"* reading is closed off in terms. **Open by design:** the operand still does not cross the boundary, so cross-domain reconciliation of a candidate whose world is resolvable *in principle* now queues rather than auto-applies — a **degradation**, not the break, and the remainder is DEFER-A with its trigger stated. |
+| **MA-3** | KINP 0.4.0 **§6** | **No — and read this one precisely.** Step 4's two hashes still differ, and that is now the **specified** answer rather than an unanswered clause: convergence is domain-scoped, the re-expression target is the participant's own authority's canonical entity, and the cross-domain instrument is the §4 equivalence view. The defect was *silence*, which Findings called the one unavailable option; the symptom is retained deliberately, because the alternative moves ids. No claim id in this document changes. Remainder: DEFER-B. |
+| **MA-4** | KINP 0.4.0 **§4.2**, **§5** (+ `registry/relations.tsv`) | **No.** Step 2's second horn — B has no way to be told A's consensus reality is its own — is answered by the new core relation `world_aligns_with`, which the fabric can now state and §11 decision 2 governs like any other link; §5 says the two defaults are distinct until something asserts otherwise. Step 4's KGP-§7-filter consequence reads over that closure. The relation is **new**, not a widened `same_as`: no signature moved, so no existing claim id moved. |
+| **MA-5** | KMI 0.3.5 **§2**, **§7.1(d)(e)** | **No.** Both horns of Step 9's table are closed. Store B now reads the asset's **own** `license`/`egress`, which travel with the bytes as the single carve-out (d) permits, and evaluates them **in addition to** its own domain's policy; a copy whose policy did *not* travel MUST NOT be served onward across a boundary. Laundering-by-retention is closed at the retainer, which is where Step 9 said control was lost. The outbound leg that already held is untouched, and (d)'s no-synthesis rule is intact — the pair is carried, never invented. |
+| **MA-6** | KCB 0.4.9 **§5** (+ optional `auth.accepted_issuers[]` in **§2**) | **No.** Step 7's dial now has an answer: a grant names its issuing host by KINP id, the domain-B provider states which issuers it honours and **fails closed** on one it does not, and a ceiling crossing the boundary states its unit or the `invoke` is refused for want of one. Steps 8–10 no longer have to be run *"as if the authorization question were already answered"*. KMI's `fetch:asset` leg inherits it by citation. **Deliberately unspecified:** token format, issuance, rotation, issuer discovery — §5's own boundary, unmoved. |
+| **MA-7** | KINP 0.4.0 **§3.4** | **No, as a contract gap.** Step 6's *published **where**?* is answered: the prefix registry is the one deliberately **non-federated commons**, federating domains MUST establish prefix disjointness before merging an attributed result set, and a collision is a **reportable defect** that blocks attribution — never a silent merge, a preference, or a rewrite. What koine can do is make the collision *representable* (via MA-8's `served_by`) and forbid resolving it silently; it cannot prevent two domains from having minted one prefix, and the clause says so. |
+| **MA-8** | KCB 0.4.9 **§3** (+ pointers from **§3.1(c)(e)(f)**) | **No.** Step 5's three carrier-less clauses have carriers: per-entry `served_by` + a resolvable address (c), per-entry `observed_at` (e), result-level `incomplete[]` (f). Attribution — *"the whole of what federation adds"* — is mechanized rather than merely asserted. Emitted only by a federating deployment; a single-registry `find` is byte-unchanged. |
+| **MA-9** | KCB 0.4.9 **§3.1(b)**, **§3.1(d)** | **No.** Step 5(i): a forwarded `find` carries a query id and a remaining hop count and a registry drops one it has seen, so the mutual/three-way re-forward terminates. Step 5(ii): `mediastore` seen twice — same provider KINP id, same `(name, version)`, same `schema_id` — is now **one** entry with two attributions. **One honest residual:** `schema_id` is optional (§2), so where a provider publishes none the three-part key cannot be met and §3.1(d)'s existing conservative default applies — both entries are returned, unreconciled. That is the safe direction and not a new break; a consumer resolves it against the provider's own card, as (e) already requires. |
+| **MA-10** | KMI 0.3.5 **§7.1(f)** | **No, for the reachable set.** Step 10's consumer can now conclude: a store MUST answer *not held, and not expected* distinctly from *not reachable*, so polling the reachable set terminates instead of waiting forever. (f)'s substance is untouched — nothing is invalidated, whatever the answer. **Open by design:** no minimum replica count, no retention obligation, no designated durable holder (DEFER-C) — koine specifies contracts, not operations. |
+| **MA-11** | — **not folded** | **Yes, and deliberately.** KCS §5 still has no authority-boundary vocabulary, and this pass's five unexpressible assertions stand. It was filed as **evidence** for KCS §7 open question 1, which already cites it by name alongside V-8; folding a vocabulary into §5 now would pre-empt the question the evidence feeds. No KCS version moves. It remains the reason `kcs:multi-authority` cannot assert what this pass needs — see *What a clean pass would license*. |
+
+**What the fold did not touch, on purpose.** Everything under *Not deltas* above is unchanged: Step
+1's offline-first minting, §7.1(a)/(c)/(d)'s asset identity and its survival through the §3.2/§3.3
+projections, §3.1(b)'s route-by-lookup rule, §3's version ranking over a merged set, §4.5's ban on
+promoting a `based_on` chain by transitivity, and §7.1(f)'s refusal to invalidate anything. Those are
+the regression set for the re-runs.
 
 ---
 
@@ -559,18 +597,27 @@ already cites [`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) for A–E and
 *What* leaving Candidate means differs per spec, because this pass is the whole gate for only one of
 the three:
 
-1. **KINP 0.3.0 → Ratified.** This pass is its only count. A clean re-run — with **MA-1, MA-2,
-   MA-3, MA-4** folded first and **MA-7** in the same fold — restores the status 0.2.1 held. Steps
-   2, 3, 4 and 6 are the ones that must flip; Step 1 held and is the regression set.
-2. **KCB — one count of three closes.** Folding **MA-6**, with **MA-8** and **MA-9** alongside,
+1. **KINP → Ratified.** This pass is its only count. A clean re-run — with **MA-1, MA-2, MA-3,
+   MA-4** folded first and **MA-7** in the same fold — restores the status 0.2.1 held. Steps 2, 3, 4
+   and 6 are the ones that must flip; Step 1 held and is the regression set. *(All five folded at
+   **KINP 0.4.0**, 2026-08-26 — see* Fold status *above. The re-run has not happened.)*
+2. **KCB — one count of four closes.** Folding **MA-6**, with **MA-8** and **MA-9** alongside,
    discharges the §3.1 count and nothing else: KCB remains Candidate until the media-transform
-   re-run lands *and* the §7.5 deltas **V-2/V-4/V-5/V-7** are folded. All of MA-6/MA-8/MA-9 are
-   additive, so they fold into the same **0.5.0** minor those already occupy.
+   re-run lands, the §7.5 deltas **V-2/V-4/V-5/V-7** are folded, and §4.2's own re-run lands.
+   *(Folded at **KCB 0.4.9**, 2026-08-26 — a **patch**, not the 0.5.0 minor this line first
+   predicted: 0.5.0 is spoken for by §2.2's standalone-manifest removal, which V-1…V-8 also occupy,
+   and a fold must not force it early. The count reads as a re-run of Steps 5–7 against the folded
+   text. "One count of four" was true when this line was written; KCB accrued a **fifth** count the
+   same day — §4.3 autonomy posture, at 0.4.8 — so the fold discharges one of five, and §4.3's own
+   re-run joins the list above. Nothing this pass found bears on it.)*
 3. **KMI — one count of two closes.** Folding **MA-5**, with **MA-10** alongside, discharges the
    §7.1 count; KMI remains Candidate until the KCB re-run lands. MA-5 adds two fields to the §2
    envelope and MA-10 adds an answerable *not held, and not expected* — additive, and **0.4.0 is
-   already spoken for** by §4.4's EDL removal, so they land at **0.5.0** or in a patch that adds no
-   field, not by displacing that removal.
+   already spoken for** by §4.4's EDL removal. *(Folded at **KMI 0.3.5**, 2026-08-26 — a **patch**.
+   This line offered "0.5.0 or a patch that adds no field"; the fold took the third reading, a patch
+   that adds two **optional** fields, on the precedent KCB set at 0.4.6/0.4.7 for additive normative
+   text landing as a patch while the next minor is reserved. Nothing that conformed at 0.3.4 stops
+   conforming, and the EDL removal keeps 0.4.0.)*
 
 **And a second condition, fabric-wide, that no fold can satisfy.** Under
 [the ratification gate](../specs/README.md#the-ratification-gate), `candidate → ratified` requires a
@@ -596,7 +643,22 @@ projections, but the **policy** that governs the bytes does not travel (**MA-5**
 degrades to an unfalsifiable *pending* (**MA-10**). The test exists and has been run; what remains
 is the fold.
 
-> **Resolution (2026-08-24):** recorded against **KINP 0.3.0**, **KCB 0.4.6** and **KMI 0.3.4** —
+> **Resolution (amended 2026-08-26 — the fold landed):** deltas **MA-1…MA-10** are **folded** —
+> MA-1/MA-2/MA-3/MA-4/MA-7 at **KINP 0.4.0**, MA-5/MA-10 at **KMI 0.3.5**, MA-6/MA-8/MA-9 at **KCB
+> 0.4.9**, with an Editorial entry at **KGP 0.5.2** stating that spec's reading at no version cost.
+> **MA-11 is closed unfolded**, as evidence for KCS §7 open question 1, which already cites it by
+> name. Three remainders are deliberately deferred with a forcing trigger each (DEFER-A/B/C), and
+> two alternatives are rejected on the record. Per-finding detail is in *Fold status* above; the
+> reasoning for each disposition is in
+> [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
+> **All three specs nevertheless stay Candidate** — a fold does not close its own gate. Each count
+> below now reads as a **re-run of this pass against the folded text**, and that re-run has not
+> happened; nothing above may be cited as a pass. The fabric-wide second condition is unmoved and
+> still binds: `kcs:multi-authority` cannot assert five of the ten assertions until KCS open question
+> 1 resolves (MA-11).
+>
+> **Resolution (2026-08-24, superseded above but retained as the record of the break-test):**
+> recorded against **KINP 0.3.0**, **KCB 0.4.6** and **KMI 0.3.4** —
 > the three §-edits `chief/52` applied under
 > [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md), each of which names this pass as a
 > re-ratification count. Deltas **MA-1…MA-11** are **open — none folded**, and **MA-1…MA-6** are

@@ -83,10 +83,15 @@ carries the per-spec table and the dated **Resolution**.
 The **three federation §-edits** — [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
 applied to KINP §11 decision 1, KCB §3.1 and KMI §7.1 — are gated the same way, by
 [`e2e-multi-authority.md`](e2e-multi-authority.md), which has now landed and been run and also did
-**not** pass clean: deltas **MA-1…MA-11**, blocking **MA-1…MA-6**, every one additive. **KINP
-0.3.0, KCB 0.4.6 and KMI 0.3.4 all stay candidate** — that pass is the whole of KINP's gate, one of
-KCB's three counts, and one of KMI's two. Its *Re-ratification — what this pass gates* section
-carries the per-spec table, what a clean re-run would license, and the dated **Resolution**.
+**not** pass clean: deltas **MA-1…MA-11**, blocking **MA-1…MA-6**, every one additive. **MA-1…MA-10
+were folded on 2026-08-26** (`chief/85`) — **KINP 0.4.0**, **KMI 0.3.5**, **KCB 0.4.9**, with KGP
+taking an Editorial entry and no version move, and MA-11 closed unfolded as evidence for KCS §7 open
+question 1. **All three specs nevertheless stay candidate**: a fold does not close its own gate, so
+each count now reads as a **re-run of that pass against the folded text**, and that re-run has not
+happened. That pass is still the whole of KINP's gate, one of KCB's four counts, and one of KMI's
+two. Its *Fold status* section re-reads each finding against the folded specs, and
+*Re-ratification — what this pass gates* carries the per-spec table, what a clean re-run would
+license, and the dated **Resolution**.
 
 ## The KCS encodings — nine of twelve exist, and the other three are the ratification tail
 

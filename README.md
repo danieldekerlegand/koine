@@ -57,10 +57,10 @@ ratified only after passing a concrete pressure test.
 
 | Specification | In plain terms | Version | Status |
 |---|---|---|---|
-| [Identity & Namespace](specs/identity.md) (KINP) | How every entity gets a stable, shared name — the keystone the rest build on | 0.3.0 | 🟡 candidate |
+| [Identity & Namespace](specs/identity.md) (KINP) | How every entity gets a stable, shared name — the keystone the rest build on | 0.4.0 | 🟡 candidate |
 | [Grounding-Pack](specs/grounding-pack.md) (KGP) | How knowledge (facts, relationships, graphs) is exchanged | 0.5.2 | 🚧 candidate |
-| [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | 0.3.4 | 🚧 candidate |
-| [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.4.8 | 🚧 candidate |
+| [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | 0.3.5 | 🚧 candidate |
+| [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.4.9 | 🚧 candidate |
 | [Conformance-Scenario](specs/conformance-scenario.md) (KCS) | A declarative scenario — data, not code — that drives several **real** participants over their actual connections at once, and checks properties spanning all four planes, each tied to the clause it tests | 0.3.0 | 🚧 candidate |
 | [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 0.6.0 | 🚧 candidate |
 

@@ -5,15 +5,26 @@
 [`../../scenarios/e2e-multi-authority.md`](../../scenarios/e2e-multi-authority.md) — the
 cross-authority break test that [ADR-0012](../../decisions/ADR-0012-federated-authority-roles.md)
 required and `chief/53` wrote — ran two independently built authority domains into one fabric and
-came back with **eleven findings, six of them blocking**. Nothing has been folded. Three specs
-describe the pre-break design, and two of them ([KINP](../../specs/identity.md),
-[KMI](../../specs/media-interchange.md)) are held at `candidate` partly by exactly these deltas.
+came back with **eleven findings, six of them blocking**. When this page was written nothing had
+been folded: three specs described the pre-break design, and two of them
+([KINP](../../specs/identity.md), [KMI](../../specs/media-interchange.md)) were held at `candidate`
+partly by exactly these deltas. The fold has since landed — see the note below — and all three are
+still `candidate`, now on a re-run rather than on these findings.
 
 This page is the **first half** of the fold: what each of the eleven gets, decided and reasoned
 **before** a clause is touched. It changes **no clause and no version** — deciding what to fold and
 folding it are different acts, and conflating them is how a fold overreaches. The second half (the
 edits themselves) is [`85-fold-the-federation-breaks`](../../tasks/chief/85-fold-the-federation-breaks.json)
 US-2, which lands each **FOLD** row below and nothing else.
+
+> **The fold landed, 2026-08-26.** Every **FOLD** row below is applied, at the version this page's
+> *Where each fold lands* table planned for it: **KINP 0.4.0**, **KMI 0.3.5**, **KCB 0.4.9**, with
+> **KGP** taking an Editorial changelog entry and no version move, and **MA-11** closed unfolded. The
+> per-finding re-read against the folded text — does each step's break still reproduce? — is the
+> *Fold status* section of
+> [`../../scenarios/e2e-multi-authority.md`](../../scenarios/e2e-multi-authority.md), and each spec's
+> changelog is the record. All three specs **stay Candidate**: a fold does not close its own gate.
+> This page remains the reasoning, not a status mirror.
 
 **What this page is not.** It binds no clause, and it is not a status mirror — each spec's own
 header is the authority on its version and status
@@ -117,7 +128,7 @@ changelog are the authority once written.
 |---|---|---|---|
 | **KINP** 0.3.0 | MA-1, MA-2, MA-3, MA-4, MA-7 — §3.4, §4.1, §4.2, §4.5, §5, §6 | **0.4.0** (minor). Additive in behaviour, but it adds a normative branch to §4.5, a consumer obligation to §4.1, a new equivalence relation, and a scoping statement to §6. Four of its six touched sections are normative surface a reader implements against. | Stays **Candidate**. New normative text re-enters validation; the fold does not clear its gate on its own — see US-3. |
 | **KMI** 0.3.4 | MA-5, MA-10 — §2, §7.1(d)(e)(f) | **0.3.5** (patch), following the standing constraint that **0.4.0 is spent** on §4.4's EDL removal (KCB §7.3c forbids declaring and removing in the same publication) and the established KCB precedent that additive-optional normative text lands as a patch when the next minor is reserved. `license`/`egress` are optional on read and write; a single-store deployment behaves exactly as at 0.3.4. | Stays **Candidate**. |
-| **KCB** 0.4.7 | MA-6, MA-8, MA-9 — §2 (`auth`), §3, §3.1(b)(c)(d)(e)(f), §5 | **0.4.8** (patch), on the same reasoning KCB used at **0.4.6** (six normative §3.1 clauses, patch) and **0.4.7** (every field optional, patch): **0.5.0 stays spoken for** by §2.2's standalone-manifest removal, which a fold must not force early. | Stays **Candidate** — three of its four counts are untouched by this fold. |
+| **KCB** 0.4.8 | MA-6, MA-8, MA-9 — §2 (`auth`), §3, §3.1(b)(c)(d)(e)(f), §5 | **0.4.9** (patch), on the same reasoning KCB used at **0.4.6** (six normative §3.1 clauses, patch), **0.4.7** and **0.4.8** (every field optional, patch): **0.5.0 stays spoken for** by §2.2's standalone-manifest removal, which a fold must not force early. | Stays **Candidate** — four of its five counts are untouched by this fold. |
 | **KGP** 0.5.2 | None — see below | **No version moves.** | Unchanged. |
 | **KCS** 0.3.0 | None — MA-11 is CLOSE | **No version moves.** | Unchanged. |
 
@@ -154,7 +165,7 @@ folds KCB's **V-1…V-8** into the same spec. Where federation and capability ve
 capability advertised across an authority boundary is both — the two folds must agree. The
 constraint this page fixes on its side, so 86 can plan against it:
 
-- **The KCB minor stays reserved.** MA-6/MA-8/MA-9 land as a **patch** (0.4.8) and do **not** consume
+- **The KCB minor stays reserved.** MA-6/MA-8/MA-9 land as a **patch** (0.4.9) and do **not** consume
   0.5.0, which is owed to §2.2's standalone-manifest removal and is where V-1…V-8 are already
   expected to land. This fold takes nothing 86 needs.
 - **The §3 `find` response gains a shape (MA-8).** V-1's finding is the same class — a clause with no

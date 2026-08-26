@@ -593,6 +593,35 @@ Ratified 2026-07-17.
 
 ## Changelog
 
+- **Editorial** (2026-08-26) — **KGP's reading under federation, stated at no version cost.**
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) names KGP a
+  **consequence surface, not a gated spec** — no step contradicts a KGP clause on its own terms —
+  while landing three of its deltas partly here and requiring that whoever folds them answer for
+  this column. They are answered in **KINP and KMI**, which is not avoidance but the repo's own
+  define-once rule: identifiers, envelopes, and resolution semantics are defined in KINP and
+  referenced, never redefined, by other specs.
+  - **MA-3 (claim-id convergence, §3.3).** §3.3's convergence property is **correct and intact** —
+    that pass's Step 4 records normalization never wavering and producing byte-identical canonical
+    forms across TSV and every §4 projection. What it lacked was a cross-domain *target*, which is
+    an identity question: [`identity.md`](identity.md) §6 answers it at 0.4.0 by scoping claim-id
+    convergence to an **authority domain** and naming the §4 equivalence layer as the cross-domain
+    instrument. No §3 rule, no §3.1 hashed set, and no §3.3 claim id moves.
+  - **MA-4 (§7's `world = consensus-reality` filter).** The filter's referent is a **world id**,
+    which KINP §5 defines. KINP 0.4.0 extends the §4.2 equivalence layer over worlds
+    (`world_aligns_with`), so the filter reads over that closure and has a federated reading without
+    §7 restating anything. §7's text is unchanged.
+  - **MA-5 (§7.1/§7.2's classes as the missing operand).** [`media-interchange.md`](media-interchange.md)
+    §2 **reuses** the licence and egress classes on the asset envelope at 0.3.5 and cites this spec
+    for their meaning. **No KGP clause changes and no enforcement point moves**: §7.2 still filters
+    `local-only` **records** at pack construction, and KMI states separately that the envelope pair
+    governs **bytes** and is evaluated by the serving participant at `fetch` time (KMI §7.1(e)).
+  **No clause changes, no version moves, and no gate is added.** KGP stays **0.5.2 Candidate** on the
+  one item it already had — the downstream round-trip fixture
+  ([`../docs/reference/promotability.md`](../docs/reference/promotability.md)) — which is precisely why the
+  three readings were placed in KINP and KMI rather than restated here. The dispositions are reasoned
+  in
+  [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
+
 - **Editorial** (2026-08-26) — Recorded the **downstream result** of `kcs:worlds-to-fabric` against
   the §4.1 round-trip-fixture gate above (*Gate status*). The 2026-08-24 run is now recorded in
   [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) and therefore
