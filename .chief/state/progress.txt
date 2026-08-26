@@ -148,3 +148,37 @@ all 3 status tables match their headers. `node scripts/check-doc-links.mjs --rat
   or named gates, and record the *positive* evidence (AC-2), which today is mostly
   `kcs:worlds-to-fabric`'s fully-live 3/3 pass. Coordinate with `83-promote-kgp` on KGP rather than
   promoting from here; DR-3 says this run does **not** discharge KGP's fixture gate.
+
+## ⚠️ BASE INTEGRATION REQUIRED — do this FIRST, before any user story
+
+`chief/84-record-the-downstream-results` is **8 commit(s) behind** its base `main` (@da48d29) and
+chief's automatic rebase onto that base CONFLICTS. The rebase was aborted, so
+your branch is exactly as it was and nothing is lost — but it cannot merge
+until the base is integrated, and every commit that lands on `main` while
+this is unresolved makes it worse.
+
+**Your first task this iteration is to integrate the base yourself:**
+
+1. `git rebase main` in this worktree.
+2. At each stop, resolve the conflicts keeping BOTH sides' intent — the
+   `main` side is already-merged work, so never discard it, and never
+   discard your own — then `git add <files>` and `git rebase --continue`.
+   `git rebase --abort` returns you to exactly this state if you need it.
+3. Re-run the project's quality gates and make them green.
+
+Rebase, not `git merge main`: chief rebases this branch again at merge time,
+and a rebase drops merge commits and replays the originals — a resolution
+recorded in a merge commit would be thrown away and this conflict would come
+straight back. Resolving inside the rebase puts the fix in your own commits.
+
+Then continue the normal loop: pick the highest-priority story with
+`passes:false` and implement it. The integration is NOT a user story — do not
+flip any story's `passes` for it, and do not report completion until the
+stories themselves are really done.
+
+## Conflicting paths
+- .chief/state/prd.json
+- .chief/state/progress.txt
+
+base: main @da48d29 · behind: 8 commit(s) · branch: chief/84-record-the-downstream-results
+(full note: .chief/state/INTEGRATE-BASE.md)
