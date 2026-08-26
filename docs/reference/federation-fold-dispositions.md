@@ -248,6 +248,20 @@ the key.**
 A conflict found later between the two folds is itself a finding worth an ADR, not a quiet
 reconciliation inside one of them.
 
+**Amended 2026-08-26, after `86` landed and the cross-read ran.** The read is
+[`fold-coordination-federation-versioning.md`](fold-coordination-federation-versioning.md), and it
+checked this section's constraints rather than inheriting them. **All three hold**: the KCB minor was
+still unspent when `86` took it for 0.5.0; V-4's transport `binding` extends the entry MA-8's `find`
+response already carries rather than minting a second envelope; and `auth.accepted_issuers[]` is
+nowhere near §7.1's digest or §7.2's table. **The named near-miss is clear** — §3.1(d)'s converse is
+byte-unchanged at 0.5.0 and `version` is still in the key. One finding came back, against **this**
+fold's clause rather than `86`'s: §3.1(d) keys on `(provider KINP id, (name, version), schema_id)`, so
+it merges away every operand the fabric deliberately keeps *outside* the digest — and §7.3's deprecated
+marking, which has no carrier and no §7.2 bump row, is the one of those that is a **gate**. Recorded as
+[ADR-0014](../../decisions/ADR-0014-federated-merge-merges-attributions.md), which lands with counts (ii)
+and (iii) rather than in either fold's version. That is the rule this section states, applied to this
+section.
+
 ---
 
 ## What the pressure test taught about the pattern, not the clauses

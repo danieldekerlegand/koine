@@ -421,3 +421,15 @@ be wrong without them:
 
 No contradiction is claimed here. US-3's first job is to look for one, and its standing instruction is
 that a real conflict is an **ADR**, not a quiet reconciliation inside whichever fold merges second.
+
+**That read has now run**, and is
+[`fold-coordination-federation-versioning.md`](fold-coordination-federation-versioning.md). It
+enumerated **eleven** seams — the four above plus seven it added — and read each against the
+*published* text of both folds. **All four above hold**, including the federation fold's named
+near-miss: `version` is still in §3.1(d)'s de-duplication key, so two majors of one name stay two
+entries and V-4 is not undone at the discovery layer. **Ten of eleven agree.** The eleventh is a
+**gap at the seam** rather than a contradiction — §7.3's deprecated marking has no carrier, and
+§3.1(d)'s converse merges two attributions that disagree about one into a single entry whose marking
+is undefined — and it is recorded as
+[ADR-0014](../../decisions/ADR-0014-federated-merge-merges-attributions.md), owned by neither fold and
+landing with KCB counts (ii) and (iii). Nothing was folded into 0.5.0 for it.

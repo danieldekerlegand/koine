@@ -738,9 +738,10 @@ response shape (`served_by` + `observed_at` per entry, `incomplete[]` per result
 extent of each is reasoned in
 [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
 **The §3.1 count nevertheless stays open**: a fold does not close its own gate, and this count now
-reads as a **re-run of Steps 5–7 against the folded text**. The three other counts on this spec —
+reads as a **re-run of Steps 5–7 against the folded text**. The four other counts on this spec —
 the [`e2e-media-transform.md`](../scenarios/e2e-media-transform.md) re-run, the §7.5 mutate-live-schema
-re-run, and §4.2's subscription-firehose re-run — are restated and **none moves**; in particular
+re-run, §4.2's subscription-firehose re-run, and §4.3's cross-owner-posture re-run — are restated and
+**none moves**; in particular
 0.5.0 stays spoken for by §2.2's standalone-manifest removal, which is why this fold is a patch. See
 that scenario's *Re-ratification — what this pass gates* section.
 
@@ -1915,6 +1916,26 @@ most important thing an owner citing this run must understand:
 
 ## Changelog
 
+- **Editorial** (2026-08-26) — **the two 2026-08-26 folds read against each other.** 0.4.9 (the
+  federation fold) and 0.5.0 (the capability-versioning fold) landed in this spec on the same day
+  from two tasklists, and a capability advertised across an authority boundary is governed by both.
+  Eleven seams were read against the **published** text of each; the record is
+  [`../docs/reference/fold-coordination-federation-versioning.md`](../docs/reference/fold-coordination-federation-versioning.md).
+  **Ten agree** — including the three the federation fold pre-registered (V-2's shape-registry
+  rejection rests on KINP §3.4/MA-7; §4.4c's *refuse for want of a version* and §5's *refuse for want
+  of a unit* are stated as one rule applied twice; §2.4 reads §3.1(d) rather than editing it, and
+  **`version` stayed in the de-duplication key**, the named near-miss). **One does not**, and it is
+  recorded as [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) rather than
+  folded into either version: §7.3a/d's **deprecated marking and removal version have no carrier** in
+  §2 or §3 — MA-8's class, unreached by that fold — and §3.1(d)'s converse keys on
+  `(provider KINP id, (name, version), schema_id)`, none of which a marking moves, so two attributions
+  that disagree about a deprecation MUST come back as one entry whose marking is undefined and
+  §3.1(e) cannot fire. §7.3g is what makes it bite. **No version moves and no count closes**: the
+  clause spans both folds' sections and lands with counts (ii) and (iii), which already exercise them.
+  This entry also records one **correction** found by that read — §3.1's closing paragraph said *"the
+  three other counts"* and enumerated three; §4.3's count had landed at 0.4.8 from a third tasklist
+  between that paragraph's planning and its writing, so it now names four. The status note was
+  already right; no clause, no version and no count moves for the correction.
 - **0.5.0** (2026-08-26) — **The capability-versioning fold.** Folds the deltas of this spec's second
   re-ratification count — the §7.5 break-test
   [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md), which drove

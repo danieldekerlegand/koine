@@ -93,7 +93,15 @@ Ranked by what a promotion actually costs from here. This ordering is the point 
    second-independent-implementation condition (**W3**). Real routing code downstream is already built against the pre-finding contract.
    KCB is the spec where reading `green` as a verdict does the most damage: `kcs:live-schema-mutation`
    and `kcs:multi-authority` both came back green over passes with four and six blocking deltas open
-   (**DR-7**, **DR-8**).
+   (**DR-7**, **DR-8**). One clause change is **queued against two of the five** and is
+   not a fold: [ADR-0014](../../decisions/ADR-0014-federated-merge-merges-attributions.md), the single
+   finding of the [cross-read](fold-coordination-federation-versioning.md) of the two 2026-08-26 folds —
+   §7.3's deprecated marking has no carrier, and §3.1(d)'s de-duplication converse merges it away — lands
+   with counts (ii) and (iii) rather than in either version, so it moves neither and closes neither.
+   *And the reference implementation was read against the folded text* (§5 of that page): nothing
+   contradicts a folded clause, but the standalone manifest 0.5.0 removed is still its only crawl path
+   (**AG-1**), and its manifest type carries neither `version` nor `schema_id` (**AG-2**) — so §7 as a
+   whole is unexercised outside this tree.
 
 ## Two facts that apply to every row
 

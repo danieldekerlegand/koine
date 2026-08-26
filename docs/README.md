@@ -30,6 +30,7 @@ reference out of this repo resolves for nobody who has only this one —
 - [Promotability — what stands between each spec and `ratified`](reference/promotability.md)
 - [The federation fold — a disposition for each of MA-1…MA-11](reference/federation-fold-dispositions.md) — and, after the fold landed, what it does to promotability and what the pass taught about the shared federation pattern itself
 - [The capability-versioning fold — a disposition for each of V-1…V-8](reference/capability-versioning-fold-dispositions.md) — the reasoning that decided each fold's *extent* before a clause moved, including the one alternative rejected on the record and the two remainders deferred with triggers; the fold itself landed at KCB 0.5.0
+- [Fold coordination — the federation fold read against the capability-versioning fold](reference/fold-coordination-federation-versioning.md) — eleven seams where a KCB 0.4.9 clause and a KCB 0.5.0 clause govern the same object, ten agreeing and one not ([ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)); also the reference implementation read against the folded text, and the plain answer on whether KCB is promotable
 
 ## Explanation
 

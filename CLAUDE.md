@@ -526,7 +526,25 @@ vocabulary.
   beside the pressure-test scenario — both now recorded in KCB §4.3, which is where the clause landed
   the same day (0.4.8), so the ADR's "no spec version moves" applies to the record and not to the day; withdrawal triggers W1–W3 are stated; the approval mechanism, the
   human authority, intra-org supervision and GOV-2's decision record are explicitly out of scope. No
-  spec version moves).
+  spec version moves), and ADR-0014 (**a federated merge merges attributions, never contents** — the
+  one finding of reading the federation fold (KCB 0.4.9) against the capability-versioning fold
+  (KCB 0.5.0), two folds that landed in one spec on one day from two tasklists; ten of eleven seams
+  agree, and the eleventh is a **gap at the seam** rather than a contradiction, which is why it is a
+  record and not a patch to whichever fold merged second. §7.3's *deprecated marking* and its removal
+  version have **no carrier** in §2 or §3 — MA-8's class, unreached by that fold — and §3.1(d)'s
+  de-duplication converse keys on `(provider KINP id, (name, version), schema_id)`, none of which a
+  marking moves, so a stale attribution and a fresh one come back as **one** entry whose marking is
+  undefined and §3.1(e) cannot fire; V-7 is what makes it bite, having just established that for a
+  discovery binding the pull side is the *whole* contract. It generalizes: §3.1(d)'s key is the digest
+  key plus `version`, so every operand deliberately kept **outside** the digest — `cost`, `binding`,
+  `volume`, `effect`, the marking — is outside the merge key too, and only the two with a declared
+  §7.2 bump are rescued. Decides: the marking gets a **carrier** extending MA-8's response shape; a
+  registry **MUST NOT synthesize** a value for a field outside the key; where the field is a **gate**
+  the **restriction wins** (ADR-0013's monotone-restrictive discipline reused); and none of it licenses
+  reconciling two **authorities**. **No spec version moves** — the clause spans both folds' sections and
+  lands with KCB counts (ii) and (iii). The read of record is
+  `docs/reference/fold-coordination-federation-versioning.md`, which also carries the six **agora**
+  findings AG-1…AG-6 and the plain answer that KCB is **not** promotable).
   `decisions/README.md` carries the full table — keep this list and that table in step. The deployment-history ADRs (ADR-0002/0003/0004 — bridge
   reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
   integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently
