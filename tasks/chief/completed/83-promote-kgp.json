@@ -1,0 +1,89 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/83-promote-kgp",
+  "description": "**KGP's only named gate shipped weeks ago and nobody promoted it.** This is the cheapest win in the portfolio.\n\nKGP 0.5.2 sits at `Candidate`. The single condition its own record gives for promotion is the RDF-star / PROV / JSON-LD round-trip fixture — which merged as `agora:77-kgp-projection-and-roundtrip-fixture` at `85eb207`, with every story passing. The koine-side marker (`64`) was retired on 2026-08-25 because the work was done downstream. Nothing else gates it.\n\n**Meanwhile the roadmap claims two specs are ratified and zero are.** Phase 1 — Candidate re-ratification — is the only phase in the audited portfolio that went BACKWARDS: its three edits merged, it produced no promotions, and KINP and KCS were each demoted since. So the count moved from a claimed 2 to an actual 0 while the phase was notionally in progress.\n\nPromoting KGP does not fix Phase 1. It does make the phase non-zero, and it removes the strangest fact in the fabric — a spec held at Candidate by a gate that has been satisfied since before the roadmap was last touched.\n\n**Be honest about what promotion means.** `ratified` is a claim other organizations rely on. If reading the fixture shows the round trip does not actually cover what §-level ratification requires, the correct outcome is to say so and leave KGP at Candidate with the real gate named — not to promote it because a tasklist expected that. A promotion that cannot be defended is worse than a stale Candidate.",
+  "crossRepo": [
+    "agora"
+  ],
+  "touches": [
+    "specs",
+    "docs"
+  ],
+  "iters": 5,
+  "warmup": [
+    "head -20 specs/knowledge-graph-protocol.md",
+    "grep -n 'Status\\|ratif\\|round-trip\\|fixture' specs/knowledge-graph-protocol.md | head -12",
+    "python3 -c \"import json;d=json.load(open('tasks/chief/completed/64-kgp-projection-roundtrip-fixture.json'));print(d.get('supersededBy'))\"",
+    "ls ../agora/tasks/chief/completed/77-*.json && python3 -c \"import json,glob;d=json.load(open(glob.glob('../agora/tasks/chief/completed/77-*.json')[0]));print(d.get('mergedToMain'))\"",
+    "grep -n 'ratified' specs/README.md | head"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "The gate is verified satisfied, or it is not",
+      "acceptanceCriteria": [
+        "The round-trip fixture `agora:77` delivered is read against what KGP's promotion actually requires — RDF-star, PROV and JSON-LD round trips — and the verdict is recorded either way.",
+        "If it does not cover the requirement, KGP stays Candidate and the REAL remaining gate is named in the spec. That is a valid and useful outcome for this tasklist; do not promote to satisfy the title.",
+        "The check reads the fixture as it exists in agora rather than assuming its tasklist notes are accurate. `passes: true` is a claim, not evidence — the portfolio has already been bitten by that distinction."
+      ],
+      "notes": "VERDICT: gate NOT satisfied — KGP stays 0.5.2 Candidate. Read the artifact, not the flag: agora 85eb207 (merge of chief/77) is 4 files / 2 commits, BOTH US-1 — projection.ts (223 lines, emitter only), projection.test.ts (55 lines, 2 cases over one hand-written single-claim pack), index.ts (+13 re-exports), tasklist (+2/-1). agora US-2 (round-trip) and US-3 (evidence artifact) were flipped to passes:true with notes:null by retire commit a73b967 AFTER the merge — bookkeeping, no code. Confirmed at agora main 9fe2ee5 that nothing was added since: grep over knowledge/src finds no reader, no unproject/parse-back; index.ts exports projectPack and no inverse. So §4.1 rule 2 (re-derive the claim id from the recovered canonical, reject on disagreement) has never run and is untestable without a reader. G1 met narrowly, G2/G3/G4 not met. Recorded in docs/reference/kgp-projection-gate-verification.md; §4.1 now states the verdict + the 4 remaining items and names owner 87-kgp-projection-reader-and-roundtrip (the retired marker 64 is no longer cited). Editorial only — §3/§3.1/§3.3/§4.1 tables/§5/§6/§7 byte-unchanged, no claim id moves. CHECKS: .chief/verify.sh green — doc-integrity OK (746 links, all 3 status tables match headers), doc-links 0 dead vs 1 on main, tasklist-categories OK, 8 tasklists categorized. Also repaired 9 pre-existing dead links to 53-multi-authority-scenario.json (moved to completed/) that this branch's docs/README.md touch made merge-blocking.",
+      "passes": true,
+      "diffSize": {
+        "files": 3,
+        "lines": 304,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": false
+      }
+    },
+    {
+      "id": "US-2",
+      "title": "If satisfied, KGP is promoted and the ratification count is made true",
+      "acceptanceCriteria": [
+        "KGP's Status header moves to `ratified` with a changelog entry citing the fixture and its merge sha.",
+        "`specs/README.md`'s ratification statement is corrected. It currently asserts *\"no scenario has a KCS encoding, so no spec is currently promotable to `ratified`\"* — false since `agora:75`, and it is the sentence the whole ladder is read from.",
+        "`ROADMAP.md`'s claim is corrected to the real count. It says 2 of 6 ratified; the true figure before this tasklist is 0 of 6, and after it is at most 1.",
+        "The changelog records what ratification commits koine to for KGP, so a downstream reader knows what stability they just gained."
+      ],
+      "notes": "NOT PROMOTED — criteria 1 and 4 deliberately not executed. US-1's verdict stands (agora 85eb207 is an emitter with no reader; §4.1 rule 2 has never run), and this tasklist's own premise says promoting to satisfy the title is worse than a stale Candidate. KGP remains 0.5.2 Candidate; no Status header, version, or status mirror moved. Criteria 2 and 3 executed, and checking criterion 2 found the MIRROR IMAGE of US-1: specs/README.md's 'no scenario has a KCS encoding, so no spec is currently promotable' has been FALSE since 2026-08-19. Verified against the artifacts, not the flags — agora chief/75 (merge f853240) checked in NINE ScenarioDocument encodings at console/src/kcs/scenarios/ (5,096 lines; coverage.test.ts enforces set-equality against koine's own scenarios/*.md and skips loudly with no sibling; all 9 `source` values match koine's 9 .md files exactly), and agora chief/76 (merge f32508e) ran them over live MCP/A2A links leaving console/evidence/kcs-live-run.json — evidence_id sha256-2d9e6c43…, generated 2026-08-24, kcs_version 0.3.0, green=true, live_pass=false, verdict=partial-live, 19/32 participant slots live (59%), transport_failures=[]; kcs:worlds-to-fabric 3/3 live and live-pass. Both tasklists' stories carry real notes (not the notes:null tell that sank 77). Recorded the caveats rather than laundering them: `green` is the downstream artifact's own claim, not re-run here, and the two scenarios koine calls NOT clean (V-1…V-8, MA-1…MA-11) also come back green because the encodings deliberately do not assert an unfolded delta. CRITERION 3: ROADMAP's headline already read 0 of 6; the false claims left were Phase 0's present-tense 'two specs are ratified' (both since demoted — KINP on the 0.3.0 federation fold, KCS on the 0.3.0 determinism fold) and Phase F4 marked ⬜ planned while it had delivered. Count is 0 of 6 before this tasklist and 0 of 6 after; the artefact gate is now met for all six and each spec is blocked by its own pass. FILES: specs/README.md (statement corrected + dated, F4 paragraph repointed at agora 75/76, KCS's grandfathered debt marked paid), docs/reference/kcs-encoding-gate-verification.md (new evidence record, indexed in docs/README.md), ROADMAP.md (headline, Phase 0, Phase 1 KGP row + depends-on, Phase F4 delivered, F5 fixture row → 87), specs/grounding-pack.md (§4.1: KGP's other gate IS met, so the fixture is literally the last item — editorial, no normative change, no claim id moves), scenarios/README.md (dated stale-banner only; the column flip belongs to 84), docs/reference/implementability-audit.md (stale 62/63 ids). CHECKS: .chief/verify.sh — all 4 selected gates GREEN. doc-integrity OK (45 files, 765 links, all 3 status tables match their headers), doc-links 0 dead vs 1 on main, tasklist-categories OK (8 categorized), verify-selftest 30 passed / 0 failed.",
+      "passes": true,
+      "diffSize": {
+        "files": 3,
+        "lines": 114,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": false
+      }
+    },
+    {
+      "id": "US-3",
+      "title": "The other five specs get an honest promotability line",
+      "acceptanceCriteria": [
+        "For each of KINP, KMI, KCB, KCS and KFT, one line: what specifically blocks promotion today. Not a status glyph — the named gate.",
+        "Where a spec was DEMOTED, say when and by what. KINP fell to Candidate on the §11.1 federation edit and KCS on the 0.3.0 determinism fold; a reader currently cannot tell a spec that never rose from one that fell.",
+        "Where a gate is an unwritten fold (MA-1…MA-11 for KINP, V-1…V-8 for KCB), point at the tasklist that owns it rather than restating the gap.",
+        "This is a table, not a program. It exists so the next person can see which promotions are cheap and which are real work — the answer for KGP turned out to be 'already earned, nobody claimed it', and that should not be discoverable only by audit."
+      ],
+      "notes": "Delivered as docs/reference/promotability.md — a six-row table (KINP, KGP, KMI, KCB, KCS, KFT), indexed in docs/README.md and pointed at from specs/README.md's ratification-gate section and ROADMAP.md (Phase 0, Phase 1, Related Docs). CRITERION 1 — one line per spec naming the gate, not a glyph: KINP = the MA-1..MA-4 fold, its ONLY count; KGP = the §4.1 round-trip fixture, downstream, zero koine edits; KMI = two counts (MA-5/MA-10 fold + KCB's media-transform re-run); KCB = three counts (media-transform re-run outstanding since 2026-07-22, V-2/V-4/V-5/V-7 fold, MA-6/MA-8/MA-9 fold); KCS = re-validation of its own 0.3.0 determinism fold, grandfathered debt paid 2026-08-19, §7.1/§7.3 open QUESTIONS not gates; KFT = the owner's re-run of e2e-producer-exhaust-finetune.md's Re-validation section, dep-pin precondition closed, §3.3/§8.1 unexercised. CRITERION 2 — checking every changelog for a '**Ratified.**' entry overturned the premise: ALL SIX specs were ratified and ALL SIX were demoted, none 'never rose'. Dates/causes: KCB 0.3.0 2026-07-22 (AgentCard extension), KMI 0.3.0 and KGP 0.5.0 2026-08-02 (OTIO / projection), KFT 0.4.0 2026-08-06 (FT-M..FT-Q), KCS 0.3.0 2026-08-20 (determinism), KINP 0.3.0 2026-08-23 (federation). ROADMAP Phase 0 said 'two specs were ratified in this phase' and its KGP/KMI/KCB/KFT row said only 'first-authored & pressure-tested' — both corrected in place with the correction dated. Every demotion was caused by koine's own next edit, five within five weeks of promotion. CRITERION 3 — folds point at owners, not restatements: KINP/KCB§3.1/KMI§7.1 -> 85-fold-the-federation-breaks; KCB V-* -> 86-fold-the-capability-versioning-breaks; KGP -> 87 (agora). Three gates recorded as UNOWNED (KCB's media-transform re-run, KCS's re-validation, KFT's re-run) rather than left blank. The tasklist-53 wrinkle is explained rather than repeated: 53's scope was to WRITE AND RUN the break test and it did; the fold is 85's, so the three specs cite a retired tasklist for a gate that moved. CRITERION 4 — a 'Cheapest first' ranking: KGP (nothing in koine blocks it) < KCS < KFT < KMI < KINP < KCB. No version/status column, deliberately: docs/ is not one of the three mirror files check-doc-integrity.mjs verifies, so a current-version column there would be a fourth unchecked mirror; only immutable historical versions appear. CHECKS: .chief/verify.sh — all 4 selected gates GREEN. doc-integrity OK (46 files, 805 links, all 3 status tables match their headers), doc-links 0 dead vs 0 on main, tasklist-categories OK (8 categorized), verify-selftest 30 passed / 0 failed.",
+      "passes": true,
+      "diffSize": {
+        "files": 3,
+        "lines": 132,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": false
+      }
+    }
+  ],
+  "mergedToMain": "117723b"
+}
