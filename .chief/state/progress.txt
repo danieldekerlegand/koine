@@ -58,3 +58,51 @@ KINP/KCB/KMI/KGP/KCS, then wrote the disposition table for MA-1…MA-11.
 - The reactive-fold discipline shows up mostly as *splitting* a finding — fold the half the break
   forces, defer the second mechanism the scenario proposes, with a trigger. That happened three times
   (MA-2, MA-3, MA-10) and is where the economy of this fold is.
+
+## US-2 — The folds land, minimally (2026-08-26)
+
+**Did:** applied every FOLD row of `docs/reference/federation-fold-dispositions.md` and nothing
+else. MA-1…MA-10 folded across three specs; MA-11 left closed.
+
+**Files changed (13)**
+- `specs/identity.md` → **KINP 0.4.0** (minor). §3.4 non-federated-commons + prefix-disjointness +
+  collision-is-a-reportable-defect, and three second-domain *illustrative* placeholder rows
+  (`archivekb`/`coordinator`/`assetstore`) so the federation examples resolve (MA-7). §4.1
+  cut-or-re-evaluate + weakest-issuer carry (MA-1). §4.2 new core relation `world_aligns_with`
+  (MA-4). §4.5 fourth fail-closed branch (MA-2). §5 two consensus realities, asserted-never-assumed
+  (MA-4). §6 domain-scoped convergence (MA-3). §11 decision 1 + changelog updated.
+- `specs/media-interchange.md` → **KMI 0.3.5** (patch). §2 optional `license`/`egress`; §7.1(d)
+  travels-with-the-bytes carve-out; §7.1(e) not-served-onward; §7.1(f) three-valued answer.
+- `specs/capability-bus.md` → **KCB 0.4.8** (patch). §2 optional `auth.accepted_issuers[]`; §3
+  `find` response shape (`served_by`/`observed_at`/`incomplete[]`); §3.1(b) horizon; §3.1(c)(e)(f)
+  carrier pointers; §3.1(d) de-dup converse; §5 issuer-named grant + stated-unit ceiling.
+- `specs/grounding-pack.md` → Editorial changelog entry only. **No version, no gate.**
+- `registry/relations.tsv` → `world_aligns_with` added (new name, never a signature edit).
+- `scenarios/e2e-multi-authority.md` → new **Fold status** section (all 11 re-read against the
+  folded text, placed after Verdict); Verdict's Resolution pointer; the two version predictions in
+  *What a clean pass would license* corrected; the dated **Resolution** amended, old one retained.
+- Mirrors: `README.md`, `specs/README.md`, `ECOSYSTEM.md` (the 3 checked tables), `CLAUDE.md`
+  (the 4th, unchecked), `scenarios/README.md` prose, `ROADMAP.md` Phase F1 (fold row → ✅, new
+  re-run row), `docs/reference/federation-fold-dispositions.md` (fold-landed note).
+
+**Verification:** check-doc-integrity OK (49 files, 1067 links, 3 tables match); check-schemas OK;
+check-registry OK; check-tasklist-categories OK; `.chief/verify.sh --run` over all 13 files →
+**all selected gates green** (doc-links 0 dead vs 0 on main).
+
+**Learnings for future iterations**
+- **No schema twin needed here, and that is worth stating rather than assuming.** Nothing in
+  `schemas/` models the KMI §2 asset envelope or a KINP equivalence link, and
+  `participant-self-description.schema.json` references the KCB manifest **by pointer only**
+  (ADR-0007 d7), so an added `params` field never reaches it. `provenance.schema.json`'s
+  `$defs.license` / `$defs.egress` are vocabularies KMI *reuses*; they were not altered.
+- **Watch the "this section is additive — no field is added" sentences.** Both KCB §3.1 and KMI §7.1
+  opened with one, and both became false the moment a fold added an optional field. Grep the section
+  you are folding into for its own additivity claim before you add anything.
+- **A fold has to correct the predictions the scenario made about it.** `e2e-multi-authority.md`'s
+  *What a clean pass would license* predicted 0.5.0 for KCB and "0.5.0 or a patch that adds no
+  field" for KMI; both were superseded by the reserved-minor rule. Leaving them would have put the
+  scenario in direct conflict with the spec headers, and no guard checks that.
+- **Anchors in `specs/identity.md` §11 are inside a numbered list** — continuation lines carry a
+  3-space indent, so an exact-match edit fails unless you include it.
+- The disposition doc from US-1 was accurate throughout; every landing zone it named was the right
+  one, and the two scenario-framing corrections it recorded both held when the clauses were edited.
