@@ -148,13 +148,38 @@ Consequences, stated narrowly:
   rides with `84-record-the-downstream-results`; the tenth encoding does not, and nothing schedules
   it today.
 
+## 6.2 Amendment, 2026-08-26 — an eleventh scenario, and KCB joins KFT
+
+Same day, same shape, second spec. KCB 0.4.7 (`chief/70`) landed an eleventh pressure test —
+[`../../scenarios/kcb-subscription-firehose.md`](../../scenarios/kcb-subscription-firehose.md) — the
+focused backpressure leg whose deltas **BP-1…BP-6** are folded into the new normative §4.2. Nothing
+about the nine changed here either: E1 and E2 stand, the evidence artifact's content address is
+untouched, and no id or `source` moved.
+
+`coverage.test.ts` now goes red on **two** unencoded documents rather than one, and its
+`KOINE_SCENARIOS.length === 9` assertion is two short of koine's eleven.
+
+Consequences, stated as narrowly as §6.1's:
+
+- **KCB loses the artefact gate too**, and only for §4.2. The clauses 0.4.7 folded have no
+  machine-replayable document citing them, so [the gate](../../specs/README.md#the-ratification-gate)
+  forbids promoting on that count. KCB's other three counts are unaffected — the scenarios they
+  re-run (`e2e-media-transform`, `e2e-live-schema-mutation`, `e2e-multi-authority`) are all encoded.
+  Four specs remain wholly unaffected.
+- **Again not caught by koine's own gates**, and again not catchable by them. The rule this makes a
+  second instance of is now written down in `CLAUDE.md`: adding a file to `scenarios/` is a
+  cross-repo obligation with no local red light, so say so where a reader will meet it — the
+  scenario's row in [`../../scenarios/README.md`](../../scenarios/README.md) and
+  [`../../ROADMAP.md`](../../ROADMAP.md). Both carry it for this leg.
+- **Owner: unowned**, exactly as the tenth. Two encodings now wait on nobody.
+
 ## 7. How to re-run this check
 
 From a checkout of the implementing repo, beside a koine checkout:
 
 ```
 git log --oneline --date=short --format='%h %ad %s' -- console/src/kcs/scenarios console/evidence
-ls console/src/kcs/scenarios/                    # nine encodings + their gates (koine now holds TEN scenarios)
+ls console/src/kcs/scenarios/                    # nine encodings + their gates (koine now holds ELEVEN scenarios)
 grep -n "source: 'scenarios/" console/src/kcs/scenarios/index.ts   # must equal koine's scenarios/*.md
 node -e "console.log(require('./console/evidence/kcs-live-run.json').verdict)"
 node console/src/live/evidence.ts --check        # re-runs the suite, compares the content address

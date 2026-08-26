@@ -1,8 +1,8 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.4.6
+**Spec version:** 0.4.7
 **Status:** Candidate
-**Last updated:** 2026-08-24
+**Last updated:** 2026-08-26
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
 capability consumers (most participants are both provider and consumer).
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for identifiers;
@@ -47,7 +47,26 @@ carries.
 > two legs are restated unchanged once more. 0.4.4 adds **§1.2**, which is INFORMATIVE and cites
 > external corroboration for where KCB sits; it defines nothing, delegates to nothing, and the two
 > legs are restated unchanged again. 0.4.6 does not move either leg; it adds the third count above,
-> which gates §3.1 alone.
+> which gates §3.1 alone. 0.4.7 resolves the **last open question** — §8's *subscription
+> backpressure* — into a normative **§4.2**, after the pressure leg
+> [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) found the
+> spec's parking assignment **void rather than deferred**: flow control was left to *"the host's cost
+> advisor"*, but §3 and ADR-0001 keep the host off the stream path and §3.1 federation leaves no
+> single host with jurisdiction over both ends, so no downstream infra work could ever discharge it
+> (**BP-5**). §4.2 puts the mechanism where the topology admits it — **between the two peers, on the
+> binding's own axis** — as an optional port `volume` declaration (BP-1), optional `subscribe`
+> rate/window/overflow operands whose governing question is *lossless or lossy* rather than *how
+> fast* (BP-3), an optional content-addressed `resume` operand that makes a gap **detectable** and a
+> shed **retraction** forbidden (BP-3), a metered subscription whose ceiling signals a **brake before
+> the cliff** (BP-2), a `references` operand that makes the `fetch` fan-out predictable and bounds it
+> by the subscriber's own declared rate (BP-4), and **one** in-band control channel in both
+> directions — the same channel **V-7** needs, explicitly not a second mechanism. *Classification:*
+> **patch** — every field is optional on read and on write, a subscription that declares nothing
+> behaves exactly as it did at 0.4.6, no verb/plane/port kind is added, §7.2's compatibility table is
+> not disturbed, and **0.5.0 stays spoken for** by §7.3's removal of §2.2's standalone manifest,
+> which §7.3c forbids folding into an unrelated publication. New normative text, so it adds a
+> **fourth** count to Candidate — a re-run of that leg, gating §4.2 alone. The three existing counts
+> are restated and none moves.
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
 > capability bus moves *capability*: how a participant advertises what it can do, how orgs and
@@ -213,7 +232,8 @@ extension (§2.3):
           "mcp":         "https://…/mcp",          // MCP tools endpoint the extension still needs
           "produces":    [                          // ports emitted (§2.1)
             { "plane": "media", "media_types": ["audio/wav"], "world_pattern": "*",
-              "schema_id": "sha256-…" }             // digest over this port's shape (§7.1)
+              "schema_id": "sha256-…",              // digest over this port's shape (§7.1)
+              "volume":    { "unit": "event", "rate": { "typical": 2, "peak": 30 } } }  // delivery envelope (§4.2a); outside the digest
           ],
           "consumes":    [                          // ports accepted
             { "plane": "knowledge", "dialect": "grounding-only", "schema_id": "sha256-…" },
@@ -299,6 +319,12 @@ re-type the port; it is the subscriber's **cross-check** on the capability's dec
 that a schema edited without a bump is detectable rather than silent. What the canonicalization
 covers, and what it deliberately excludes (`description`, `cost`, the `version` itself), is fixed in
 §7.1; what a consumer does when a digest moves under an unchanged version is fixed in §7.2.
+
+A port MAY additionally carry an OPTIONAL **`volume`** — the delivery envelope a subscriber to that
+port would be accepting (rate, payload size, asset references per delivery, resume horizon). Volume
+is not shape: it sits **outside** the `schema_id` digest exactly as `cost` does, and it is what lets
+a subscriber tell a firehose from a trickle **before** it binds, which no other field on any plane
+could. Its shape and the rules that read it are fixed in **§4.2a**.
 
 ### 2.2 Migration — 0.2.0 standalone manifest → 0.3.0 card extension
 
@@ -524,7 +550,7 @@ see that scenario's *Re-ratification — what this pass gates* section.
 | **discover** | registry query (§3) | find providers by capability / interchange type / world |
 | **describe** | one A2A agent-card fetch (`/.well-known/agent-card.json`) + MCP `tools/list` for tool schemas | fetch the provider's AgentCard **including its KCB extension** (`capabilities.extensions[]`, §2) in a single fetch — there is no second `/.well-known/kcb-manifest.json` to retrieve |
 | **invoke** | MCP `tools/call` / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference |
-| **subscribe** | A2A streaming (MCP notifications only on the pre-2026-07-28 wire — §4.1) | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur |
+| **subscribe** | A2A streaming (MCP notifications only on the pre-2026-07-28 wire — §4.1) | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur. Rate, resumption, and the in-band control channel are §4.2. |
 | **fetch** | CAS GET by `asset` id | retrieve asset bytes by their KINP id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant (§5). |
 
 `subscribe` is the control-plane half of KGP §6 subscriptions: KGP defines the delta payload,
@@ -533,6 +559,8 @@ KCB defines how a consumer registers and how the stream is delivered. Ordering-i
 redelivery idempotent. Because a stream may deliver a **reference** (an EDL, a claim) before the
 referenced asset's bytes have propagated, consumers MUST tolerate dangling asset references and
 `fetch` them lazily on demand; producers MUST NOT assume bytes are pre-propagated (delta L).
+That idempotency argument is about **redelivery**; it says nothing about **non-delivery**, and how a
+subscriber slows a stream, resumes one, and is told what a producer is doing to keep up is **§4.2**.
 
 ### 4.1 Which MCP wire each verb assumes
 
@@ -564,6 +592,213 @@ evidence for the other — that recording is KCS's, and is noted there
 
 ---
 
+### 4.2 Subscription flow control (0.4.7)
+
+How a subscriber asks for **less**, and how a producer says it is sending **more**. This was KCB's
+open question 1 through 0.4.6 — *"firehose flow-control remains an infra concern for the host's cost
+advisor"* — and it is folded here because a pressure leg,
+[`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md), showed
+that the parking assignment is **void rather than deferred**: §3 and
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) keep the host **off the stream path** (it
+returns addresses; no traffic flows through it), none of its four instruments — grant, revocation,
+ranking, the optional facade — reaches a running subscription, and under §3.1 federation no single
+host has jurisdiction over both ends at all (**BP-5**). Nobody downstream can discharge a question
+addressed to a party the fabric's own topology rule forbids from being in position, so the question
+cannot leave the contract. Where it *can* live is the one place the topology admits: **between the
+two peers, on the binding's own axis.**
+
+This section is **additive at every surface**. A subscription that declares nothing behaves exactly
+as it did at 0.4.6; every field below is optional on read and on write; no verb is added, no plane or
+port kind is added, and a card conformant at 0.4.6 is conformant unchanged. It is also **not a
+quality-of-service contract** — see (g).
+
+**a. A port declares its volume (BP-1).** §2.1's port vocabulary carried no volume, rate, cadence, or
+cardinality field on any plane, so a world emitting 4 deltas/second of 6 MB each and a world emitting
+a handful a day were **indistinguishable on every field the registry indexes** — a subscriber learned
+what it had bound to by running. Any port MAY therefore carry an OPTIONAL `volume` object declaring
+the delivery envelope a subscriber would be accepting:
+
+```jsonc
+"volume": {
+  "unit":            "delta",        // what is counted: a KGP delta, a media event, a frame
+  "rate":            { "typical": 4, "peak": 20 },        // deliveries per second
+  "payload_bytes":   { "typical": 6000000, "peak": 20000000 },  // one delivery, canonical (KGP §3)
+  "references":      { "typical": 120 },                  // asset refs per delivery — the (f) operand
+  "resume_horizon":  "PT1H"          // how far back this port can answer a `resume` (c); ISO 8601
+}
+```
+
+Normative:
+
+- A `volume` declaration is an **estimate of an envelope**, never a guarantee and never an SLA. A
+  producer that exceeds it is **not in breach** of this section, and a subscriber MUST NOT treat it
+  as one; what a subscriber gets from it is the ability to *choose before it binds*, which is the
+  whole of what BP-1 asked for.
+- An **absent** `volume` reads as *unknown*, never as *low*. A consumer MUST NOT infer a rate from
+  silence, and MAY decline to bind a port that declares none.
+- `volume` sits **outside** the port's `schema_id` digest (§7.1), for the same reason `cost` does:
+  volume is not shape, and a re-declared envelope must not signal a payload break that is not one.
+  Changing it is a **minor** bump on the capability that carries it (§7.2) — the version moves, so a
+  pinned subscriber can see it — exactly as a re-price is (§5).
+- §3's **ranking rules do not change**. A registry MAY return `volume` with an entry and a consumer
+  MAY rank on it locally; ranking by highest satisfying version, deprecated below non-deprecated
+  (§7.3d), is untouched, and no registry may reorder on volume.
+
+**b. A subscription declares what it can take (BP-3, the brake).** `subscribe` (§4) registered a
+scope and nothing else — no rate, window, batch size, or maximum in flight — so the only lever a
+saturated subscriber had was **disconnect**. The verb is unchanged and remains the right verb held by
+the right party at the right scope; it gains OPTIONAL operands, set at registration and adjustable
+in-band (d):
+
+| Operand | Meaning |
+|---|---|
+| `max_rate` | deliveries per second the subscriber will accept |
+| `max_in_flight` | deliveries the subscriber will leave outstanding |
+| `window` | a coalescing window (ISO 8601 duration) the subscriber asks the producer to apply |
+| `on_overflow` | what the producer MUST do when a declared limit would otherwise be exceeded — one of `coalesce`, `defer`, `drop` |
+
+Normative:
+
+- **The contract's question is not *how fast* but *whether an adaptation is lossless*.** `coalesce`
+  (merge the deltas in a window into one) and `defer` (queue and deliver later) are **lossless** for
+  KGP payloads by construction — KGP §6 deltas are ordering-independent and KGP §3 claim ids are
+  content-addressed, so coalescing, batching, re-ordering, or dropping a duplicate moves **no claim
+  id** and changes **no merge outcome** (KGP §3.3's convergence is untouched). `drop` is **lossy**
+  and MUST be named as such by a subscriber that chooses it. A producer MAY apply a lossless
+  adaptation without being asked; it MUST NOT apply a lossy one that was not asked for.
+- **A retraction is never shed.** Under `on_overflow: drop`, a delivery carrying a `retracts` or
+  `supersedes` lifecycle relation (KINP §4.2, KGP §6) MUST still be delivered, and MUST NOT be
+  coalesced into a form that loses it. This is the one payload that is not rate-safe: content
+  addressing makes a **duplicate** a no-op, which is why §4 needs no exactly-once guarantee, and the
+  same property makes a **gap** leave no trace — a merged graph records what arrived and holds
+  nothing shaped like what did not, so a shed retraction leaves a claim asserted forever in a graph
+  that is internally consistent and factually wrong.
+- **A producer that cannot honour a declared limit MUST refuse the subscription at registration**,
+  with a stated reason, rather than accept it and exceed it. Fail closed, as everywhere else on this
+  bus (§5, §7.2).
+- A subscription carrying **none** of these operands is a 0.4.6 subscription and MUST be served as
+  one.
+
+**c. A subscription is resumable (BP-3, the gap).** `subscribe` registered for deltas *"as they
+occur"* with no `since`, cursor, or sequence a consumer could name, and KCB publishes no range-pull
+verb — so a subscription could not be resumed, only re-established **at now**, and the recovery from
+overload (a full snapshot of a high-volume world, demanded of an already-saturated subscriber) cost
+strictly more than the overload. `subscribe` therefore gains one further OPTIONAL operand:
+
+```jsonc
+"resume": { "after": "<KGP pack id>" }     // the last delivery the subscriber merged
+```
+
+Normative:
+
+- `resume.after` names a **content-addressed** point in the delta chain (a KGP pack id, KGP §6), not
+  a sequence number or a wall-clock time. It is an operand on `subscribe`, **not a new verb** — the
+  §4 verb table still has exactly five entries.
+- A producer MUST answer a `resume` in exactly one of three ways, and **silence is not one of them**:
+  (i) resume from that point; (ii) refuse `gap-unavailable`, naming the earliest point it *can*
+  resume from; or (iii) refuse `resume-unsupported`. A producer that cannot resume is conformant; a
+  producer that silently starts at now while a `resume` was asked for is **not**.
+- A subscriber that receives a delivery whose `basis` (KGP §6) it has not seen MUST NOT merge it
+  silently. It MUST resume (per this clause), or record the gap. Recording it is enough — the
+  requirement is that a gap be **detectable**, which before this clause it was not.
+- A producer SHOULD declare its `resume_horizon` on the port (a), so a subscriber can tell before it
+  binds whether resumption after a plausible outage is available to it at all.
+
+**d. The control channel — one channel, both directions (BP-5).** The mechanism (b) and (c) need is a
+**signal on the subscription itself**, because ADR-0001 admits no third party onto that path. A
+`subscribe` stream therefore carries, alongside its deliveries, in-band **control frames** in both
+directions:
+
+- **subscriber → producer** — set or adjust the (b) operands on a live subscription: slow down, pause,
+  resume, change `on_overflow`. This is what makes the subscription adjustable without a teardown, and
+  it is the lever Step 3 of the leg went looking for and did not find.
+- **producer → subscriber** — the reverse: *I am coalescing*, *I am deferring*, *I am shedding*, *I am
+  approaching your ceiling* (e), *I am ending this subscription*. This is the **push channel** §7's
+  preamble concedes is missing, and it is the same channel the §7 signals need: **V-7** of
+  [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) found that
+  no §7 deprecation or removal signal reaches a live `subscribe`, and asked for an in-band control
+  frame in exactly this direction.
+
+Normative:
+
+- **There is one control channel, not two.** A fold of V-7 MUST carry its deprecation and removal
+  signals on this channel rather than mint a second, parallel signalling mechanism. Backpressure and
+  version signalling are the same missing push channel read from two sides.
+- Frames ride the **same stream as the deliveries** — A2A streaming under the pinned revision, or
+  MCP notifications on the pre-2026-07-28 wire (§4.1). No new transport, no new verb, no second
+  connection, and §4.1's audit is unchanged: `subscribe` remains the one session-shaped clause.
+- **Ignore what you do not understand.** A producer that receives an unknown frame MUST ignore it; a
+  subscriber MUST tolerate a producer that never sends one. This is §7.2's ignore-unknown-fields rule
+  applied at frame level, and it is what makes the channel additive: a participant that implements
+  none of this section still interoperates.
+- **The host is not on this path, and does not need to be.** Flow control is negotiated between the
+  two peers because the topology admits nobody else (ADR-0001, §3). This composes across §3.1
+  federation unchanged, precisely because it never required a party with jurisdiction over both ends:
+  where `worldsim` and `analyzer` sit in different authority domains, the binding — and therefore its
+  control channel — still runs directly between them.
+- **A frame is an interaction between participants**, so KCS §5's cross-plane assertion vocabulary can
+  range over it. That is a reason to prefer a frame over transport-level flow control and not merely a
+  side effect: a stalled A2A window is unattributable (*saturated*, *slow*, and *dead* are one signal)
+  and unassertable, so a scenario cannot state that backpressure was applied and honoured — and a
+  clause nothing can test is not a clause.
+
+**e. A metered subscription, and a brake before the cliff (BP-2).** §2.1 puts `cost` on
+`params.capabilities[]` — a named, invocable unit — while a subscription scopes to a **world**, which
+has no manifest object to price; and §5 evaluates the ceiling *"at invoke"*, of which a stream has
+exactly one. `budget_units` was therefore inert on a subscription, not merely generous. Two additions
+close it, and the second matters more than the first:
+
+- A port's `volume` (a) MAY carry a `cost`, in the §2.1 shape, denominated **per `unit`**. Where it
+  does, a grant's `budget_units` ceiling (§5) decrements **on delivery** rather than at invoke, and a
+  subscription is metered for the first time. Where it does not, the subscription is unmetered exactly
+  as it is today.
+- **An exhausted ceiling MUST NOT be the first signal a subscriber receives.** A producer approaching
+  the ceiling MUST signal on the control channel (d) *before* it stops. §5's enforcement rule is that
+  an overrun *"fails at the gate"*, which on a stream can only mean **stopping** it — and **a ceiling
+  is a cliff, where backpressure is a brake.** This clause is what converts the one into the other:
+  the subscriber can slow down, narrow, or seek a raised grant while the binding is still alive.
+
+Cost accounting and flow control remain **different instruments answering different questions**. §2.1
+and §5 do close per-invoke cost and nothing here reopens that; what this clause adds is an operand and
+an evaluation point on the one binding that had neither.
+
+**f. Composition across a fetch fan-out (BP-4).** Delta L requires a consumer to tolerate dangling
+asset references and `fetch` them **lazily on demand** (§4) — and under a firehose the demand *is* the
+firehose, amplifying onto a CAS holder that is party to neither binding, at a rate set by two parties
+that are not it. `fetch:asset` is a verb + scope with no rate dimension, and §4.1 makes `fetch` not an
+MCP call, so §5's ceiling never sees it. Normative:
+
+- A port's `volume.references` (a) makes the amplification **predictable before binding**: the derived
+  `fetch` rate a subscription implies is its delivery rate multiplied by that count.
+- The fan-out is the **subscriber's** traffic, not the producer's — delta L makes the `fetch` the
+  consumer's own action — so a subscriber's declared `max_rate` (b) is what bounds it, and the
+  subscriber is accountable for the load its binding places on a third participant.
+- A CAS holder MAY apply its own limit on `fetch` and MUST **signal a refusal** rather than stall or
+  drop silently. A `fetch` is request/response (§4.1), so no stream frame is needed: a refused `fetch`
+  is a **pending fetch**, which delta L's dangling-reference tolerance already requires every consumer
+  to handle. Backpressure on the fan-out therefore composes onto machinery that already exists.
+- This holds unchanged under **KMI §7.1** replication-on-reference and **§3.1** peering, because the
+  limit is applied by the participant that **holds the bytes**, in its own authority domain — the same
+  fail-closed placement §7.1 already fixes for license, egress, and trust tier.
+
+**g. This is not a quality-of-service contract.** KCB fixes the **shape** of the volume declaration,
+the subscription operands, and the control frames, so that the planes agree on what a subscriber may
+ask for and what a producer must answer. Scheduling, queue discipline, buffer sizing, admission policy
+and the retry curve behind a refused `fetch` live in each participant's own infra — as token issuance
+and rotation do for §5. Nothing here promises a latency, guarantees a rate, or makes a producer liable
+for one.
+
+**Re-ratification.** This section is new normative text, and it is candidate on a **re-run of the leg
+that forced it** — [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md)
+— against the folded text. That leg states the condition precisely: Step 1 must distinguish the two
+worlds *before* binding, Step 2's meter must move, Step 3's table must have a lever that is not
+disconnect, Step 4 must resume without a snapshot and must not silently miss a retraction, Step 5's
+limit must survive the hop, and Step 6 must name a party that is actually on the path. That is a
+**fourth** count on this spec's status, gating §4.2 alone; the three existing counts in the status
+note are restated and none of them moves.
+
+---
+
 ## 5. Trust & authorization
 
 - **Capability grants.** Invocation requires a capability token naming the granted verb + scope
@@ -590,6 +825,14 @@ evidence for the other — that recording is KCS's, and is noted there
   than overspending (delta K). A capability moving `cost.tier` from `free` to `paid` is this case
   and not a special one: path search stops preferring it, a zero-budget grant stops reaching it, and
   there is no silent bill.
+- **A subscription is metered on delivery, and braked before it stops** (§4.2e). The rules above
+  evaluate `budget_units` *at invoke*, of which a stream has exactly one — so a ceiling on a
+  `subscribe:world/…` grant was inert until §4.2 gave it an operand (a port's `volume.cost`, §4.2a)
+  and an evaluation point (per delivery). Enforcement is otherwise unchanged and still fails closed,
+  with one addition that matters: an exhausted ceiling MUST NOT be the **first** signal a subscriber
+  receives — a producer approaching it signals on the §4.2d control channel first, because on a
+  stream *"fails at the gate"* can only mean stopping, and a ceiling is a cliff where backpressure is
+  a brake.
 - **Signing.** Manifests and KGP packs share one signing shape (`{key_id, alg}`); inter-project
   packs and invocations SHOULD be signed so provenance (KINP §7 `prov.agent`) is
   cryptographically attributable, not merely asserted.
@@ -806,9 +1049,19 @@ re-runs clean.
 
 ## 8. Open questions
 
-1. **Subscription backpressure** — flow-control for high-volume-world subscriptions (per-invoke
-   *cost* is now handled by capability `cost` + grant spend ceilings, §2.1/§5); firehose
-   flow-control remains an infra concern for the host's cost advisor.
+**None open.** Every question this section has held is now normative text; the record of what each
+one was, and what decided it, is kept below rather than deleted.
+
+1. ~~**Subscription backpressure**~~ — *flow-control for high-volume-world subscriptions (per-invoke
+   cost is now handled by capability `cost` + grant spend ceilings, §2.1/§5); firehose flow-control
+   remains an infra concern for the host's cost advisor.* **Resolved in place at 0.4.7 → normative
+   §4.2.** The numbering is deliberately **not** shifted, so every existing §8.1 reference still
+   resolves. Its second clause was wrong rather than incomplete: the pressure leg
+   [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) showed
+   the host cannot be the addressee at all (**BP-5**), because ADR-0001 keeps it off the stream path
+   and §3.1 leaves no host with jurisdiction over both ends of a federated binding. The first clause
+   held and is preserved in §4.2e: per-invoke cost *is* closed, and flow control is a different
+   instrument answering a different question — a ceiling is a cliff, backpressure is a brake.
 
 *Resolved and moved:* **capability versioning & deprecation** was open question 2 through 0.3.0. It
 is decided by [ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md) and is now
@@ -818,7 +1071,7 @@ was then open question 1 through 0.4.5, and noted that it mirrored KINP §11 dec
 likely resolve the same way. It did:
 [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) decides the shared pattern for all
 three planes, and its KCB application is now normative **§3.1**. The numbering shifted again in
-0.4.6, leaving one open question.
+0.4.6, leaving one open question — which 0.4.7 then resolved **in place**, per the entry above.
 
 ## Pressure test
 
@@ -856,8 +1109,53 @@ operand) and **V-7** (no §7 signal reaches a live `subscribe`). All folds are a
 that scenario's *Findings* and *Re-ratification* sections. The extension-shape re-run remains
 outstanding and independent.
 
+**0.4.7 — a fourth gate.** The backpressure fold (§4.2) reopens no delta either: it adds an optional
+`volume` to a port (§2.1), optional operands to `subscribe`, an in-band control channel on a stream
+that already exists, and a reading rule for a grant field §5 already defined — so F/G/J/K/L, V-1…V-8
+and MA-6/MA-8/MA-9 are all untouched, and delta **L** is in fact what §4.2f's fan-out backpressure
+composes onto. Its own break-test is the leg that forced it,
+[`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md), whose six
+findings **BP-1…BP-6** (blocking **BP-5**, **BP-3**) §4.2 answers clause by clause. **Re-ratifying
+KCB now needs four passes:** the extension-shape re-run, a clean mutate-live-schema pass, a clean
+cross-authority pass for §3.1, and a clean re-run of the firehose leg for §4.2. Each is independent
+and none of the first three is moved by this fold. One convergence is deliberate and recorded in both
+documents: **V-7** and **BP-5** want the *same* push channel, so §4.2d specifies one channel in both
+directions and requires V-7's fold to ride it rather than mint a second.
+
 ## Changelog
 
+- **0.4.7** (2026-08-26) — **Candidate.** **§8's last open question (subscription backpressure) is
+  resolved and promoted to a normative §4.2**, after the focused pressure leg
+  [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) attacked
+  it and returned six deltas **BP-1…BP-6**, blocking **BP-5** and **BP-3**. The leg's structural
+  finding is what forced the fold: §8.1 parked flow control on *"the host's cost advisor"*, but §3
+  and [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) keep the host **off the stream
+  path**, its grant / revocation / ranking / facade instruments all fail to reach a running
+  subscription, and under §3.1 federation no single host has jurisdiction over both ends — so the
+  assignment was **void, not deferred**, and no downstream infra work could discharge it. What §4.2
+  fixes, clause by clause: a port MAY declare its **`volume`** envelope, outside the `schema_id`
+  digest as `cost` is, so a firehose is distinguishable from a trickle *before* binding and an absent
+  declaration reads *unknown*, never *low* (**BP-1**); `subscribe` gains optional `max_rate` /
+  `max_in_flight` / `window` / `on_overflow` operands under the normative rule that what the contract
+  governs is **whether an adaptation is lossless**, not how fast — coalescing and deferral are
+  lossless for KGP payloads by construction, `drop` is lossy and must be named, and **a retraction is
+  never shed** (**BP-3**); an optional content-addressed **`resume`** operand — not a new verb — that
+  a producer MUST answer resumed / `gap-unavailable` / `resume-unsupported` and never with silence,
+  making a gap **detectable** where content-addressed merge left no trace of one (**BP-3**); a
+  metered subscription whose ceiling decrements on delivery and MUST signal **before** it stops, so a
+  cliff becomes a brake (**BP-2**); a `volume.references` operand and the rule that the fan-out is the
+  *subscriber's* traffic, bounded by its own declared rate and refusable by the CAS holder onto delta
+  L's existing pending-fetch tolerance (**BP-4**); and **one** in-band control channel in both
+  directions, which is also the push channel **V-7** asked for — V-7's fold MUST ride it rather than
+  mint a second. §4.2g fixes the boundary: this is shape, not a QoS contract. **BP-6** is evidence for
+  a KCS open question and changes nothing here. *Classification:* **patch** — every field is optional
+  on read and on write, a subscription that declares nothing behaves exactly as it did at 0.4.6, no
+  verb / plane / port kind / media type is added, §7.2's compatibility table is not disturbed so no
+  live subscriber anywhere is broken, and **0.5.0 remains spoken for** by §7.3's removal of §2.2's
+  standalone manifest, which §7.3c forbids folding into an unrelated publication. Status: new
+  normative text, so it adds a **fourth** count to Candidate — a re-run of the firehose leg against
+  the folded text — gating §4.2 alone. The three existing counts are restated and none moves.
+  **§8 now holds no open questions.**
 - **Editorial** (2026-08-24) — The cross-authority break test §3.1 names as this spec's **third**
   re-ratification count has **landed and been run**:
   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), which composes two

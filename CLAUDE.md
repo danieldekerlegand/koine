@@ -86,7 +86,7 @@ vocabulary.
   byte-unchanged, so no claim id moves. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
   ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.4.6, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.4.7, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -157,8 +157,36 @@ vocabulary.
   field, no verb changes) and **0.5.0 is already spent** on §2.2's removal. New normative text, so it
   adds a **third** candidate count — the cross-authority break test
   `chief/53-multi-authority-scenario`, the same one KINP 0.3.0 names — gating §3.1 alone; the two
-  existing gates are restated, neither moved. §8 now holds one open question (backpressure,
-  renumbered to §8.1).
+  existing gates are restated, neither moved. 0.4.7 (patch) resolves that **last open question** —
+  subscription backpressure — into a normative **§4.2**, after the focused pressure leg
+  `scenarios/kcb-subscription-firehose.md` returned six deltas **BP-1…BP-6** (blocking BP-5, BP-3).
+  BP-5 is why the fold could not wait: §8.1 parked flow control on *"the host's cost advisor"*, but
+  §3/ADR-0001 keep the host **off the stream path** and §3.1 federation leaves no host with
+  jurisdiction over both ends, so the assignment was **void, not deferred** — nothing downstream
+  could ever discharge it. §4.2 puts the mechanism where the topology admits it, **between the two
+  peers on the binding's own axis**: an optional port **`volume`** envelope outside the `schema_id`
+  digest (as `cost` is) so a firehose is distinguishable from a trickle *before* binding, absent
+  reading *unknown* and never *low* (BP-1); optional `subscribe` `max_rate`/`max_in_flight`/`window`/
+  `on_overflow` operands under the normative rule that the contract governs **whether an adaptation
+  is lossless**, not how fast — coalesce/defer are lossless for KGP payloads by construction, `drop`
+  is lossy and must be named, and **a retraction is never shed** (BP-3); an optional
+  content-addressed **`resume`** operand (an operand, **not** a sixth verb) a producer MUST answer
+  resumed / `gap-unavailable` / `resume-unsupported` and never with silence, plus a
+  never-silently-merge-past-an-unseen-`basis` rule, so a gap is **detectable** where content-addressed
+  merge left no trace of one (BP-3); a metered subscription — `volume.cost` is the operand §5's
+  *"at invoke"* ceiling never had, delivery is the evaluation point, and an exhausted ceiling MUST NOT
+  be the **first** signal, which turns a cliff into a brake (BP-2); a `volume.references` operand plus
+  the rule that the `fetch` fan-out is the **subscriber's** traffic, bounded by its own declared rate
+  and refusable by the CAS holder onto delta L's existing pending-fetch tolerance, holding unchanged
+  under KMI §7.1 and §3.1 (BP-4); and **one** in-band control channel in **both** directions — the
+  same push channel **V-7** asked for, which V-7's fold MUST ride rather than mint a second. §4.2g
+  fixes the boundary: shape, never a QoS contract. BP-6 is evidence for a KCS open question; no KCS
+  version moves. Patch, not minor: every field optional on read and write, a subscription declaring
+  nothing behaves exactly as at 0.4.6, no verb/plane/port kind added, §7.2's table undisturbed so no
+  live subscriber breaks, and **0.5.0 stays spoken for** by §2.2's removal. §8 is resolved **in place**
+  (numbering deliberately unshifted, like KFT §11.3 and KMI §9 q3) and **now holds no open questions**.
+  New normative text, so a **fourth** candidate count: a re-run of that leg against the folded text,
+  gating §4.2 alone; the three existing counts are restated and none moves.
 - `specs/media-interchange.md` — KMI 0.3.4, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
@@ -203,7 +231,7 @@ vocabulary.
   spent** on the EDL removal. §9's numbering is deliberately *not* shifted — question 3 is marked
   resolved in place the way §9.5 already is — so every existing §9.x reference still resolves. New
   normative text, so it adds a **second** candidate count: the cross-authority break test
-  `chief/53-multi-authority-scenario`, the same one KINP 0.3.0 and KCB 0.4.6 name, gating §7.1
+  `chief/53-multi-authority-scenario`, the same one KINP 0.3.0 and KCB 0.4.6/0.4.7 name, gating §7.1
   alone; the outstanding KCB re-run is restated and does not move.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
