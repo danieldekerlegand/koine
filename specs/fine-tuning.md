@@ -1317,9 +1317,69 @@ it was before, which is why the third pass's re-run is unaffected; but the gate 
 over one field set for every job, and the owner should read §3.4, §4.2, §4.3, §5.4, §6 and §7 as
 **changed** normative surface rather than as re-validated text.
 
+**Downstream evidence (2026-08-24) — the gate fired, and the suite is a version behind.** The KCS
+encodings of the three end-to-end passes were run over real MCP/A2A links and all three came back
+`green`, recorded in each scenario's `## Downstream results`. What that is and is not worth to
+re-ratification:
+
+- **Positive, and it is the part of this profile that most needed observing: §4.2 refused.**
+  Five of `kcs:finetune`'s fifteen assertions are `refused` over an `expect: reject` step. One
+  `local-only` record in a corpus kept the **whole run** off rented compute, so KGP §7.2's
+  *"…or training set"* clause is enforced rather than argued; **FT-B**'s aggregation reached the
+  **base model's** own license and egress, refusing a job whose corpus was entirely `exportable`;
+  **FT-A**'s §5.4 output inheritance held, so local-only-trained weights could not be registered
+  across the tier boundary; **FT-D** closed the same hole on the eval path; and **FT-F** refused
+  `dpo` × `text-to-image` **at admission**, before compute was provisioned. A gate that has never
+  refused anything is a number in a manifest; these five are the record that this one is not.
+- **The suite pins KFT 0.5.0 (DR-5).** Nothing in it asserts over **§3.3**'s conversion mapping —
+  whose conformance criterion is the round-trip of §3.3.4 — or over **§8.1**'s six refusal grades
+  and `route_to[]`: every refusal above is the ungraded KCS `refused` predicate, with no reason
+  class attached. This does **not** open a new gate; it confirms from the downstream side exactly
+  what the *0.5.0* paragraph above already says, that §3.3 and §8.1 are normative surface no pass
+  has exercised. What changes is that it is no longer a prediction, and neither surface may be
+  cited in a re-ratification.
+- **The training-provider role has never been live (DR-6).** Across all three passes — 2/3, 1/3 and
+  1/3 live slots — the general trainer and the specialist alike answered from a delta-N `standin`
+  recording. Every refusal listed above is therefore an **admitting-side** refusal observed against
+  a recorded provider. That is still the side the gate lives on, so it is worth having, but it is
+  not the claim *a live provider was refused*. This closes by adoption — a cast change, not a
+  document change — and blocks nothing here.
+- **The second gate has no encoding at all (DR-11).**
+  [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) is koine's tenth
+  scenario against a downstream set of nine, written after that set was frozen, so **every clause
+  0.6.0 folded — §3.4's `resume`, §4.2's aggregate over it, §4.3's union, §5.4's bind-at-publication,
+  §5.2's `continues`, §6's join rule, §7's remainder — has no machine-replayable document citing
+  it**, and neither do FT-R…FT-V. Under [the ratification gate](README.md#the-ratification-gate) a
+  clean re-run of that leg is therefore *necessary but not sufficient*: the encoding is downstream
+  work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**. It adds
+  no third gate — it qualifies the second — and the first gate is unaffected, since
+  `kcs:producer-exhaust-finetune` exists and ran.
+
 ---
 
 ## Changelog
+
+- **Editorial** (2026-08-26) — Recorded the **downstream results** of the three end-to-end passes in
+  *Pressure test*. Their KCS encodings were run over real MCP/A2A links on 2026-08-24 and all three
+  came back `green`; **neither gate moves**. The positive half is the part of this profile that most
+  needed observing — **§4.2 refused, five times**, each over an `expect: reject` step: one
+  `local-only` record kept a whole run off rented compute (KGP §7.2's training-set clause enforced
+  rather than argued), **FT-B**'s aggregation reached the base model's own license and egress,
+  **FT-A**'s §5.4 output inheritance held across the tier boundary, **FT-D** closed the same hole on
+  the eval path, and **FT-F** refused `dpo` × `text-to-image` at admission. Three qualifications are
+  recorded with it: **DR-5** — the suite pins **KFT 0.5.0**, so §3.3's conversion mapping and §8.1's
+  refusal grades have no encoded assertion and every refusal above is the ungraded KCS `refused`,
+  which confirms from the downstream side what *Pressure test* already said about them being
+  unexercised surface; **DR-6** — the **training-provider** role was a delta-N stand-in in all three
+  passes, so every refusal is an *admitting-side* refusal against a recorded provider, closing by
+  adoption rather than by an edit; and **DR-11** — the second gate's scenario,
+  [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), has **no KCS
+  encoding**, so every clause 0.6.0 folded lacks a machine-replayable document citing it and a clean
+  re-run of that leg is necessary but not sufficient under
+  [the ratification gate](README.md#the-ratification-gate). That encoding is downstream work under
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**; it qualifies the
+  second gate rather than adding a third, and leaves the first gate untouched. **No clause changes
+  and the status does not move** — KFT stays **Candidate** on both gates.
 
 - **0.6.0 — resumption is a first-class, gating input** (2026-08-26) — Folds the focused pressure leg
   [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) (FT-R…FT-V), which

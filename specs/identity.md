@@ -2,7 +2,7 @@
 
 **Spec version:** 0.3.0
 **Status:** Candidate
-**Last updated:** 2026-08-23
+**Last updated:** 2026-08-26
 **Applies to:** every participant that mints, publishes, or resolves identifiers — producers,
 consumers, identity authorities, control-plane hosts.
 
@@ -575,9 +575,43 @@ rejected alternatives are recorded for provenance.
 See [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) for the
 end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 revision.
 
+**Downstream evidence — the identity firewall held under machine replay.** That pressure test's KCS
+encoding (`kcs:worlds-to-fabric`) was run over real MCP/A2A links on **2026-08-24** and is the
+**only** scenario in the suite with a fully live cast: all three roles — world producer, knowledge
+producer, identity authority — were live participants, no delta-N stand-in, verdict `live-pass`.
+What that observes for this spec, rather than argues:
+
+- **§4.3's separation of `based_on` from `same_as` is the property that held.** `firewall_holds`
+  passed, and so did two `no_sameas_across_worlds` probes, the second running the full path
+  *fiction NPC → intermediate entity → the real figure → an external anchor*. No `same_as` path
+  joins the fiction to the real figure through either hop.
+- **Delta A** — `source_world_is` on the ingested asset: the source world travels with the asset,
+  which is what lets a later extraction scope itself at all.
+- **Delta C** — `based_on_exists` across a world that does not inherit identity.
+
+Two limits on citing it, both recorded as findings in that scenario's `## Downstream results`:
+a `green` run means *the encoded assertions held*, never *the spec holds*; and this run predates
+[ADR-0012](../decisions/ADR-0012-federated-authority-roles.md), so it touches **none** of the
+federation surface §11 decision 1 opened. This spec's single count — the cross-authority break test
+below — is **unaffected** by it, and MA-1…MA-4 stay blocking and unfolded.
+
 ---
 
 ## Changelog
+
+- **Editorial** (2026-08-26) — Recorded the **downstream result** of this spec's gating pressure
+  test in *Pressure test*. `kcs:worlds-to-fabric`, the KCS encoding of
+  [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md), was run over real
+  MCP/A2A links on 2026-08-24 with the suite's **only fully live cast** (3/3 roles, verdict
+  `live-pass`) and machine-observed §4.3's separation of `based_on` from `same_as` — `firewall_holds`
+  plus two `no_sameas_across_worlds` probes, the second over the full four-hop path — along with
+  deltas **A** and **C**. Under [`README.md`](README.md#the-ratification-gate) a recorded result is
+  citable evidence alongside a hand-walked pass, so this is stated as **positive evidence** rather
+  than as an unread reference. Two limits are stated with it: `green` means *the encoded assertions
+  held*, not *the spec holds*, and the run predates
+  [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) and touches no federation surface.
+  **No clause changes and the status does not move** — KINP stays **Candidate** on the same single
+  count, with **MA-1…MA-4** blocking and unfolded.
 
 - **Editorial** (2026-08-24) — The cross-authority break test §11 decision 1 and the 0.3.0 entry
   below name as this spec's gate has **landed and been run**:

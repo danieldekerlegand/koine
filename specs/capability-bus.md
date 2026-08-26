@@ -1122,7 +1122,57 @@ and none of the first three is moved by this fold. One convergence is deliberate
 documents: **V-7** and **BP-5** want the *same* push channel, so §4.2d specifies one channel in both
 directions and requires V-7's fold to ride it rather than mint a second.
 
+**Downstream evidence (2026-08-24) — and this spec is where reading it wrong costs the most.** The
+KCS encodings of three of the four gating scenarios were run over real MCP/A2A links and all three
+came back `green` (`kcs:media-transform`, `kcs:live-schema-mutation`, `kcs:multi-authority`; recorded
+in each scenario's `## Downstream results`). **No count above moves**, and the reason is the single
+most important thing an owner citing this run must understand:
+
+- **`green` is not a gate verdict.** Per the runner, `green` means every encoded step and assertion
+  passed with no transport failure. Two of those three scenarios are ones koine records as *not
+  clean* — `kcs:live-schema-mutation` over **four** open blocking deltas (V-2/V-4/V-5/V-7) and
+  `kcs:multi-authority` over **six** (MA-6 among them) — and both come back green **because the
+  encodings deliberately do not assert a delta that has not been folded** (findings **DR-7**,
+  **DR-8**). The green line is evidence that the *encoded* path works, and evidence of nothing about
+  the breaks. Reading it as "§7 holds" is the `passes: true` error one layer down.
+- **What it is positive evidence for.** Delta **F**'s cross-plane path planning
+  (`capability_path_exists`) and delta **K**'s spend ceiling (`cost_within_ceiling`, on both
+  projected and actual spend) held under machine replay against real peers, including the mood→score
+  leg that F exists for; and delta **L**'s dangling-reference tolerance and **G**'s `fetch` grant
+  refusal both ran as encoded, the refusal as an `expect: reject` step. §7's compatibility surface
+  was *replayed* but, per DR-7, not asserted.
+- **The fourth count has no encoding at all — DR-12.**
+  [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) is
+  koine's eleventh scenario against a downstream set of nine and was written after that set was
+  frozen, so **every clause of §4.2 — a through g — has no machine-replayable document citing it**.
+  Under [the ratification gate](README.md#the-ratification-gate) a clean re-run of that leg would
+  therefore be *necessary but not sufficient* for the fourth count; the encoding is downstream work
+  under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**. The first
+  three counts are unaffected — their scenarios are all encoded — and this adds no fifth count, it
+  qualifies the fourth.
+
 ## Changelog
+
+- **Editorial** (2026-08-26) — Recorded the **downstream results** of the gating scenarios in
+  *Pressure test*, and this spec is where reading them wrong costs the most. Three of the four
+  gating scenarios' KCS encodings were run over real MCP/A2A links on 2026-08-24 and all three came
+  back `green`; **no count moves**. The reason is stated normatively for the reader rather than left
+  to inference: `green` means every encoded step and assertion passed with no transport failure, and
+  two of the three are passes koine records as *not clean* — `kcs:live-schema-mutation` over four
+  open blocking deltas (V-2/V-4/V-5/V-7) and `kcs:multi-authority` over six (MA-6 among them) —
+  because **an encoding deliberately does not assert a delta that has not been folded** (findings
+  **DR-7**, **DR-8**). Positive evidence is delta **F**'s cross-plane path planning, delta **K**'s
+  spend ceiling on projected and actual spend, **L**'s dangling-reference tolerance and **G**'s
+  `fetch` grant refusal, all under machine replay against real peers. Separately, **DR-12** records
+  that the fourth count's scenario,
+  [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md), has **no
+  KCS encoding at all** — it is koine's eleventh against a downstream set of nine — so every clause
+  of §4.2 lacks a machine-replayable document citing it and a clean re-run of that leg would be
+  necessary but not sufficient under [the ratification gate](README.md#the-ratification-gate). That
+  encoding is downstream work under
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**; it qualifies the
+  fourth count rather than adding a fifth. **No clause changes and the status does not move** — KCB
+  stays **Candidate** on all four counts.
 
 - **0.4.7** (2026-08-26) — **Candidate.** **§8's last open question (subscription backpressure) is
   resolved and promoted to a normative §4.2**, after the focused pressure leg

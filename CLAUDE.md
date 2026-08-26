@@ -327,6 +327,21 @@ vocabulary.
   manifest→AgentCard-extension redefinition, KMI's §4 OTIO adoption. KMI's half has been re-run
   (scenario *Re-validation — KMI 0.3.0*: additive layer holds, no delta reopened); KCB's is
   outstanding, and both stay candidate until it lands.
+- **The downstream run is recorded and citable, and reading it wrong is the live hazard.** Every
+  `scenarios/*.md` carries a populated `## Downstream results` section (2026-08-26), written off
+  `agora/console/evidence/kcs-live-run.json` — the 2026-08-24 run of the nine KCS encodings,
+  `sha256-2d9e6c43…c17bb3`, 19/32 slots live, verdict `partial-live`. Twelve findings **DR-1…DR-12**
+  are indexed in `scenarios/README.md`, each defined once in the document it bites. Three rules a
+  reader needs: (1) **`green` is not a gate verdict** — it means every encoded step and assertion
+  passed, and two scenarios came back green over four and six open blocking deltas (DR-7, DR-8),
+  because an encoding deliberately does not assert an unfolded delta; (2) a green encoding is
+  evidence only for what it **encodes**, and three clauses no assertion reaches are recorded (DR-3
+  KGP §4.1 round-trip, DR-4 KMI M-1, DR-5 KFT §3.3/§8.1); (3) the artefact gate is met for **four**
+  of six — KFT's second gate and KCB's §4.2 count sit on scenarios written after the encoding set
+  was frozen and have none (DR-11, DR-12), both unowned. `scenarios/README.md`'s **KCS encoding**
+  column is the register of record; `ROADMAP.md` Phase F4 and `docs/reference/promotability.md`
+  restate it and are the bug on disagreement. No version moved for any of this — the follow-through
+  is recorded as a dated **Editorial** changelog entry in each of the six specs.
 - `schemas/` — the machine-readable twin of the prose specs (JSON Schema draft-2020-12):
   `provenance.schema.json` shared `$defs` + grounding-pack / entity-grounding-snapshot /
   canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.5.x
