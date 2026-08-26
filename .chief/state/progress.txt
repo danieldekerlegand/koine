@@ -82,3 +82,74 @@ green — allowing merge**.
   `specs/fine-tuning.md` (§2, §3, §3.1–§3.3, §4.2, §5.1–§5.4, §6, §7, §8.1, §11), the three existing
   finetune scenarios, `registry/relations.tsv`, and the schema. Future iterations can start from
   this note instead.
+
+---
+
+## Iteration 2 — US-2 (Fold the forced §11 question into the KFT contract + schema)
+
+Folded **FT-R…FT-V** from `scenarios/kft-resume-checkpoint.md` into **KFT 0.5.0 → 0.6.0**
+(*Candidate*), additively. §11.3 is marked **resolved in place** — numbering deliberately unshifted,
+the precedent KMI §9.5 and KFT §11.5 already set — so every existing §11.x reference still resolves;
+§11.1/§11.2/§11.4/§11.6 stay open, and item 5 stays recorded as resolved by ADR-0009 / KCB §7.
+
+**The shape of the fold.** The leg's five findings are five faces of one question, so they folded as
+one clause set rather than five patches:
+- **§3.4 (new, NORMATIVE)** — the optional top-level `resume` `{checkpoint, of_job, at_step}`, with a
+  table separating **warm start** (`base_model`, confirmed as needing no new surface) from
+  **resumption** (a mid-run checkpoint). Four rules: pinned input (enters §5.2 `used[]`, so FT-C's
+  anchor keeps determining the run) · **the only slot** (a ref in the permissive `hyperparams` is
+  refused `invalid`, not executed) · never corpus (gates without being priced) · a new activity.
+- **§4.2 / §4.3** — the checkpoint joins the effective-egress aggregate and the union license/tier.
+- **§5.4** — a checkpoint inherits **at publication**, not at completion. This was FT-S's real teeth
+  and it is a hole that exists **with or without resume**, on the §6 `subscribe` stream.
+- **§5.2** — a continuation leg is a NEW activity linked by the new core relation **`continues`**.
+- **§6** — `job+step` idempotency stays sound (distinct legs ⇒ distinct `job` ids), `step` counts from
+  the root leg so legs overlap deliberately, plus a NORMATIVE curve-**join rule** and an optional
+  non-authoritative `attempt` ordinal.
+- **§7** — estimate the **remainder**, verify `at_step` against the prior leg's provenance, check
+  against the ceiling **net of cumulative `spent_units` across the chain**.
+- **§3.3.1/§3.3.2** — gating set gains `resume.checkpoint`; two matrix rows and a **fifth** normative
+  consequence (converts to a local *path*, so id/`of_job`/`at_step` go out of band; a target with no
+  resume surface is refused rather than handed a cold run).
+
+**Files changed.** `specs/fine-tuning.md` (+275/-… — §3 intro/example, §3.3.1, §3.3.2, §3.4, §4.2,
+§4.3, §5.2, §5.4, §6, §7, §11.3, *Pressure test*, changelog, header) · `registry/relations.tsv`
+(`continues`) · `schemas/finetune-job.schema.json` (+ `resume`) · `schemas/fixtures/finetune-job.json`
+· `scenarios/kft-resume-checkpoint.md` (a *Fold — KFT 0.6.0* section) · `scenarios/README.md` ·
+`README.md` · `specs/README.md` · `ECOSYSTEM.md` · `CLAUDE.md`.
+
+**Verification.** `check-doc-integrity` OK (44 files, **765** links, 3 status tables match) ·
+`check-schemas` OK (9 schemas, 278 positions, 80 $refs, 3 fixtures) · `check-registry` OK (**28**
+relation names) · `check-tasklist-categories` OK (7 tasklists) · both PRD `verify` commands print
+`schemas ok` / `finetune-job schema ok` · `bash .chief/verify.sh` — 16 changed files, 6 selected
+gates, `verify-test: 30 passed, 0 failed`, **all selected gates green — allowing merge**.
+
+### Learnings for future iterations
+
+- **`schemas/fixtures/` allows exactly ONE fixture per schema, by filename.** `check-schemas.mjs`
+  derives `<fixture>.schema.json` from each fixture's name and errors if it does not exist, so
+  `finetune-job-resume.json` is rejected outright — there is no way to ship a second, contrasting
+  fixture for one schema. A new optional field is therefore exercised by **editing the golden
+  fixture** (what 0.5.0 did for `descriptor[]` / `base_model_descriptor[]`), and the additivity claim
+  is carried by the schema's `required` list plus prose, never by a second artifact. Don't spend a
+  round discovering this.
+- **A version bump touches FOUR mirrors, and only three are checked.** `README.md`,
+  `specs/README.md` (**two** places — the table *and* the candidate-count sentence around line 195,
+  which names every candidate spec by version) and `ECOSYSTEM.md` §2 are diffed by
+  `check-doc-integrity`; `CLAUDE.md`'s *Current state* prose is not. The prose sentence in
+  `specs/README.md` is inside the checked file but is **not** part of the table diff — a stale
+  version there passes CI just like CLAUDE.md's.
+- **Match the changelog's own register.** Each KFT entry is a titled bullet list where every
+  sub-bullet names a section and states what moved *and why it is not a redesign*. Two things the
+  precedent always does and that reviewers look for: say explicitly whether §4's **admission
+  behaviour** moved (0.5.0 said byte-unchanged; 0.6.0 says it *does* move — but only for a job
+  carrying `resume`, never for a cold one), and restate the outstanding gate rather than replacing it.
+- **A fold that adds normative text adds a gate.** KCB 0.4.6 and KMI 0.3.4 both did this ("a third
+  candidate count", "a second candidate count"). 0.6.0 follows: the leg itself becomes the second
+  gate, since it was written against 0.5.0 and each finding is now answered — Steps 2–6 must walk
+  clean where they broke, Steps 1 and 7 must stay held.
+- **A new relation is cheap and additive; editing one is forbidden.** `continues` slotted into
+  `registry/relations.tsv` beside `retrains`/`supersedes` with no guard friction (`check-registry`
+  went 27 → 28 names). What the immutability rule forbids is changing a **published signature** — so
+  when a lifecycle question needs a verb the registry lacks, mint a new name rather than widening an
+  existing description.
