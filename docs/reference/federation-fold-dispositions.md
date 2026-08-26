@@ -11,11 +11,17 @@ been folded: three specs described the pre-break design, and two of them
 partly by exactly these deltas. The fold has since landed — see the note below — and all three are
 still `candidate`, now on a re-run rather than on these findings.
 
-This page is the **first half** of the fold: what each of the eleven gets, decided and reasoned
+This page began as the **first half** of the fold: what each of the eleven gets, decided and reasoned
 **before** a clause is touched. It changes **no clause and no version** — deciding what to fold and
 folding it are different acts, and conflating them is how a fold overreaches. The second half (the
 edits themselves) is [`85-fold-the-federation-breaks`](../../tasks/chief/85-fold-the-federation-breaks.json)
-US-2, which lands each **FOLD** row below and nothing else.
+US-2, which landed each **FOLD** row below and nothing else.
+
+Two sections were added after the edits landed, and they also change no clause:
+*What the fold does to promotability* (the effect on each spec's gate, with the ranking itself left
+to [`promotability.md`](promotability.md)) and *What the pressure test taught about the pattern, not
+the clauses* — the finding that outlives the eleven, since three specs deferred one question and each
+predicted it would resolve the same way at its own surface.
 
 > **The fold landed, 2026-08-26.** Every **FOLD** row below is applied, at the version this page's
 > *Where each fold lands* table planned for it: **KINP 0.4.0**, **KMI 0.3.5**, **KCB 0.4.9**, with
@@ -158,6 +164,34 @@ which moves no version and adds no gate. US-2 writes it.
 
 ---
 
+## What the fold does to promotability
+
+Plainly, because two specs were held at `candidate` partly by these deltas and a reader should not
+have to infer the effect: **the fold clears the federation half of nobody's gate.** Not KINP's, not
+KMI's, not KCB's. A fold does not close its own gate — new normative text re-enters validation — so
+in every case the count **changed shape rather than closing**, from *fold the deltas* to *re-run the
+pass against the folded text*.
+
+| Spec | Was the fold the whole of its federation gate? | What the count reads as now | Promotable? |
+|---|---|---|---|
+| **KINP** | Yes — MA-1/2/3/4 (blocking) + MA-7 were the entirety of its **only** re-ratification count. | A re-run of [`e2e-multi-authority.md`](../../scenarios/e2e-multi-authority.md) against the folded text: **Steps 2, 3, 4 and 6 must flip**, Step 1 is the regression set. | **No.** But nothing else stands in the way — no second count, no fold outstanding, no koine-side deliverable. One clean re-run is the whole of the prose leg. |
+| **KMI** | Only for count (i). MA-5 (blocking) + MA-10 were §7.1's whole gate; KMI's **second** count is the [`e2e-media-transform.md`](../../scenarios/e2e-media-transform.md) re-run, which is **KCB's** work and untouched here. | A re-run of **Steps 8–10** against the folded text. | **No**, and it would not be even on a clean re-run — count (ii) is not KMI's to discharge. |
+| **KCB** | Only for count (iii) of five. | A re-run of **Steps 5–7**. | **No.** Four other counts stand, one of them [`86`](../../tasks/chief/86-fold-the-capability-versioning-breaks.json)'s fold, two of them also failing the conformance gate (**DR-12**, **DR-13**). |
+| **KGP** | It had no federation gate. MA-3/MA-4/MA-5 read *through* KGP and are answered in KINP and KMI by the define-once rule. | Unchanged — one downstream round-trip fixture. | **No**, for a reason that has nothing to do with federation. |
+
+**And the re-run is unowned.** No tasklist in any repo owns it: `53` wrote and ran the pass and is
+retired, `85` folded what it broke and ends here. Three specs' counts now sit on one hand-walk of one
+document that nobody has picked up. That is the honest state and it is recorded as such rather than
+parked against a tasklist that would make it look scheduled.
+
+**The ladder is not kept here.** [`promotability.md`](promotability.md) is the one place that ranks
+what stands between each spec and `ratified`, and its rows for KINP, KMI and KCB were updated with
+the above rather than a second ranking being started on this page — a fourth unchecked mirror is
+exactly what that page warns against. Nothing is promoted from here: promotion is the owner's act
+against that page.
+
+---
+
 ## Coordination with the sibling fold
 
 [`86-fold-the-capability-versioning-breaks`](../../tasks/chief/86-fold-the-capability-versioning-breaks.json)
@@ -174,5 +208,125 @@ constraint this page fixes on its side, so 86 can plan against it:
   does not touch §7.1's `schema_id` digest, §7.2's compatibility table, or the `(capability, major)`
   grant binding V-4/V-5 bear on.
 
+**Amended 2026-08-26, after the fold landed and the base moved.** Three things changed under this
+section between its writing and the fold, and `86` should plan against the amended version:
+
+- **KCB is at 0.4.9, not 0.4.8.** While this branch was open, `chief/71` independently landed
+  **KCB 0.4.8** — normative **§4.3**, autonomy posture across an ownership boundary
+  ([ADR-0013](../../decisions/ADR-0013-autonomy-posture-boundary-clause.md)) — taking the patch
+  number this fold had planned for. The federation fold renumbered to **0.4.9**. **0.5.0 is still
+  reserved and still unspent**, so the constraint above is unchanged in substance: `86` gets the
+  minor. The lesson is worth carrying, because `86` is about to be the third fold in the same
+  queue — *the reserved-minor convention pushes every fold onto the same next patch, and nothing in
+  CI catches two branches claiming it.* Diff the version cell against `git show main:specs/capability-bus.md`
+  before assuming a merge was textual.
+- **KCB now carries five re-ratification counts, not three.** `86`'s US-1 asks which of "the three
+  counts currently holding KCB at Candidate" its fold clears. The answer set has grown: (i) the
+  media-transform re-run, (ii) §7.5 — **`86`'s own**, (iii) §3.1 — folded here, now a re-run,
+  (iv) §4.2 subscription backpressure, (v) §4.3 autonomy posture. `86` clears **(ii) and only
+  (ii)**, and even then only after a clean re-run of
+  [`e2e-live-schema-mutation.md`](../../scenarios/e2e-live-schema-mutation.md). Counts (iv) and (v)
+  additionally fail the **conformance gate** — their scenarios have no KCS encoding (**DR-12**,
+  **DR-13**) — so *KCB is not promotable on any fold, by either tasklist*, and `86`'s US-3 should
+  say so plainly rather than discover it late.
+- **§4.3 landed between the two folds and adds a surface both must respect.** `effect` sits
+  **outside** the `schema_id` digest, exactly as `cost` (§5) and `volume` (§4.2a) do. **V-1**'s
+  digest-blindness fold must not pull it in: the three envelope operands are outside the digest by
+  the same reasoning — price, rate and reversibility are not *shape* — and a fold that digests one
+  of them re-digests every contract that declares it.
+
+One near-miss worth naming, because it is the exact class of contradiction this section exists to
+catch. **MA-9's de-duplication converse keys on `(provider KINP id, (name, version), schema_id)`** —
+and `version` is precisely what **V-4** (no address for a second major) and **V-5** (no version
+operand at invoke) are about. The two folds do **not** conflict, but only because `version` is *in*
+the key: two majors of one capability stay two entries under MA-9, which is what V-4 needs. Were
+`86` to simplify that key to `(provider, name, schema_id)` — a plausible tidy-up, since a differing
+`schema_id` already separates them in most cases — it would collapse two majors into one entry with
+"multiple attributions" and silently undo V-4 at the discovery layer. **Do not drop `version` from
+the key.**
+
 A conflict found later between the two folds is itself a finding worth an ADR, not a quiet
 reconciliation inside one of them.
+
+---
+
+## What the pressure test taught about the pattern, not the clauses
+
+The clause-level findings are above. This section records the thing that outlives them, because it
+is the part that would have to be re-learned the next time three specs defer one question.
+
+**The setup.** KINP §11 decision 1, KCB open question 1 and KMI open question 3 were three
+independent deferrals of one question — *is an authority a permanently privileged dependency, or a
+role more than one peer can hold?* Each spec's note said the question mirrored its siblings' and
+**would likely resolve the same way**; KCB's note still carries the follow-up sentence, *"It did."*
+[ADR-0012](../../decisions/ADR-0012-federated-authority-roles.md) then decided it once for all three,
+`52` applied it at three surfaces, and `53` attacked the result. So the prediction is testable, and
+this is the pass that tests it.
+
+**It held for the decision, and only for the decision.** ADR-0012's invariant — *an authority is a
+role, not a hard dependency; a single holder stays conformant; federation is additive composition and
+never a relay* — was attacked at all three planes and broke at none. The scenario's
+*Not deltas* paragraph is the evidence, and it is three-for-three: **offline-first minting** survived
+both authorities being gone, including the world-stamp back door (KINP); **asset identity** stayed
+byte-stable across stores under re-minting, corruption and copy-substitution attacks (KMI); and
+**route-by-lookup-not-proxy** survived the case built specifically to break it — a peer reachable
+only from inside its own domain — leaving an honest *unreachable* rather than a silent proxy (KCB).
+Not one of the eleven findings requires a redesign, which is the same result read from the other
+side. The shared ADR was the right instrument and picking option (c) was right.
+
+**It did not hold for the applications, and the failure modes were not even the same kind.** This is
+the finding worth keeping. Sort the ten folded deltas by the plane they landed on and each plane broke
+on the thing *its own* plane is about:
+
+| Plane | Deltas | Blocking | What kind of failure |
+|---|---|---|---|
+| **KINP** | MA-1, MA-2, MA-3, MA-4, MA-7 | 4 | **Meaning.** What a merged closure *is* (MA-1), which relation to emit when an operand is missing (MA-2), what a claim id converges *on* (MA-3), what "the real world" denotes when there are two of them (MA-4), which namespace is global (MA-7). Every one is a question about what a term means across a boundary. |
+| **KCB** | MA-6, MA-8, MA-9 | 1 | **Carriage and bounds.** Three of §3.1's six clauses were correct and had **no field to carry them** (MA-8); a grant had no issuer to name (MA-6); a forwarded query had no horizon and a merged result no de-duplication key (MA-9). The rules were right; nothing conveyed them. |
+| **KMI** | MA-5, MA-10 | 1 | **Decidability at the far holder.** §7.1(e)'s egress gate was correct and had **no operand** (MA-5); §7.1(f)'s *pending fetch, never a broken identifier* was correct and **unfalsifiable** (MA-10). The rules were right; a second holder could not evaluate them. |
+
+Meaning, carriage, decidability. **No plane's breaks would have been found by pressure-testing
+another plane**, and no plane's fold substitutes for another's. "Likely resolve the same way" was
+true of the *decision* and false of the *application* — and the specs' deferral notes did not
+distinguish the two, which is what made the prediction read as stronger than it was.
+
+**The severity distribution says the same thing, and inverts the obvious guess.** The shortest
+application took the worst damage. KINP's federation edit was a **decision paragraph** in §11 plus a
+sentence in §3; KCB §3.1 and KMI §7.1 are full lettered normative sections. Yet KINP took **five**
+findings and **four of the six blocking ones**, while KCB took three (one blocking) and KMI two (one
+blocking). Length was not the variable. What tracked was **how much of the plane's semantics the
+authority boundary passes through** — and identity is the plane every other plane's terms are
+expressed in, so every ambiguity there surfaces everywhere. A future shared fold should expect the
+keystone plane to absorb most of the breaks and should budget the deepest reading there, whatever the
+size of the edit.
+
+**A shared decision does not license parallel drafting.** MA-8's own words are that §3.1's clauses
+were *"asserted, not mechanized"* — three of six had no carrier in §3's `find` response. That is what
+a section written to mirror a sibling's structure looks like when the sibling's plane already had a
+carrier and this one did not. The correct discipline, and the one the fold applied in reverse: after
+adopting a shared decision, **re-read each plane's application against that plane's own existing
+surfaces**, not against its siblings' sections. It is the sibling-shaped section that hides the
+missing field.
+
+**The define-once rule is what made eleven cross-plane findings foldable at three specs.** Seven of
+the eleven name more than one spec in their delta — MA-2 (KINP + KCB), MA-3 and MA-4 (KINP + KGP),
+MA-5 (KMI + KGP), MA-6 (KCB + KMI), MA-7 (KINP + KCB), MA-10 (KMI + KCB) — and every one folded at
+**exactly one** spec, with the others inheriting by citation. **KGP moved no version at all** despite
+being named in three of them. A cross-plane finding is not an obligation on every spec it names; it
+is an obligation on the one that *defines* the thing, and the rest cite. Had each named spec folded
+its own half, this pass would have produced roughly seventeen clauses instead of ten, in three places
+that could then drift.
+
+**And the pattern needed one exception it did not predict.** ADR-0012 says an authority is a role, not
+a hard dependency — and MA-7 found the one authority where the honest answer is that it *is* a shared
+commons: §3.4's namespace-prefix registry, which §3.1(c)'s attribution and §3.1(d)'s merge both
+assume is globally unique. Federating it would make a collision representable at the cost of changing
+every identifier's shape; leaving it unstated let two domains hold one prefix in good faith. The fold
+states it as **deliberately non-federated**, with prefix-disjointness and collision-is-a-reportable-defect.
+A pattern of this kind should be expected to have exactly this sort of exception, and to be asked for
+it explicitly: *which authority in this plane is not a role?*
+
+**What bounds all of the above.** **DR-9** — every live slot in the 2026-08-24 run sat in domain **A**;
+domain **B**'s authority and both CAS stores were stand-ins. So the properties that depend on the far
+authority being *independently operated* — MA-2's missing operands, MA-8/MA-9's peer attribution —
+cannot be distinguished here from a fixture that simply did not model them. Closing that needs a
+**second adopter**, not a document change, and no re-run of this scenario supplies it.

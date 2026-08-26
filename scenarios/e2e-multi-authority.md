@@ -561,6 +561,20 @@ projections, §3.1(b)'s route-by-lookup rule, §3's version ranking over a merge
 promoting a `based_on` chain by transitivity, and §7.1(f)'s refusal to invalidate anything. Those are
 the regression set for the re-runs.
 
+**What this pass taught about the pattern, as opposed to the clauses.** Three specs deferred one
+question, [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) decided it once, and each
+spec's note predicted its plane would *"likely resolve the same way."* This pass is the test of that
+prediction, and the answer is split: the **decision** held at all three planes — the *Not deltas* set
+above is three-for-three on ADR-0012's invariant — while the **applications** broke in three
+different kinds of way (KINP on *meaning*, KCB on *carriage*, KMI on *decidability at the far
+holder*), none of which another plane's pass would have found. That finding, the severity
+distribution that goes with it, and the one authority the pattern needed to exempt (MA-7's prefix
+registry) are recorded in
+[`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md),
+under *What the pressure test taught about the pattern, not the clauses*. **DR-9** bounds all of it:
+domain B was a stand-in in the 2026-08-24 run, so the properties that need the far authority to be
+independently operated await a second adopter, not another document.
+
 ---
 
 ## Re-ratification — what this pass gates

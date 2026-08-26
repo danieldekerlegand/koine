@@ -38,6 +38,20 @@ composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline
 > — the id stayed byte-stable under every attack tried, but **MA-5** (blocking) and **MA-10** are
 > open, so the second count does not close.
 
+> **Status note (0.3.5):** **MA-5 and MA-10 are folded** (§2's optional `license`/`egress`, §7.1(d)'s
+> travels-with-the-bytes carve-out, §7.1(e)'s not-served-onward rule, §7.1(f)'s three-valued answer)
+> — and **the second count still does not close**. A fold does not close its own gate: new normative
+> text re-enters validation, so the count **changed shape rather than closing**, from *fold MA-5 and
+> MA-10* to **a re-run of Steps 8–10 of
+> [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) against the folded
+> text**. Stated plainly so a reader does not have to infer it: **this fold clears neither of KMI's
+> two counts.** The first (the [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md)
+> re-run) is **KCB's** work and is untouched here, so even a clean re-run of the second leaves KMI
+> **Candidate**. What the fold does to each spec's gate is set out in
+> [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md);
+> the ranking of what stands between each spec and `ratified` is kept once, in
+> [`../docs/reference/promotability.md`](../docs/reference/promotability.md).
+
 > **Status note (0.3.3):** folds the §9.5 additive-metadata-survival pressure break. A third-party
 > OTIO round-trip may remain structurally valid while dropping `metadata.koine.asset`; KMI now
 > requires fail-closed id re-attachment on re-import (§4.2a), so the status remains **Candidate**.

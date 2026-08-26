@@ -731,7 +731,14 @@ rejected alternatives are recorded for provenance.
    folded text**: Steps 2, 3, 4 and 6 are the ones that must flip, and Step 1 is the regression set.
    See that scenario's *Re-ratification — what this pass gates* section for what a clean re-run
    would license, including the second, fabric-wide condition recorded there — a machine-replayable
-   KCS encoding, itself gated on KCS open question 1.
+   KCS encoding, itself gated on KCS open question 1. Stated plainly, because it is the whole of
+   KINP's promotion story: **the fold clears no part of this gate, and nothing else stands behind
+   it.** KINP has no second count, no outstanding fold, and no koine-side deliverable of its own —
+   one clean re-run is the entire prose leg. That re-run is currently **unowned**. The ranking of
+   what stands between each spec and `ratified` is kept once, in
+   [`../docs/reference/promotability.md`](../docs/reference/promotability.md); what the fold did to
+   each gate is reasoned in
+   [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
 2. **Merge aggressiveness → hybrid.** Auto-apply `same_as`/`based_on` above a confidence
    threshold; route high-impact or below-threshold links to a **review queue**, reusing the
    authority's convergence-QA gate. *Rejected:* always-auto (contamination risk) and
