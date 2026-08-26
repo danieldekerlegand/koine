@@ -28,6 +28,7 @@ exactly where that stands.
 | [`kft-resume-checkpoint.md`](kft-resume-checkpoint.md) | KFT §11.3 ([`../specs/fine-tuning.md`](../specs/fine-tuning.md)) | **Resuming an interrupted run** — §6 calls a checkpoint *resumable* and §3 has no slot that can name one, so the FT-C reproducibility anchor stops determining the run and the only slot that accepts the ref is the one no gate reads. Confirms the warm-start half of §11.3 first, then breaks the resume half. | FT-R…V | ⬜ **focused pressure leg** — follow-up to `e2e-producer-exhaust-finetune`; **folded into KFT 0.6.0**, and a re-run against the folded text is now one of KFT's two gates |
 | [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md) | KCB §7 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) | **Evolution without a break** — a provider widens, re-prices, mutates-without-bumping, then ships a capability **v2 beside v1** and retires v1, all while a **live subscriber** keeps running. Hunts the one invariant of [ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md): *a subscriber never learns of a break by failing.* | V-1…V-8 | ⬜ **planned** — `kcs:live-schema-mutation` (F4 · `62`) |
 | [`e2e-multi-authority.md`](e2e-multi-authority.md) | KINP §11.1 + KCB §3.1 + KMI §7.1 ([`../specs/identity.md`](../specs/identity.md), [`../specs/capability-bus.md`](../specs/capability-bus.md), [`../specs/media-interchange.md`](../specs/media-interchange.md)) | **Federation without a privileged holder** — two independently built authority domains compose into one fabric: cross-authority `same_as` reconciliation, peering registries, and per-project CAS replication on reference. Hunts the three hazards [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) names — a firewall bypassed, a peered record that cannot be attributed, a replicated copy that loses identity, provenance or availability. | MA-1…MA-11 | ⬜ **planned** — `kcs:multi-authority` (F4 · `62`) |
+| [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md) | KCB §8.1 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) | **A firehose world drowns its subscriber** — the last open question KCB has. Hunts whether `cost` + spend ceilings (§2.1/§5) reach a *stream* at all, what a saturated subscriber may do other than disconnect, and whether the host §8.1 parks flow control on is even on the path that ADR-0001 routes peer-to-peer. | BP-1…BP-6 | ⬜ **focused pressure leg** — follow-up to `e2e-live-schema-mutation` |
 | [`kcs-format-stress.md`](kcs-format-stress.md) | KCS ([`../specs/conformance-scenario.md`](../specs/conformance-scenario.md)) | The **scenario format itself** — by trying to encode the two hand-written scenarios above as KCS documents and finding where the format can't express what they need. | KCS deltas | ⬜ **planned** — is the *attempt* at the seven above; earned by use, not by a run (see below) |
 
 ## How a scenario reads
@@ -60,6 +61,14 @@ break-test of its versioning section, which has now **landed and been run**
 **V-1…V-8**, blocking **V-2/V-4/V-5/V-7**, all additively foldable into a KCB **0.5.0** minor. See
 that scenario's *Re-ratification — what this pass gates* section for exactly what a clean re-run
 would license.
+
+**KCB's §8.1 backpressure question** — its last open one — has now been pressure-tested by
+[`kcb-subscription-firehose.md`](kcb-subscription-firehose.md), which also did **not** pass clean:
+deltas **BP-1…BP-6**, blocking **BP-3/BP-5**, every one additive. Its sharpest finding is not that
+the host's cost advisor is inadequate but that §3's route-by-lookup-not-proxy rule keeps it **off the
+stream path**, so the parking assignment cannot be discharged downstream by anyone. That is a
+**fourth** count against the same KCB candidate; its *Re-ratification — what this pass gates* section
+carries the per-spec table and the dated **Resolution**.
 
 The **three federation §-edits** — [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
 applied to KINP §11 decision 1, KCB §3.1 and KMI §7.1 — are gated the same way, by
