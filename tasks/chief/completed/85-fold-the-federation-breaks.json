@@ -27,7 +27,17 @@
         "This story produces the table and changes no clause. Deciding what to fold and folding it are different acts and conflating them is how a fold overreaches."
       ],
       "notes": "Disposition table written as docs/reference/federation-fold-dispositions.md and linked from docs/README.md (repo rule: a doc not in that map does not exist). All 11 classified: 10 FOLD, 1 CLOSE (MA-11 — KCS §7 q1 already cites it by name as escape-hatch evidence), 0 whole-finding DEFER, 3 deferred remainders (DEFER-A/B/C) each with a stated forcing trigger. Attributions verified against each spec's own text rather than inherited: KINP §11 decision 1 + changelog records MA-1..MA-4 blocking AND MA-7; KMI §7.1 records MA-5 blocking + MA-10; KCB §3.1 records MA-6 blocking + MA-8/MA-9 — all three confirmed. Two corrections to the scenario's framing found by reading clauses: KMI §2 also has an optional `excerpt` (MA-5's field list is one short), and §3.1(d) already covers the differing-schema_id half of MA-9. No clause and no version changed. Guards: check-doc-integrity OK (49 files, 1036 links, 3 status tables match), check-tasklist-categories OK, .chief/verify.sh --run over the 3 changed files: all selected gates green (doc-links 0 dead vs 1 on main, retired 1 — fixed a pre-existing stale link in promotability.md to the retired task 84).",
-      "passes": true
+      "passes": true,
+      "diffSize": {
+        "files": 2,
+        "lines": 168,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": false
+      }
     },
     {
       "id": "US-2",
@@ -39,7 +49,17 @@
         "The scenario is re-read against the folded specs and the breaks it no longer produces are marked resolved, with the ones that survive left visibly open."
       ],
       "notes": "All 10 FOLD rows applied to the named sections; nothing beyond them. KINP 0.4.0 (minor — §3.4/§4.1/§4.2/§4.5/§5/§6, MA-1/2/3/4/7), KMI 0.3.5 (patch — §2 + §7.1(d)(e)(f), MA-5/MA-10), KCB 0.4.8 (patch — §2/§3/§3.1(b)(c)(d)(e)(f)/§5, MA-6/MA-8/MA-9), KGP Editorial only (no version, no new gate). Each spec got a version bump, a changelog entry citing the MA-ids and the scenario leg, and a Status reconsidered against its own ladder — all three deliberately STAY Candidate because a fold does not close its own gate, and each count is restated as a re-run against the folded text. Version choices are on the record: KMI 0.4.0 stays spent on the EDL removal and KCB 0.5.0 stays reserved for §2.2's removal (which 86's V-1..V-8 occupy), so both landed as patches on the 0.4.6/0.4.7 precedent. Schema twins: NO change needed and verified — no schemas/*.json models the KMI §2 asset envelope or a KINP equivalence link, and participant-self-description references the KCB manifest by pointer only (ADR-0007 d7); provenance.schema.json's $defs.license/$defs.egress are the vocabularies KMI reuses, not shapes altered. Registry: world_aligns_with ADDED as a new core relation (never a same_as signature edit — immutability rule). Scenario re-read: new 'Fold status' section walks all 11 against the folded text — MA-1..MA-10 no longer reproduce, MA-11 left visibly open by design, plus two honest residuals stated (MA-9's dedup key needs an optional schema_id; MA-3's two hashes are retained deliberately) and three DEFERs carried with triggers. Verification: node scripts/check-doc-integrity.mjs OK (49 files, 1067 links, 3 status tables match headers); check-schemas.mjs OK; check-registry.mjs OK (15 rows, 29 unique names); check-tasklist-categories.mjs OK (4 tasklists); .chief/verify.sh --run over all 13 changed files: all selected gates GREEN (doc-integrity, doc-links 0 dead vs 0 on main, registry) — 'all selected gates green — allowing merge'. Fourth mirror (CLAUDE.md Current state) updated by hand for all three versions plus the KGP no-move note. [Corrected on base integration, 2026-08-26: main independently landed KCB **0.4.8** (§4.3 autonomy posture, chief/71) while this branch was open, so this fold's control-plane half was renumbered to **KCB 0.4.9** throughout — spec header, status note, changelog, §3.1/§3 internal refs, the 3 checked mirrors, CLAUDE.md, ROADMAP, the disposition doc and the scenario. KCB now carries FIVE counts, not four; this fold still discharges only §3.1. KINP 0.4.0 and KMI 0.3.5 are unchanged. All four guards re-run green after the rebase.]",
-      "passes": true
+      "passes": true,
+      "diffSize": {
+        "files": 13,
+        "lines": 760,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": true
+      }
     },
     {
       "id": "US-3",
@@ -51,7 +71,18 @@
         "Record what the pressure test taught about the FEDERATION PATTERN itself, not only about the clauses. Three specs independently deferred the same single-authority question and each promised it would 'likely resolve the same way' — whether that held is the finding worth keeping."
       ],
       "notes": "AC1 — stated in the specs themselves, not only in a doc: KINP §11 decision 1 now says the fold clears NO part of its gate and that nothing else stands behind it (no second count, no outstanding fold, no koine-side deliverable), and a NEW KMI 0.3.5 status note says the same for KMI — the 0.3.4 note still read 'MA-5 (blocking) and MA-10 are open', which was stale after US-2. The answer for both is the same and is stated rather than inferable: the count CHANGED SHAPE (fold -> re-run against the folded text) rather than closing, so neither spec becomes promotable; KMI additionally cannot promote on a clean re-run because its count (ii) is KCB's work. AC2 — nothing promoted here. docs/reference/promotability.md (the ladder 83 owns) is where the effect landed: KINP/KMI/KCB rows rewritten, cheapest-first items 4/5/6 rewritten, 'Five counts as of 0.4.8' -> 0.4.9, and the 'On tasklist 53' paragraph's instruction to repoint the three status notes at 85 was REPLACED — 85 is finished too, so that pointer would have been stale on arrival; the rule recorded instead is point a gate at the artefact and name the owner separately. The re-run is recorded UNOWNED in promotability.md and in the ROADMAP F1 row. AC3 — the 86-coordination section is amended with three changes since US-1 wrote it: KCB is at 0.4.9 (main took 0.4.8 for §4.3 mid-branch) with 0.5.0 still reserved and unspent for 86; KCB now carries FIVE counts not three, of which 86 clears (ii) and only (ii), and KCB is promotable on neither fold because (iv)/(v) also fail the conformance gate; and §4.3's `effect` sits OUTSIDE the schema_id digest like `cost`/`volume`, which V-1's digest fold must not change. One near-miss named explicitly: MA-9's de-dup key is (provider KINP id, (name, version), schema_id) and `version` is exactly what V-4/V-5 are about — the folds agree ONLY because `version` is in the key, so 86 must not simplify it away. AC4 — new section 'What the pressure test taught about the pattern, not the clauses'. The prediction split: the DECISION held three-for-three (the scenario's own Not-deltas set — offline-first minting, byte-stable asset identity, route-by-lookup — each survived a direct attack, and no finding requires a redesign), while the APPLICATIONS broke in three different KINDS of way — KINP on meaning (5 deltas, 4 of the 6 blocking), KCB on carriage (3, 1 blocking; MA-8's own words: 'asserted, not mechanized'), KMI on decidability at the far holder (2, 1 blocking) — none findable by another plane's pass. Four further findings recorded: the shortest application (KINP, a §11 decision paragraph vs two lettered sections) took the worst damage, so length was not the variable and the keystone plane should be budgeted the deepest reading; a shared decision does not license parallel drafting (re-read each plane against its OWN surfaces, not its siblings'); the define-once rule is what let 7 of 11 cross-plane findings fold at exactly one spec each with KGP moving no version (~10 clauses instead of ~17); and the pattern needed one exception it did not predict (MA-7 — the prefix registry is deliberately NON-federated). DR-9 is recorded as the bound on all of it: domain B was a stand-in, so what needs an independently-operated far authority awaits a second adopter. VERIFICATION: node scripts/check-doc-integrity.mjs OK (51 markdown files, 1202 relative links, all 3 status tables match headers — KINP 0.4.0 / KMI 0.3.5 / KCB 0.4.9 candidate); check-schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures); check-registry OK (15 rows, 29 unique names); check-tasklist-categories OK; `.chief/verify.sh --run` over 17 changed files -> 'all selected gates green — allowing merge', doc-links 0 dead vs 0 on main, verify-test 30 passed 0 failed. No clause and no version moved in this story.",
-      "passes": true
+      "passes": true,
+      "diffSize": {
+        "files": 7,
+        "lines": 256,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": false
+      }
     }
-  ]
+  ],
+  "mergedToMain": "ba12152"
 }
