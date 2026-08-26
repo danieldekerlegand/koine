@@ -144,3 +144,80 @@ encoding must grow. Resolution notes and the "clean pass would license" conditio
 - **KCB now has no minor left in reserve.** 0.5.0 spent the one that was held for §2.2's removal. The
   next retirement (§2.3's legacy URI root, at 0.6.0) is the only scheduled one; any future additive
   fold has to argue for patch, as 0.4.6–0.4.9 all did.
+
+---
+
+## US-3 — This fold and the federation fold agree (2026-08-26)
+
+**Answer: they do, at ten of eleven seams. The eleventh is an ADR.**
+
+**The read** — `docs/reference/fold-coordination-federation-versioning.md` (informative, binds no
+clause; indexed in `docs/README.md`). Eleven seams enumerated where a KCB **0.4.9** clause and a KCB
+**0.5.0** clause govern the same object, each read against the **published** text of both rather than
+either fold's intent. The four the federation fold pre-registered all hold, including its **named
+near-miss**: §3.1(d)'s converse is byte-unchanged and `version` is still in the de-dup key, so two
+majors of one name stay two entries and V-4 is not undone at the discovery layer. Seven more seams
+added by this read (S5–S11) — the unreadable-granted-major case across a boundary, §4.4c case 4 under
+a foreign grant, `kcb2` across two release cadences, `binding` vs staleness, the `removal` frame vs
+§3.1(f), `accepted_issuers` vs the digest, and `effect` vs V-1's digest reasoning.
+
+**The one finding → `decisions/ADR-0014-federated-merge-merges-attributions.md`.** §7.3a/d's
+**deprecated marking** and its **removal version** have **no carrier** in §2's manifest or §3's `find`
+response — MA-8's class, which the federation fold folded for §3.1's own clauses and did not extend to
+§7.3. §3.1(d)'s converse keys on `(provider KINP id, (name, version), schema_id)`; a marking moves none
+of the three (it is not shape, and §7.2 has **no bump row** for marking something deprecated), so a
+stale attribution and a fresh one merge into **one** entry whose marking is undefined, and §3.1(e)'s
+*resolve-against-the-card* rule cannot fire because the disagreement is gone. **V-7 is what makes it
+bite**: §7.3g had just established that for a discovery binding the pull side is the *whole* contract.
+It generalizes — §3.1(d)'s key is the digest key plus `version`, so all five carriers deliberately kept
+outside the digest (`cost`, `binding`, `volume`, `effect`, the marking) are outside the merge key, and
+only the two with a declared bump are rescued. **Not a contradiction** — a gap at the seam, owned by
+neither fold — so nothing was folded into 0.5.0 and **no version and no count moves**; the clause lands
+with counts (ii) and (iii).
+
+**agora** read read-only at `9fe2ee5` (2026-08-25), source only, no build or test run. Six findings
+**AG-1…AG-6** in §5 of the page. AG-1 is blocking *and created by publishing 0.5.0*: the standalone
+`/.well-known/kcb-manifest.json` is still agora's only crawl path. AG-2 is the larger fact: its
+`Capability` type has no `version` and no port carries a `schema_id`, so **§7 as a whole is unexercised
+outside this tree**.
+
+**Promotability: NO.** Five counts, none closed, both folds clear zero of five; (ii)/(iv)/(v) also fail
+the artefact gate (DR-7/DR-12/DR-13); every re-run unowned.
+
+**One correction, folded in rather than worked around:** §3.1's closing paragraph said *"the three
+other counts"* — §4.3's count had landed at 0.4.8 from a third tasklist between that paragraph's
+planning and its writing. Now four, enumerated. Editorial changelog entry; no clause, version or count
+moves.
+
+**Files:** new `decisions/ADR-0014-federated-merge-merges-attributions.md`, new
+`docs/reference/fold-coordination-federation-versioning.md`; edited `specs/capability-bus.md` (§3.1
+count sentence + Editorial changelog entry), `decisions/README.md` (row, and fixed a stray blank line
+that was splitting the table in two), `docs/README.md`, `ROADMAP.md` (ADR list), `CLAUDE.md` (ADR
+list), `docs/reference/promotability.md` (item 6), and both dispositions pages (loop closed).
+
+**Verification:** `check-doc-integrity.mjs` OK (54 files, all links + 3 status tables match);
+`check-schemas.mjs` OK; `check-registry.mjs` OK; `check-tasklist-categories.mjs` OK; `.chief/verify.sh`
+green — *verify-test: 30 passed, 0 failed*.
+
+### Learnings for future iterations
+- **agora IS reachable from the worktree** — `~/Development/agora`, a sibling of `~/Development/koine`,
+  not `../agora`. US-2's learning note said the worktree could not reach it; that was wrong, and a
+  read-only inspection is both possible and in scope. Do not write there (the worktree rule), and do
+  not link there from a spec/schema/registry/policy file (CLAUDE.md) — a `docs/` page naming files as
+  plain code spans is the right shape, and it is what `implementability-audit.md` /
+  `interop-trial.md` already do.
+- **The cross-read finds things because it reads for CARRIERS, not for contradictions.** Both folds
+  were internally consistent; what the seam exposed was a clause (§7.3d) whose *carrier* was never
+  minted, meeting a merge key (§3.1(d)) that is entitled to ignore it. When two folds meet, the
+  question that pays is *"what field does this clause ride on, and is that field in the other clause's
+  key?"* — not *"do these two paragraphs disagree?"*
+- **Every operand kept outside the `schema_id` digest is also outside §3.1(d)'s merge key.** Four folds
+  in four consecutive versions did this for the same correct reason. Any future fold that mints an
+  out-of-digest operand inherits ADR-0014's question and should say which of its parts covers it.
+- **A "gap at the seam" is still an ADR when it is owned by neither fold.** The alternative — patching
+  it into whichever fold merges second — puts a defect in fold A's clause into fold B's changelog,
+  which is the last place anyone looks. Say *gap*, not *contradiction*, and say who it lands with.
+- **Check the ADR-list mirrors when adding an ADR.** Four places, and CI checks none of them for
+  completeness: `decisions/README.md` (the table of record), `ROADMAP.md`'s repo-map bullet,
+  `CLAUDE.md`'s `decisions/` bullet, and `docs/README.md` if a companion doc is added. `decisions/README.md`
+  also had a stray blank line splitting its table in two since ADR-0012 — worth a glance when editing it.
