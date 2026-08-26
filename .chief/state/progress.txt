@@ -19,6 +19,14 @@ Started: Wed Aug 26 10:34:58 CDT 2026
   must be added to that index or it is dead weight.
 - **When a tasklist moves to `tasks/chief/completed/`, links to it in `specs/` break.** There were
   9 such links on main for `53-multi-authority-scenario.json`.
+- **Green gates do not mean a rebase is integrated.** `verify.sh` checks links, the three status
+  mirrors, schemas and the registry — never whether a *claim* you wrote is still true about text the
+  base branch moved. After any rebase, re-read every statement your branch made about anything main
+  touched.
+- **Adding a `scenarios/*.md` breaks a downstream set-equality test, with no red light here.** See
+  the CLAUDE.md *Conventions* bullet. It also silently costs that spec the ratification gate.
+- **`.chief/state/` is gitignored with two force-tracked files**, so `git add` on them exits
+  non-zero while still staging correctly — never chain it with `&&`.
 
 ---
 
