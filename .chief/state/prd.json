@@ -2,54 +2,48 @@
   "name": null,
   "project": "koine",
   "category": "feature",
-  "branchName": "chief/53-multi-authority-scenario",
-  "description": "A new pressure-test scenario that hunts the break the shared federation pattern (chief/51 ADR, chief/52 §-edits) must survive: two authorities in one fabric, cross-authority same_as reconciliation plus registry peering plus per-project CAS replication on reference (ROADMAP.md Phase F1). koine promotes a spec only after a concrete pressure test fails to break it (CLAUDE.md conventions), so this scenario is the gate that lets the three federation §-edits re-ratify. Follows the existing scenarios/ convention (replayable, cross-plane assertions) as in scenarios/e2e-worlds-to-fabric.md and scenarios/e2e-media-transform.md. PARKED: gated on chief/51 + chief/52 and on a real >1-authority deployment target (ROADMAP.md: nothing built until a deployment needs more than one authority). Public-safe: bind roles, illustrative CURIEs use the KINP §3.4 placeholder namespaces.",
-  "parked": false,
-  "dependsOn": [
-    "51-federation-adr",
-    "52-federation-spec-edits"
-  ],
+  "branchName": "chief/69-kft-open-questions",
+  "description": "KFT's own §11 'Open questions' (fine-tuning.md ~line 481), folded only on the next pressure break, never speculatively (each note says 'unless a pressure test forces it into the contract'; ROADMAP.md Phase F6): (1) adapter-selection hint — whether the job manifest may carry an engine hint or it stays producer-internal (§9); (2) multi-node / distributed runs — cost metering + checkpoint lineage across GPUs (§5.3/§6), where the cost unit + checkpoint-asset shape must not preclude it; (3) resume-checkpoint ref — confirm the job manifest carries a resume checkpoint ref cleanly (a run based_on a prior finetuned model, §5 lineage); (4) eval-as-reward — how tightly method:dpo binds to a KCS scenario as its reward (§6.1) and whether reward scenarios need a distinct KCS profile. (Item 5, capability versioning, is resolved by Phase F2 / chief/54.) PARKED: reactive by design; authored and held. KFT is candidate (0.4.0). Public-safe: bind roles.\n\n**Unparked 2026-08-25 by operator decision.** The reactive-by-design discipline said to wait for a pressure test to force the question. US-1 IS that pressure test, and it is constructible today — so waiting was waiting for someone to do the work this tasklist describes. The trade is deliberate and worth stating: a manufactured pressure leg can force a question no real user has, so **US-2 folds a clause only if US-1 finds a CONCRETE break.** A leg that finds none closes the question as 'pressure applied, no break found', which is a real answer and a better one than an open note that never resolves.",
+  "dependsOn": [],
   "touches": [
-    "scenarios/",
-    "specs/identity.md",
-    "specs/capability-bus.md",
-    "specs/media-interchange.md"
+    "specs/fine-tuning.md",
+    "schemas/finetune-job.schema.json",
+    "scenarios/"
   ],
-  "iters": 5,
+  "iters": 6,
   "warmup": [
-    "ls -1 scenarios/ && sed -n '1,40p' scenarios/e2e-worlds-to-fabric.md",
-    "sed -n '1,40p' scenarios/e2e-media-transform.md",
-    "sed -n '470,486p' specs/identity.md"
+    "sed -n '481,496p' specs/fine-tuning.md",
+    "sed -n '1,40p' scenarios/e2e-finetune.md",
+    "python3 -c \"import json; json.load(open('schemas/finetune-job.schema.json')); print('ok')\""
   ],
   "verify": [
     "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
-    "test -f scenarios/e2e-multi-authority.md || ls scenarios/*multi-authority*.md"
+    "python3 -c \"import json; json.load(open('schemas/finetune-job.schema.json')); print('finetune-job schema ok')\""
   ],
   "userStories": [
     {
       "id": "US-1",
-      "title": "A two-authority pressure scenario hunting the shared-pattern break",
-      "description": "Author a scenarios/ pressure test with two identity authorities in one fabric, driving cross-authority same_as reconciliation, registry peering, and per-project CAS replication on reference — written to find a break, not to assert correctness (CLAUDE.md conventions).",
+      "title": "New KFT pressure-test leg forcing the open question",
+      "description": "Add the scenario leg that FORCES whichever §11 question demands an answer, before folding — KFT folds each open question only under pressure (each note is explicit).",
       "acceptanceCriteria": [
-        "A new scenarios/ file (e.g. scenarios/e2e-multi-authority.md) defines a replayable pressure test with TWO authorities and exercises all three federation surfaces the ADR unified: cross-authority same_as reconciliation (KINP), peering discovery registries (KCB), and per-project CAS replicating on reference (KMI).",
-        "The scenario asserts the invariants the federation pattern must preserve — offline-first minting still works, content-addressed identity stays byte-stable across authorities/stores, and no query-time merge produces a false cross-authority identity — and is written adversarially (prefer finding a break).",
-        "It follows the scenarios/ convention (cross-plane assertion vocabulary, replayable steps) and, per scenarios/README.md, illustrative CURIEs use the KINP §3.4 placeholder namespaces; it names no deployment or product."
+        "A scenarios/ leg (extending scenarios/e2e-finetune.md / e2e-finetune-multimodal.md / e2e-producer-exhaust-finetune.md, or a new focused scenario) forces one §11 question: adapter-selection hint (§11.1), distributed-run cost metering + checkpoint lineage (§11.2), resume-checkpoint ref (§11.3), or eval-as-reward KCS profile for method:dpo (§11.4).",
+        "The leg is adversarial and shows the concrete break that forces a contract answer; only the forced question is carried into US-2.",
+        "It uses the KINP §3.4 placeholder namespaces and names no product."
       ],
       "passes": true,
-      "notes": "scenarios/e2e-multi-authority.md written (522 lines): 10 adversarial steps over two authority domains (A: refkb/orchestrator/analyzer/worldsim/mediastore, B: archivekb/coordinator/assetstore), all three federation surfaces exercised. 11 findings MA-1..MA-11, 6 blocking (MA-1..MA-6); 5 held-under-attack results recorded (offline-first minting with both authorities dark, asset-id byte-stability across stores, KMI 7.1(d) no-lineage-on-copy incl. C2PA/OMC projections, KCB 3.1(b) route-by-lookup, KINP 4.5 no-transitive-promotion). Verify: node scripts/check-doc-integrity.mjs OK - 43 markdown files, 705 relative links checked, all 3 status tables match; .chief/verify.sh --run over the changed set green (guard-doc-integrity, guard-doc-links 0 dead vs 0 on main, verify-selftest 30 passed 0 failed); schemas/*.json all parse."
+      "notes": "scenarios/kft-resume-checkpoint.md added — focused adversarial leg forcing KFT §11.3 only. Step 1 confirms the warm-start half HELD (base_model takes a finetuned model entity; lineage, §5.4 inheritance and §5.1.1 publication all compose transitively). The resume half broke five ways: FT-R (high/structural — no slot names a checkpoint; schema is additionalProperties:false; FT-C's reproducibility anchor stops determining the run), FT-S (high/gate — the only permissive slot hyperparams is read by no normative clause, and §5.4 leaves a mid-run checkpoint with no egress class, so a continued-pre-training resume cloud-places weights that memorized a local-only corpus), FT-T (high — activity identity: no continues/resumes relation, retrains means re-train-from-scratch), FT-U (high — §6's job+step idempotency collides on re-executed steps), FT-V (med — FT-E's estimate cannot net out completed steps). Blocking FT-R, FT-S. Closing section states §11.1/§11.2/§11.4/§11.6 are untouched by construction. Placeholder namespaces only (refkb/mediastore/orchestrator/provider), no product named. Verification: node scripts/check-doc-integrity.mjs green (44 markdown files, 752 relative links, 0 errors, 3 status tables match); check-schemas OK (9 schemas, 274 positions, 78 $refs, 3 fixtures); check-registry OK (27 relation names); check-tasklist-categories OK (7 tasklists); .chief/verify.sh: all selected gates green — allowing merge. Note: doc-integrity was red with 9 PRE-EXISTING dangling links to tasks/chief/53-multi-authority-scenario.json (retired into completed/) — confirmed identical on a clean baseline — and verify.sh path-selects that guard from any changed doc, so it blocked this branch; repointed in a separate commit, link target only."
     },
     {
       "id": "US-2",
-      "title": "Record the re-ratification resolution across the three specs",
-      "description": "Wire the scenario back to the three federation §-edits so a clean pass re-ratifies them, matching how existing re-validations record a Resolution note.",
+      "title": "Fold the forced §11 question into the KFT contract + schema",
+      "description": "Reflect only the pressure-forced question into fine-tuning.md and, where it touches job shape, schemas/finetune-job.schema.json — keeping the 0.3.0 fold's additive discipline — bumping the version and staying candidate.",
       "acceptanceCriteria": [
-        "The scenario carries a Resolution / note recording which KINP/KCB/KMI spec versions its pass gates, mirroring the 'Re-validation' sections in the existing scenarios.",
-        "On a clean pass the three federation §-edits (chief/52) may return from candidate to ratified; the scenario states this explicitly and each affected spec's changelog can cite it.",
-        "schemas/*.json still parse; no schema twin changes are required by this scenario (it is a control/data-plane behavior test, not a shape change)."
+        "fine-tuning.md §11 (and the relevant §5/§6 clause) is edited to fold the forced question — e.g. allow an adapter-selection hint in the manifest, confirm the resume-checkpoint ref, or define the eval-as-reward KCS profile — and schemas/finetune-job.schema.json is updated in lockstep if the job shape changes, keeping the golden fixture valid.",
+        "The change is strictly additive where possible (0.3.0/0.4.0 manifests stay valid) per KFT's additive-fold precedent; the schema stays role-scoped with KINP §3.4 placeholder CURIEs.",
+        "The KFT version header is bumped and Status set to candidate with a changelog entry citing the leg; the remaining §11 questions stay open, and item 5 (capability versioning) is noted as resolved by Phase F2 (chief/54)."
       ],
-      "passes": true,
-      "notes": "Added `## Re-ratification — what this pass gates` to scenarios/e2e-multi-authority.md (87 lines): a 7-row per-spec table (KINP 0.3.0 / KCB 0.4.6 / KMI 0.3.4 gated; KGP 0.5.2 as a consequence surface; KCS 0.3.0 evidence-only; ADR-0012 not reopened; schemas/ no shape change), a *What a clean pass would license* section stating per spec what leaving Candidate means (KINP -> Ratified on its only count; KCB 1 of 3 counts; KMI 1 of 2) plus the KCS-encoding precondition from specs/README.md's ratification gate, and a dated **Resolution (2026-08-24)** note: MA-1..MA-11 open, none folded, all three stay Candidate. Wired the three specs to cite the scenario by name at each gate site + one Editorial (2026-08-24) changelog entry each (no clause, version, or status moves). ROADMAP F1 -> in progress; scenarios/README.md fold paragraph records the trio. Verify: node scripts/check-doc-integrity.mjs OK - 43 markdown files, 741 relative links checked, all 3 status tables match headers; .chief/verify.sh --run over the changed set green (guard-doc-integrity; guard-doc-links 0 dead vs 0 on main; guard-categories OK 4 tasklists; verify-selftest 30 passed, 0 failed); schemas/*.json all parse ('schemas ok') and are byte-unchanged (git diff --stat shows no schemas/ file)."
+      "passes": false,
+      "notes": ""
     }
-  ],
-  "unparkNote": "UNPARKED 2026-08-23, same reasoning as 52: the real-deployment half of the gate is satisfied by cuneiform ADR-0027, and the rest is dependsOn on 51 and 52. Let the dependency graph express it - this now reports BLOCKED and clears itself when its deps merge."
+  ]
 }

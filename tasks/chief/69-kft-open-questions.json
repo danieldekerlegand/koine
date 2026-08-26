@@ -30,8 +30,8 @@
         "The leg is adversarial and shows the concrete break that forces a contract answer; only the forced question is carried into US-2.",
         "It uses the KINP §3.4 placeholder namespaces and names no product."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "scenarios/kft-resume-checkpoint.md added — focused adversarial leg forcing KFT §11.3 only. Step 1 confirms the warm-start half HELD (base_model takes a finetuned model entity; lineage, §5.4 inheritance and §5.1.1 publication all compose transitively). The resume half broke five ways: FT-R (high/structural — no slot names a checkpoint; schema is additionalProperties:false; FT-C's reproducibility anchor stops determining the run), FT-S (high/gate — the only permissive slot hyperparams is read by no normative clause, and §5.4 leaves a mid-run checkpoint with no egress class, so a continued-pre-training resume cloud-places weights that memorized a local-only corpus), FT-T (high — activity identity: no continues/resumes relation, retrains means re-train-from-scratch), FT-U (high — §6's job+step idempotency collides on re-executed steps), FT-V (med — FT-E's estimate cannot net out completed steps). Blocking FT-R, FT-S. Closing section states §11.1/§11.2/§11.4/§11.6 are untouched by construction. Placeholder namespaces only (refkb/mediastore/orchestrator/provider), no product named. Verification: node scripts/check-doc-integrity.mjs green (44 markdown files, 752 relative links, 0 errors, 3 status tables match); check-schemas OK (9 schemas, 274 positions, 78 $refs, 3 fixtures); check-registry OK (27 relation names); check-tasklist-categories OK (7 tasklists); .chief/verify.sh: all selected gates green — allowing merge. Note: doc-integrity was red with 9 PRE-EXISTING dangling links to tasks/chief/53-multi-authority-scenario.json (retired into completed/) — confirmed identical on a clean baseline — and verify.sh path-selects that guard from any changed doc, so it blocked this branch; repointed in a separate commit, link target only."
     },
     {
       "id": "US-2",
