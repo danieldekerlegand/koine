@@ -306,3 +306,33 @@ stream distinguish an attempt (FT-U), and let the estimate price the remainder (
 **additive** on KFT's own precedent — every 0.4.0 and 0.5.0 manifest stays conformant, `method` and
 `modality` do not move, and §4's admission behaviour changes only where FT-S deliberately widens the
 aggregate. Anything larger is out of scope for what this leg found.
+
+---
+
+## Fold — KFT 0.6.0
+
+All five findings were folded on **2026-08-26**, additively, into
+[`../specs/fine-tuning.md`](../specs/fine-tuning.md) **0.6.0** (still *Candidate*). §11.3 is marked
+**resolved in place** — the numbering is not shifted, so every existing §11.x reference still
+resolves — and §11.1, §11.2, §11.4 and §11.6 stay open exactly as the section above left them.
+
+| Finding | Answered by |
+|---|---|
+| **FT-R** — no slot names a checkpoint | New NORMATIVE **§3.4**: the optional top-level `resume` object `{checkpoint, of_job, at_step}`, plus the rule that `used[]` carries the ref so FT-C's anchor keeps determining the run. Schema in lockstep — `resume` is `additionalProperties: false`, and a manifest without it is a cold run that validates unchanged. |
+| **FT-S** — the permissive slot no gate reads, and the unclassified mid-run checkpoint | **§3.4** refuses a resume ref carried in `hyperparams` (`invalid`, §8.1) instead of executing it; **§4.2** takes the effective egress class over `{data ∪ base ∪ resume.checkpoint}` and **§4.3** puts it in the union license/tier; **§5.4** binds a checkpoint's class **at publication** rather than at completion, which closes the `subscribe`-stream half that needed no resume to reach. |
+| **FT-T** — activity identity | **§5.2**: a continuation leg MUST mint a new activity (a closed PROV record is never rewritten) linked by the new core relation **`continues`** in [`../registry/relations.tsv`](../registry/relations.tsv), distinct from `retrains` and `supersedes`. "What trained this model?" is answered by walking the chain to its root, which MUST stay resolvable. |
+| **FT-U** — the stream collides with itself | **§6**: distinct legs carry distinct `job` ids so `job+step` idempotency is sound and unweakened; `step` counts from the root leg, so legs overlap deliberately; the NORMATIVE **join rule** orders legs by the `continues` chain and takes the later leg as authoritative on an overlapping range; an optional non-authoritative `attempt` ordinal rides the event. |
+| **FT-V** — the estimate prices work that will not be done | **§7**: a continuation leg is estimated on the **remainder**, with `at_step` verified against the prior leg's provenance rather than trusted, and checked against the ceiling **net of cumulative `spent_units` across the `continues` chain** — so one training is neither authorized twice nor refused `over-budget` for work it will not do. §8.1's vocabulary is unchanged, as Step 6 said it should be. |
+
+Portability followed in lockstep: `resume.checkpoint` joins §3.3.1's gating set, and §3.3.2 gains two
+rows plus a fifth normative consequence — a resume ref converts to a local **path**, so the KINP id,
+`of_job` and `at_step` go out of band, and a target with no resume surface is **refused** rather than
+silently handed a cold run. Step 7's *what held* is intact: no new plane, no new artifact kind, no new
+media type, no KCB verb/port/grant change.
+
+**This leg is now a gate.** Because it was written against 0.5.0, a re-run against the folded text is
+what closes it: Steps 2–6 must walk clean where they broke, and Steps 1 and 7 must stay held. That
+gate is **additional to** the outstanding re-run of
+[`e2e-producer-exhaust-finetune.md`](e2e-producer-exhaust-finetune.md)'s *Re-validation — KFT 0.4.0*,
+which 0.6.0 restates and does not move — a **cold** job (no `resume`) is admitted and refused on
+exactly the inputs it was before.

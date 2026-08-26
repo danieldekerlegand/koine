@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://koine.ecosystem/schemas/finetune-job.schema.json",
   "title": "FinetuneJob",
-  "description": "The invoke payload for the KFT `finetune` capability (specs/fine-tuning.md §3, KFT 0.4.0). The machine-readable twin of the job manifest. Two intakes — a base model and a dataset — each a reference plus, optionally, the document that describes it in its own standard's terms; the shape follows Kubeflow TrainJob's initializer.{model,dataset}.storageUri precedent (§3.2). Data is referenced by KINP/KGP/KMI id, never inlined, and no descriptor is ever an admission input. The cross-schema $refs below resolve against schemas/provenance.schema.json (shared $defs) and schemas/dataset-jsonl-header.schema.json (the training-record header) in this directory. A golden positive example lives at schemas/fixtures/finetune-job.json; the validators + conformance suite that exercise this schema live downstream in a runtime commons per ADR-0001 (koine = contracts), NOT in koine.",
+  "description": "The invoke payload for the KFT `finetune` capability (specs/fine-tuning.md §3, KFT 0.6.0). The machine-readable twin of the job manifest. Two intakes — a base model and a dataset — each a reference plus, optionally, the document that describes it in its own standard's terms, plus the optional `resume` ref that names an interrupted leg of this same training (§3.4) rather than a third intake; the shape follows Kubeflow TrainJob's initializer.{model,dataset}.storageUri precedent (§3.2). Data is referenced by KINP/KGP/KMI id, never inlined, and no descriptor is ever an admission input. The cross-schema $refs below resolve against schemas/provenance.schema.json (shared $defs) and schemas/dataset-jsonl-header.schema.json (the training-record header) in this directory. A golden positive example lives at schemas/fixtures/finetune-job.json; the validators + conformance suite that exercise this schema live downstream in a runtime commons per ADR-0001 (koine = contracts), NOT in koine.",
   "type": "object",
   "$defs": {
     "kinpId": {
@@ -78,9 +78,30 @@
       ],
       "additionalProperties": false
     },
+    "resume": {
+      "type": "object",
+      "description": "OPTIONAL. Present = this job is a continuation leg of a training that was interrupted; absent = a cold run, and every resume clause is inert (KFT §3.4). NOT a third intake and NOT warm start: a prior *released* finetuned model is named by base_model (it is a KINP `model` entity like any other), while this names a *mid-run* checkpoint of the same training. A gating input — the checkpoint's inherited egress class joins the §4.2 aggregate and its license joins the §4.3 union — but never corpus: it MUST NOT also appear in dataset.{knowledge,media,records}[]. A resume ref carried anywhere else in the manifest (notably in the permissive hyperparams, which no normative clause reads) is not a resume ref and the job MUST be refused `invalid` (KFT §3.4, §8.1).",
+      "properties": {
+        "checkpoint": {
+          "$ref": "#/$defs/kinpId",
+          "description": "KMI asset id of the checkpoint to resume from — the id KFT §6's telemetry event published. Typed by §5.3 (application/vnd.koine.model+… bytes, byte-hash id, fetched via KCB fetch:asset); no new artifact kind is introduced. MUST appear in the run activity's used[] (KFT §5.2), so it is part of the reproducibility anchor (FT-C)."
+        },
+        "of_job": {
+          "$ref": "#/$defs/kinpId",
+          "description": "KINP activity id of the leg that published the checkpoint. The target of this leg's `continues` edge (KFT §5.2, registry/relations.tsv) — distinct from `retrains` (a re-train from scratch) and `supersedes` (a replacement). A continuation leg MUST mint its own `job` activity and MUST NOT reuse this one."
+        },
+        "at_step": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The KFT §6 `step` the checkpoint was published at. `step` counts from the start of the training (the root leg), so this is both the operand §7 nets the remainder estimate from and the boundary §6's curve-join rule turns on. The provider MUST verify it against the prior leg's provenance/telemetry rather than trusting the manifest (KFT §7)."
+        }
+      },
+      "required": ["checkpoint", "of_job", "at_step"],
+      "additionalProperties": false
+    },
     "hyperparams": {
       "type": "object",
-      "description": "Method-specific hyperparameters (epochs, lr, max_seq_len, lora{r,alpha,dropout,target_modules}, …). Permissive — engine adapters own the detail (KFT §9). With `method`, this is KFT's deliberate divergence from TrainJob, which passes adaptation through spec.trainer.args (KFT §3.2).",
+      "description": "Method-specific hyperparameters (epochs, lr, max_seq_len, lora{r,alpha,dropout,target_modules}, …). Permissive — engine adapters own the detail (KFT §9) — and read by NO normative clause, which is why a resume checkpoint ref carried here is refused rather than executed (KFT §3.4). With `method`, this is KFT's deliberate divergence from TrainJob, which passes adaptation through spec.trainer.args (KFT §3.2).",
       "additionalProperties": true
     },
     "export": {
