@@ -106,3 +106,37 @@ check-registry OK; check-tasklist-categories OK; `.chief/verify.sh --run` over a
   3-space indent, so an exact-match edit fails unless you include it.
 - The disposition doc from US-1 was accurate throughout; every landing zone it named was the right
   one, and the two scenario-framing corrections it recorded both held when the clauses were edited.
+
+## ⚠️ BASE INTEGRATION REQUIRED — do this FIRST, before any user story
+
+`chief/85-fold-the-federation-breaks` is **7 commit(s) behind** its base `main` (@140e79f) and
+chief's automatic rebase onto that base CONFLICTS. The rebase was aborted, so
+your branch is exactly as it was and nothing is lost — but it cannot merge
+until the base is integrated, and every commit that lands on `main` while
+this is unresolved makes it worse.
+
+**Your first task this iteration is to integrate the base yourself:**
+
+1. `git rebase main` in this worktree.
+2. At each stop, resolve the conflicts keeping BOTH sides' intent — the
+   `main` side is already-merged work, so never discard it, and never
+   discard your own — then `git add <files>` and `git rebase --continue`.
+   `git rebase --abort` returns you to exactly this state if you need it.
+3. Re-run the project's quality gates and make them green.
+
+Rebase, not `git merge main`: chief rebases this branch again at merge time,
+and a rebase drops merge commits and replays the originals — a resolution
+recorded in a merge commit would be thrown away and this conflict would come
+straight back. Resolving inside the rebase puts the fix in your own commits.
+
+Then continue the normal loop: pick the highest-priority story with
+`passes:false` and implement it. The integration is NOT a user story — do not
+flip any story's `passes` for it, and do not report completion until the
+stories themselves are really done.
+
+## Conflicting paths
+- .chief/state/prd.json
+- .chief/state/progress.txt
+
+base: main @140e79f · behind: 7 commit(s) · branch: chief/85-fold-the-federation-breaks
+(full note: .chief/state/INTEGRATE-BASE.md)
