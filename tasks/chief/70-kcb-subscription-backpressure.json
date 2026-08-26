@@ -29,8 +29,8 @@
         "The leg confirms per-invoke cost + grant spend ceilings (§2.1/§5) do NOT by themselves solve firehose backpressure, distinguishing this from the already-handled cost question.",
         "It follows the scenarios/ convention and uses the KINP §3.4 placeholder namespaces; names no product."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Wrote scenarios/kcb-subscription-firehose.md (focused pressure leg, 8 steps + findings). Verification observed green: node scripts/check-doc-integrity.mjs OK - 45 markdown files, 780 relative links checked, all 3 status tables match their headers; .chief/verify.sh --run selected guard-doc-integrity + guard-doc-links, both green (doc-links: 0 dead vs 0 on main), 'all selected gates green - allowing merge'; schemas parse ok. AC-1: 6 concrete deltas BP-1..BP-6, 2 blocking - BP-5 is the break AC-1 asks for (Step 6: SS8.1 parks flow control on the host's cost advisor, but SS3/ADR-0001 route-by-lookup-not-proxy keeps the host off the stream path, and under SS3.1 federation no single host has jurisdiction over both ends - the assignment is void, not deferred); BP-3 is the subscriber-side break (disconnect is the only lever, no resumption operand, a missed retraction leaves a claim asserted forever). AC-2: Step 2 shows cost+budget_units do NOT reach a stream - cost sits on params.capabilities[] and a subscription scopes to a world with no manifest object to price, and SS5 evaluates the ceiling 'at invoke' with no second invoke, so budget_units never decrements; and even extended it fails at the gate, i.e. a cliff not a brake. AC-3: KINP SS3.4 placeholders only (worldsim/analyzer/refkb/mediastore/orchestrator), no product named; scenarios/README.md table row + narrative added per convention."
     },
     {
       "id": "US-2",

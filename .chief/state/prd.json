@@ -1,58 +1,48 @@
 {
+  "name": null,
   "project": "koine",
-  "category": "unblock",
-  "branchName": "chief/83-promote-kgp",
-  "description": "**KGP's only named gate shipped weeks ago and nobody promoted it.** This is the cheapest win in the portfolio.\n\nKGP 0.5.2 sits at `Candidate`. The single condition its own record gives for promotion is the RDF-star / PROV / JSON-LD round-trip fixture \u2014 which merged as `agora:77-kgp-projection-and-roundtrip-fixture` at `85eb207`, with every story passing. The koine-side marker (`64`) was retired on 2026-08-25 because the work was done downstream. Nothing else gates it.\n\n**Meanwhile the roadmap claims two specs are ratified and zero are.** Phase 1 \u2014 Candidate re-ratification \u2014 is the only phase in the audited portfolio that went BACKWARDS: its three edits merged, it produced no promotions, and KINP and KCS were each demoted since. So the count moved from a claimed 2 to an actual 0 while the phase was notionally in progress.\n\nPromoting KGP does not fix Phase 1. It does make the phase non-zero, and it removes the strangest fact in the fabric \u2014 a spec held at Candidate by a gate that has been satisfied since before the roadmap was last touched.\n\n**Be honest about what promotion means.** `ratified` is a claim other organizations rely on. If reading the fixture shows the round trip does not actually cover what \u00a7-level ratification requires, the correct outcome is to say so and leave KGP at Candidate with the real gate named \u2014 not to promote it because a tasklist expected that. A promotion that cannot be defended is worse than a stale Candidate.",
-  "crossRepo": [
-    "agora"
-  ],
+  "category": "feature",
+  "branchName": "chief/70-kcb-subscription-backpressure",
+  "description": "KCB §7 open question 3 (capability-bus.md ~line 256): subscription firehose backpressure / flow-control for high-volume-world subscriptions. Per-invoke cost is already handled by capability cost + grant spend ceilings (§2.1/§5); the spec currently parks firehose flow-control as 'an infra concern for the host's cost advisor.' This tasklist folds it into the contract ONLY on the next pressure break (ROADMAP.md Phase F6) — i.e. when a high-volume-world subscription scenario demonstrates that leaving flow-control purely to the host breaks a subscriber. PARKED: reactive by design; authored and held. KCB is candidate (0.3.0). Public-safe: bind roles.\n\n**Unparked 2026-08-25 by operator decision.** The reactive-by-design discipline said to wait for a pressure test to force the question. US-1 IS that pressure test, and it is constructible today — so waiting was waiting for someone to do the work this tasklist describes. The trade is deliberate and worth stating: a manufactured pressure leg can force a question no real user has, so **US-2 folds a clause only if US-1 finds a CONCRETE break.** A leg that finds none closes the question as 'pressure applied, no break found', which is a real answer and a better one than an open note that never resolves.",
+  "dependsOn": [],
   "touches": [
-    "specs",
-    "docs"
+    "specs/capability-bus.md",
+    "scenarios/"
   ],
   "iters": 5,
   "warmup": [
-    "head -20 specs/knowledge-graph-protocol.md",
-    "grep -n 'Status\\|ratif\\|round-trip\\|fixture' specs/knowledge-graph-protocol.md | head -12",
-    "python3 -c \"import json;d=json.load(open('tasks/chief/completed/64-kgp-projection-roundtrip-fixture.json'));print(d.get('supersededBy'))\"",
-    "ls ../agora/tasks/chief/completed/77-*.json && python3 -c \"import json,glob;d=json.load(open(glob.glob('../agora/tasks/chief/completed/77-*.json')[0]));print(d.get('mergedToMain'))\"",
-    "grep -n 'ratified' specs/README.md | head"
+    "sed -n '254,262p' specs/capability-bus.md",
+    "grep -n 'subscribe\\|subscription\\|cost\\|grant\\|spend' specs/capability-bus.md | head -20",
+    "ls -1 scenarios/"
+  ],
+  "verify": [
+    "python3 -c \"import json,glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')\"",
+    "grep -qiE 'backpressure|flow-control|subscription' specs/capability-bus.md"
   ],
   "userStories": [
     {
       "id": "US-1",
-      "title": "The gate is verified satisfied, or it is not",
+      "title": "A high-volume-subscription pressure leg forcing the backpressure question",
+      "description": "Add the scenario leg where a high-volume-world subscription firehose breaks a subscriber, forcing the §7.3 flow-control question into the contract — KCB folds it only under pressure.",
       "acceptanceCriteria": [
-        "The round-trip fixture `agora:77` delivered is read against what KGP's promotion actually requires \u2014 RDF-star, PROV and JSON-LD round trips \u2014 and the verdict is recorded either way.",
-        "If it does not cover the requirement, KGP stays Candidate and the REAL remaining gate is named in the spec. That is a valid and useful outcome for this tasklist; do not promote to satisfy the title.",
-        "The check reads the fixture as it exists in agora rather than assuming its tasklist notes are accurate. `passes: true` is a claim, not evidence \u2014 the portfolio has already been bitten by that distinction."
+        "A scenarios/ leg drives a high-volume-world subscription (a firehose) and demonstrates the concrete break that leaving flow-control purely to the host's cost advisor causes a subscriber — the pressure that forces §7.3 into the contract.",
+        "The leg confirms per-invoke cost + grant spend ceilings (§2.1/§5) do NOT by themselves solve firehose backpressure, distinguishing this from the already-handled cost question.",
+        "It follows the scenarios/ convention and uses the KINP §3.4 placeholder namespaces; names no product."
       ],
-      "notes": "VERDICT: gate NOT satisfied \u2014 KGP stays 0.5.2 Candidate. Read the artifact, not the flag: agora 85eb207 (merge of chief/77) is 4 files / 2 commits, BOTH US-1 \u2014 projection.ts (223 lines, emitter only), projection.test.ts (55 lines, 2 cases over one hand-written single-claim pack), index.ts (+13 re-exports), tasklist (+2/-1). agora US-2 (round-trip) and US-3 (evidence artifact) were flipped to passes:true with notes:null by retire commit a73b967 AFTER the merge \u2014 bookkeeping, no code. Confirmed at agora main 9fe2ee5 that nothing was added since: grep over knowledge/src finds no reader, no unproject/parse-back; index.ts exports projectPack and no inverse. So \u00a74.1 rule 2 (re-derive the claim id from the recovered canonical, reject on disagreement) has never run and is untestable without a reader. G1 met narrowly, G2/G3/G4 not met. Recorded in docs/reference/kgp-projection-gate-verification.md; \u00a74.1 now states the verdict + the 4 remaining items and names owner 87-kgp-projection-reader-and-roundtrip (the retired marker 64 is no longer cited). Editorial only \u2014 \u00a73/\u00a73.1/\u00a73.3/\u00a74.1 tables/\u00a75/\u00a76/\u00a77 byte-unchanged, no claim id moves. CHECKS: .chief/verify.sh green \u2014 doc-integrity OK (746 links, all 3 status tables match headers), doc-links 0 dead vs 1 on main, tasklist-categories OK, 8 tasklists categorized. Also repaired 9 pre-existing dead links to 53-multi-authority-scenario.json (moved to completed/) that this branch's docs/README.md touch made merge-blocking.",
-      "passes": true
+      "passes": true,
+      "notes": "Wrote scenarios/kcb-subscription-firehose.md (focused pressure leg, 8 steps + findings). Verification observed green: node scripts/check-doc-integrity.mjs OK - 45 markdown files, 780 relative links checked, all 3 status tables match their headers; .chief/verify.sh --run selected guard-doc-integrity + guard-doc-links, both green (doc-links: 0 dead vs 0 on main), 'all selected gates green - allowing merge'; schemas parse ok. AC-1: 6 concrete deltas BP-1..BP-6, 2 blocking - BP-5 is the break AC-1 asks for (Step 6: SS8.1 parks flow control on the host's cost advisor, but SS3/ADR-0001 route-by-lookup-not-proxy keeps the host off the stream path, and under SS3.1 federation no single host has jurisdiction over both ends - the assignment is void, not deferred); BP-3 is the subscriber-side break (disconnect is the only lever, no resumption operand, a missed retraction leaves a claim asserted forever). AC-2: Step 2 shows cost+budget_units do NOT reach a stream - cost sits on params.capabilities[] and a subscription scopes to a world with no manifest object to price, and SS5 evaluates the ceiling 'at invoke' with no second invoke, so budget_units never decrements; and even extended it fails at the gate, i.e. a cliff not a brake. AC-3: KINP SS3.4 placeholders only (worldsim/analyzer/refkb/mediastore/orchestrator), no product named; scenarios/README.md table row + narrative added per convention."
     },
     {
       "id": "US-2",
-      "title": "If satisfied, KGP is promoted and the ratification count is made true",
+      "title": "Fold subscription backpressure into KCB §7.3",
+      "description": "Reflect the pressure-forced flow-control decision into capability-bus.md's subscribe contract, bumping the version and staying candidate.",
       "acceptanceCriteria": [
-        "KGP's Status header moves to `ratified` with a changelog entry citing the fixture and its merge sha.",
-        "`specs/README.md`'s ratification statement is corrected. It currently asserts *\"no scenario has a KCS encoding, so no spec is currently promotable to `ratified`\"* \u2014 false since `agora:75`, and it is the sentence the whole ladder is read from.",
-        "`ROADMAP.md`'s claim is corrected to the real count. It says 2 of 6 ratified; the true figure before this tasklist is 0 of 6, and after it is at most 1.",
-        "The changelog records what ratification commits koine to for KGP, so a downstream reader knows what stability they just gained."
+        "capability-bus.md's §7.3 / subscribe clause is edited to specify subscription flow-control / backpressure for high-volume-world subscriptions (e.g. subscriber-declared rate/window, provider signalling), consistent with the §2.1/§5 cost + grant model and the KCB §2 AgentCard-extension manifest.",
+        "The KCB version header is bumped and Status set to candidate with a changelog entry citing the scenario leg.",
+        "schemas/*.json still parse; if the subscribe manifest gains a flow-control field the schema twin is updated in lockstep, staying role-scoped with KINP §3.4 placeholder CURIEs."
       ],
-      "notes": "NOT PROMOTED \u2014 criteria 1 and 4 deliberately not executed. US-1's verdict stands (agora 85eb207 is an emitter with no reader; \u00a74.1 rule 2 has never run), and this tasklist's own premise says promoting to satisfy the title is worse than a stale Candidate. KGP remains 0.5.2 Candidate; no Status header, version, or status mirror moved. Criteria 2 and 3 executed, and checking criterion 2 found the MIRROR IMAGE of US-1: specs/README.md's 'no scenario has a KCS encoding, so no spec is currently promotable' has been FALSE since 2026-08-19. Verified against the artifacts, not the flags \u2014 agora chief/75 (merge f853240) checked in NINE ScenarioDocument encodings at console/src/kcs/scenarios/ (5,096 lines; coverage.test.ts enforces set-equality against koine's own scenarios/*.md and skips loudly with no sibling; all 9 `source` values match koine's 9 .md files exactly), and agora chief/76 (merge f32508e) ran them over live MCP/A2A links leaving console/evidence/kcs-live-run.json \u2014 evidence_id sha256-2d9e6c43\u2026, generated 2026-08-24, kcs_version 0.3.0, green=true, live_pass=false, verdict=partial-live, 19/32 participant slots live (59%), transport_failures=[]; kcs:worlds-to-fabric 3/3 live and live-pass. Both tasklists' stories carry real notes (not the notes:null tell that sank 77). Recorded the caveats rather than laundering them: `green` is the downstream artifact's own claim, not re-run here, and the two scenarios koine calls NOT clean (V-1\u2026V-8, MA-1\u2026MA-11) also come back green because the encodings deliberately do not assert an unfolded delta. CRITERION 3: ROADMAP's headline already read 0 of 6; the false claims left were Phase 0's present-tense 'two specs are ratified' (both since demoted \u2014 KINP on the 0.3.0 federation fold, KCS on the 0.3.0 determinism fold) and Phase F4 marked \u2b1c planned while it had delivered. Count is 0 of 6 before this tasklist and 0 of 6 after; the artefact gate is now met for all six and each spec is blocked by its own pass. FILES: specs/README.md (statement corrected + dated, F4 paragraph repointed at agora 75/76, KCS's grandfathered debt marked paid), docs/reference/kcs-encoding-gate-verification.md (new evidence record, indexed in docs/README.md), ROADMAP.md (headline, Phase 0, Phase 1 KGP row + depends-on, Phase F4 delivered, F5 fixture row \u2192 87), specs/grounding-pack.md (\u00a74.1: KGP's other gate IS met, so the fixture is literally the last item \u2014 editorial, no normative change, no claim id moves), scenarios/README.md (dated stale-banner only; the column flip belongs to 84), docs/reference/implementability-audit.md (stale 62/63 ids). CHECKS: .chief/verify.sh \u2014 all 4 selected gates GREEN. doc-integrity OK (45 files, 765 links, all 3 status tables match their headers), doc-links 0 dead vs 1 on main, tasklist-categories OK (8 categorized), verify-selftest 30 passed / 0 failed.",
-      "passes": true
-    },
-    {
-      "id": "US-3",
-      "title": "The other five specs get an honest promotability line",
-      "acceptanceCriteria": [
-        "For each of KINP, KMI, KCB, KCS and KFT, one line: what specifically blocks promotion today. Not a status glyph \u2014 the named gate.",
-        "Where a spec was DEMOTED, say when and by what. KINP fell to Candidate on the \u00a711.1 federation edit and KCS on the 0.3.0 determinism fold; a reader currently cannot tell a spec that never rose from one that fell.",
-        "Where a gate is an unwritten fold (MA-1\u2026MA-11 for KINP, V-1\u2026V-8 for KCB), point at the tasklist that owns it rather than restating the gap.",
-        "This is a table, not a program. It exists so the next person can see which promotions are cheap and which are real work \u2014 the answer for KGP turned out to be 'already earned, nobody claimed it', and that should not be discoverable only by audit."
-      ],
-      "notes": "Delivered as docs/reference/promotability.md \u2014 a six-row table (KINP, KGP, KMI, KCB, KCS, KFT), indexed in docs/README.md and pointed at from specs/README.md's ratification-gate section and ROADMAP.md (Phase 0, Phase 1, Related Docs). CRITERION 1 \u2014 one line per spec naming the gate, not a glyph: KINP = the MA-1..MA-4 fold, its ONLY count; KGP = the \u00a74.1 round-trip fixture, downstream, zero koine edits; KMI = two counts (MA-5/MA-10 fold + KCB's media-transform re-run); KCB = three counts (media-transform re-run outstanding since 2026-07-22, V-2/V-4/V-5/V-7 fold, MA-6/MA-8/MA-9 fold); KCS = re-validation of its own 0.3.0 determinism fold, grandfathered debt paid 2026-08-19, \u00a77.1/\u00a77.3 open QUESTIONS not gates; KFT = the owner's re-run of e2e-producer-exhaust-finetune.md's Re-validation section, dep-pin precondition closed, \u00a73.3/\u00a78.1 unexercised. CRITERION 2 \u2014 checking every changelog for a '**Ratified.**' entry overturned the premise: ALL SIX specs were ratified and ALL SIX were demoted, none 'never rose'. Dates/causes: KCB 0.3.0 2026-07-22 (AgentCard extension), KMI 0.3.0 and KGP 0.5.0 2026-08-02 (OTIO / projection), KFT 0.4.0 2026-08-06 (FT-M..FT-Q), KCS 0.3.0 2026-08-20 (determinism), KINP 0.3.0 2026-08-23 (federation). ROADMAP Phase 0 said 'two specs were ratified in this phase' and its KGP/KMI/KCB/KFT row said only 'first-authored & pressure-tested' \u2014 both corrected in place with the correction dated. Every demotion was caused by koine's own next edit, five within five weeks of promotion. CRITERION 3 \u2014 folds point at owners, not restatements: KINP/KCB\u00a73.1/KMI\u00a77.1 -> 85-fold-the-federation-breaks; KCB V-* -> 86-fold-the-capability-versioning-breaks; KGP -> 87 (agora). Three gates recorded as UNOWNED (KCB's media-transform re-run, KCS's re-validation, KFT's re-run) rather than left blank. The tasklist-53 wrinkle is explained rather than repeated: 53's scope was to WRITE AND RUN the break test and it did; the fold is 85's, so the three specs cite a retired tasklist for a gate that moved. CRITERION 4 \u2014 a 'Cheapest first' ranking: KGP (nothing in koine blocks it) < KCS < KFT < KMI < KINP < KCB. No version/status column, deliberately: docs/ is not one of the three mirror files check-doc-integrity.mjs verifies, so a current-version column there would be a fourth unchecked mirror; only immutable historical versions appear. CHECKS: .chief/verify.sh \u2014 all 4 selected gates GREEN. doc-integrity OK (46 files, 805 links, all 3 status tables match their headers), doc-links 0 dead vs 0 on main, tasklist-categories OK (8 categorized), verify-selftest 30 passed / 0 failed.",
-      "passes": true
+      "passes": false,
+      "notes": ""
     }
   ]
 }
