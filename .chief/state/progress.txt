@@ -182,3 +182,87 @@ stories themselves are really done.
 
 base: main @da48d29 · behind: 8 commit(s) · branch: chief/84-record-the-downstream-results
 (full note: .chief/state/INTEGRATE-BASE.md)
+
+---
+
+## BASE INTEGRATION (2026-08-26) — done before US-3
+
+`main` had moved 8 commits ahead (KCB 0.4.7 / `chief/70`, which added an **eleventh** scenario
+`scenarios/kcb-subscription-firehose.md`). Rebased 5 commits onto `main` @da48d29. Commit `2257748`.
+
+**Conflict resolutions**
+- `.chief/state/prd.json` + `.chief/state/progress.txt` — `git checkout --theirs` (in a rebase
+  **theirs = the commit being replayed = this branch**). main's copies are tasklist `70`'s run
+  state, mine are `84`'s; they are per-run files, so mine wins wholesale. Note `git add` on
+  `.chief/state/*` prints "paths are ignored" and **stages anyway** (tracked files, `.gitignore`
+  matches the dir); `git check-ignore` correctly reports not-ignored. Just ignore the warning.
+- `scenarios/README.md` scenario table — merged both sides by script: took this branch's rewritten
+  **KCS encoding** column for the ten rows, took main's new `kcb-subscription-firehose` row, and
+  restyled its fifth cell into this branch's column vocabulary (`⬜ absent`).
+
+**Then the follow-through main's new file needed** (integration, not a story): the eleventh scenario
+had no `## Downstream results` section. Gave it one in the tenth's shape (never encoded, never run,
+no owner) + finding **DR-12**, indexed it in `scenarios/README.md`, and corrected every count that
+had gone stale — ten→eleven scenarios, `absent` once→twice, DR-1…DR-11→DR-1…DR-12, and the two
+claims that KFT was the *only* spec to lose the artefact gate / the *only* red row downstream.
+
+---
+
+## US-3 — What the results change is followed through (2026-08-26)
+
+**Done.** Commit `06928ab`. Tasklist complete.
+
+**Files changed:** all six `specs/*.md`, `specs/README.md`, `docs/reference/promotability.md`,
+`ROADMAP.md`, `CLAUDE.md`.
+
+**Shape of the change.** Each spec got (a) a *Downstream evidence* block inside its existing
+**Pressure test** / gate section and (b) a dated **Editorial** changelog entry. **No version, no
+status, and no clause moved** — the house precedent is KMI/KCB/KINP's `Editorial (2026-08-24)`
+entries, which say "No clause changes and the status does not move" in as many words. `Last updated`
+bumped to 2026-08-26 on the three specs that were behind.
+
+| Spec | Positive evidence (AC-2) | Findings folded (AC-1) |
+|---|---|---|
+| KINP | only fully-live cast (3/3, `live-pass`); `firewall_holds` + 2 `no_sameas_across_worlds` incl. the 4-hop path; deltas A, C | — (run predates ADR-0012, touches no federation surface; MA-1…MA-4 unmoved) |
+| KGP | §3.3 `claims_converge` under machine replay; §7's two egress legs **refused** | **DR-3** — R3 unencoded, fixture gate unmoved |
+| KMI | delta H/I + §5 bridge asserted over bound values | **DR-4** — artefact gate met by *count, not content* |
+| KCB | delta F path planning, K ceiling, L tolerance, G refusal | **DR-7/DR-8** (green over 4 and 6 blocking deltas), **DR-12** (§4.2 unencoded) |
+| KFT | the §4.2 gate **refused five times** (local-only corpus, FT-B, FT-A, FT-D, FT-F) | **DR-5**, **DR-6**, **DR-11** |
+| KCS | nine documents parse + replay + report; deltas M/O/N/P exercised; §7.1's escape hatch used as designed twice (V-8, MA-11) | **DR-10** → §7.1 (new second half: a runner-side vocabulary-version obligation) + §7.2 + Pressure test; **DR-2** → §7.3 (now a *report-shape* question) |
+
+**AC-3 (coordination) honored:** KGP is **not** promoted here. Its entry states DR-3 explicitly —
+the fully-live pass does not touch the §4.1 round-trip fixture — and points promotion at
+`87-kgp-projection-reader-and-roundtrip`. `83-promote-kgp` had already merged and reached the same
+verdict via `docs/reference/kgp-projection-gate-verification.md`; nothing was duplicated.
+
+**Registers reconciled** (this is where the stale claims were): `specs/README.md` said *"the artefact
+gate is met for every spec in the fabric"* and *"all nine of those sections are still empty"* — both
+false now, replaced with **four of six** plus the two conditions on citing the run.
+`docs/reference/promotability.md`'s two *facts that apply to every row* were the same two errors; all
+six table rows and the *Cheapest first* ranking now carry their DR qualifications (KCB went three
+counts → four). `ROADMAP.md`'s *"No row here is blocked by F4 any more"* corrected.
+
+**Gates observed:** `check-doc-integrity` **OK** — 48 markdown files, **1010** relative links, all 3
+status tables match. `check-doc-links --ratchet --base main` → **0 dead vs 0 on main**.
+`check-schemas` OK · `check-registry` OK · `check-tasklist-categories` OK (5 tasklists).
+`bash .chief/verify.sh --run <10 files>` → "all selected gates green — allowing merge".
+
+**Learnings for future iterations**
+
+- **A `## Downstream results` section is now an obligation for every new `scenarios/*.md`,** on top
+  of the KCS-encoding obligation CLAUDE.md already names. main added a scenario without one and it
+  was invisible until this branch rebased. Worth adding to CLAUDE.md's scenarios bullet if a third
+  instance appears.
+- **The `green`-is-not-a-verdict rule is the single most reusable output of this tasklist.** It is
+  now stated in `specs/README.md`'s gate, in KCB's and KMI's pressure tests, in `promotability.md`
+  and in `CLAUDE.md`. Any future prose citing the downstream run must carry it or it repeats the
+  `passes: true` audit.
+- **Recording evidence against a spec is Editorial, not a version bump** — it moves no clause. But
+  say so *explicitly* in the entry (as every prior Editorial entry does), because the reader's
+  default assumption on seeing a spec diff is that something normative moved. The one judgement call
+  here was KCS §7.1 gaining a second half: an open **question** is informative, so still editorial,
+  and the entry names the call rather than burying it.
+- **`docs/reference/promotability.md` is the per-spec register that a finding must reach** to be
+  "followed through" in any useful sense — it is what a promoter reads. `ROADMAP.md` is the program
+  view and `scenarios/README.md` is the encoding-state register of record. Three different jobs;
+  do not collapse them.
