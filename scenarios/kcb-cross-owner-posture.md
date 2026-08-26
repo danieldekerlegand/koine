@@ -411,8 +411,10 @@ hand-walked pass earns `draft → candidate` and `candidate → ratified` additi
 scenario's **machine-replayable KCS encoding**. None exists: this is the **twelfth** scenario against a
 downstream encoding set of nine, so §4.3's clauses have no runnable document citing them and KCB is not
 promotable on this count until one is written. That encoding is downstream runtime work (ADR-0001) and
-is **unowned** as of this date. Named here, and in [`README.md`](README.md) and
-[`../ROADMAP.md`](../ROADMAP.md), because no guard in this repo checks it — the downstream set-equality
+is **unowned** as of this date. Named here, in [`README.md`](README.md), in
+[`../ROADMAP.md`](../ROADMAP.md) and in
+[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+§6.3, because no guard in this repo checks it — the downstream set-equality
 test is the only thing that will notice, and it will notice as a red build in another repository.
 
 **Resolution (2026-08-26).** Deltas **AP-1…AP-8** folded into KCB **0.4.8** §4.3 (with §2.1 and §5

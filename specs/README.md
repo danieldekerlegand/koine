@@ -168,10 +168,11 @@ So the **artefact gate is met for four of the six specs**, and for those four wh
 waits on is no longer this rule. It is each spec's own outstanding pass — an unfolded delta set, an
 un-re-run scenario, a missing downstream fixture. **Two are still blocked by this rule**, both since
 2026-08-26 and both narrowly: KFT, whose 0.6.0 fold is gated by
-[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), and KCB's §4.2
-count, gated by [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md);
-each is a scenario written **after** the nine encodings were built, neither has an encoding, and
-neither encoding is owned (findings **DR-11** and **DR-12**). Adding a document to
+[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), and KCB on **two**
+counts — §4.2, gated by [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md),
+and §4.3, gated by [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md);
+each is a scenario written **after** the nine encodings were built, none has an encoding, and no
+encoding is owned (findings **DR-11**, **DR-12** and **DR-13**). Adding a document to
 [`../scenarios/`](../scenarios/) incurs this gate, and no koine guard notices — the red light is
 downstream. **Six of six specs remain `candidate` and zero are promotable today**, but otherwise for
 spec-specific reasons that this section no longer supplies. One line per
@@ -200,7 +201,7 @@ Two things this correction deliberately does **not** do:
     KFT's §3.3 and §8.1 (**DR-5**) — and the artifact records a per-scenario aggregate rather than
     pass/fail per assertion with its cited clause (**DR-2**), so the mapping from a green line to a
     discharged clause is read off the encoding by hand. The index of all twelve findings is
-    [`../scenarios/README.md`](../scenarios/README.md#findings-from-the-run-dr-1dr-12).
+    [`../scenarios/README.md`](../scenarios/README.md#findings-from-the-run-dr-1dr-13).
 
 There is still no provisional status, no waiver, and no "ratified pending encoding": the rule has
 one exception, the grandfather clause above, and it is closed to new entrants.

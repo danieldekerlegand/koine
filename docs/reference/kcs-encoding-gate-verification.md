@@ -173,13 +173,40 @@ Consequences, stated as narrowly as §6.1's:
   [`../../ROADMAP.md`](../../ROADMAP.md). Both carry it for this leg.
 - **Owner: unowned**, exactly as the tenth. Two encodings now wait on nobody.
 
+## 6.3 Amendment, 2026-08-26 — a twelfth scenario, and KCB's second count
+
+Same day, same shape, same spec. KCB 0.4.8 (`chief/71`) landed a twelfth pressure test —
+[`../../scenarios/kcb-cross-owner-posture.md`](../../scenarios/kcb-cross-owner-posture.md) — the
+focused cross-owner autonomy-posture leg whose deltas **AP-1…AP-8** are folded into the new
+normative §4.3. Nothing about the nine changed here either: E1 and E2 stand, the evidence artifact's
+content address is untouched, and no id or `source` moved.
+
+`coverage.test.ts` now goes red on **three** unencoded documents rather than two, and its
+`KOINE_SCENARIOS.length === 9` assertion is three short of koine's twelve.
+
+Consequences, stated as narrowly as §6.1's and §6.2's:
+
+- **KCB loses the artefact gate on a second count**, and only for §4.3. The clauses 0.4.8 folded
+  have no machine-replayable document citing them, so
+  [the gate](../../specs/README.md#the-ratification-gate) forbids promoting on that count. KCB's
+  three encoded counts are unaffected (`e2e-media-transform`, `e2e-live-schema-mutation`,
+  `e2e-multi-authority`), and §4.2's own gap is **DR-12**, unchanged. Four specs remain wholly
+  unaffected. Separately from this gate, ADR-0013 carries a **second-independent-implementation**
+  condition (**W3**) on ratifying §4.3 — a condition of the record, not of the encoding set.
+- **Again not caught by koine's own gates**, and again not catchable by them. The obligation is
+  named where a reader meets it: the scenario's row in
+  [`../../scenarios/README.md`](../../scenarios/README.md), the scenario's own *Conformance gate*
+  paragraph and `## Downstream results` section (**DR-13**), and
+  [`../../ROADMAP.md`](../../ROADMAP.md).
+- **Owner: unowned**, exactly as the tenth and the eleventh. Three encodings now wait on nobody.
+
 ## 7. How to re-run this check
 
 From a checkout of the implementing repo, beside a koine checkout:
 
 ```
 git log --oneline --date=short --format='%h %ad %s' -- console/src/kcs/scenarios console/evidence
-ls console/src/kcs/scenarios/                    # nine encodings + their gates (koine now holds ELEVEN scenarios)
+ls console/src/kcs/scenarios/                    # nine encodings + their gates (koine now holds TWELVE scenarios)
 grep -n "source: 'scenarios/" console/src/kcs/scenarios/index.ts   # must equal koine's scenarios/*.md
 node -e "console.log(require('./console/evidence/kcs-live-run.json').verdict)"
 node console/src/live/evidence.ts --check        # re-runs the suite, compares the content address
