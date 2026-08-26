@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.4.9
+**Spec version:** 0.5.0
 **Status:** Candidate
 **Last updated:** 2026-08-26
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -91,7 +91,35 @@ carries.
 > compatibility table are undisturbed, and **0.5.0 stays spoken for** by §2.2's removal, which
 > V-1…V-8 also occupy. New normative text, so no count closes: the third count (§3.1) becomes a
 > **re-run of that pass against the folded text**, and the other **four** are restated and none
-> moves.
+> moves. **0.5.0** is **the capability-versioning fold** — the deltas of count (ii), the §7.5
+> break-test [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md),
+> which returned **V-1…V-8** with **V-2/V-4/V-5/V-7** blocking. Seven fold and one closes: **V-2**
+> (§2.1's optional `payload_schema_id` + §7.1's normative reader rule that a bare `shape` is *no
+> cross-check available*, the shape-registry alternative **rejected on the record** as a second
+> non-federated commons against KINP §3.4/ADR-0007); **V-4** (**§2.4**, an optional per-entry
+> transport `binding`, so a second major is dialable while §7.1's ban on version-in-the-**name**
+> stands — two namespaces, only one governed); **V-5** (**§4.4**, an optional `version` operand, the
+> granted major made readable inside the token with the grant's name unchanged, and a resolution rule
+> that **refuses for want of a version** rather than defaulting — deliberately the shape 0.4.9 gave
+> `budget_units` at MA-6); **V-7** (**§7.3g**, three named frames — successor, deprecation, removal —
+> on §4.2d's **existing** control channel, each before the fact it announces, since §4.2d already
+> forbids minting a second); **V-3** (§7.1 step 5, a canonicalization **rule id** in the digest
+> prefix, absent meaning `kcb1`, so **no published digest moves**); **V-6** (§7.3c's floor stated per
+> axis — a retiring **capability** major waits for the successor's next major, while a koine-spec
+> axis keeps one full minor, so §2.3's and KMI §4.4's removal versions do not move); **V-1** (§4.4d's
+> optional `quoted_cost` and a refusal that names *quote mismatch*); **V-8** closed where it lands,
+> as evidence already cited by KCS §7 open question 1. Two remainders are deferred with triggers
+> (**DEFER-D** the binding forms §4.2d's channel cannot reach, **DEFER-E** `deprecated_at`); see
+> [`../docs/reference/capability-versioning-fold-dispositions.md`](../docs/reference/capability-versioning-fold-dispositions.md).
+> **Minor, not patch:** every field is optional on read and on write and a participant implementing
+> none of them stays conformant, but seven of the folds are **new normative surface a reader
+> implements against** and §7.2's compatibility table itself gains a reader's obligation. 0.5.0 also
+> **discharges an obligation already declared**: under §7.3f, publishing it *is* the removal of
+> §2.2's standalone `/.well-known/kcb-manifest.json` — not a fold, a deadline arriving. §2.3's
+> separate window is untouched and still runs to **0.6.0**. **Stays Candidate**: a fold does not
+> close its own gate. Count (ii) becomes a **re-run of Steps 3, 5, 7, 8, 9 and 10 against the folded
+> text** — which, per **DR-7**, requires the KCS encoding to be *extended* before it can assert the
+> folded behaviour at all — and the other **four** counts are restated and none moves.
 
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
@@ -268,11 +296,17 @@ extension (§2.3):
           "capabilities": [                         // named, invocable units; i/o are ports
             { "name":    "compose",
               "version": "1.2.0",                                                  // semver, NEVER in the name (§7.1)
+              "binding": { "tool": "compose" },                                    // OPTIONAL transport address for THIS major (§2.4)
               "inputs":  [ { "plane": "knowledge", "shape": "mood-descriptor",
-                             "schema_id": "sha256-…" } ],                          // knowledge IN
+                             "payload_schema_id": "sha256-…",                      // OPTIONAL digest over the PAYLOAD (§7.1)
+                             "schema_id": "sha256/kcb2-…" } ],                     // knowledge IN — rule-id'd digest (§7.1 step 5)
               "outputs": [ { "plane": "media", "media_types": ["audio/midi"],
                              "schema_id": "sha256-…" } ],                          // media OUT (delta F)
-              "cost":    { "tier": "paid", "est_units": 1200 } }                   // path cost (delta K); outside the digest (§7.1)
+              "cost":    { "tier": "paid", "est_units": 1200 } },                  // path cost (delta K); outside the digest (§7.1)
+            { "name":    "compose",                                                // the SAME name at the next major (§7.2)
+              "version": "2.0.0",
+              "binding": { "tool": "compose_2" },                                  // a different transport id; discovery still matches "compose"
+              "inputs":  [ /* … */ ], "outputs": [ /* … */ ] }
           ],
           "auth":     { "scheme": "capability-token", "grants_required": ["invoke:compose"],
                         "accepted_issuers": ["orchestrator:agent:governance"] },  // OPTIONAL (§5)
@@ -305,6 +339,16 @@ extension (§2.3):
   payload-shape *family*, while the spec version rides in `params.kcb_version`. Minting a
   `…/manifest/0.4` URI for added optional fields would make every already-published card invisible
   to a crawler matching the old one — `compose-v2`'s fragmentation (§7.1) at the document level.
+- **A capability entry MAY carry a transport `binding` (optional; V-4).** §7.2 mandates that a
+  provider serve two majors side by side for a transition window, and the transport KCB chose cannot
+  represent that from the capability name alone: an MCP tool namespace is flat and name-keyed, so
+  `tools/list` cannot return two tools called `compose`, while §7.1 forbids the name-mangling that
+  would fix it and `params.mcp` is a single address. Each entry in `params.capabilities[]` MAY
+  therefore carry a `binding` naming the tool id and/or endpoint **that major** is invocable at,
+  which a consumer **reads from the manifest and never guesses**. Additive and optional on read
+  exactly like `version` and `schema_id`: absent, a provider serves one major at the single
+  `params.mcp` address exactly as it did at 0.4.9. Its rules — and why it does not breach §7.1's ban
+  on version-in-the-name — are **§2.4's**.
 - **`auth.accepted_issuers[]` (optional; MA-6).** Where a deployment federates registries (§3.1), a
   provider states which **grant issuers** it honours, by KINP id, beside the existing
   `auth.scheme` / `auth.grants_required`. Additive and optional on read exactly like `version` and
@@ -334,7 +378,7 @@ capability's `inputs`/`outputs`. Its `plane` selects the type vocabulary:
 
 | Port plane | Typed by | Example |
 |---|---|---|
-| `knowledge` | KGP `dialect` + optional `worlds`, plus a `shape` naming the payload | a mood descriptor; a GroundingPack |
+| `knowledge` | KGP `dialect` + optional `worlds`, plus a `shape` naming the payload and an OPTIONAL `payload_schema_id` digesting it (§7.1) | a mood descriptor; a GroundingPack |
 | `media` | KMI `media_types` + optional `world_pattern` (delta J) | `audio/wav` from world `alderforest` |
 | `entity` | KINP entity `types` | a `mood` / `scene` / `plugin` entity ref |
 
@@ -353,6 +397,18 @@ re-type the port; it is the subscriber's **cross-check** on the capability's dec
 that a schema edited without a bump is detectable rather than silent. What the canonicalization
 covers, and what it deliberately excludes (`description`, `cost`, the `version` itself), is fixed in
 §7.1; what a consumer does when a digest moves under an unchanged version is fixed in §7.2.
+
+A **`knowledge`** port MAY additionally carry an OPTIONAL **`payload_schema_id`** — the same
+algorithm-prefixed digest form, taken over the participant's own canonical declaration of the payload
+that port carries. It exists because `shape` holds a **free-form name** and not a structure, so
+redefining the payload behind an unchanged `shape` produces a byte-identical `schema_id` at an
+unchanged `version` — the one failure §7.1 exists to make impossible, and it lands on the cross-plane
+leg (delta F) the fabric is for (**V-2**). Media ports are protected without this because a
+`media_type` names an externally standardized format, and entity ports because `types` are
+registry-controlled; knowledge ports have neither property. Unlike `cost`, `volume` and `effect`,
+`payload_schema_id` **is** shape: it sits **inside** the §7.1 canonicalization as a knowledge-plane
+shape key. It is optional on read and on write — and what a consumer must conclude from a knowledge
+port that carries **none** is fixed in §7.1, not here.
 
 A port MAY additionally carry an OPTIONAL **`volume`** — the delivery envelope a subscriber to that
 port would be accepting (rate, payload size, asset references per delivery, resume horizon). Volume
@@ -385,15 +441,21 @@ existing A2A AgentCard as the `https://w3id.org/koine/kcb/manifest/0.3` extensio
 | `auth` | extension `params.auth` |
 | `signing` | extension `params.signing` |
 
-- **Both MAY be served during transition — and the window now has a declared end.** A provider MAY
-  continue serving the standalone `/.well-known/kcb-manifest.json` alongside the card extension; the
-  extension on `/.well-known/agent-card.json` is the authoritative form wherever both are offered.
-  0.3.0 bounded that window by a *condition* ("until all consumers crawl the extension"), which is
-  not something a consumer can plan against, so under the deprecation policy (§7.3) this
-  deprecation now names its own end: **the standalone manifest location is removed at KCB 0.5.0.**
-  Past that version a provider MUST NOT rely on the standalone file being read and a registry is no
-  longer obliged to crawl it. Nothing already published is invalidated (§7.3f), and the removal
-  version MAY be moved later, never earlier (§7.3e).
+- **The window is closed: the standalone manifest is REMOVED at this version (0.5.0).** 0.3.0
+  bounded the transition by a *condition* ("until all consumers crawl the extension"), which is not
+  something a consumer can plan against, so under the deprecation policy (§7.3) that deprecation was
+  made to name its own end — **removed at KCB 0.5.0** — and this publication *is* that version.
+  Under §7.3f the removal ends an **obligation**, not a readability: past 0.5.0 a provider MUST NOT
+  rely on the standalone `/.well-known/kcb-manifest.json` being read, and a registry is **no longer
+  obliged to crawl it** (§3 populates from the card extension alone). Serving the file additionally
+  is not forbidden and is not conformance — nothing may depend on it. Nothing already published is
+  invalidated: a manifest recorded under 0.2.0 stays readable, and an archival record naming that
+  location stays resolvable (§7.4). The table above is retained as the field-by-field record of where
+  each 0.2.0 field went, which a reader migrating an old deployment still needs.
+- **This removal is not a fold.** It is an obligation declared before this release and now due;
+  §7.3c forbids declaring and removing in one publication, and 0.5.0 is the version that was
+  declared. §2.3's separate window — the legacy extension-URI root — is **untouched** and still runs
+  to **KCB 0.6.0**.
 - **`signing` MUST be preserved intact.** [`grounding-pack.md`](grounding-pack.md) line 313 declares
   `manifest.signing = {key_id, alg}` the *shared* signing shape between the KCB manifest and KGP
   packs; the collapse moves `signing` into `params` but MUST NOT change its shape, so provenance
@@ -463,6 +525,57 @@ a legacy peer's card; clause **a** is prose, and prose is where a consumer's obl
 one schema that does name the URI — `participant-self-description.schema.json`'s
 `manifest_extension_uri`, what a participant *declares it serves* — is the twin of clause **b** and
 so admits the current form only.
+
+
+### 2.4 Transport binding — addressing a second major (0.5.0)
+
+Where a provider serves two majors of one capability, **how a consumer dials the one it means**.
+This folds **V-4** of [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md),
+which found the dual-serving window §7.2 *mandates* to be unrepresentable on the transport KCB
+chose: an MCP tool namespace is flat and name-keyed, so two tools cannot both be `compose`; §7.1
+forbids the `compose-v2` name-mangling that would fix it; and §2 carries a single `params.mcp`
+address. The contract layer and the transport layer disagreed, and no clause reconciled them.
+
+**Two namespaces, and only one of them is governed by the ban on version-in-the-name.** This is the
+distinction that makes the fold consistent with §7.1 rather than a hole in it:
+
+| Namespace | Who reads it | Rule |
+|---|---|---|
+| The **capability name** (`params.capabilities[].name`) | the registry (§3), and every consumer searching for the capability | MUST NOT carry a version. §7.1 is **unchanged**: a successor hiding under a different *name* is invisible to the party that needs to find it. |
+| The **transport binding** (`params.capabilities[].binding`) | only a consumer that has already read this entry off this card | A local addressing detail. Nobody discovers by it, so a provider may serve major 2 at a tool id of its choosing. |
+
+Normative:
+
+- Each entry in `params.capabilities[]` MAY carry an OPTIONAL `binding`:
+
+  ```jsonc
+  "binding": { "tool": "compose_2",              // OPTIONAL — the MCP tool id THIS entry is invocable at
+               "endpoint": "https://…/mcp/v2" }  // OPTIONAL — where, if not the manifest's params.mcp
+  ```
+
+- **A consumer reads the binding; it never guesses one.** A consumer MUST NOT derive a transport id
+  from a capability's name and version, MUST NOT assume that two entries sharing a name share an
+  address, and MUST NOT assume that an entry with no `binding` is unreachable — absent, the entry is
+  invocable under its own `name` at the manifest's `params.mcp`, which is 0.4.9 behaviour exactly.
+- **A provider serving more than one major of a name MUST make each addressable.** It does so by
+  giving at least the entries that would otherwise collide a distinct `binding`. Serving two majors
+  that resolve to one transport id is **non-conformant**: it is §7.2's dual-serving obligation
+  asserted and not met.
+- **A binding is not shape and not identity.** It addresses a capability, not a port, so §7.1's
+  canonicalization and every published `schema_id` are untouched; and it is not part of what a grant
+  scopes (§5) or what §3 matches or ranks. Under **§3.1(d)**'s de-duplication converse two entries
+  are **one** capability where the provider KINP id, `(name, version)` and `schema_id` agree — a
+  `binding` is none of those three, so a per-major address neither merges two entries nor splits one.
+- **A binding may change without the payload changing**, so changing it is a **minor** bump on the
+  capability that carries it (§7.2) — the version moves, and a consumer holding a cached address
+  re-reads it at discovery or `describe` (§4). A live `subscribe` learns of it on §4.2d's control
+  channel, alongside the §7.3g signals, and never by a failed dial.
+- **The registry needs no field of its own.** §3 indexes what the card carries, so a `binding` is
+  returned with the entry that carries it and ranked by nothing.
+
+**Bounded on purpose.** This section does **not** require a provider to serve two majors at two
+endpoints, does not define a naming convention for transport ids, does not make `binding` a
+discovery key, and does not touch §7.1's ban on version-in-the-name.
 
 ---
 
@@ -625,9 +738,10 @@ response shape (`served_by` + `observed_at` per entry, `incomplete[]` per result
 extent of each is reasoned in
 [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
 **The §3.1 count nevertheless stays open**: a fold does not close its own gate, and this count now
-reads as a **re-run of Steps 5–7 against the folded text**. The three other counts on this spec —
+reads as a **re-run of Steps 5–7 against the folded text**. The four other counts on this spec —
 the [`e2e-media-transform.md`](../scenarios/e2e-media-transform.md) re-run, the §7.5 mutate-live-schema
-re-run, and §4.2's subscription-firehose re-run — are restated and **none moves**; in particular
+re-run, §4.2's subscription-firehose re-run, and §4.3's cross-owner-posture re-run — are restated and
+**none moves**; in particular
 0.5.0 stays spoken for by §2.2's standalone-manifest removal, which is why this fold is a patch. See
 that scenario's *Re-ratification — what this pass gates* section.
 
@@ -639,8 +753,8 @@ that scenario's *Re-ratification — what this pass gates* section.
 |---|---|---|
 | **discover** | registry query (§3) | find providers by capability / interchange type / world |
 | **describe** | one A2A agent-card fetch (`/.well-known/agent-card.json`) + MCP `tools/list` for tool schemas | fetch the provider's AgentCard **including its KCB extension** (`capabilities.extensions[]`, §2) in a single fetch — there is no second `/.well-known/kcb-manifest.json` to retrieve |
-| **invoke** | MCP `tools/call` / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference. A declared autonomy posture is an optional operand, and the capability's declared effect class is what it reads — §4.3. |
-| **subscribe** | A2A streaming (MCP notifications only on the pre-2026-07-28 wire — §4.1) | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur. Rate, resumption, and the in-band control channel are §4.2; posture is §4.3. |
+| **invoke** | MCP `tools/call` / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference. The target **version** and the **quoted cost** the caller gated against are optional operands, and which major runs is resolved by a stated rule with no default — §4.4. A declared autonomy posture is an optional operand, and the capability's declared effect class is what it reads — §4.3. |
+| **subscribe** | A2A streaming (MCP notifications only on the pre-2026-07-28 wire — §4.1) | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur. Rate, resumption, and the in-band control channel are §4.2; posture is §4.3; the §7 successor / deprecation / removal signals ride that same channel — §7.3g. |
 | **fetch** | CAS GET by `asset` id | retrieve asset bytes by their KINP id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant (§5). |
 
 `subscribe` is the control-plane half of KGP §6 subscriptions: KGP defines the delta payload,
@@ -665,7 +779,7 @@ or a session id.**
 | §2 `params.mcp` | An **address**, not a connection | Wire-independent. The field names where a peer's MCP surface is; it has never carried, or implied, a session. |
 | §3 registry crawl | Pull over a peer's MCP/A2A surfaces | Wire-independent. The crawl reads the KCB extension off the **A2A card** (§2); its MCP leg is request/response. |
 | §4 **describe** — `tools/list` | Request/response | Wire-independent. KCB reads the manifest off the A2A card, so `tools/list` supplies *tool schemas* only. The pinned revision's mandatory **`server/discover`** is the MCP-native way to learn what a server is; KCB neither requires nor forbids calling it, because the KCB payload is not served from there. |
-| §4 **invoke** — `tools/call` | Request/response | Wire-independent, and *better* served by the pinned revision: a capability grant (§5) and the invoked capability's version travel **per call**, which is exactly what per-request `_meta` is for. Nothing in §5 or §7 reads state left by a previous call. |
+| §4 **invoke** — `tools/call` | Request/response | Wire-independent, and *better* served by the pinned revision: a capability grant (§5) and the invoked capability's version travel **per call**, which is exactly what per-request `_meta` is for (§4.4a/b). Nothing in §5 or §7 reads state left by a previous call. The tool the call addresses is the one the manifest's `binding` names (§2.4), never one derived from the capability name. |
 | §4 **fetch** | CAS `GET` by asset id | Wire-independent — not an MCP call at all. |
 | §4 **subscribe** | Server→client **stream** | **The one session-shaped clause.** A stateless core has no client-scoped channel a server may push to, so under the pinned revision a `subscribe` stream is delivered over **A2A streaming**. "MCP notifications" names the pre-2026-07-28 wire; a participant on that wire MAY still deliver there, and a consumer MUST NOT assume it. |
 
@@ -1103,6 +1217,102 @@ counts in the status note are restated and none of them moves. ADR-0013 addition
 **second-independent-implementation** condition on ratification (its **W3**), which is a condition of
 that record rather than a finding of this leg.
 
+
+---
+
+### 4.4 Version negotiation at invoke (0.5.0)
+
+Which major an `invoke` runs against, and what the caller had been quoted when it decided to make the
+call. This folds **V-5** (blocking) and **V-1** of
+[`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md), and it is the
+half of §7's perimeter that §2.4 does not address: §2.4 gives the second major an **address**, and
+this section gives the call a **version**. Neither closes the hole alone — with an address and no
+operand a provider still has to choose a major for a version-free call, and with an operand and no
+address it cannot route the one that was chosen.
+
+**Why a default cannot be specified.** §5 binds a grant to `(capability, major)` and fails closed on
+a major it was not issued for. That rule is right and it had **no operand**: the token is version-free
+by design (encoding the major into the grant *name* would fragment authorization the way `compose-v2`
+fragments discovery, §7.1), `invoke` defined no version argument, and both majors answer to one name.
+Every available default fails, and they fail in different directions — *highest published* inverts
+fail-closed into **fail-open** and bills a v1-granted caller at v2; *lowest* makes a successor
+unreachable forever; *whatever the grant says* is correct and the provider does not hold the issuance
+record. Under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) the registry returns an
+address and peers dial **directly**, so there is no hub to arbitrate a disagreement about which major
+was meant: a clause that left the choice to the implementer would produce a runtime mismatch far from
+its cause. This section therefore states the resolution exhaustively and, where it is genuinely
+ambiguous, **refuses** rather than picks.
+
+This section is **additive at every surface**. Every operand below is optional on read and on write; an
+`invoke` that carries none of them against a provider publishing one major behaves exactly as it did at
+0.4.9; no verb, plane, port kind or authority role is added.
+
+**a. `invoke` carries the version it means (V-5).** `invoke` (§4) MAY carry an OPTIONAL **`version`**
+operand — an exact semver or a range in the §3 `find` form (`1.4.0`, `^1`) — naming what the caller
+intends to run against, in the operand shape §4.2b established and §4.3b reuses. A caller that pins
+says so **on the wire**, where the party that enforces the pin can read it.
+
+**b. The granted major travels in the token (V-5).** The grant's **`invoke:<capability>` form is
+unchanged** — §5's anti-fragmentation argument is untouched, and no new grant name is minted. What
+changes is that the issuance fact §5 already describes becomes **readable by the party that enforces
+it**: a grant MUST carry the major it was issued at, alongside the issuing host (§5, MA-6) it already
+carries. A provider presented with a grant whose major it cannot read MUST treat it as a grant with no
+readable major, which is (c)'s third case and not an authorization for anything.
+
+**c. Resolution — one rule, and no default (V-5).** A provider resolves the target major of an
+`invoke` in exactly this order, and the order is NORMATIVE:
+
+1. **The `version` operand, where present.** It names the target. If no published version satisfies
+   it, the `invoke` is refused *no satisfying version*, naming the majors published.
+2. **Otherwise the grant's major, where readable (b).** This is the case (b) exists for.
+3. **Otherwise, where the provider publishes more than one major of that name — REFUSE for want of a
+   version**, naming the majors it publishes so the caller can re-dispatch against one. A provider
+   MUST NOT pick, and MUST NOT resolve to the highest published major: that is the fail-open
+   inversion **V-5** found, and it is forbidden by name.
+4. **Otherwise — the one major published.** A provider serving a single major answers a version-free
+   call exactly as it did at 0.4.9, which is what keeps this fold additive.
+
+Two rules bound the outcome:
+
+- **A resolved major outside the granted major is refused at the gate** (§5) — before the work, not
+  after the bill. Where the operand and the grant disagree, the operand does not widen the grant: the
+  grant is what binds, and the refusal names the granted major and the requested one.
+- **Refusal for want of a version is the same instrument §5 already uses** for a `budget_units` ceiling
+  whose unit is unstated across an authority boundary (MA-6). Where a number or a name could mean two
+  things and no party is entitled to guess, this bus refuses rather than assumes. The two clauses are
+  one rule applied twice, not two conventions.
+
+**d. The quoted cost is an operand, and a mismatch is refused by name (V-1).** *"A cost change is
+never silent"* (§5) was asserted and not mechanized: §3's path search returns the projected cost
+*before* an `invoke`, §5 evaluates the ceiling against the **then-published** cost, and the call
+carried neither — so a caller learned that a price had moved **by being refused**, and a provider
+could not distinguish *"the caller saw the new price and accepted it"* from *"the caller is still
+budgeting against a stale one"*. `invoke` therefore MAY carry an OPTIONAL **`quoted_cost`** — the
+projected cost §3 returned and the caller actually gated against, in §2.1's `cost` shape. Normative:
+
+- Where `quoted_cost` is present and differs from the then-published cost of the resolved
+  `(name, major)`, the provider MUST refuse **quote mismatch**, naming the published cost. That names
+  the real condition, where a bare ceiling refusal names a symptom.
+- Where it is **absent**, behaviour is 0.4.9's exactly: the ceiling is evaluated against the
+  then-published cost and a raise beyond the caller's remaining ceiling fails at the gate rather than
+  overspending (delta K).
+- **It is not a price lock.** A quote is not a token, carries no expiry, reserves nothing, and does not
+  bind the provider: the then-published cost still governs and the invoke still fails closed. What the
+  operand buys is that the refusal is **attributable to the right cause**, which a caller can act on.
+- `cost` remains **outside** the `schema_id` digest (§7.1) and a re-price remains a **minor** bump
+  (§7.2). This clause adds an operand; it moves no digest and re-prices nothing.
+
+**e. Bounded on purpose.** This section defines **no** token format, issuance or rotation mechanism
+(§5's own boundary, unmoved); **no** version-negotiation protocol — a refusal under (c) is a refusal,
+not a counter-offer, and a re-dispatch under a different operand is a new `invoke`, exactly as §4.3g
+fixes for a posture refusal; and **no** requirement that a caller pin. A consumer content to follow a
+provider's single published major carries nothing and is conformant.
+
+**Re-ratification — this adds no count.** §4.4 is the fold of deltas already recorded against the
+**§7.5** count (V-5, V-1), so it re-enters validation on that count rather than opening a new one: the
+mutate-live-schema re-run is what exercises it. The other four counts in the status note are restated
+and none moves.
+
 ---
 
 ## 5. Trust & authorization
@@ -1148,6 +1358,16 @@ that record rather than a finding of this leg.
   grant from the hosting org's governance. Fail closed. The grant's `invoke:<capability>` **form is
   unchanged** — the major travels with the issuance and is never encoded into a new grant name,
   which would fragment authorization the way `compose-v2` fragments discovery (§7.1).
+- **The granted major is readable, and which major runs is resolved by §4.4c (V-5).** The rule above
+  was right and had **no operand**: nothing on the wire said which major an `invoke` meant, so a
+  provider serving two majors under one name had to choose one for a version-free call — and *highest
+  published*, the obvious choice, inverts the bullet above from fail-closed into **fail-open**,
+  billing a v1-granted caller at v2. Therefore: a grant MUST carry the major it was issued at,
+  readable by the provider that enforces it (§4.4b), beside the issuing host it already names (MA-6);
+  the target major of a call is resolved by **§4.4c** — operand, else grant, else **refuse for want of
+  a version**, never a default; and a resolved major outside the granted major is refused **at the
+  gate**, before the work and before the bill. The grant's name, its scope, and the token format are
+  all unchanged.
 - **A re-priced capability fails closed, never silently.** `cost` sits *outside* a port's
   `schema_id` (§7.1) because price is not shape, so re-pricing does not re-digest the contract and
   does not signal a break that is not one; it is a **minor** bump (§7.2), so the version moves and a
@@ -1157,6 +1377,11 @@ that record rather than a finding of this leg.
   than overspending (delta K). A capability moving `cost.tier` from `free` to `paid` is this case
   and not a special one: path search stops preferring it, a zero-budget grant stops reaching it, and
   there is no silent bill.
+  **What 0.5.0 adds is the operand that names the condition (V-1):** an `invoke` MAY carry the
+  `quoted_cost` it gated against (§4.4d), and a provider whose then-published cost differs refuses
+  **quote mismatch** rather than a bare ceiling overrun. Enforcement, governance and direction are
+  unchanged — the then-published cost still decides and it still fails closed; the caller simply
+  learns *why*.
 - **A subscription is metered on delivery, and braked before it stops** (§4.2e). The rules above
   evaluate `budget_units` *at invoke*, of which a stream has exactly one — so a ceiling on a
   `subscribe:world/…` grant was inert until §4.2 gave it an operand (a port's `volume.cost`, §4.2a)
@@ -1197,6 +1422,15 @@ planes agree.
 | **World producer** | a simulation/game server, generators | Consume grounding capabilities; expose world-export as a capability; in-world agents MAY publish their own manifests. |
 | **Domain consumer → provider** | no agent surface yet | Consumer first (ground its own design work); later a **provider** — expose its native operation ("render this instrument") as an invocable capability so a peer's agents can drive it. |
 
+**Mapping a capability onto a tool namespace (V-4).** Every role above that *provides* meets one
+transport fact: an MCP tool namespace is **flat and name-keyed**, while §7.2 obliges a provider to
+serve two majors of one capability side by side for a transition window. The two are reconciled by
+**§2.4**, and only there: the capability **name** stays version-free because the registry matches it
+(§3, §7.1), and the per-major **transport id** rides as an optional `binding` on the manifest entry,
+which a consumer reads and never derives. A provider serving one major maps it onto one tool under its
+own name and needs nothing from §2.4; a provider mid-window gives at least the colliding entries
+distinct bindings, or it has not met §7.2's obligation.
+
 ---
 
 ## 7. Versioning, compatibility & deprecation
@@ -1232,14 +1466,41 @@ as **`0.0.0`-unknown** and MUST be treated by a consumer as pinnable only by dig
 `inputs`/`outputs` — SHOULD carry a **`schema_id`**: an algorithm-prefixed digest in the KINP §3
 form (`sha256-<lowercase hex>`) over the canonicalized bytes of that port's declaration.
 
+**A knowledge port's `shape` is a routing identity, not a payload identity (V-2).** NORMATIVE, and it
+is an obligation on the **reader**: a `knowledge` port declaring a `shape` and **no**
+`payload_schema_id` (§2.1) establishes what the port is *for* and **not what it carries**, because
+`shape` holds a free-form name and a provider may redefine the payload behind an unchanged name at an
+unchanged digest and an unchanged `version`. A consumer MUST therefore read such a port as this
+section's own ***no cross-check available*** default, and MUST NOT read an unmoved `schema_id` on it
+as evidence that the payload is unchanged. This converts a **silent** break into a **declared
+absence**, which is the whole of what the break-test demanded: the consumer that failed did not fail
+for want of a digest, it failed because it believed the digest it held covered the payload. A provider
+that wants the cross-check publishes a `payload_schema_id` over its own canonical declaration of that
+payload — optional, and no provider is obliged to. Media ports (`media_types` names an externally
+standardized format) and entity ports (`types` are registry-controlled) are unaffected: their shape
+keys carry structure that a third party fixes, which is exactly the property `shape` lacks.
+
+*Deliberately not done: a shape registry.* Registering `shape` names with immutable signatures, on the
+[`../registry/`](../registry/) relation rule, was the alternative and is **rejected on the record** —
+it would mint a commons two authority domains must agree on before they can exchange a knowledge port,
+where [KINP §3.4](identity.md) records the prefix registry as the fabric's *one* deliberately
+non-federated commons and [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) federates
+every other authority role; and a payload shape is authored by the participant that implements the
+capability, which [ADR-0007](../decisions/ADR-0007-self-describing-participant.md) makes
+self-describing. The reasoning, and the break that would re-open it, are in
+[`../docs/reference/capability-versioning-fold-dispositions.md`](../docs/reference/capability-versioning-fold-dispositions.md).
+
 **Canonicalization.** The bytes hashed are a JSON serialization of the port object reduced to shape
 and normalized, so that two providers declaring the same port produce the same digest and one
 provider re-serializing produces no drift:
 
 1. **Keep only shape keys** — `plane`, plus that plane's type vocabulary from §2.1's table:
-   `dialect`, `worlds`, `shape` (knowledge); `media_types`, `world_pattern` (media); `types`
-   (entity). Every other key is dropped before hashing, explicitly including `description`, `cost`,
-   the capability's own `version`, and `schema_id` itself. `cost` is priced, not typed (§5), so a
+   `dialect`, `worlds`, `shape`, `payload_schema_id` (knowledge); `media_types`, `world_pattern`
+   (media); `types` (entity). Every other key is dropped before hashing, explicitly including
+   `description`, `cost`, `volume` (§4.2a), `effect` (§4.3a), the capability's own `version`, its
+   `binding` (§2.4), and `schema_id` itself. `payload_schema_id` is the one 0.5.0 addition and it is
+   kept, because it **is** shape (§2.1): a port that starts declaring one has declared a different
+   contract, and the digest must move. `cost` is priced, not typed (§5), so a
    re-price must not re-digest; and folding the `version` in would make every digest trivially
    unique and therefore useless as a cross-check *on* that version.
 2. **Normalize values** — array-valued vocabularies (`media_types`, `types`, `worlds`) are sorted
@@ -1250,6 +1511,35 @@ provider re-serializing produces no drift:
    discipline KINP §3 applies to a claim id.
 4. **Hash and prefix** — `sha256` over those bytes, lowercase hex, prefixed with the algorithm name
    and a hyphen. A future algorithm is a **new prefix**, never a reinterpretation of this one.
+5. **Name the rule that produced it (V-3).** Step 1's key set is drawn from §2.1's vocabulary *as
+   this version states it*, so any future minor that grows that table would make a provider and a
+   consumer one minor apart digest the same port differently — and §7.2 converts that disagreement
+   into *silent mutation*, the one verdict it makes non-recoverable. Two conformant parties would
+   break each other, and *ignore unknown fields* (which keeps the minor tier alive at the manifest
+   layer) and *hash only the keys you know* (which forks the digest here) cannot both hold of one
+   key. Step 4's own principle — *a future algorithm is a new prefix, never a reinterpretation* — is
+   therefore extended from the **hash** to the **key-set rule**:
+
+   - A `schema_id` MAY carry a **canonicalization rule id** in its prefix, as
+     `sha256/<rule>-<lowercase hex>`. **An absent rule id means `kcb1`** — the key set and
+     normalization of 0.4.x — so every digest already published keeps its meaning, nothing is
+     republished, and no already-conformant card moves.
+   - This version states **`kcb2`**: `kcb1`'s rules plus the knowledge plane's `payload_schema_id`.
+     Because step 2 drops an absent key rather than serializing it, a port that declares **no**
+     `payload_schema_id` canonicalizes **byte-identically** under both, and a provider MUST NOT emit a
+     `kcb2` prefix for such a port. **This fold therefore moves no published digest.** A port that
+     *does* declare one has changed its shape and its digest moves — which is a minor bump under §7.2
+     like any other shape change, so a consumer on the old rule meets a moved digest at a **moved
+     version** and takes the ordinary re-discovery path, never the silent-mutation one.
+   - **Comparison is meaningful only between digests computed under the same rule id.** A consumer
+     that meets a rule id it does not know MUST read that digest as this section's *no cross-check
+     available* default — never as a defect, and never as a mutation (§7.2).
+   - Growing §2.1's shape vocabulary again mints the **next** rule id. Re-interpreting `kcb1` or
+     `kcb2` is non-conformant, for the reason step 4 already gives about the hash.
+
+   This is also what makes §7.4's archival pin *interpretable* rather than merely resolvable: a digest
+   recorded decades out is comparable only if the rule that produced it can be named. §7.4 needs no
+   clause of its own — it is where the cost of not stating the rule would have come due.
 
 **Falsifiability is the point.** A consumer recomputes the digest from the card it fetched itself
 (`describe`, §4) and compares it against the published value. The digest is a **fact** the consumer
@@ -1271,6 +1561,8 @@ given bump.
 | **Widen** an input port — accept more `media_types`, a broader `world_pattern`, more entity `types` | minor | No |
 | **Add** an output field, or an additional produced `media_type` | minor | No — consumers MUST ignore unknown output fields |
 | Editorial only — `description`, examples; no `schema_id` change | patch | No |
+| Add an OPTIONAL `payload_schema_id` to a knowledge port (§2.1) | minor | No — the digest moves *with* the version, and what the port routes is unchanged |
+| Change a capability's transport `binding` (§2.4) | minor | No — but a live `subscribe` MUST be told on §4.2d's channel (§7.3g), never left to a failed dial |
 | Change `cost` | minor, and never silent (§5) | No |
 | Add a **required** input, or make an optional input required | **major** | Yes |
 | **Remove or rename** a capability, a port, or a field | **major** | Yes |
@@ -1289,6 +1581,17 @@ Two obligations fall out of that table, and both are normative.
   that differs from the one it bound to at an **unchanged** `version` has detected a **silent
   mutation**: it MUST treat the capability as unusable and MUST NOT guess which side is right.
   Re-discovery (§3), not a retry, is the recovery.
+- **Two things are NOT a silent mutation, and a consumer MUST NOT report them as one.** (i) A
+  knowledge port whose `schema_id` has *not* moved is no evidence that its payload has not, where the
+  port carries no `payload_schema_id` — that port never had a payload cross-check, and §7.1 makes a
+  consumer read it as *no cross-check available* (**V-2**). (ii) A digest carrying a canonicalization
+  **rule id** the consumer does not know is *incomparable*, not mutated, and is read the same way
+  (**V-3**). The verdict this table makes non-recoverable is reserved for the case it was written for:
+  the same rule, the same port, a moved digest, an unmoved version.
+- **Which major a call runs against is §4.4c's, and it is not a default.** This table governs what a
+  provider MAY change under a bump; §4.4 governs which of the published majors an `invoke` reaches.
+  The two are complementary and neither substitutes: a provider dual-serving under this table MUST
+  make each major addressable (§2.4) and MUST resolve — or refuse — under §4.4c.
 
 **A breaking change is published as a successor, never edited in place.** A provider MUST NOT mutate
 a published `(name, major)` into an incompatible shape. It publishes an **additional** entry in
@@ -1298,6 +1601,14 @@ predecessor deprecated with a declared removal version (§7.3). So the signal fo
 capability a subscriber bound to keeps working, the successor is discoverable next to it, an
 unpinned consumer migrates by re-discovering and a pinned one when it chooses. **A subscriber never
 learns of a break by failing an invoke.**
+
+That invariant is **pull-side**, and the bus's most durable binding never pulls: a consumer holding an
+open `subscribe` (§4) is under no obligation to re-`describe`, and before 0.5.0 it learned of a
+successor, a deprecation and a removal alike by a **dead stream** (**V-7**). **§7.3g** is the
+streaming half of this rule — the same three facts, pushed on §4.2d's existing in-band control
+channel, each before it takes effect. A discovery binding held with no stream open, and a grant (§5),
+which does not expire, are reached by neither half; §7.3g states that boundary rather than implying
+it is closed.
 
 This is the rule two other parts of the fabric are already instances of: a **relation signature** is
 immutable once published ([`../registry/README.md`](../registry/README.md)) because changing it
@@ -1320,10 +1631,22 @@ media type, a manifest location (§2.2), an extension URI.
   type, a manifest location, an extension URI — it is the **minor version of the spec that defines
   it**. A version is a deadline a consumer can read off the contract; a calendar date is a
   *deployment* fact, visible only to the operator and enforceable by nothing on the wire.
-- **c. Never in the same release: at least one full minor.** The declared removal MUST be at least
-  one minor after the version that declared the deprecation, so that declaring and removing are
-  never the same publication and a consumer one version behind still meets the deprecation before
-  the removal.
+- **c. Never in the same release — and the floor is measured on the axis's own unit (V-6).**
+  Declaring and removing MUST NOT be the same publication, so that a consumer one version behind
+  still meets the deprecation before the removal. *How far apart* depends on **who authors the
+  axis**, and the two cases are not the same rule:
+  - **A surface whose axis is a koine spec version** — a media type, a manifest location, an
+    extension URI: **at least one full minor**, unchanged from 0.4.x. This is where the rule was
+    argued and where it is correct: a spec minor is published on a public cadence by a party that is
+    not the retiring one, so "removed at KMI 0.4.0" is a deadline a consumer can plan against.
+  - **A retiring capability major** — an axis the retiring party **publishes itself, at will**: **at
+    least the successor's next major.** *"`1.x` removed at `2.1.0`"* is conformant arithmetic and no
+    floor at all, because (e) forbids moving a declared removal *earlier* and says nothing about
+    **arriving** at it sooner — a provider may declare it and ship `2.1.0` the next day, which is
+    exactly what the break-test did. One full breaking-change cycle of dual service is a floor that
+    costs the declaring party something to reach, which is what makes it one.
+  - The three surfaces mid-window under this policy are all of the **first** kind, so no declared
+    removal version moves for this change (see below).
 - **d. Both forms are served, and the predecessor stays functional, for the whole window.**
   Deprecated means *superseded*, not *degraded*. Where both are offered for the same thing the
   **successor is authoritative**. Discovery (§3) MUST keep returning a deprecated entry — marked,
@@ -1338,12 +1661,54 @@ media type, a manifest location (§2.2), an extension URI.
   produced is invalidated: content-addressed artifacts stay valid and fetchable, and an archival
   record naming a retired contract version stays resolvable (§7.4). Retirement is a statement about
   the **live** contract only.
+- **g. A live subscriber is told, on the channel that already exists (V-7).** Everything in (a)–(f)
+  is **pull-side**: a subscriber meets a deprecation at discovery or `describe` (d), and a consumer
+  that never re-discovers meets it nowhere. The bus's most durable binding never pulls — an open
+  `subscribe` (§4) is under no obligation to re-`describe` — so a fully conformant subscriber slept
+  through successor, deprecation and removal alike and learned by a **dead stream**, which is
+  precisely the invariant §7.2 rates highest. Therefore, NORMATIVE: a producer serving a live
+  `subscribe` bound to a `(name, major)` MUST emit, on the **§4.2d control channel** in the
+  producer→subscriber direction, each of the following events that binds that subscriber:
 
-Three surfaces are mid-window under this policy today: KCB's own standalone
-`/.well-known/kcb-manifest.json`, removed at **KCB 0.5.0** (§2.2); the **legacy namespace root**
-of the §2 manifest extension URI, removed at **KCB 0.6.0** (§2.3); and KMI's deprecated
-`application/vnd.koine.edl+json`, removed at **KMI 0.4.0**
-([`media-interchange.md`](media-interchange.md) §4.4).
+  | Frame | Announces | Emitted |
+  |---|---|---|
+  | `successor_published` | a successor at a new major now stands beside the bound one (§7.2), carrying that successor's version and — where the provider serves it elsewhere — its `binding` (§2.4) | when the successor is published |
+  | `deprecated` | the bound `(name, major)` is now marked deprecated, carrying its declared **removal version** (a) | when the marking is published |
+  | `removal` | the removal version has been reached and this subscription ends under (f) | **before** the stream stops |
+
+  - **Each frame precedes the fact it announces**, never follows it. A subscriber MUST NOT be left to
+    learn any of the three from a failed `invoke` or a stream that simply stops; a producer that
+    stops a stream at removal without a preceding `removal` frame is **non-conformant**.
+  - **One channel, not two.** These are frames on §4.2d's existing in-band channel, which mints that
+    channel in both directions and requires exactly this: *"a fold of V-7 MUST carry its deprecation
+    and removal signals on this channel rather than mint a second, parallel signalling mechanism."*
+    No verb, no transport, no second connection, and §4.1's audit is unchanged.
+  - **Additive under §4.2d's own rule.** A subscriber that understands none of the three ignores them
+    and is exactly as exposed as it was at 0.4.9 — no worse; a producer that emits none is now
+    **detectable** rather than merely silent, because the frames are named and a scenario can assert
+    their absence (KCS §5). It composes across §3.1 federation unchanged, for §4.2d's stated reason:
+    the binding — and therefore its channel — runs directly between the two peers, and no party with
+    jurisdiction over both ends was ever required.
+  - **What this does not reach, stated rather than implied.** §7.2 defines three binding forms and
+    this channel exists on one of them. A **discovery binding** — cached port shapes with no stream
+    open — and a **grant** (§5), which does not expire, have no channel, so for those (a)–(f)'s
+    pull-side machinery remains the whole of the contract. The two mechanisms that would reach them —
+    a stated re-validation cadence, and a TTL on the binding or the grant — are **deliberately not
+    folded here**: a cadence is only as good as the declared window, which (c) has just conceded was
+    not trustworthy; and a TTL is the most invasive of the three, touches §5's issuance, and buys a
+    streaming subscriber nothing this frame does not. The break that would force one is recorded, with
+    its trigger, in
+    [`../docs/reference/capability-versioning-fold-dispositions.md`](../docs/reference/capability-versioning-fold-dispositions.md)
+    (DEFER-D).
+
+Two surfaces are mid-window under this policy today, and one has just left it. **Removed at this
+version:** KCB's own standalone `/.well-known/kcb-manifest.json`, whose declared removal was **KCB
+0.5.0** and this is it (§2.2) — under (f) the obligation ends and the readability does not. **Still
+mid-window:** the **legacy namespace root** of the §2 manifest extension URI, removed at **KCB 0.6.0**
+(§2.3), and KMI's deprecated `application/vnd.koine.edl+json`, removed at **KMI 0.4.0**
+([`media-interchange.md`](media-interchange.md) §4.4). Both of those axes are **koine spec versions**,
+so (c)'s one-full-minor floor is the one that applies to them and **neither declared removal version
+moves** for (c)'s split.
 
 ### 7.4 An archival pin is not a live binding
 
@@ -1381,9 +1746,27 @@ cannot be operated; no §7 signal reaches a streaming subscriber (V-7); and the 
 knowledge ports (V-2) and incomparable across a spec minor (V-3). Every proposed fold is additive.
 The scenario's *Re-ratification — what this pass gates* section states the condition precisely: this
 pass discharges §7.5's requirement that the break-test be **written and run**, and does **not**
-discharge the gate, because the run was not clean. **KCB stays Candidate** until those folds land
-(a minor — **0.5.0**, the version §7.3 already schedules for §2.2's removal) and the break-test
-re-runs clean.
+discharge the gate, because the run was not clean.
+
+**Those folds have now landed — at 0.5.0, the version §7.3 already schedules for §2.2's removal.**
+Seven of the eight are folded and one is closed: **V-2** → §2.1's `payload_schema_id` and §7.1's
+reader rule (a bare `shape` is not a cross-check); **V-4** → **§2.4**'s transport `binding`;
+**V-5** → **§4.4a–c**'s version operand, readable granted major and no-default resolution, with §5;
+**V-7** → **§7.3g**'s three frames on §4.2d's existing channel; **V-3** → §7.1 step 5's
+canonicalization rule id; **V-6** → §7.3c's per-axis floor; **V-1** → §4.4d's quoted cost and its
+named refusal; **V-8** is closed where it lands, in KCS §7 open question 1. Three of the seven are
+**split** — V-2's shape-registry route is rejected on the record, V-7's cadence/TTL remainder is
+DEFER-D and V-6's `deprecated_at` is DEFER-E — and the extent of each is reasoned in
+[`../docs/reference/capability-versioning-fold-dispositions.md`](../docs/reference/capability-versioning-fold-dispositions.md).
+
+**A fold does not close its own gate. KCB stays Candidate**, and this count is now a **re-run of
+Steps 3, 5, 7, 8, 9 and 10 against the folded text**, with Steps 2, 4, 6 and 11 as the regression
+set. (Step 3 is in both lists on purpose: its digest-exclusion half *held* and its quote half broke —
+see that scenario's *Fold status*, which corrects the pass's own regression-set line.) The re-run is
+**unowned**, and per **DR-7** re-running today's KCS encoding proves nothing about the fold: that
+encoding deliberately does not assert an unfolded delta, so it must be **extended** — through the
+declared-console-extension escape hatch KCS §7 open question 1 blesses and **V-8** measures the cost
+of — before a clean run can discharge this count.
 
 ---
 
@@ -1477,6 +1860,20 @@ of the first four is moved by this fold. ADR-0013 additionally carries a
 **second-independent-implementation** condition on ratifying §4.3 (its **W3**); that is a condition of
 the record, not a finding of the leg.
 
+**0.5.0 — the second gate's deltas fold, and no sixth gate opens.** The capability-versioning fold
+reopens no delta either: F/G/J/K/L, MA-6/MA-8/MA-9, BP-1…BP-6 and AP-1…AP-8 are all untouched, and
+three of the new clauses are deliberately built **onto** earlier folds rather than beside them —
+§7.3g's frames ride §4.2d's control channel (which mandated exactly that), §4.4c's refuse-for-want-of-a-version
+is the instrument §5 already uses for MA-6's unstated ceiling unit, and §2.4's `binding` is excluded
+from §3.1(d)'s three-part de-duplication key by construction. It adds **no count**: §2.4, §4.4, §7.1
+step 5, §7.2's two new reader rules and §7.3c/g are the fold of the deltas count (ii) already holds,
+so they re-enter validation on that count. **Re-ratifying KCB still needs five passes**, and all five
+are open: the extension-shape re-run, a clean mutate-live-schema pass (now a re-run of **Steps 3, 5,
+7, 8, 9 and 10** against the folded text), a clean cross-authority pass for §3.1, a clean firehose
+re-run for §4.2, and a clean cross-owner-posture re-run for §4.3 — plus ADR-0013's **W3** on §4.3
+alone. What did change is that 0.5.0 discharges §2.2's declared removal (§7.3f); that is a deadline
+arriving, not a fold, and it closes nothing.
+
 **Downstream evidence (2026-08-24) — and this spec is where reading it wrong costs the most.** The
 KCS encodings of three of the five gating scenarios were run over real MCP/A2A links and all three
 came back `green` (`kcs:media-transform`, `kcs:live-schema-mutation`, `kcs:multi-authority`; recorded
@@ -1496,6 +1893,15 @@ most important thing an owner citing this run must understand:
   leg that F exists for; and delta **L**'s dangling-reference tolerance and **G**'s `fetch` grant
   refusal both ran as encoded, the refusal as an `expect: reject` step. §7's compatibility surface
   was *replayed* but, per DR-7, not asserted.
+- **And after the 0.5.0 fold, DR-7 becomes a work item rather than a caveat.** Re-running
+  `kcs:live-schema-mutation` unchanged against the folded text would assert the same subset it
+  asserted before and would say nothing about §2.4, §4.4, §7.1 step 5 or §7.3g. The encoding must be
+  **extended** to assert the negotiated behaviour — the assertion set is written out in that
+  scenario's *Conformance case* section — and **V-8** is the standing measure of what that costs:
+  four of its ten assertions have no KCS §5 predicate, so the extension rides the declared
+  console-extension escape hatch KCS §7 open question 1 leans toward. That extension is downstream
+  work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**; it adds
+  no count and does not qualify one, it is what makes count (ii) discharge*able*.
 - **The fourth and fifth counts have no encoding at all — DR-12, DR-13.**
   [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) is
   koine's eleventh scenario and
@@ -1509,6 +1915,101 @@ most important thing an owner citing this run must understand:
   qualifies the fourth and the fifth.
 
 ## Changelog
+
+- **Editorial** (2026-08-26) — **the two 2026-08-26 folds read against each other.** 0.4.9 (the
+  federation fold) and 0.5.0 (the capability-versioning fold) landed in this spec on the same day
+  from two tasklists, and a capability advertised across an authority boundary is governed by both.
+  Eleven seams were read against the **published** text of each; the record is
+  [`../docs/reference/fold-coordination-federation-versioning.md`](../docs/reference/fold-coordination-federation-versioning.md).
+  **Ten agree** — including the three the federation fold pre-registered (V-2's shape-registry
+  rejection rests on KINP §3.4/MA-7; §4.4c's *refuse for want of a version* and §5's *refuse for want
+  of a unit* are stated as one rule applied twice; §2.4 reads §3.1(d) rather than editing it, and
+  **`version` stayed in the de-duplication key**, the named near-miss). **One does not**, and it is
+  recorded as [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) rather than
+  folded into either version: §7.3a/d's **deprecated marking and removal version have no carrier** in
+  §2 or §3 — MA-8's class, unreached by that fold — and §3.1(d)'s converse keys on
+  `(provider KINP id, (name, version), schema_id)`, none of which a marking moves, so two attributions
+  that disagree about a deprecation MUST come back as one entry whose marking is undefined and
+  §3.1(e) cannot fire. §7.3g is what makes it bite. **No version moves and no count closes**: the
+  clause spans both folds' sections and lands with counts (ii) and (iii), which already exercise them.
+  This entry also records one **correction** found by that read — §3.1's closing paragraph said *"the
+  three other counts"* and enumerated three; §4.3's count had landed at 0.4.8 from a third tasklist
+  between that paragraph's planning and its writing, so it now names four. The status note was
+  already right; no clause, no version and no count moves for the correction.
+- **0.5.0** (2026-08-26) — **The capability-versioning fold.** Folds the deltas of this spec's second
+  re-ratification count — the §7.5 break-test
+  [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md), which drove
+  a capability through a full release cycle under a live subscriber and returned **V-1…V-8**,
+  blocking **V-2/V-4/V-5/V-7**. §7's *model* was never in question; its **perimeter** was, and this
+  release repairs it additively. Seven fold, one closes:
+  - **V-2** (blocking) → **§2.1** gains an OPTIONAL knowledge-port `payload_schema_id`, and **§7.1**
+    gains the rule that matters more: a knowledge port declaring a bare `shape` and no payload digest
+    establishes **routing** identity and not **payload** identity, and a consumer MUST read it as
+    §7.1's own *no cross-check available* — a silent break becomes a **declared absence**. The
+    scenario's alternative, a **shape registry**, is **rejected on the record**: it would mint a
+    commons two authority domains must agree on before exchanging a knowledge port, against KINP
+    §3.4's *one deliberately non-federated commons* and ADR-0007's self-describing participant.
+  - **V-4** (blocking) → new **§2.4**: an OPTIONAL per-entry transport `binding`, so the dual-serving
+    window §7.2 *mandates* can actually be operated on a flat, name-keyed MCP tool namespace. Two
+    namespaces, only one governed: the capability **name** stays version-free (§7.1 unchanged,
+    because the registry matches names), while the transport id is a local address nobody discovers
+    by. Read from the manifest, **never guessed**; not shape, not identity, and not part of §3.1(d)'s
+    de-duplication key. §6 gains the role-facing statement of the same mapping.
+  - **V-5** (blocking) → new **§4.4a–c** with **§5**: an OPTIONAL `version` operand on `invoke`; the
+    granted major made **readable inside the token** while the grant's `invoke:<capability>` name
+    stays unchanged (so §5's anti-fragmentation argument is untouched); and a resolution rule stated
+    exhaustively — operand, else grant, else **refuse for want of a version**, never a default, with
+    *highest published* forbidden **by name** because it inverts fail-closed into fail-open. This is
+    the shape 0.4.9 gave `budget_units` crossing an authority boundary (MA-6), reused deliberately:
+    under ADR-0001 there is no hub to arbitrate which major was meant.
+  - **V-7** (blocking) → new **§7.3g**: three named frames — `successor_published`, `deprecated`,
+    `removal` — each emitted **before** the fact it announces, on **§4.2d's existing** in-band control
+    channel, which already required that a V-7 fold ride it rather than mint a second. §7.2's *a
+    subscriber never learns of a break by failing* was pull-side and its most durable binding never
+    pulls; this is the streaming half. The binding forms the channel cannot reach — a cached discovery
+    binding, and a grant, which does not expire — are **stated** rather than implied closed (DEFER-D).
+  - **V-3** → **§7.1 step 5**: the digest prefix MAY carry a canonicalization **rule id**
+    (`sha256/<rule>-…`), extending step 4's *a future algorithm is a new prefix* from the hash to the
+    **key-set rule**. Absent means **`kcb1`** (0.4.x); this version states **`kcb2`** (`kcb1` plus
+    `payload_schema_id`); a port declaring no `payload_schema_id` canonicalizes byte-identically under
+    both and MUST NOT be re-prefixed, so **no published digest moves**. An unknown rule id reads as
+    *no cross-check available*, never as a mutation. Folding V-2 without this would have fired V-3 on
+    publication day, since V-2 grows §2.1's vocabulary.
+  - **V-6** → **§7.3c**, split by axis: a retiring **capability major** — an axis its own retiring
+    party publishes at will — waits for the successor's **next major**, one full breaking-change cycle
+    of dual service; a surface whose axis is a **koine spec version** keeps the original one-full-minor
+    floor, which is where it was argued and is correct. The remaining mid-window surfaces (§2.3, KMI
+    §4.4) are both of the second kind, so **no declared removal version moves**. `deprecated_at` is
+    DEFER-E.
+  - **V-1** → **§4.4d** with **§5**: an OPTIONAL `quoted_cost` operand and a refusal that names
+    **quote mismatch**. The refusal was already correct and fails closed; what it could not do was
+    distinguish *the caller accepted the new price* from *the caller is budgeting against a stale one*.
+    No price lock, no quote token, no expiry — the then-published cost still governs.
+  - **V-8** → **closed, not folded.** KCS §7 open question 1 already cites it by name as evidence that
+    its escape hatch works. No KCB clause, no KCS version.
+  **Minor, not patch.** Every field is optional on read and on write, no field or verb is removed, no
+  plane, port kind or authority role is added, and a participant implementing none of this stays
+  conformant — but seven folds are **new normative surface a reader implements against**, and §7.2's
+  own compatibility table gains a reader's obligation. That is a minor by §7.2's terms.
+  **And 0.5.0 discharges an obligation already declared:** under §7.3f, publishing this version **is**
+  the removal of §2.2's standalone `/.well-known/kcb-manifest.json` — declared at 0.3.0, dated at
+  0.4.0, and now due. A registry is no longer obliged to crawl it and a provider MUST NOT rely on it
+  being read; nothing already published is invalidated (§7.4). §2.3's separate window — the legacy
+  extension-URI root — is **untouched** and still runs to **KCB 0.6.0**.
+  **Bounded on purpose:** no shape registry (rejected, with its re-open trigger); no token format,
+  issuance or rotation (§5's boundary, unmoved); no version-negotiation protocol — a refusal is not a
+  counter-offer; no re-validation cadence or binding TTL (DEFER-D); no `deprecated_at` (DEFER-E); no
+  requirement that a caller pin, that a provider publish a payload digest, or that a provider serve two
+  majors at two endpoints. The extent of each fold, and the reasoning for every CLOSE and DEFER, is in
+  [`../docs/reference/capability-versioning-fold-dispositions.md`](../docs/reference/capability-versioning-fold-dispositions.md).
+  **Status: stays Candidate.** A fold does not close its own gate. Count (ii) becomes a **re-run of
+  Steps 3, 5, 7, 8, 9 and 10 against the folded text** — and per **DR-7** that re-run must use an
+  **extended** KCS encoding, since the current one deliberately does not assert an unfolded delta; the
+  assertion set it needs is written out in that scenario's *Conformance case*. The other four counts
+  are restated and none moves. **No schema twin changes** — koine ships no machine-readable twin of the
+  KCB card extension, and `participant-self-description.schema.json` references the manifest by pointer
+  without restating a `params` field (ADR-0007 decision 7). **No registry file changes** — the one route
+  that would have touched [`../registry/`](../registry/) is the rejected shape registry.
 
 - **0.4.9** (2026-08-26) — **The federation fold, control-plane half.** Folds the three deltas
   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the ADR-0012

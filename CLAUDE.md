@@ -115,7 +115,7 @@ vocabulary.
   without §7 moving, and KMI **reuses** §7.1/§7.2's classes on the asset envelope while KGP's own
   enforcement point (pack construction, for records) is unchanged. **No clause, no version, no second
   gate** — deliberately, on the spec closest to promotion.
-- `specs/capability-bus.md` — KCB 0.4.9, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.5.0, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -266,7 +266,47 @@ vocabulary.
   §7.2's compatibility table are undisturbed. Bounded on purpose: no token format/issuance/rotation
   or issuer-discovery protocol (§5's own boundary), and §3.1(b) bounds a **query**, not a topology.
   **Stays candidate**; the §3.1 count is now a re-run of Steps 5–7 against the folded text and the
-  other four counts are restated, none moved.
+  other four counts are restated, none moved. 0.5.0 (**minor** — the one KCB had left, and the same
+  one §2.2's removal was declared against) is **the capability-versioning fold**, folding the deltas
+  of count (ii), the §7.5 break-test `scenarios/e2e-live-schema-mutation.md` (V-1…V-8, blocking
+  V-2/V-4/V-5/V-7). §7's *model* was never in question; its **perimeter** was. Seven fold and one
+  closes: **V-2** — **§2.1** gains an optional knowledge-port **`payload_schema_id`** and **§7.1**
+  the rule that matters more, that a bare `shape` establishes **routing** identity and *not* payload
+  identity, so a consumer MUST read it as §7.1's own *no cross-check available* (a silent break
+  becomes a **declared absence**); the **shape registry** alternative is **rejected on the record**,
+  because it would mint a commons two authority domains must agree on before exchanging a knowledge
+  port, against KINP §3.4's one non-federated commons and ADR-0007. **V-4** — new **§2.4**, an
+  optional per-entry transport **`binding`**, so §7.2's mandated dual-serving window is operable on a
+  flat, name-keyed MCP tool namespace: **two namespaces, only one governed** — the capability *name*
+  stays version-free because the registry matches it (§7.1 untouched), the transport id is local and
+  nobody discovers by it, and it is read from the manifest, **never guessed**. **V-5** — new
+  **§4.4a–c** with **§5**: an optional `version` operand on `invoke`, the granted major made
+  **readable inside the token** (the grant's `invoke:<capability>` *name* unchanged, so §5's
+  anti-fragmentation argument stands), and a resolution rule stated exhaustively — operand, else
+  grant, else **refuse for want of a version**, never a default, with *highest published* forbidden
+  **by name** because it inverts fail-closed into fail-open. Deliberately the shape 0.4.9 gave
+  `budget_units` at MA-6: under ADR-0001 there is no hub to arbitrate which major was meant. **V-7** —
+  new **§7.3g**, three named frames (`successor_published`, `deprecated` with its removal version,
+  `removal`), each emitted **before** the fact it announces, on **§4.2d's existing** control channel,
+  which already forbade minting a second; the binding forms it cannot reach (a cached discovery
+  binding, a grant, which does not expire) are **stated**, not implied closed (DEFER-D). **V-3** —
+  **§7.1 step 5**, a canonicalization **rule id** in the digest prefix, **absent meaning `kcb1`** and
+  this version stating `kcb2`, with a port declaring no `payload_schema_id` canonicalizing
+  byte-identically under both, so **no published digest moves**; an unknown rule id reads
+  *incomparable*, never *mutated*. Not optional given V-2, which grows the very vocabulary V-3 says
+  fires it. **V-6** — **§7.3c**'s floor split by axis: a retiring **capability major** waits for the
+  successor's next major, while a **koine-spec** axis keeps one full minor, so §2.3's and KMI §4.4's
+  removal versions do not move (`deprecated_at` is DEFER-E). **V-1** — **§4.4d**'s optional
+  `quoted_cost` and a refusal that names *quote mismatch*; not a price lock. **V-8** — **closed**, not
+  folded: KCS §7 open question 1 already cites it by name, and no KCS version moves. Minor rather than
+  patch because seven folds are normative surface a reader implements against and §7.2's own table
+  gains a reader's obligation. Publishing 0.5.0 also **discharges §2.2's declared removal** of the
+  standalone `/.well-known/kcb-manifest.json` (§7.3f) — a deadline arriving, not a fold; §2.3's window
+  is untouched and still runs to **0.6.0**. **No schema twin and no registry file moves.** **Stays
+  candidate**: count (ii) is now a re-run of Steps 3, 5, 7, 8, 9 and 10 against the folded text — and
+  per **DR-7** that re-run needs the KCS encoding **extended** to the scenario's new **F1–F13** set
+  first, since the existing one deliberately asserts no unfolded delta — and the other four counts are
+  restated, none moved.
 - `specs/media-interchange.md` — KMI 0.3.5, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
@@ -486,7 +526,25 @@ vocabulary.
   beside the pressure-test scenario — both now recorded in KCB §4.3, which is where the clause landed
   the same day (0.4.8), so the ADR's "no spec version moves" applies to the record and not to the day; withdrawal triggers W1–W3 are stated; the approval mechanism, the
   human authority, intra-org supervision and GOV-2's decision record are explicitly out of scope. No
-  spec version moves).
+  spec version moves), and ADR-0014 (**a federated merge merges attributions, never contents** — the
+  one finding of reading the federation fold (KCB 0.4.9) against the capability-versioning fold
+  (KCB 0.5.0), two folds that landed in one spec on one day from two tasklists; ten of eleven seams
+  agree, and the eleventh is a **gap at the seam** rather than a contradiction, which is why it is a
+  record and not a patch to whichever fold merged second. §7.3's *deprecated marking* and its removal
+  version have **no carrier** in §2 or §3 — MA-8's class, unreached by that fold — and §3.1(d)'s
+  de-duplication converse keys on `(provider KINP id, (name, version), schema_id)`, none of which a
+  marking moves, so a stale attribution and a fresh one come back as **one** entry whose marking is
+  undefined and §3.1(e) cannot fire; V-7 is what makes it bite, having just established that for a
+  discovery binding the pull side is the *whole* contract. It generalizes: §3.1(d)'s key is the digest
+  key plus `version`, so every operand deliberately kept **outside** the digest — `cost`, `binding`,
+  `volume`, `effect`, the marking — is outside the merge key too, and only the two with a declared
+  §7.2 bump are rescued. Decides: the marking gets a **carrier** extending MA-8's response shape; a
+  registry **MUST NOT synthesize** a value for a field outside the key; where the field is a **gate**
+  the **restriction wins** (ADR-0013's monotone-restrictive discipline reused); and none of it licenses
+  reconciling two **authorities**. **No spec version moves** — the clause spans both folds' sections and
+  lands with KCB counts (ii) and (iii). The read of record is
+  `docs/reference/fold-coordination-federation-versioning.md`, which also carries the six **agora**
+  findings AG-1…AG-6 and the plain answer that KCB is **not** promotable).
   `decisions/README.md` carries the full table — keep this list and that table in step. The deployment-history ADRs (ADR-0002/0003/0004 — bridge
   reconciliation, contract-layer consolidation, the Erlang provider-router) moved to the private
   integration repo, which continues koine's ADR numbering, so **0002–0004 are permanently

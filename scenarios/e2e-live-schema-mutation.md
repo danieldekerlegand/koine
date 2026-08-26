@@ -473,6 +473,57 @@ without a spec bump. Filed as **evidence for that question**, not as a demand on
 
 ---
 
+## Conformance case — the assertions the folded text requires (KCB 0.5.0)
+
+**Why the table above is not enough after the fold.** The ten assertions above are what the *pass*
+needed. Finding **DR-7** (recorded under *Downstream results*) says the encoding
+`kcs:live-schema-mutation` came back `green` on 2026-08-24 **over four open blocking deltas**,
+because an encoding deliberately does not assert a delta that has not been folded. Re-running that
+encoding unchanged against KCB 0.5.0 would therefore assert the same subset and say **nothing** about
+§2.4, §4.4, §7.1 step 5 or §7.3g. The encoding must be **extended**, and this is the set it must
+carry — the negotiated behaviour stated as things a replay can observe, rather than clauses a reader
+can agree with.
+
+Two implementations that both satisfy this table negotiate the same way **without consulting each
+other**, which is the property [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) makes
+load-bearing: the registry returns an address, peers dial directly, and there is no hub to reconcile
+a disagreement about which major was meant.
+
+| # | What a replay must observe | Step | Clause | KCS §5 predicate |
+|---|---|---|---|---|
+| **F1** | Both majors are dialable: a consumer that read the manifest reaches `1.4.0` and `2.0.0` **deterministically**, at the transport ids their entries declare — and a consumer that guessed one from the name reaches neither. | 7 | §2.4 | — *extension* |
+| **F2** | A version-free `invoke` against a provider publishing two majors of one name is **refused for want of a version**, and the refusal **names the majors published**. It is not served at the highest, the lowest, or any. | 8 | §4.4c(3) | `refused(step)` + `expect: "reject"`; the *reason* needs an extension |
+| **F3** | An `invoke` carrying `version: "^1"` under a v1 grant runs against `1.4.0` and never `2.0.0` — and the same call with no operand, against a provider serving one major, still runs (the 0.4.9 path). | 8, 2 | §4.4c(1)(4) | — *extension* |
+| **F4** | An `invoke` resolving to major 2 under a v1 grant is refused **at the gate, before any work and before any bill** — and the refusal names the granted major and the requested one. | 8 | §4.4c, §5 | `refused(step)`; *before-effect* needs an extension |
+| **F5** | A stale `quoted_cost` is refused **quote mismatch** by name; the same call **without** the operand still fails closed against the ceiling, exactly as at 0.4.9. Both, in one run — the second is the regression half. | 3 | §4.4d, §5 | `cost_within_ceiling` + `refused`; the reason needs an extension |
+| **F6** | A knowledge payload redefined behind an unchanged `shape`, where the port **does** publish a `payload_schema_id`: the digest **moves**, and the consumer detects it. | 5 | §2.1, §7.1 | — *extension* |
+| **F7** | The same redefinition where the port publishes **none**: the consumer reports ***no cross-check available*** and **does not** report *unchanged*. This is the assertion that separates a declared absence from a silent break, and it is the whole of V-2's fold. | 5 | §7.1, §7.2 | — *extension* |
+| **F8** | A `schema_id` carrying a canonicalization **rule id the consumer does not know** is read as *incomparable*, **not** as a silent mutation — the same verdict as F7 and not §7.2's non-recoverable one. | 6 | §7.1 step 5, §7.2 | — *extension* |
+| **F9** | A port declaring **no** `payload_schema_id` canonicalizes **byte-identically** under `kcb1` and `kcb2`, and its published digest is unchanged across the 0.4.9 → 0.5.0 boundary. The fold moves no digest, and this is how that is checked rather than asserted. | 4, 6 | §7.1 step 5 | `structure_matches(a, b)` (KCS 0.3.0) |
+| **F10** | The live subscriber receives a **`successor_published`** frame **before** `2.0.0` is invocable. | 7 | §7.3g | — *extension* |
+| **F11** | It receives a **`deprecated`** frame carrying the **removal version**, before the removal. | 9 | §7.3g | — *extension* |
+| **F12** | It receives a **`removal`** frame **before** the stream stops — and no run ends with a stream that stopped without one. The Step 10 failure mode is *learning by a dead stream*; this asserts its absence. | 10 | §7.3g, §7.2 | `always_completes(scenario)` is *inverted*; the ordering needs an extension |
+| **F13** | A retiring **capability major** declaring a removal earlier than the successor's **next major** is non-conformant — while a koine-spec-axis surface declaring one full minor is conformant. Both halves, or (c)'s split is untested. | 9 | §7.3c | — *extension* |
+
+**The cost of this table is V-8's, measured.** Ten of the thirteen have **no KCS §5 predicate**, and
+two of the remaining three borrow a neighbour's meaning — the same gap the pass already recorded, at
+roughly twice the size, because a folded clause asserts more than an unfolded one. That is not a
+demand on KCS: **KCS §7 open question 1** already cites V-8 by name as evidence for *a fixed core plus
+an escape hatch*, and the 2026-08-24 run declared five console extensions and reported them, which is
+the escape hatch working. The extension is built the same way — **declared console extensions,
+reported as such**, never smuggled into §5 — and **no KCS version moves** for it.
+
+**Downstream obligation, named here rather than left to be found.** This extends an **existing**
+encoding and adds no file to [`.`](README.md), so the set-equality the downstream encoding set is held
+to against `scenarios/*.md` is **unaffected** — no test breaks by this section existing. What *is*
+owed downstream is the extension itself: `kcs:live-schema-mutation` asserts assertions 1–10 above and
+must come to assert **F1–F13** before a re-run can discharge KCB's §7.5 count. It is downstream work
+under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and it is **unowned** — the same
+status **DR-11/DR-12/DR-13** record for the other artefact gaps. Until it lands, a green
+`kcs:live-schema-mutation` remains evidence for what it encodes and for nothing else.
+
+---
+
 ## Findings — required spec deltas
 
 | # | Severity | Gap | Delta | Spec |
@@ -527,7 +578,56 @@ Cleanup: V-1. V-8 is evidence for a KCS open question and blocks nothing. None r
 V-4/V-5 add a transport binding and an invoke argument, V-7 adds a control frame, V-2 registers a
 name, V-3 extends a prefix rule, V-6 raises a floor, V-1 adds a quote. **KCB stays candidate.**
 
-> **Resolution:** — see *Re-ratification — what this pass gates*, below.
+
+> **Resolution:** — see *Fold status*, immediately below, and *Re-ratification — what this pass
+> gates*. The verdict above is the record of the **pass**, stated at the version it ran against; the
+> deltas were folded on 2026-08-26 at **KCB 0.5.0**, and KCB is still Candidate — on a re-run, not on
+> these findings.
+
+---
+
+## Fold status — V-1…V-8 re-read against the folded spec (2026-08-26)
+
+The fold landed as `chief/86-fold-the-capability-versioning-breaks`: **KCB 0.5.0**, a minor, and no
+other spec version moves. What each disposition is and *why it stops where it stops* is reasoned in
+[`../docs/reference/capability-versioning-fold-dispositions.md`](../docs/reference/capability-versioning-fold-dispositions.md);
+what follows is this document's own re-read — each finding put back against the folded text, saying
+whether the break it recorded still reproduces.
+
+**A fold does not close a gate.** KCB stays **Candidate**: the count this pass *is* becomes a
+**re-run of Steps 3, 5, 7, 8, 9 and 10 against the folded text**, which has not happened, and which
+per **DR-7** needs the extended encoding of *Conformance case* above before it could assert anything
+about the fold. Nothing here may be cited as a pass.
+
+| # | Folded in | Does the step's break still reproduce? |
+|---|---|---|
+| **V-5** | KCB 0.5.0 **§4.4a–c** + **§5** | **No.** Step 8's version-free call no longer has a wrong answer to choose between: an `invoke` may carry a `version` operand, the granted major is readable inside the token (the grant's `invoke:compose` **name** unchanged, so §5's anti-fragmentation argument is intact), and where neither is present and two majors are published the provider **refuses for want of a version** — with *highest published*, the choice that inverted fail-closed into fail-open, forbidden by name. A provider serving one major answers a bare call exactly as it did at 0.4.9, which is what keeps the fold additive. **Deliberately unspecified:** token format, issuance, rotation (§5's own boundary, unmoved), and any negotiation protocol — a refusal is not a counter-offer. |
+| **V-4** | KCB 0.5.0 **§2.4** (+ **§2**, **§6**, **§4.1**) | **No.** Step 7's second major has an address: each `params.capabilities[]` entry MAY declare a transport `binding`, read from the manifest and **never guessed**, and a provider serving two majors that resolve to one transport id is non-conformant rather than merely stuck. The two namespaces are separated in terms — the capability **name** stays version-free because the registry matches it (§7.1 untouched), the transport id is local and nobody discovers by it. **V-4 and V-5 were two halves of one hole and are folded together**: an address with no operand still leaves the provider choosing, an operand with no address cannot route the choice. |
+| **V-7** | KCB 0.5.0 **§7.3g** (riding **§4.2d**) | **No, for a stream.** Step 10's subscriber is now told: `successor_published`, `deprecated` (carrying the removal version) and `removal`, each **before** the fact it announces, on §4.2d's **existing** in-band channel — which already required that a V-7 fold ride it rather than mint a second. A producer that stops a stream at removal with no preceding frame is non-conformant, so *learning by a dead stream* is a defect with a name. **Open by design:** the frame rides a stream, and Step 1's other two binding forms have none — a cached **discovery binding**, and a **grant**, which does not expire. §7.3g states that boundary rather than implying it closed; the remainder is **DEFER-D**, whose trigger is a break driven through a consumer that discovered once, never subscribed, and invokes on a cadence of its own. |
+| **V-2** | KCB 0.5.0 **§2.1** + **§7.1** | **No — and read the direction precisely.** Step 5's redefinition behind an unchanged `shape` is still *possible*; what is closed is that it can be **silent**. A knowledge port declaring a bare `shape` and no `payload_schema_id` now establishes **routing** identity and **not** payload identity, and a consumer MUST read it as §7.1's own *no cross-check available* — the failure was never the missing digest, it was the consumer believing the digest it held covered the payload. A provider that wants the cross-check publishes a `payload_schema_id`; none is obliged to. **Rejected on the record:** the **shape registry**, because it would mint a commons two authority domains must agree on before exchanging a knowledge port — against KINP §3.4's *one deliberately non-federated commons* and ADR-0007. Its re-open trigger is stated in the disposition record. |
+| **V-3** | KCB 0.5.0 **§7.1 step 5** | **No, and it had to land in this fold.** The digest prefix MAY now carry a canonicalization **rule id**; absent means `kcb1` (0.4.x), this version states `kcb2` (`kcb1` + `payload_schema_id`), and a port declaring no `payload_schema_id` canonicalizes byte-identically under both, so **no published digest moves**. An unknown rule id reads *incomparable*, never *mutated*. Not optional given V-2: V-2 grows §2.1's knowledge vocabulary, which is exactly the event V-3 says fires it — folding one without the other would have broken two conformant parties on publication day. Step 11's 🟡 thread closes with it: an archival digest is interpretable because the rule that produced it can be named. |
+| **V-6** | KCB 0.5.0 **§7.3c** | **No, on the half the break forces.** The floor is now stated **per axis**: a retiring **capability major** — an axis the retiring party publishes at will — waits for the successor's **next major**, so Step 9's *"`1.x` removed at `2.1.0`, shipped tomorrow"* is no longer conformant; a surface whose axis is a **koine spec version** keeps the original one-full-minor floor, where it was argued and is correct. §2.3's and KMI §4.4's declared removal versions are of that second kind and **do not move**. **Deferred:** `deprecated_at` (**DEFER-E**) — a subscriber can still reconstruct the declared span from the successor's version and the removal version under the new floor. |
+| **V-1** | KCB 0.5.0 **§4.4d** + **§5** | **No.** Step 3's refusal was already correct and still is; what it could not do was name its condition. An `invoke` may now carry the `quoted_cost` §3's path search returned and the caller actually gated against, and a provider whose then-published cost differs refuses **quote mismatch** — distinguishing *the caller accepted the new price* from *the caller is budgeting against a stale one*. **Not a price lock:** no token, no expiry, nothing reserved; the then-published cost still governs and it still fails closed. |
+| **V-8** | — **not folded, closed** | **Yes as a gap, and deliberately.** KCS §5 still has no versioning vocabulary, and this pass's four unexpressible assertions stand — now thirteen, per *Conformance case*. It was filed as **evidence** for KCS §7 open question 1, which cites it by name alongside MA-11; folding a vocabulary into §5 now would pre-empt the question the evidence feeds. **No KCS version moves.** One correction to the finding's own wording: it says *"no demand on the ratified spec"*, and KCS is **0.3.0 Candidate** today, not 0.2.0 Ratified — the disposition is unchanged, the reason is that the question already holds it, not that a ratified spec is off limits. |
+
+**Two corrections this fold owes the pass, recorded rather than worked around.**
+
+1. **Step 3 is in both lists.** *What a clean pass would license* names Steps 2, 3, 4, 6 and 11 as the
+   regression set — but Step 3 carries 🔴 **V-1**. What held at Step 3 is the **digest exclusion** (a
+   re-price does not re-digest, and must not); what broke is the **quote**. A re-run must treat Step 3
+   as a regression check for the exclusion **and** a flip check for the quote, which is why the count
+   above reads Steps 3, 5, 7, 8, 9, 10 and the regression set reads 2, 4, 6, 11.
+2. **The fold's version prediction held.** Both this document and KCB §7.5 named **0.5.0**, the minor
+   §7.3 already scheduled for §2.2's standalone-manifest removal, and that is where it landed — with
+   the removal performed in the same publication, because §7.3f makes publishing the declared version
+   *be* the removal. That is a deadline arriving, not a fold, and it closes no count.
+
+**What the fold did not touch, on purpose.** Everything under *Not deltas* above is unchanged: the
+minor tier under a three-way widening, both digest **exclusions** (`cost` and editorial), the
+canonicalization's absorption of key-reordering and the absent-vs-empty pair, successor-beside-predecessor
+with the ban on version-in-the-**name**, the archival pin's survival and its correct refusal to
+authorize a re-run, and the one-policy-for-every-retiring-surface shape of §7.3. Those are the
+regression set for the re-run.
 
 ---
 
@@ -566,6 +666,16 @@ Two conditions, and **neither is sufficient alone**:
    **V-3** and **V-6** in the same fold. All are additive, so that fold is a **minor**: KCB **0.5.0**,
    which is already the version §7.3 schedules for removing §2.2's standalone manifest. Steps 5, 7, 8,
    9 and 10 are the ones that must flip; Steps 2, 3, 4, 6 and 11 held and are the regression set.
+   *(All seven folded at **KCB 0.5.0**, 2026-08-26, and V-8 closed where it lands — see* Fold status
+   *above. The re-run has not happened, and it is **unowned**. Two amendments this line owes a
+   re-runner: the fold took the **digest** route for V-2 and rejected the shape registry on federation
+   grounds; and the regression set above mis-files **Step 3**, which carries 🔴 V-1 — the step is a
+   regression check for the digest exclusion and a **flip** check for the quote, so the flip list is
+   Steps **3**, 5, 7, 8, 9, 10 and the regression set is Steps 2, 4, 6, 11.)*
+   **And a clean re-run needs an encoding that can fail.** Per **DR-7** the current
+   `kcs:live-schema-mutation` came back `green` over all four blocking deltas because it does not
+   assert an unfolded one; re-running it against 0.5.0 would assert the same subset. The extended
+   assertion set is *Conformance case* above (**F1–F13**), and building it is unowned downstream work.
 2. **KCB's other gate closes.** Re-running [`e2e-media-transform.md`](e2e-media-transform.md)
    against the 0.3.0 AgentCard-extension manifest shape is an *independent* gate on the same
    candidate ([KCB §7.5](../specs/capability-bus.md#75-pressure-test-for-this-section) and that
@@ -580,13 +690,24 @@ does not reach v2 🔴 **V-5**; a cost raise fails closed at the ceiling 🟡 **
 but by refusal rather than by a named quote mismatch). That is the pass doing its job: §7's *model*
 is sound and its *perimeter* is not, and the perimeter is repairable additively.
 
-> **Resolution (2026-08-13):** recorded against **KCB 0.4.0**, whose §7 this pass break-tests at
-> §7.5's request. Deltas **V-1…V-8** are **open — none folded**, and V-2/V-4/V-5/V-7 are blocking, so
-> **KCB stays Candidate** on both of its gates. No other spec version moves: V-8 is evidence for a
-> KCS open question, KFT §11.5's archival-pin pointer is *confirmed* rather than changed, and KMI is
-> untouched. When a fold lands, amend this note to name the version that closed each delta — as
-> [`e2e-media-transform.md`](e2e-media-transform.md)'s Resolution does for F–L — after which this
-> document stands as the historical record of what the break-test found.
+> **Resolution (2026-08-13, amended 2026-08-26):** recorded against **KCB 0.4.0**, whose §7 this pass
+> break-tests at §7.5's request. Deltas **V-1…V-8** were **open — none folded**, and V-2/V-4/V-5/V-7
+> are blocking, so **KCB stays Candidate** on both of its gates. No other spec version moves: V-8 is
+> evidence for a KCS open question, KFT §11.5's archival-pin pointer is *confirmed* rather than
+> changed, and KMI is untouched.
+>
+> **Amendment (2026-08-26) — the fold landed at KCB 0.5.0**, a minor: **V-2** → §2.1
+> `payload_schema_id` + §7.1's *a bare `shape` is no cross-check* reader rule (shape registry rejected
+> on the record); **V-4** → §2.4 transport `binding`; **V-5** → §4.4a–c + §5; **V-7** → §7.3g's three
+> frames on §4.2d's existing channel; **V-3** → §7.1 step 5's canonicalization rule id; **V-6** →
+> §7.3c's per-axis floor; **V-1** → §4.4d's `quoted_cost` and its named refusal; **V-8** closed where
+> it lands, in KCS §7 open question 1, at no KCS version. Two remainders are deferred with triggers
+> (**DEFER-D**, **DEFER-E**) and one alternative is rejected with a re-open trigger, all in
+> [`../docs/reference/capability-versioning-fold-dispositions.md`](../docs/reference/capability-versioning-fold-dispositions.md).
+> **KCB stays Candidate** — a fold does not close its own gate — and this pass's count is now a
+> **re-run of Steps 3, 5, 7, 8, 9 and 10 against the folded text**, using the extended encoding of
+> *Conformance case*. This document stands as the historical record of what the break-test found; the
+> per-delta re-read is *Fold status*.
 
 ---
 
