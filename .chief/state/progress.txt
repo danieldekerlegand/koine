@@ -196,3 +196,57 @@ OK (3 tasklists). Branch is 0 behind `main`.
   and triage every hit by *which* fold it belongs to — main's §4.3 hits must stay.
 - **The count language is the load-bearing part.** Version numbers are easy to chase; "the other
   three are restated" is the sentence that silently goes wrong.
+
+## US-3 — What the fold does to promotability is stated (2026-08-26)
+
+**Did:** stated the fold's effect on each gate where a reader actually looks (the specs), handed the
+ranking to the one page that owns it, amended the coordination `86` will read, and wrote the
+pattern-level finding the pass produced.
+
+**Files changed (7)**
+- `specs/identity.md` — §11 decision 1 now states plainly that the fold clears **no part** of KINP's
+  gate and that **nothing else stands behind it** (no second count, no fold outstanding, no
+  koine-side deliverable); one clean re-run is the entire prose leg, and it is unowned.
+- `specs/media-interchange.md` — **new 0.3.5 status note.** The 0.3.4 note still read *"MA-5
+  (blocking) and MA-10 are open, so the second count does not close"* — stale the moment US-2
+  landed. The new note says both are folded and **the count still does not close**, it changed shape.
+- `docs/reference/promotability.md` — KINP / KMI / KCB rows and cheapest-first items 4/5/6 rewritten;
+  "Five counts as of 0.4.8" → 0.4.9; the **"On tasklist 53"** paragraph's standing instruction
+  (*repoint the three status notes at 85 when the fold lands*) **replaced** — `85` is finished too,
+  so that pointer would have been stale on arrival.
+- `docs/reference/federation-fold-dispositions.md` — two new no-clause sections (*What the fold does
+  to promotability*, *What the pressure test taught about the pattern, not the clauses*) + the
+  `86`-coordination section amended.
+- `scenarios/e2e-multi-authority.md` — the Fold status section now links its own evidence to the
+  pattern finding.
+- `ROADMAP.md` — the re-run row marked **unowned** with the ladder pointer; "one of KCB's four
+  counts" → **five**.
+- `docs/README.md` — the disposition doc's hook updated for its two new parts.
+
+**The answer, in one line:** the fold clears **nobody's** gate. Every count changed shape (fold →
+re-run against the folded text) rather than closing, and the re-run is **unowned in every repo**.
+
+**Verification:** doc-integrity OK (51 files, 1202 links, 3 tables match); schemas OK; registry OK;
+tasklist-categories OK; `.chief/verify.sh --run` over 17 files → **all selected gates green**
+(doc-links 0 dead vs 0 on main, verify-test 30 passed / 0 failed).
+
+**Learnings for future iterations**
+- **"Repoint X at tasklist Y when Y lands" is an instruction that expires.** `promotability.md`
+  carried exactly that and it was already wrong by the time the condition fired, because `85`
+  retires at the same moment the fold lands. The rule that replaced it — **point a gate at the
+  artefact that discharges it and name the owner separately** — is the general fix: owners retire,
+  artefacts do not. Check for this shape of instruction whenever a tasklist completes.
+- **A fold's own status notes go stale in the *previous* version's note, not the new one.** KMI's
+  0.3.4 note asserted MA-5 was open; US-2 wrote a changelog entry and never touched it. When folding,
+  grep the prior status notes for the delta ids you just folded.
+- **The pattern finding was worth more than the clause findings and nearly went unwritten.** The
+  falsifiable question was *did "likely resolve the same way" hold?* — and it split cleanly: the
+  decision held three-for-three, the applications broke in three different kinds of way (meaning /
+  carriage / decidability). The evidence for the first half is the scenario's own **Not deltas**
+  paragraph, which reads like a footnote and is actually the ADR's vindication.
+- **The shortest §-edit took the worst damage.** KINP's federation application was a decision
+  paragraph; KCB §3.1 and KMI §7.1 are full lettered sections. KINP took 5 findings and 4 of the 6
+  blocking. Budget the deepest reading at the **keystone** plane regardless of edit size.
+- **Version arithmetic is the thing that rots fastest across a fold.** Between US-2 and US-3, "four
+  counts" became "five" in six separate documents. Grep `count` — not just the version string —
+  after any base integration.
