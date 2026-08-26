@@ -14,7 +14,7 @@ still `candidate`, now on a re-run rather than on these findings.
 This page began as the **first half** of the fold: what each of the eleven gets, decided and reasoned
 **before** a clause is touched. It changes **no clause and no version** — deciding what to fold and
 folding it are different acts, and conflating them is how a fold overreaches. The second half (the
-edits themselves) is [`85-fold-the-federation-breaks`](../../tasks/chief/85-fold-the-federation-breaks.json)
+edits themselves) is [`85-fold-the-federation-breaks`](../../tasks/chief/completed/85-fold-the-federation-breaks.json)
 US-2, which landed each **FOLD** row below and nothing else.
 
 Two sections were added after the edits landed, and they also change no clause:

@@ -1,252 +1,74 @@
-# Chief Progress — 85-fold-the-federation-breaks
-Started: Wed Aug 26 11:32:37 CDT 2026
+# Chief Progress — 86-fold-the-capability-versioning-breaks
+Started: Wed Aug 26 12:07:01 CDT 2026
 ---
 
 ## Codebase Patterns
-- **Guards to run after any doc/spec edit:** `node scripts/check-doc-integrity.mjs` (relative links +
-  anchors + the 3 status-table mirrors), `node scripts/check-tasklist-categories.mjs`, and the merge
-  gate itself: `.chief/verify.sh --run <changed files…>` (it selects gates from paths; `--plan` reads
-  STDIN). The *Current state* prose in CLAUDE.md is a FOURTH mirror that is **not** checked — update
-  it by hand when a spec version moves.
-- **A new doc must be linked from `docs/README.md`** — the repo's stated rule is "a document not
-  linked here does not exist". check-doc-integrity does not enforce it; the map is the contract.
-- **Version discipline in this repo is deliberate and quotable.** KCB lands additive normative text
-  as a PATCH (0.4.6 added six §3.1 clauses; 0.4.7 added §4.2) because **0.5.0 is reserved** for
-  §2.2's standalone-manifest removal; KMI's 0.4.0 is likewise spent on the EDL removal. Check what
-  the next minor is already spoken for BEFORE choosing a bump.
-- **Relations are immutable:** never edit a signature in `registry/relations.tsv` — mint a new name
-  (precedent: KFT 0.6.0's `continues`).
-- **KINP owns identifiers/worlds/resolution semantics**; other specs reference, never redefine. That
-  rule decides where a cross-spec fold lands, and it is how a fold avoids adding a gate to a spec
-  that is close to promotion (KGP).
+- **A fold is two acts, and koine separates them.** `docs/reference/*-fold-dispositions.md` is the
+  first half (decide + reason each finding, change no clause, no version); the spec edits are the
+  second. `federation-fold-dispositions.md` is the model to copy — same sections, same FOLD/CLOSE/
+  DEFER rule, same "verify the attributions rather than inheriting them" opening.
+- **Every DEFER states the future break that would force it.** A finding may *split*: fold the half
+  the break forces, defer the remainder with its own trigger. A rejected alternative gets a re-open
+  trigger too.
+- **`node scripts/check-doc-integrity.mjs` after ANY doc touch.** It caught 8 pre-existing broken
+  links: retiring a tasklist moves `tasks/chief/<n>.json` → `tasks/chief/completed/<n>.json`, and
+  every doc that linked to it silently breaks. **If you cite a tasklist that may be retired during
+  or after your run, expect this.** Fixed in this iteration for `85`.
+- **Read the spec header + `docs/reference/promotability.md` before trusting a PRD's count of
+  gates.** PRDs are written at a point in time; KCB's counts went 2 → 3 → 4 → 5 across 0.4.6–0.4.8.
 
 ---
 
-## US-1 — Each of the eleven breaks gets a disposition (2026-08-26)
+## US-1 — Each of the eight findings gets a disposition (2026-08-26)
 
-**Did:** read `scenarios/e2e-multi-authority.md` in full (691 lines) plus every clause it cites in
-KINP/KCB/KMI/KGP/KCS, then wrote the disposition table for MA-1…MA-11.
+**Added:** `docs/reference/capability-versioning-fold-dispositions.md` (new, informative, binds no
+clause). **Repaired:** stale `85` tasklist links in `docs/reference/federation-fold-dispositions.md`
+and `docs/reference/promotability.md` (8 pre-existing doc-integrity errors, unrelated to this story
+but red).
 
-**Files changed**
-- `docs/reference/federation-fold-dispositions.md` — NEW. The disposition table (FOLD/CLOSE/DEFER
-  per finding, with the spec + § it lands in and the extent), a deferred-remainders table with a
-  forcing trigger each, a "where each fold lands / what it costs the spec" version-intent table, a
-  *Why KGP does not move* section, and a coordination section for `86`.
-- `docs/README.md` — linked it under Reference.
-- `docs/reference/promotability.md` — fixed a PRE-EXISTING dead link (task 84 was retired to
-  `tasks/chief/completed/` by the previous merge and the doc still pointed at the old path). This
-  was red on `main`; the doc-links gate now reports "0 dead vs 1 on main, retired 1".
+**Dispositions decided** (source: `scenarios/e2e-live-schema-mutation.md`):
+- V-2 blocking → **FOLD (split)**: KCB §7.1/§2.1 — a bare knowledge-port `shape` name is normatively
+  NOT a cross-check (reads as §7.1's *no cross-check available*), plus an optional
+  `payload_schema_id`. The scenario's **shape-registry** route is **rejected on the record** — it
+  would mint a second non-federated commons against KINP §3.4/MA-7 and contradict ADR-0007.
+- V-4 blocking → **FOLD**: optional per-entry transport binding in §2 `params.capabilities[]`;
+  §7.1's ban on version-in-the-*name* untouched (two namespaces, only one governed).
+- V-5 blocking → **FOLD**: §4 version/range operand + granted major travels *in* the token (grant
+  name unchanged) + refuse-for-want-of-one instead of any default. Deliberately the same shape
+  0.4.9 gave `budget_units` (MA-6).
+- V-7 blocking → **FOLD (split)**: the duty + frame vocabulary ride §4.2d's EXISTING control channel
+  (0.4.7 already mandates this: "a fold of V-7 MUST carry its signals on this channel"). Cadence and
+  TTL → **DEFER-D**, whose trigger is the binding the frame cannot reach: a consumer holding only a
+  cached discovery binding with no stream open.
+- V-3 → **FOLD**: canonicalization *rule id* in the digest prefix. Note it is not optional given V-2
+  — V-2 grows §2.1's knowledge-port vocabulary, which is exactly what fires V-3.
+- V-6 → **FOLD (split)**: floor raised for a retiring *capability major* only (successor's next
+  major); §7.3c's one-minor floor retained where the axis is a koine spec version, so §2.2/§2.3/KMI
+  §4.4 removal versions do not move. `deprecated_at` → **DEFER-E**.
+- V-1 → **FOLD (minimal)**: optional quoted-cost operand on `invoke`, refusal names *quote mismatch*.
+- V-8 → **CLOSE**: already discharged — KCS §7 open question 1 cites it by name.
 
-**Decisions made (US-2 executes them):** 10 FOLD, 1 CLOSE (MA-11), 3 deferred remainders.
-- KINP §3.4/§4.1/§4.2/§4.5/§5/§6 ← MA-1, MA-2, MA-3, MA-4, MA-7 → intent **0.4.0 minor**, stays Candidate.
-- KMI §2/§7.1(d)(e)(f) ← MA-5, MA-10 → intent **0.3.5 patch** (0.4.0 spent on EDL removal).
-- KCB §2(`auth`)/§3/§3.1/§5 ← MA-6, MA-8, MA-9 → intent **0.4.8 patch** (0.5.0 reserved; leaves it
-  free for `86`'s V-1…V-8).
-- KGP: **no version moves** — an Editorial changelog entry only; MA-3/MA-4/MA-5's readings belong in
-  KINP/KMI by the define-once rule, and KGP is one downstream fixture from promotion.
-- MA-4 takes the equivalence-over-worlds option, NOT the namespace-free world token: the world stamp
-  is inside the §6 claim hash, so a token change would re-hash every existing real-world claim.
+**Three corrections recorded** (not silently worked around): the PRD says three counts, the spec
+carries **five**; the scenario's own regression set mis-files Step 3 (it carries 🔴 V-1 while being
+listed as "held"); V-8's "no demand on a ratified spec" is stale (KCS is now 0.3.0 **Candidate**).
 
-**Learnings for future iterations**
-- The PRD's warmup command names `specs/identity-protocol.md` — **that file does not exist**; it is
-  `specs/identity.md`. The Research map otherwise held up.
-- Each spec's own changelog/Re-ratification paragraph already records its MA-deltas accurately —
-  KINP additionally records MA-7, which the tasklist description omits. Read the spec, not the summary.
-- Two small inaccuracies in the scenario's findings table, both recorded in the new doc rather than
-  fixed in the scenario (US-2 owns scenario edits): KMI §2 also has an optional `excerpt`, and KCB
-  §3.1(d) already covers the differing-`schema_id` half of MA-9.
-- The reactive-fold discipline shows up mostly as *splitting* a finding — fold the half the break
-  forces, defer the second mechanism the scenario proposes, with a trigger. That happened three times
-  (MA-2, MA-3, MA-10) and is where the economy of this fold is.
+**Verification:** `node scripts/check-doc-integrity.mjs` → OK (52 files, 1226 links, 3 status tables
+match headers). `node scripts/check-tasklist-categories.mjs` → OK. No spec, schema, or registry file
+touched, per the story's "table only" criterion.
 
-## US-2 — The folds land, minimally (2026-08-26)
-
-**Did:** applied every FOLD row of `docs/reference/federation-fold-dispositions.md` and nothing
-else. MA-1…MA-10 folded across three specs; MA-11 left closed.
-
-**Files changed (13)**
-- `specs/identity.md` → **KINP 0.4.0** (minor). §3.4 non-federated-commons + prefix-disjointness +
-  collision-is-a-reportable-defect, and three second-domain *illustrative* placeholder rows
-  (`archivekb`/`coordinator`/`assetstore`) so the federation examples resolve (MA-7). §4.1
-  cut-or-re-evaluate + weakest-issuer carry (MA-1). §4.2 new core relation `world_aligns_with`
-  (MA-4). §4.5 fourth fail-closed branch (MA-2). §5 two consensus realities, asserted-never-assumed
-  (MA-4). §6 domain-scoped convergence (MA-3). §11 decision 1 + changelog updated.
-- `specs/media-interchange.md` → **KMI 0.3.5** (patch). §2 optional `license`/`egress`; §7.1(d)
-  travels-with-the-bytes carve-out; §7.1(e) not-served-onward; §7.1(f) three-valued answer.
-- `specs/capability-bus.md` → **KCB 0.4.8** (patch). §2 optional `auth.accepted_issuers[]`; §3
-  `find` response shape (`served_by`/`observed_at`/`incomplete[]`); §3.1(b) horizon; §3.1(c)(e)(f)
-  carrier pointers; §3.1(d) de-dup converse; §5 issuer-named grant + stated-unit ceiling.
-- `specs/grounding-pack.md` → Editorial changelog entry only. **No version, no gate.**
-- `registry/relations.tsv` → `world_aligns_with` added (new name, never a signature edit).
-- `scenarios/e2e-multi-authority.md` → new **Fold status** section (all 11 re-read against the
-  folded text, placed after Verdict); Verdict's Resolution pointer; the two version predictions in
-  *What a clean pass would license* corrected; the dated **Resolution** amended, old one retained.
-- Mirrors: `README.md`, `specs/README.md`, `ECOSYSTEM.md` (the 3 checked tables), `CLAUDE.md`
-  (the 4th, unchecked), `scenarios/README.md` prose, `ROADMAP.md` Phase F1 (fold row → ✅, new
-  re-run row), `docs/reference/federation-fold-dispositions.md` (fold-landed note).
-
-**Verification:** check-doc-integrity OK (49 files, 1067 links, 3 tables match); check-schemas OK;
-check-registry OK; check-tasklist-categories OK; `.chief/verify.sh --run` over all 13 files →
-**all selected gates green** (doc-links 0 dead vs 0 on main).
-
-**Learnings for future iterations**
-- **No schema twin needed here, and that is worth stating rather than assuming.** Nothing in
-  `schemas/` models the KMI §2 asset envelope or a KINP equivalence link, and
-  `participant-self-description.schema.json` references the KCB manifest **by pointer only**
-  (ADR-0007 d7), so an added `params` field never reaches it. `provenance.schema.json`'s
-  `$defs.license` / `$defs.egress` are vocabularies KMI *reuses*; they were not altered.
-- **Watch the "this section is additive — no field is added" sentences.** Both KCB §3.1 and KMI §7.1
-  opened with one, and both became false the moment a fold added an optional field. Grep the section
-  you are folding into for its own additivity claim before you add anything.
-- **A fold has to correct the predictions the scenario made about it.** `e2e-multi-authority.md`'s
-  *What a clean pass would license* predicted 0.5.0 for KCB and "0.5.0 or a patch that adds no
-  field" for KMI; both were superseded by the reserved-minor rule. Leaving them would have put the
-  scenario in direct conflict with the spec headers, and no guard checks that.
-- **Anchors in `specs/identity.md` §11 are inside a numbered list** — continuation lines carry a
-  3-space indent, so an exact-match edit fails unless you include it.
-- The disposition doc from US-1 was accurate throughout; every landing zone it named was the right
-  one, and the two scenario-framing corrections it recorded both held when the clauses were edited.
-
-## ⚠️ BASE INTEGRATION REQUIRED — do this FIRST, before any user story
-
-`chief/85-fold-the-federation-breaks` is **7 commit(s) behind** its base `main` (@140e79f) and
-chief's automatic rebase onto that base CONFLICTS. The rebase was aborted, so
-your branch is exactly as it was and nothing is lost — but it cannot merge
-until the base is integrated, and every commit that lands on `main` while
-this is unresolved makes it worse.
-
-**Your first task this iteration is to integrate the base yourself:**
-
-1. `git rebase main` in this worktree.
-2. At each stop, resolve the conflicts keeping BOTH sides' intent — the
-   `main` side is already-merged work, so never discard it, and never
-   discard your own — then `git add <files>` and `git rebase --continue`.
-   `git rebase --abort` returns you to exactly this state if you need it.
-3. Re-run the project's quality gates and make them green.
-
-Rebase, not `git merge main`: chief rebases this branch again at merge time,
-and a rebase drops merge commits and replays the originals — a resolution
-recorded in a merge commit would be thrown away and this conflict would come
-straight back. Resolving inside the rebase puts the fix in your own commits.
-
-Then continue the normal loop: pick the highest-priority story with
-`passes:false` and implement it. The integration is NOT a user story — do not
-flip any story's `passes` for it, and do not report completion until the
-stories themselves are really done.
-
-## Conflicting paths
-- .chief/state/prd.json
-- .chief/state/progress.txt
-
-base: main @140e79f · behind: 7 commit(s) · branch: chief/85-fold-the-federation-breaks
-(full note: .chief/state/INTEGRATE-BASE.md)
-
-## Base integration — rebase onto `main` @140e79f (2026-08-26, before US-3)
-
-**The conflict was not cosmetic: it was a VERSION COLLISION.** `main` landed `chief/71`
-(autonomy posture) while this branch was open, and **that fold took KCB 0.4.8** — the exact number
-this branch's federation fold had already taken for a completely different change. Both were
-legitimate patches off 0.4.7. `main` is already-merged work, so **this fold renumbered to KCB 0.4.9**.
-
-**Renumbered everywhere** (spec header line 3, the 0.4.7→0.4.8→0.4.9 status note, the changelog
-entry, §3.1's "At 0.4.9 the fold of MA-6", §3.1's "All three are folded at 0.4.9", the three checked
-mirrors, `CLAUDE.md`, `ROADMAP.md`'s ✅ fold row, `docs/reference/federation-fold-dispositions.md`
-(incl. its from-version cell 0.4.7→0.4.8), `scenarios/e2e-multi-authority.md` (7 refs incl. two
-line-wrapped ones), `scenarios/README.md`).
-
-**Count arithmetic changed with it and had to be chased.** KCB now carries **five** re-ratification
-counts, not four — §4.3 accrued one the same day. Every "the other three are restated" sentence in
-this fold's own text became false and now reads **four**: the status note, the changelog entry,
-`CLAUDE.md`, and the disposition doc's "three of its four counts are untouched" → "four of its five".
-The scenario's *What a clean pass would license* item 2 said "one count of four closes"; that was
-true when written, so it is **retained and amended in the parenthetical** (house style here) rather
-than rewritten.
-
-**Conflicts resolved keeping both sides:**
-- `specs/capability-bus.md` ×2 (status note, changelog) — main's §4.3 paragraph/entry kept intact,
-  mine appended as 0.4.9. Changelog is newest-first, so 0.4.9 sits **above** 0.4.8.
-- `README.md` / `specs/README.md` / `ECOSYSTEM.md` — table rows; mine (KMI 0.3.5) taken, KCB cell
-  then hand-set to 0.4.9. `ECOSYSTEM.md:98` "Since **KCB 0.4.8**" is main's §4.3 sentence — left.
-- `CLAUDE.md` — both fold narratives kept; the two sides' conflict hunks **overlapped mid-sentence**
-  (one line carried the tail of 0.4.7's sentence *and* the head of 0.4.8's), so a naive take-both
-  dropped a clause opener. Check the seam sentence reads whole after resolving this file.
-- `.chief/state/prd.json` + `progress.txt` — took **ours**. These are per-run state: main's copy is
-  `71`'s, already merged and retired to `tasks/chief/completed/`, and this file's git history shows
-  it is wholly replaced per tasklist. Note `.chief/state` is **gitignored but tracked** — staging
-  needs `git add -f`.
-- §5 merged clean and reads coherently: my issuer-named-grant bullets, then main's
-  *a grant says what may be invoked; a posture says what may proceed unattended* bullet. No
-  contradiction — a posture can only cause its reader to do less, so it never widens a grant.
-
-US-2's `notes` in both `.chief/state/prd.json` and `tasks/chief/85-*.json` were amended with the
-correction rather than left claiming 0.4.8.
-
-**Verification after rebase:** `check-doc-integrity` OK (51 markdown files, 1181 relative links, all
-3 status tables match headers — KCB 0.4.9 candidate), `check-schemas` OK (9 schemas, 278 positions,
-80 $refs, 3 fixtures), `check-registry` OK (15 rows, 29 unique names), `check-tasklist-categories`
-OK (3 tasklists). Branch is 0 behind `main`.
-
-**Learnings for future iterations**
-- **A long-lived fold branch can collide on a VERSION NUMBER, and no guard catches it.**
-  `check-doc-integrity` only diffs the mirrors against the header — it is perfectly happy when two
-  branches both say 0.4.8. The reserved-minor convention (0.5.0 spoken for) pushes every fold onto
-  the same next patch, so the collision is *likely*, not freak. On any rebase touching a spec,
-  diff the version cell against `git show main:<spec>` before assuming the merge is textual.
-- **Renumbering a version is a whole-repo sweep, not a header edit.** `grep -rn "0\.4\.8" --include='*.md'`
-  and triage every hit by *which* fold it belongs to — main's §4.3 hits must stay.
-- **The count language is the load-bearing part.** Version numbers are easy to chase; "the other
-  three are restated" is the sentence that silently goes wrong.
-
-## US-3 — What the fold does to promotability is stated (2026-08-26)
-
-**Did:** stated the fold's effect on each gate where a reader actually looks (the specs), handed the
-ranking to the one page that owns it, amended the coordination `86` will read, and wrote the
-pattern-level finding the pass produced.
-
-**Files changed (7)**
-- `specs/identity.md` — §11 decision 1 now states plainly that the fold clears **no part** of KINP's
-  gate and that **nothing else stands behind it** (no second count, no fold outstanding, no
-  koine-side deliverable); one clean re-run is the entire prose leg, and it is unowned.
-- `specs/media-interchange.md` — **new 0.3.5 status note.** The 0.3.4 note still read *"MA-5
-  (blocking) and MA-10 are open, so the second count does not close"* — stale the moment US-2
-  landed. The new note says both are folded and **the count still does not close**, it changed shape.
-- `docs/reference/promotability.md` — KINP / KMI / KCB rows and cheapest-first items 4/5/6 rewritten;
-  "Five counts as of 0.4.8" → 0.4.9; the **"On tasklist 53"** paragraph's standing instruction
-  (*repoint the three status notes at 85 when the fold lands*) **replaced** — `85` is finished too,
-  so that pointer would have been stale on arrival.
-- `docs/reference/federation-fold-dispositions.md` — two new no-clause sections (*What the fold does
-  to promotability*, *What the pressure test taught about the pattern, not the clauses*) + the
-  `86`-coordination section amended.
-- `scenarios/e2e-multi-authority.md` — the Fold status section now links its own evidence to the
-  pattern finding.
-- `ROADMAP.md` — the re-run row marked **unowned** with the ladder pointer; "one of KCB's four
-  counts" → **five**.
-- `docs/README.md` — the disposition doc's hook updated for its two new parts.
-
-**The answer, in one line:** the fold clears **nobody's** gate. Every count changed shape (fold →
-re-run against the folded text) rather than closing, and the re-run is **unowned in every repo**.
-
-**Verification:** doc-integrity OK (51 files, 1202 links, 3 tables match); schemas OK; registry OK;
-tasklist-categories OK; `.chief/verify.sh --run` over 17 files → **all selected gates green**
-(doc-links 0 dead vs 0 on main, verify-test 30 passed / 0 failed).
-
-**Learnings for future iterations**
-- **"Repoint X at tasklist Y when Y lands" is an instruction that expires.** `promotability.md`
-  carried exactly that and it was already wrong by the time the condition fired, because `85`
-  retires at the same moment the fold lands. The rule that replaced it — **point a gate at the
-  artefact that discharges it and name the owner separately** — is the general fix: owners retire,
-  artefacts do not. Check for this shape of instruction whenever a tasklist completes.
-- **A fold's own status notes go stale in the *previous* version's note, not the new one.** KMI's
-  0.3.4 note asserted MA-5 was open; US-2 wrote a changelog entry and never touched it. When folding,
-  grep the prior status notes for the delta ids you just folded.
-- **The pattern finding was worth more than the clause findings and nearly went unwritten.** The
-  falsifiable question was *did "likely resolve the same way" hold?* — and it split cleanly: the
-  decision held three-for-three, the applications broke in three different kinds of way (meaning /
-  carriage / decidability). The evidence for the first half is the scenario's own **Not deltas**
-  paragraph, which reads like a footnote and is actually the ADR's vindication.
-- **The shortest §-edit took the worst damage.** KINP's federation application was a decision
-  paragraph; KCB §3.1 and KMI §7.1 are full lettered sections. KINP took 5 findings and 4 of the 6
-  blocking. Budget the deepest reading at the **keystone** plane regardless of edit size.
-- **Version arithmetic is the thing that rots fastest across a fold.** Between US-2 and US-3, "four
-  counts" became "five" in six separate documents. Grep `count` — not just the version string —
-  after any base integration.
+### Learnings for future iterations
+- **US-2 must land two things that are not folds.** (1) Publishing **0.5.0 IS §2.2's removal** — the
+  standalone `/.well-known/kcb-manifest.json` is declared "removed at KCB 0.5.0" and §7.3f makes the
+  publication the removal. (2) §2.3's legacy URI root window runs to 0.6.0 and must NOT move.
+- **US-2's conformance case cannot be a re-run of today's encoding.** DR-7: `kcs:live-schema-mutation`
+  came back `green` over all four blocking deltas because the encoding deliberately does not assert
+  an unfolded delta. The encoding must be *extended*, and V-8 says the needed predicates are not in
+  KCS §5 — use the escape hatch (declared console extensions), which KCS §7 oq1 already blesses.
+- **V-4 and V-5 are two halves of one hole** ("a fold must close both or close neither"). Do not land
+  one without the other.
+- **No schema twin exists for the KCB card extension**, so "schema twins updated where the shape
+  moved" (US-2 criterion 4) is satisfied vacuously — say so rather than inventing one. Likewise no
+  relation-registry addition is needed; the V-2 route that would have touched `registry/` is rejected.
+- **US-3's material is already staged** in the page's final section: four named places where this
+  fold and `85`'s meet, two of which (V-2's rejection, V-5's refuse-for-want-of-one) were *decided*
+  on federation grounds. US-3's job is to look for a contradiction, not to assume there is none.

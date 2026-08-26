@@ -27,7 +27,8 @@
         "The three counts currently holding KCB at Candidate are identified and mapped against these findings, so it is clear which of them this fold clears and which it does not.",
         "Table only — no clause changes in this story."
       ],
-      "notes": null
+      "notes": "docs/reference/capability-versioning-fold-dispositions.md: all 8 findings dispositioned (7 FOLD incl. 3 splits, 1 CLOSE, 2 DEFER-D/E + 1 rejected-on-record). Each names its KCB section; no schema twin and no registry file moves (V-2's shape-registry route rejected on federation grounds). Counts: the tasklist said three, the spec now carries FIVE — all five enumerated and mapped; this fold clears NONE, count (ii) changes shape only. No clause or version touched. check-doc-integrity.mjs: OK, 1226 links, 3 status tables match; check-tasklist-categories.mjs: OK.",
+      "passes": true
     },
     {
       "id": "US-2",
