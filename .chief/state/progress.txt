@@ -87,3 +87,64 @@ both green, `doc-links: 0 dead vs 0 on main`, "all selected gates green — allo
    and cumulative by design. CLAUDE.md's *Current state* prose is a **fourth mirror that CI does not
    check** — a stale version there passes green. US-2 must update it by hand along with the three
    checked tables.
+
+---
+
+## Iteration 2 — US-2 (2026-08-26)
+
+**Story:** Fold subscription backpressure into KCB. **Done.** Tasklist complete.
+
+**Files changed**
+- `specs/capability-bus.md` — **0.4.6 → 0.4.7**, new normative **§4.2** (~185 lines), plus the
+  surfaces it touches: §2 example card (`volume` on a produces port), §2.1 (the `volume` paragraph),
+  §4 verb table + delta-L paragraph pointers, §5 (a metering bullet), §8 (**resolved in place**,
+  numbering unshifted — §8 now holds **no** open questions), *Pressure test* (a fourth gate), status
+  note, changelog.
+- `scenarios/kcb-subscription-firehose.md` — Resolution blockquote **amended** with a per-delta
+  closure table, as the leg itself instructed.
+- `README.md` · `specs/README.md` (2 places) · `ECOSYSTEM.md` · `CLAUDE.md` — the four mirrors.
+- `schemas/` — **byte-unchanged** (see learning 3).
+
+**Verification observed:** `check-doc-integrity.mjs` OK — 45 markdown files, **790** relative links,
+all 3 status tables match (`capability-bus 0.4.7 candidate`); `.chief/verify.sh --run` over the 6
+changed files → `guard-doc-integrity` + `guard-doc-links` green, `doc-links: 0 dead vs 0 on main`,
+"all selected gates green — allowing merge"; `schemas ok` (9 files parse);
+`check-tasklist-categories.mjs` green.
+
+**What §4.2 says** (so a later fold does not re-derive it): (a) optional port `volume` envelope
+`{unit, rate, payload_bytes, references, resume_horizon}`, **outside** the `schema_id` digest exactly
+as `cost` is, absent reads *unknown* never *low*, §3 ranking untouched; (b) optional `subscribe`
+`max_rate`/`max_in_flight`/`window`/`on_overflow` under the normative rule that the contract governs
+**lossless vs lossy**, not *how fast* — and **a retraction is never shed**; (c) optional
+content-addressed `resume.after` operand (**not** a sixth verb) a producer MUST answer resumed /
+`gap-unavailable` / `resume-unsupported`, **never with silence**, plus never-silently-merge-past-an-
+unseen-`basis`; (d) **one** in-band control channel, both directions, and **V-7's fold MUST ride it**;
+(e) `volume.cost` is the operand §5's "at invoke" ceiling never had + an exhausted ceiling MUST NOT be
+the *first* signal; (f) the fan-out is the **subscriber's** traffic and a CAS refusal lands on delta
+L's existing pending-fetch tolerance; (g) shape, never QoS.
+
+**Learnings for future iterations**
+
+1. **Iteration 1's learning 1 was right and saved the story.** The PRD's "§7.3" is stale — §7.3 is
+   Deprecation. The fold went to a **new §4.2**, under the verb it constrains. When a PRD names a
+   section number, verify it against the spec header before editing; koine renumbers on every fold.
+2. **Version classification is a judgement recorded in prose, not a rule.** §7 governs *capability*
+   versions, not the *spec's* own. KCB's two precedents disagree on the surface — 0.4.0 added optional
+   manifest fields as a **minor**, 0.4.6 added a normative section as a **patch** — but the operative
+   criterion 0.4.6 states is *additive + prior-conformant-stays-conformant + 0.5.0 is spoken for*.
+   0.4.7 meets all three, so it is a patch and the changelog says so explicitly rather than glossing it.
+   **0.5.0 is still reserved** for §2.2's removal + the V-1…V-8 and MA-6/8/9 folds.
+3. **Check `schemas/` before concluding "no twin".** `participant-self-description.schema.json`
+   *looks* like it might model the KCB manifest — it does not: it is pointers-only, and its
+   `capability` block says the payload is "deliberately NOT restated here" with
+   `additionalProperties:false` to stop it creeping in. So an added KCB manifest field needs **no**
+   schema change. CLAUDE.md's `schemas/` bullet does not list that file — a small doc gap, not a defect.
+4. **The extension URI does not move for an added optional field** (§2, stated as the anti-pattern
+   `compose-v2`-at-the-document-level). `…/manifest/0.3` is correct at 0.4.7. Do not bump it.
+5. **`resolved in place` is now the house pattern for open questions** — KFT §11.3, KMI §9 q3, and
+   now KCB §8. Strike the text, keep the entry and its number, say what decided it and (here) that
+   its second clause was *wrong* rather than incomplete. Never renumber; existing §8.1 references
+   must still resolve.
+6. **KCB now has four re-ratification counts** and they are independent: the media-transform
+   extension re-run, the §7.5 live-schema-mutation re-run, the multi-authority pass for §3.1, and
+   the firehose re-run for §4.2. Any future fold must restate all four and move only its own.
