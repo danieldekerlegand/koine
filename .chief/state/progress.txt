@@ -293,3 +293,78 @@ OK (8 categorized), verify-selftest **30 passed / 0 failed**.
 - **Before adding a table, check which files the integrity guard actually verifies.**
   `MIRRORS` in `scripts/check-doc-integrity.mjs` is a three-element literal. A table outside those
   three files is unguarded, which is fine for immutable facts and a liability for mutable ones.
+
+---
+
+## 2026-08-26 — Base integration (NOT a user story)
+
+`chief/83-promote-kgp` was 7 commits behind `main` @`2809f00` and chief's automatic rebase
+conflicted. Rebased by hand; **no story's `passes` was touched** — all three were already done.
+
+**The rebase itself was small.** One conflict stop, on `.chief/state/prd.json` +
+`.chief/state/progress.txt` — main carried `69-kft-open-questions`'s retired runtime state and
+this branch carries `83`'s live state, so the branch side is the only correct resolution. Git
+also **dropped `003817b`** (this branch's nine-link `chief/53` repoint) as already applied: main
+landed the equivalent `123f341` independently. That is the right outcome, not a loss.
+
+**The integration's real work was semantic, not textual.** Main merged `chief/69`, which folded
+KFT §11 question 3 into **KFT 0.6.0** and landed a new pressure leg. Four statements this branch
+had authored became false, and every one of them was in a deliverable whose whole purpose is being
+accurate about what blocks promotion:
+
+1. **ROADMAP Phase 1's KFT row** named *Re-ratify KFT 0.4.0* with one gate. There are now two, and
+   the new one is not cosmetic: 0.5.0 left §4's admission inputs byte-unchanged and **0.6.0 does
+   not** — a `resume` ref joins §4.2's aggregate and §4.3's union — so §3.4/§4.2/§4.3/§5.4/§6/§7
+   are *changed* normative surface. A cold job admits exactly as before, which is why the standing
+   FT-M…FT-Q re-run is unaffected.
+2. **ROADMAP Phase F6** sat `⬜ planned` with its KFT §11 row unticked — the identical defect class
+   US-2 corrected for Phase F4 five commits earlier. Marked delivered, section moved to 🚧.
+3. **`docs/reference/promotability.md`'s KFT row + ranking entry** described one re-run of
+   already-walked text.
+4. **The big one: *"the conformance gate is met for all six and blocks nothing"* is now false for
+   KFT.** 0.6.0 added a **tenth** scenario (`scenarios/kft-resume-checkpoint.md`) a week *after*
+   the nine encodings were built downstream, so the clauses 0.6.0 folded have no machine-replayable
+   document citing them — precisely what `specs/README.md`'s ratification gate forbids promoting on.
+
+**Item 4 was verified, not inferred.** Read `agora` at `9fe2ee5`:
+`console/src/kcs/scenarios/coverage.test.ts` asserts `KOINE_SCENARIOS.length === 9` **and**
+set-equality with koine's `scenarios/*.md`. koine now holds ten, so that test goes **red** against
+this commit and names the unencoded document. Its own docstring says that is the design — *"a
+partial encoding cannot go green quietly."*
+
+**Files changed** (docs only — no spec text, version, or status header moved; no claim id moves):
+
+- `ROADMAP.md` — headline conformance-gate claim narrowed to five of six; Phase 1 KFT row rewritten
+  to 0.6.0 + two gates + the missing encoding; Phase F6 KFT §11 row marked ✅ delivered and the
+  section header moved to 🚧.
+- `docs/reference/promotability.md` — KFT row (two counts + the conformance gap), *Cheapest first*
+  entry 3, and the *Two facts that apply to every row* bullet corrected.
+- `docs/reference/kcs-encoding-gate-verification.md` — new **§6.1**, a *dated amendment* rather
+  than an edit over the original verdict: the nine encodings are untouched (E1/E2 stand, the
+  evidence content address is unchanged), what moved is **coverage**.
+- `scenarios/README.md` — the stale-banner amended: ten scenarios, nine encodings, and the
+  `⬜` on the `kft-resume-checkpoint` row is the one entry in that column that is *not* stale.
+
+**Checks:** `.chief/verify.sh` — **all 4 selected gates green.** doc-integrity OK (47 files, 841
+links, all 3 status tables match their headers), doc-links **0 dead vs 0 on main**,
+tasklist-categories OK (7 categorized), verify-selftest **30 passed / 0 failed**.
+
+**Learnings for future iterations**
+
+- **`.chief/state/` is gitignored but its two files are force-tracked.** So `git add .chief/state/…`
+  prints an "ignored by .gitignore" hint and **exits non-zero** even though it stages the file
+  correctly. In an `&&` chain that silently swallows the next command — it ate a
+  `git rebase --continue`. Run the `add` and the `continue` as separate statements.
+- **A rebase conflict on those two files is never a real conflict.** Main carries the *previous*
+  tasklist's runtime state; your branch carries the live one. Resolve with
+  `git show <the-commit-being-replayed>:<path> > <path>` — exact, and it survives the later commits
+  in the replay because the base is then yours.
+- **Green gates do not mean an integration is done.** `verify.sh` passed the instant the rebase
+  finished; all four falsehoods above sailed through it, because a link that resolves to a spec
+  saying something different is still a valid link. After a rebase, re-read every claim your branch
+  made about anything the base branch touched.
+- **koine has no local gate on scenario/encoding coverage, and structurally cannot.** Adding a
+  `scenarios/*.md` here breaks a downstream set-equality test with **no red light in this repo**.
+  If a future tasklist adds a scenario, that is a cross-repo obligation to record explicitly.
+- **Check `git log --oneline HEAD..main` for work that duplicates yours** before assuming a dropped
+  commit is a problem. `003817b` and `123f341` were the same fix authored twice.
