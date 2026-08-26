@@ -148,3 +148,64 @@ L's existing pending-fetch tolerance; (g) shape, never QoS.
 6. **KCB now has four re-ratification counts** and they are independent: the media-transform
    extension re-run, the §7.5 live-schema-mutation re-run, the multi-authority pass for §3.1, and
    the firehose re-run for §4.2. Any future fold must restate all four and move only its own.
+
+---
+
+## Iteration 3 — base integration (2026-08-26)
+
+**Not a user story.** Both US-1 and US-2 were already `passes: true`; this iteration discharged the
+`⚠️ BASE INTEGRATION REQUIRED` note (branch was 11 commits behind `main` @9ade99a, auto-rebase
+conflicted).
+
+**The rebase.** `git rebase main` conflicted on `.chief/state/prd.json` + `.chief/state/progress.txt`
+only — never on a spec, scenario, or doc. Both are per-branch **runtime state**, and the `main` side
+was a *different, retired* tasklist's state (`83-promote-kgp`), so the resolution is
+`git checkout --theirs` (in a rebase, "theirs" = the commit being replayed = **our** branch) for both
+files. Nothing of `main`'s real work was discarded — its 11 commits replayed underneath untouched.
+Branch is now `main` + 4 commits, working tree clean.
+
+**What the base brought that this branch had to answer.** `main` @`b67f50c` added a CLAUDE.md rule
+that did not exist when US-1 wrote the leg: **adding a file to `scenarios/` is a cross-repo
+obligation with no local red light.** The downstream KCS encoding set is held to *set-equality* with
+`scenarios/*.md` by a test in the implementing repo; no koine guard checks it, so a new scenario
+silently breaks that test and silently costs its spec [the ratification gate](specs/README.md#the-ratification-gate).
+`kcb-subscription-firehose.md` is koine's **eleventh** scenario against a downstream set of nine, so
+**KCB now joins KFT in failing the conformance gate — for §4.2 only** (its other three counts re-run
+scenarios that *are* encoded). Recorded in the four places a reader meets it:
+
+- `scenarios/README.md` — the leg's row now names the 0.4.7 fold, the fourth gate, and that no
+  encoding exists and none is owned.
+- `ROADMAP.md` — the status line excepts KCB alongside KFT; the KCB re-ratification row records all
+  **four** counts (it still said "two") and the encoding gap.
+- `docs/reference/kcs-encoding-gate-verification.md` — new **§6.2** amendment mirroring §6.1's
+  shape; §7's re-run comment now says ELEVEN.
+- the scenario's own Resolution amendment closes with the obligation, so a clean re-run is not
+  mistaken for sufficiency.
+
+No spec clause, version, or status moves — KCB stays 0.4.7 Candidate.
+
+**Files changed:** `ROADMAP.md`, `scenarios/README.md`, `scenarios/kcb-subscription-firehose.md`,
+`docs/reference/kcs-encoding-gate-verification.md` (+ the two rebase-resolved `.chief/state/` files).
+
+**Verification observed (post-rebase, post-edit):** `bash .chief/verify.sh --run <12 changed files>`
+→ `guard-doc-integrity` **OK** (48 markdown files, 875 relative links checked, all 3 status tables
+match their headers, capability-bus 0.4.7 candidate), `guard-doc-links` **0 dead vs 0 on main**,
+`guard-categories` **OK — 6 tasklists categorized**, `verify-selftest` **30 passed, 0 failed**,
+`✓ all selected gates green — allowing merge`. Also green standalone: `check-schemas.mjs` OK,
+`check-registry.mjs` OK, and the PRD's own two verify commands (`schemas ok`; the
+backpressure/flow-control grep hits).
+
+### Learnings for future iterations
+
+7. **Chief's base-integration note REPLACES `.chief/state/progress.txt` in the working tree** — the
+   committed history is still in `HEAD`, so `git checkout -- .chief/state/progress.txt` restores it
+   before you rebase (the note itself survives at `.chief/state/INTEGRATE-BASE.md`, which is
+   gitignored). Do that first or the rebase conflict is against a truncated file.
+8. **`.chief/state/` is gitignored yet tracked**, so `git add` on those paths prints an
+   "ignored by one of your .gitignore files" hint — the paths are already staged by the
+   `git checkout --theirs`, and `git rebase --continue` proceeds correctly. Do not add `-f`; verify
+   with `grep -c '<<<<<<<'` and `git status` instead.
+9. **Integrating `main` in a contracts repo is rarely a text conflict — it is a *convention*
+   conflict.** Diff `main`'s CLAUDE.md conventions section against the merge-base and ask what your
+   branch's new files now owe. Here a clean rebase still left the branch violating a rule that
+   landed on `main` two commits before it, and no gate in the repo would ever have said so.
