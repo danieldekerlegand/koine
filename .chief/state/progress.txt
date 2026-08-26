@@ -176,3 +176,56 @@ passed, 0 failed → "all selected gates green — allowing merge."**
   moved only because clauses now exist; the note says so explicitly and keeps the *not Complete*
   reasons (intra-org half out of scope, GOV-2 still open). Grades in that file are measurements
   with dates, not opinions.
+
+---
+
+## Iteration 3 — base integration of `main` @78a4096 (2026-08-26)
+
+**Not a user story.** Both stories were already `passes: true` on the branch; this iteration
+discharged the `⚠️ BASE INTEGRATION REQUIRED` notice (10 commits behind, auto-rebase had conflicted)
+and re-ran the gates. Commit `93f5020`, on top of the rebased `e970923` / `1bb7870` / `78f9144`.
+
+**How the rebase was resolved** (`git rebase main`, three commits replayed):
+- `.chief/state/prd.json` + `.chief/state/progress.txt` — runtime state, took **theirs** (this
+  branch's). `main` carried the retired `84-record-the-downstream-results` state. Note both files
+  are tracked but under a `.gitignore`d directory, so staging them needs `git add -f`.
+- `scenarios/README.md` — kept **main's** rewritten rows and *Corrected* note (its `84` pass flipped
+  the `⬜ planned` ×9 column to `✅ exists` and added per-scenario `## Downstream results` links) and
+  re-styled this branch's twelfth row into that shape (`⬜ absent`, DR-13, third red row).
+- `specs/capability-bus.md` — kept **both** halves of the *Pressure test* section (this branch's
+  *0.4.8 — a fifth gate* paragraph **and** main's downstream-evidence paragraph, the latter widened
+  from "the fourth count has no encoding" to the fourth **and fifth**), and both changelog entries
+  in date order (0.4.8 above main's Editorial 2026-08-26 above 0.4.7).
+
+**Follow-through the merge could not see** (the real work of this iteration): main's `84` pass built
+a downstream-results register keyed **DR-1…DR-12** over **eleven** scenarios; this branch adds a
+twelfth. Updated `scenarios/kcb-cross-owner-posture.md` (populated `## Downstream results` in main's
+shape, opening **DR-13** — blocking, KCB §4.3 alone), a new **§6.3** in
+`docs/reference/kcs-encoding-gate-verification.md`, and the counts/anchors in `ROADMAP.md`,
+`specs/README.md`, `CLAUDE.md`, `docs/reference/promotability.md` (KCB **four counts → five**).
+Also fixed a link `main` itself left dangling: `promotability.md:108` pointed at
+`tasks/chief/84-…json` after the retire commit moved it to `tasks/chief/completed/`.
+
+**Verification:** `node scripts/check-doc-integrity.mjs` green (50 markdown files, 1114 relative
+links, all 3 status tables match their headers) · `node scripts/check-doc-links.mjs --ratchet --base
+main` **0 dead vs 1 on main** (retired 1) · `check-schemas` green (9 schemas, 278 positions, 80
+`$ref`s, 3 fixtures) · `check-registry` green (28 relations) · `check-tasklist-categories` green
+(4 tasklists) · `bash .chief/verify.sh` green, verify-test **30 passed, 0 failed** · PRD `verify`
+command `schemas ok`.
+
+**Learnings for future iterations**
+- **A base integration is where cross-branch *registers* collide, not just text.** The textual
+  conflicts were three; the real cost was that `main` had introduced a repo-wide finding namespace
+  (DR-*) and a scenario count that this branch invalidates. Grep the whole tree for the *numbers*
+  (`eleven`, `DR-1…DR-12`, `nine of`, `two short of`) after a rebase — `check-doc-integrity` only
+  catches a broken **anchor**, and a heading like
+  `## The KCS encodings — nine of eleven exist…` is both a count *and* an anchor, so renaming it
+  correctly is what surfaces the stale links in `ROADMAP.md` / `specs/README.md` /
+  `docs/reference/promotability.md`.
+- **`main` can arrive red.** `promotability.md` linked a tasklist JSON that the same merge's retire
+  commit moved to `tasks/chief/completed/`. That is the hazard already recorded in iteration 2 (*a
+  ROADMAP row must not link a live tasklist JSON*) landing from the other direction — fix it in the
+  integration commit rather than leaving the branch failing a gate it did not break.
+- **Changelogs are historical, prose is current.** Where main's text was a dated *Editorial*
+  changelog entry or a §6.2-style amendment ("two short of koine's eleven"), it was left verbatim
+  and superseded by a new dated entry (§6.3). Only the non-dated running prose was re-counted.
