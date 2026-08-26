@@ -42,10 +42,10 @@ Six specs, versioned independently; each spec's own header is authoritative for 
 
 | Spec | Protocol | Plane | Version · status |
 |---|---|---|---|
-| [`specs/identity.md`](specs/identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.3.0 · 🟡 candidate |
+| [`specs/identity.md`](specs/identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.4.0 · 🟡 candidate |
 | [`specs/grounding-pack.md`](specs/grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / provenance / graph) | 0.5.2 · 🚧 candidate |
-| [`specs/media-interchange.md`](specs/media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.4 · 🚧 candidate |
-| [`specs/capability-bus.md`](specs/capability-bus.md) | **KCB** — Capability-Bus | control — discover / invoke / subscribe / fetch over MCP + A2A | 0.4.8 · 🚧 candidate |
+| [`specs/media-interchange.md`](specs/media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.5 · 🚧 candidate |
+| [`specs/capability-bus.md`](specs/capability-bus.md) | **KCB** — Capability-Bus | control — discover / invoke / subscribe / fetch over MCP + A2A | 0.4.9 · 🚧 candidate |
 | [`specs/conformance-scenario.md`](specs/conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data over **N real** participants' own connections, with cross-plane assertions | 0.3.0 · 🚧 candidate |
 | [`specs/fine-tuning.md`](specs/fine-tuning.md) | **KFT** — Fine-Tuning | *profile* — composes the four planes into a `finetune` capability (not a fifth plane) | 0.6.0 · 🚧 candidate |
 

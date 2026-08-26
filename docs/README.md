@@ -28,6 +28,7 @@ reference out of this repo resolves for nobody who has only this one —
 - [KGP §4.1 round-trip gate — what the downstream artifact actually delivers](reference/kgp-projection-gate-verification.md)
 - [The KCS-encoding gate — what the downstream suite actually delivers](reference/kcs-encoding-gate-verification.md)
 - [Promotability — what stands between each spec and `ratified`](reference/promotability.md)
+- [The federation fold — a disposition for each of MA-1…MA-11](reference/federation-fold-dispositions.md) — and, after the fold landed, what it does to promotability and what the pass taught about the shared federation pattern itself
 
 ## Explanation
 

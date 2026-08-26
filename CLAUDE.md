@@ -59,11 +59,33 @@ vocabulary.
   as clearly-marked illustrative examples or in informative "known implementations" pointers.
 
 ## Current state
-- `specs/identity.md` — KINP 0.3.0, **candidate**. ADR-0012 makes the canonical
+- `specs/identity.md` — KINP 0.4.0, **candidate**. ADR-0012 makes the canonical
   identity-authority role federable: a single designated holder remains conformant, while
   multiple independently operated holders reconcile through KINP's existing namespace,
   provenance, and §4 safeguards; local offline-first minting remains unchanged. Candidate pending
-  `chief/53-multi-authority-scenario`. Deltas A–E folded; three forks decided
+  `chief/53-multi-authority-scenario`, which has **run and was not clean** — deltas MA-1…MA-11.
+  0.4.0 is **the federation fold**, KINP's five: **§4.1** a `same_as` closure spanning two
+  authorities MUST be cut at the boundary or have each imported link re-evaluated against the
+  consumer's own threshold, and a multi-authority path carries its **weakest issuer and lowest
+  confidence** into the view — the operand is §4.2's existing `src`, so no envelope field is added
+  (MA-1); **§4.5** a **fourth, fail-closed branch** — *operand unresolvable* → `based_on` or nothing
+  and queue, **never `same_as`** — distinct from the third branch, which is about confidence (MA-2);
+  **§6** claim-id convergence is **domain-scoped**, the re-expression target is the participant's
+  **own** authority's canonical entity, and the cross-domain instrument is the §4 equivalence view,
+  not a shared hash — **no existing claim id moves** (MA-3); **§4.2** one **new core relation**
+  `world_aligns_with` over two world ids (never `same_as` widened in place — a signature is
+  immutable), with §4.3's firewall preserved, plus **§5**'s statement that each authority's
+  `…:world:consensus-reality` is its own and cross-domain sameness is asserted, never assumed
+  (MA-4); **§3.4** the prefix registry is the one deliberately **non-federated commons**, with
+  prefix-disjointness and collision-is-a-reportable-defect (MA-7). Minor because four of the five are
+  normative surface a reader implements against, though behaviour is additive. Two alternatives are
+  **rejected on the record** — a namespace-free canonical world token (it re-hashes every real-world
+  claim) and an authority-scoped prefix form (it changes every identifier's shape) — and two
+  remainders deferred with triggers (DEFER-A the control-plane route for world metadata, DEFER-B a
+  federation-scoped canonical over §4.4's anchor); see
+  `docs/reference/federation-fold-dispositions.md`. **Stays candidate**: a fold does not close its
+  own gate, and the single count is now a re-run of that pass against the folded text.
+  Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
 - `specs/grounding-pack.md` — KGP 0.5.2, **candidate**. Knowledge data plane; normative §3
@@ -85,8 +107,15 @@ vocabulary.
   it packages files and discharges no clause of §3/§3.3/§7) — with §3, §3.1 and §3.3
   byte-unchanged, so no claim id moves. Stays candidate on the one
   remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
-  ADR-0001, tracked cross-repo).
-- `specs/capability-bus.md` — KCB 0.4.7, **candidate**. Control plane over MCP/A2A; cross-plane
+  ADR-0001, tracked cross-repo). The federation fold (2026-08-26) touches KGP **not at all**: an
+  **Editorial** entry records its reading of MA-3/MA-4/MA-5 — the scenario names KGP a *consequence
+  surface, not a gated spec* — and all three are answered in KINP §6/§4.2/§5 and KMI §2 by the
+  define-once rule. §3.3's convergence is correct and intact (Step 4 records byte-identical canonical
+  forms), §7's `world = consensus-reality` filter reads over KINP's new `world_aligns_with` closure
+  without §7 moving, and KMI **reuses** §7.1/§7.2's classes on the asset envelope while KGP's own
+  enforcement point (pack construction, for records) is unchanged. **No clause, no version, no second
+  gate** — deliberately, on the spec closest to promotion.
+- `specs/capability-bus.md` — KCB 0.4.9, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -156,8 +185,8 @@ vocabulary.
   invalidates no manifest, grant, pin, or live subscription. Patch, not minor: additive (no manifest
   field, no verb changes) and **0.5.0 is already spent** on §2.2's removal. New normative text, so it
   adds a **third** candidate count — the cross-authority break test
-  `chief/53-multi-authority-scenario`, the same one KINP 0.3.0 names — gating §3.1 alone; the two
-  existing gates are restated, neither moved. 0.4.7 (patch) resolves that **last open question** —
+  `chief/53-multi-authority-scenario`, the same one KINP §11 decision 1 names — gating §3.1 alone;
+  the two existing gates are restated, neither moved. 0.4.7 (patch) resolves that **last open question** —
   subscription backpressure — into a normative **§4.2**, after the focused pressure leg
   `scenarios/kcb-subscription-firehose.md` returned six deltas **BP-1…BP-6** (blocking BP-5, BP-3).
   BP-5 is why the fold could not wait: §8.1 parked flow control on *"the host's cost advisor"*, but
@@ -216,8 +245,29 @@ vocabulary.
   questions — this fold answers an ADR, not a parked question. New normative text, so a **fifth**
   candidate count: a re-run of that leg, gating §4.3 alone (the four existing counts are restated and
   none moves), with ADR-0013's retained **second-independent-implementation** condition (W3) gating
-  §4.3's ratification alongside it.
-- `specs/media-interchange.md` — KMI 0.3.4, **candidate**. Media data plane; asset envelope +
+  §4.3's ratification alongside it. 0.4.9 (patch — 0.5.0
+  **stays** spoken for by §2.2's removal, the same minor V-1…V-8 occupy, so this fold takes nothing
+  `86` needs) is **the federation fold's control-plane half**, folding the three deltas the
+  cross-authority break test left against §3.1: **MA-6** (blocking) — discovery federated and
+  authorization did not, so **§5** now requires a grant to name its **issuing host** by KINP id and a
+  provider to state which issuers it honours via an optional **`auth.accepted_issuers[]`** in §2, a
+  federation being a **stated** set of accepted issuers and an unrecognized issuer **failing closed**,
+  while a `budget_units` ceiling crossing a boundary states its unit or the `invoke` is refused for
+  want of one; KMI §7.1(b)(e)'s `fetch:asset` leg inherits all of it by citing §5, needing no clause
+  of its own. **MA-8** — three of §3.1's six clauses were asserted with no carrier, so **§3**'s `find`
+  response gains a shape: per-entry `served_by` (the serving registry's KINP id, the peer's for a
+  peered entry) with a resolvable address and `observed_at`, plus a result-level `incomplete[]`
+  naming unreachable peers; mechanization of clauses already normative, deliberately **not** a
+  ranking or trust weighting, which §3.1(d) refuses. **MA-9** — **§3.1(b)** gains a horizon (query id
+  + remaining hop count, drop a query already seen) and **§3.1(d)** gains its **converse**: entries
+  resolving to the same provider KINP id, `(name, version)` **and** `schema_id` are **one**
+  capability with multiple attributions, never two. Patch: the one manifest field is optional on read
+  and write, the response shape is emitted only by a federating deployment, and §7.1's digest and
+  §7.2's compatibility table are undisturbed. Bounded on purpose: no token format/issuance/rotation
+  or issuer-discovery protocol (§5's own boundary), and §3.1(b) bounds a **query**, not a topology.
+  **Stays candidate**; the §3.1 count is now a re-run of Steps 5–7 against the folded text and the
+  other four counts are restated, none moved.
+- `specs/media-interchange.md` — KMI 0.3.5, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
@@ -261,8 +311,24 @@ vocabulary.
   spent** on the EDL removal. §9's numbering is deliberately *not* shifted — question 3 is marked
   resolved in place the way §9.5 already is — so every existing §9.x reference still resolves. New
   normative text, so it adds a **second** candidate count: the cross-authority break test
-  `chief/53-multi-authority-scenario`, the same one KINP 0.3.0 and KCB 0.4.6/0.4.7 name, gating §7.1
-  alone; the outstanding KCB re-run is restated and does not move.
+  `chief/53-multi-authority-scenario`, the same one KINP §11 decision 1 and KCB §3.1 name, gating
+  §7.1 alone; the outstanding KCB re-run is restated and does not move. 0.3.5 (patch — 0.4.0 stays
+  spent on the EDL removal) is **the federation fold's media half**, after that break test ran and
+  left two deltas here: **MA-5** (blocking) — the §2 envelope gains optional **`license`** and
+  **`egress`**, valued from KGP §7.1/§7.2 and **excluded from the id** so no `asset` id moves; §7.1(d)
+  gains the one narrow carve-out its own reasoning implied (the governing policy is the single thing
+  accompanying replicated bytes, and it travels because it is *carried*, never synthesized); §7.1(e)
+  gains the consequence that makes the gate decidable at a second holder — the asset's own policy is
+  evaluated **in addition to** the serving domain's, `local-only` never crosses an authority-domain
+  boundary, and a copy whose policy did **not** travel MUST NOT be served onward, which closes the
+  laundering-by-retention hole at the retainer. **MA-10** — §7.1(f) gains a three-valued answer, *not
+  held, and not expected* distinguishable from *not reachable*, so a consumer polling the reachable
+  set can conclude; (f)'s substance is untouched and still invalidates nothing. **No KGP clause
+  changes and no enforcement point moves** — KGP §7.2 still filters `local-only` **records** at pack
+  construction, while these fields govern **bytes** at `fetch` time — and **no schema twin changes**,
+  since none models the §2 envelope. Deliberately unwritten: no minimum replica count, no retention
+  obligation, no durability guarantee, and no designated durable holder (DEFER-C). **Stays
+  candidate**; the §7.1 count is now a re-run of Steps 8–10 against the folded text.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output

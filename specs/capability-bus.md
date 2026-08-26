@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.4.8
+**Spec version:** 0.4.9
 **Status:** Candidate
 **Last updated:** 2026-08-26
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -22,7 +22,7 @@ carries.
 > that returns *addresses* across an authority boundary — never a proxy (ADR-0001). It adds a
 > **third** re-ratification count, the cross-authority break test in
 > [`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), which is
-> the same test KINP 0.3.0 and KMI's federation clause name — now written and run as
+> the same test KINP §11 decision 1 and KMI's federation clause name — now written and run as
 > [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), and **not clean**
 > (MA-6 blocking, MA-8/MA-9 should-fix), so that third count does not close. 0.3.0 changed the *shape* of the
 > manifest — it is now an A2A AgentCard extension (§2), not a standalone
@@ -79,7 +79,20 @@ carries.
 > grounds as 0.4.7 — every field optional, a dispatch declaring no posture behaves exactly as at
 > 0.4.7, no verb/plane/port kind/authority role added, §7.2 undisturbed, and 0.5.0 still spoken for.
 > New normative text, so a **fifth** count — a re-run of that leg, gating §4.3 alone; the four
-> existing counts are restated and none moves.
+> existing counts are restated and none moves. 0.4.9 folds the three deltas the
+> **cross-authority break test** left open against §3.1 — **MA-6** (blocking), **MA-8**, **MA-9** —
+> into §5 (a grant names its issuing host by KINP id; a provider states which issuers it honours via
+> the optional `auth.accepted_issuers[]` of §2; a spend ceiling denominates in a stated unit or the
+> cross-domain `invoke` is refused; fail closed on an unrecognized issuer), §3 (a `find` response
+> shape carrying `served_by` + `observed_at` per entry and `incomplete[]` per result — the missing
+> carrier for §3.1(c)(e)(f)), and §3.1 itself (a **horizon** on a forwarded query, and (d)'s
+> de-duplication converse). *Classification:* **patch** — the one manifest field added is optional on
+> read and write, no verb/plane/port kind is added, §7.1's `schema_id` digest and §7.2's
+> compatibility table are undisturbed, and **0.5.0 stays spoken for** by §2.2's removal, which
+> V-1…V-8 also occupy. New normative text, so no count closes: the third count (§3.1) becomes a
+> **re-run of that pass against the folded text**, and the other **four** are restated and none
+> moves.
+
 
 > The **control plane**. Where the knowledge plane (KGP) and media plane move *data*, the
 > capability bus moves *capability*: how a participant advertises what it can do, how orgs and
@@ -261,7 +274,8 @@ extension (§2.3):
                              "schema_id": "sha256-…" } ],                          // media OUT (delta F)
               "cost":    { "tier": "paid", "est_units": 1200 } }                   // path cost (delta K); outside the digest (§7.1)
           ],
-          "auth":     { "scheme": "capability-token", "grants_required": ["invoke:compose"] },
+          "auth":     { "scheme": "capability-token", "grants_required": ["invoke:compose"],
+                        "accepted_issuers": ["orchestrator:agent:governance"] },  // OPTIONAL (§5)
           "signing":  { "key_id": "…", "alg": "ed25519" }  // shared shape with KGP manifest.signing
         }
       }
@@ -291,6 +305,13 @@ extension (§2.3):
   payload-shape *family*, while the spec version rides in `params.kcb_version`. Minting a
   `…/manifest/0.4` URI for added optional fields would make every already-published card invisible
   to a crawler matching the old one — `compose-v2`'s fragmentation (§7.1) at the document level.
+- **`auth.accepted_issuers[]` (optional; MA-6).** Where a deployment federates registries (§3.1), a
+  provider states which **grant issuers** it honours, by KINP id, beside the existing
+  `auth.scheme` / `auth.grants_required`. Additive and optional on read exactly like `version` and
+  `schema_id`: a card that omits it is a conformant manifest, and in a single-host deployment it is
+  simply the host that provisioned the registry. Its meaning — and failing closed on an unrecognized
+  issuer — is **§5's**, not this section's. Nothing about the extension `uri`, the `params` shape, or
+  a port's `schema_id` digest (§7.1) is affected by it.
 - Because the provider's identity is the card's KINP agent id, **a capability provider is itself a
   fabric entity** — an agent can be referenced, grounded, and reasoned about like any other node.
 - **Prior art.** Extending A2A by convention rather than forking it is already the house style
@@ -473,6 +494,18 @@ deployment needs more than one, they **peer** (§3.1).
   an unpinned consumer migrates by re-discovering, a consumer pinned to `^1` keeps finding 1.x, and
   either way a subscriber meets a break or a deprecation at **discovery or `describe`** time rather
   than at `invoke` (§7.2).
+- **What a `find` returns, where a deployment federates (§3.1(c)(e)(f); MA-8).** A result is a list
+  of **entries** plus a result-level status. Each entry carries the manifest data above and:
+  **`served_by`** — the KINP id of the registry that served it, which is the registry's own id for a
+  locally indexed entry and the **peer's** id for a peered one, so peered is distinguishable from
+  local — together with a resolvable address for that registry (§3.1(c)); and **`observed_at`** —
+  when the serving registry observed the entry from its source, SHOULD-level per §3.1(e). The
+  **result** carries **`incomplete[]`** — the KINP ids of peers that were asked and could not be
+  reached (§3.1(f)) — empty when every peer answered, so a short result is never silently short.
+  This is a **carrier** for clauses §3.1 already states normatively, not a new obligation: a
+  single-registry deployment emits none of it and is conformant unchanged, and a consumer MUST
+  ignore fields it does not understand (§7.2). It is deliberately **not** a ranking or a trust
+  weighting over `served_by`, which §3.1(d) refuses.
 - **Composition:** because the extension's ports are plane-typed (§2.1), the registry computes a
   *path* from a start port to a goal port **across planes and providers** — e.g. `text →
   narration:audio`, `mood(knowledge) → score:audio`, `assets → edl → CMX3600` — the bounded,
@@ -497,8 +530,10 @@ role, not a hard dependency.** KINP applies that decision to the identity-author
 decision 1 there); this section applies it to discovery.
 
 This section is **additive**. A deployment that runs exactly one registry (§3) is conformant
-unchanged: no field is added to the manifest (§2), no verb changes (§4), and nothing below is
-required of a participant whose deployment has one registry.
+unchanged: no verb changes (§4), and nothing below is required of a participant whose deployment has
+one registry. At 0.4.9 the fold of **MA-6** adds one **optional** manifest field —
+`auth.accepted_issuers[]` (§2) — read only by §5; a card that omits it is conformant, and the §3
+`find` response shape that carries (c), (e) and (f) is emitted only where a deployment federates.
 
 **a. Federation is a composition of registries, not a redefinition of one.** Each registry in a
 federation is a §3 registry: it indexes the participants of its own **authority domain** — those
@@ -515,11 +550,22 @@ A registry MUST NOT carry `invoke`, `subscribe`, or `fetch` traffic (§4) on a p
 peered entry MUST NOT name a registry as the address of a capability. An aggregator facade stays
 what §3 already makes it — optional, forwarding without transforming, never the mandatory path.
 
+**A forwarded `find` carries a horizon (MA-9).** Forwarding is otherwise unbounded: mutual or
+three-way peering re-forwards the same query indefinitely, and nothing above stops it. A registry
+that forwards a `find` MUST attach a **query id** and a **remaining hop count**, MUST decrement the
+hop count on each forward, MUST NOT forward at zero, and MUST **drop** — answering from its own
+index alone — a query id it has already seen. The values are a deployment's choice; what KCB fixes
+is that the two operands exist on a forwarded query and that a registry honours them. This bounds a
+**query**, not a topology: no peering topology, no federation membership protocol, and no limit on
+how peers are configured is specified here or anywhere in this section.
+
 **c. The authority boundary is observable.** Every entry a registry returns MUST be attributable to
 the registry that served it: an entry sourced from a peer MUST carry that peer's **KINP id** (§2 —
 a registry is a participant, so it has one) and a resolvable address for it, and MUST be
 distinguishable from a locally indexed entry. A consumer that cannot tell which authority asserted
-an entry cannot choose between two of them, which is the whole of what federation adds.
+an entry cannot choose between two of them, which is the whole of what federation adds. The carrier
+for this is §3's `find` response: per-entry **`served_by`** plus a resolvable address for it
+(MA-8).
 
 **d. Ranking and conflict across peers.** §3's ranking rules — highest satisfying version first,
 deprecated below non-deprecated (§7.3d) — apply to the **merged** result set unchanged, and MUST
@@ -532,15 +578,25 @@ KINP id. The same provider reached through two peers at the same `(name, version
 `schema_id` is a defect at that provider (§7.2), not a choice for the registry: both entries are
 returned, and the consumer resolves it by re-reading the provider's card.
 
+**The converse: one participant reached twice is one entry (MA-9).** The rule above forbids
+silently reconciling two capabilities; it does not license **inventing** a second one. Where two
+entries resolve to the same provider **KINP id**, the same `(name, version)` **and** the same
+`schema_id`, they are **one** capability with **multiple attributions**: the registry MUST return it
+once, carrying every `served_by` that offered it (c), and MUST NOT present it as two capabilities or
+as two authorities. This completes the case the paragraph above already half-covers — same provider,
+two peers, **differing** `schema_id` is a defect and both entries are returned; identical on all
+three, it was always one capability and only the path to it differed.
+
 **e. Staleness is visible, never silent.** A registry is already a cache (§3); a peered entry is a
 cache of a cache. A registry SHOULD carry, on each peered entry, when that entry was observed from
-its peer. A consumer MUST resolve any disagreement between two entries — or between an entry and
+its peer — the carrier is §3's per-entry **`observed_at`** (MA-8). A consumer MUST resolve any disagreement between two entries — or between an entry and
 what it finds on the wire — against the **provider's own card**, never by preferring one index over
 another.
 
 **f. An unreachable peer degrades discovery; it invalidates nothing.** Per ADR-0012, an authority
 role is not a hard dependency. A peer that cannot be reached MAY narrow what a `find` returns, and
-a registry MUST report that a peer was unreachable rather than return a silently short result. It
+a registry MUST report that a peer was unreachable rather than return a silently short result — the
+carrier is §3's result-level **`incomplete[]`**, naming the peer by KINP id (MA-8). It
 MUST NOT invalidate a locally registered manifest, a grant already issued (§5), a version already
 pinned (§7.4), or a live `subscribe` (§4) — none of which is mediated by the registry.
 
@@ -560,8 +616,20 @@ federates and **authorization** does not: §5 grants issue from one host, so §3
 whose calls nobody can authorize across a domain edge), **MA-8** (three of §3.1's six clauses have
 no carrier in §3's `find` response — no serving-peer id, no peered-vs-local marker, no observation
 time, no partial-result channel for an unreachable peer), and **MA-9** (a forwarded `find` has no
-horizon and no de-duplication key). All three are additive. The §3.1 count therefore stays open;
-see that scenario's *Re-ratification — what this pass gates* section.
+horizon and no de-duplication key).
+
+**All three are folded at 0.4.9** — MA-6 by §5's issuer-named grant, the optional
+`auth.accepted_issuers[]` of §2 and the stated-unit rule for `budget_units`; MA-8 by the §3 `find`
+response shape (`served_by` + `observed_at` per entry, `incomplete[]` per result) that carries (c),
+(e) and (f); MA-9 by (b)'s query-id-and-hop-count horizon and (d)'s de-duplication converse. The
+extent of each is reasoned in
+[`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
+**The §3.1 count nevertheless stays open**: a fold does not close its own gate, and this count now
+reads as a **re-run of Steps 5–7 against the folded text**. The three other counts on this spec —
+the [`e2e-media-transform.md`](../scenarios/e2e-media-transform.md) re-run, the §7.5 mutate-live-schema
+re-run, and §4.2's subscription-firehose re-run — are restated and **none moves**; in particular
+0.5.0 stays spoken for by §2.2's standalone-manifest removal, which is why this fold is a patch. See
+that scenario's *Re-ratification — what this pass gates* section.
 
 ---
 
@@ -1046,6 +1114,32 @@ that record rather than a finding of this leg.
   cross-participant chain (knowledge producer → media producer → paid model) cannot exceed the caller's authorized
   spend. Path-finding (§3) prefers zero-cost routes and surfaces the projected cost before an
   `invoke`.
+- **A grant names its issuer, and a provider states whose grants it honours (MA-6).** Discovery
+  federates (§3.1) and authorization did not: the bullet above issues grants from *the hosting org's
+  governance* — one host — while §3.1 makes a peer's provider discoverable and directly dialable, so
+  peering returned addresses that nobody could authorize a call to. Therefore: a grant MUST name its
+  **issuing host** by **KINP id** (a host is a participant, §2, so it already has one), and a
+  provider MUST state which issuers it honours — the optional `auth.accepted_issuers[]` on its
+  manifest (§2). **A federation is a stated set of accepted issuers, never an implicit one:** a
+  provider that states none honours only its own domain's issuer, and a grant from an issuer a
+  provider does not accept is **not authorization** — the provider MUST **fail closed** and refuse,
+  exactly as it would for a missing grant. Publishing a card that a peer registry indexes is not
+  consent to another domain's governance.
+- **A spend ceiling denominates in a stated unit, or the cross-domain call is refused (MA-6).**
+  `budget_units` is a quantity in the *issuing* host's governance, and two governance domains have no
+  reason to mean the same thing by it. A grant crossing an authority-domain boundary MUST state the
+  unit its ceiling denominates in, and a provider that cannot interpret that unit MUST refuse the
+  `invoke` **for want of one** rather than assume its own. Fail closed; never convert silently. The
+  §4.2e delivery-time evaluation of a subscription's ceiling is unchanged and inherits this
+  unchanged.
+- **KMI's byte replication inherits this and needs no clause of its own.** Cross-domain CAS
+  replication is a `fetch:asset` grant (KMI §7.1(b)(e), which cites this section) — the issuer
+  naming, the accepted-issuer set, the unit rule and the fail-closed rule all apply to it as
+  written.
+- **What this deliberately does not specify.** Token format, issuance, rotation, and any
+  trust-federation or issuer-discovery protocol stay exactly where the closing note of this section
+  already puts them — in the host's own infra. KCB fixes only the **shape**: that a grant carries its
+  issuer, and that a provider publishes which issuers it accepts.
 - **A grant binds to `(capability, major)`** (§7,
   [ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md)). `invoke:compose` issued
   while `compose` was at major 1 authorizes every **1.x** — which is what §7.2's compatibility rule
@@ -1415,6 +1509,41 @@ most important thing an owner citing this run must understand:
   qualifies the fourth and the fifth.
 
 ## Changelog
+
+- **0.4.9** (2026-08-26) — **The federation fold, control-plane half.** Folds the three deltas
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the ADR-0012
+  cross-authority break test §3.1 names as this spec's third count — recorded against KCB.
+  **MA-6** (blocking, **§5** + an optional `auth.accepted_issuers[]` in **§2**): discovery federated
+  and authorization did not, so §3.1 returned addresses whose calls nobody could authorize across a
+  domain edge. A grant now names its **issuing host** by KINP id, a provider states which issuers it
+  honours, an unrecognized issuer **fails closed**, and a `budget_units` ceiling crossing a boundary
+  either denominates in a stated unit or the `invoke` is refused for want of one. KMI §7.1(b)(e)'s
+  `fetch:asset` leg inherits all of it by citing §5, as it already does — no separate clause.
+  **MA-8** (**§3** + pointers from **§3.1(c)(e)(f)**): three of §3.1's six clauses were asserted with
+  nothing to carry them, so the `find` response gains a shape — per-entry `served_by` (the serving
+  registry's KINP id, the peer's for a peered entry) with a resolvable address and `observed_at`,
+  plus a result-level `incomplete[]` naming unreachable peers. Mechanization of clauses already
+  normative, deliberately **not** a ranking or trust weighting over `served_by`, which §3.1(d)
+  refuses. **MA-9** (**§3.1(b)** and **§3.1(d)**): a forwarded `find` carries a **query id and a
+  remaining hop count** and a registry drops a query it has seen — the horizon peering had none of;
+  and (d) gains its **converse**, that entries resolving to the same provider KINP id,
+  `(name, version)` and `schema_id` are **one** capability with multiple attributions, never two.
+  **Patch, not minor:** the single manifest field added is optional on read and write, the §3
+  response shape is emitted only by a federating deployment and a single-registry deployment behaves
+  exactly as at 0.4.8, no verb, plane, or port kind is added, §7.1's `schema_id` canonicalization and
+  §7.2's subscriber-compatibility table are undisturbed so no live subscriber breaks, and
+  **0.5.0 stays spoken for** by §7.3's removal of §2.2's standalone manifest — the same minor
+  V-1…V-8 occupy, which this fold deliberately does not consume.
+  **Bounded on purpose:** no token format, issuance, rotation, trust-federation or issuer-discovery
+  protocol (§5's own boundary, unmoved); no peering topology and no federation membership protocol
+  (§3.1(b) bounds a *query*, not a topology). The extent of each fold is reasoned in
+  [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md),
+  which also fixes the constraints this fold owes the sibling capability-versioning fold.
+  **Status: stays Candidate.** New normative text re-enters validation and a fold does not close its
+  own gate: the §3.1 count becomes a **re-run of Steps 5–7 against the folded text**, and the
+  media-transform, §7.5, §4.2 and §4.3 counts are restated and none moves. No schema twin changes —
+  `participant-self-description.schema.json` references the manifest by pointer and restates no
+  `params` field ([ADR-0007](../decisions/ADR-0007-self-describing-participant.md) decision 7).
 
 - **0.4.8** (2026-08-26) — **Candidate.** **Normative §4.3 — autonomy posture across an ownership
   boundary**, applying [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md), which

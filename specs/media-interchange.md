@@ -1,6 +1,6 @@
 # Koine Media-Interchange Protocol (KMI)
 
-**Spec version:** 0.3.4
+**Spec version:** 0.3.5
 **Status:** Candidate
 **Last updated:** 2026-08-26
 **Applies to:** media authorities (producer/authority for assets + timelines), media producers of
@@ -32,11 +32,25 @@ composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline
 > **byte-stable across stores**, so a replicated copy is the same asset rather than a new one. It
 > adds a **second** re-ratification count, the cross-authority break test in
 > [`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), which is
-> the same test KINP 0.3.0 and KCB §3.1 name; it gates §7.1 alone and does not move the
+> the same test KINP §11 decision 1 and KCB §3.1 name; it gates §7.1 alone and does not move the
 > KCB-re-run count below. That test is now written and run as
 > [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), and is **not clean**
 > — the id stayed byte-stable under every attack tried, but **MA-5** (blocking) and **MA-10** are
 > open, so the second count does not close.
+
+> **Status note (0.3.5):** **MA-5 and MA-10 are folded** (§2's optional `license`/`egress`, §7.1(d)'s
+> travels-with-the-bytes carve-out, §7.1(e)'s not-served-onward rule, §7.1(f)'s three-valued answer)
+> — and **the second count still does not close**. A fold does not close its own gate: new normative
+> text re-enters validation, so the count **changed shape rather than closing**, from *fold MA-5 and
+> MA-10* to **a re-run of Steps 8–10 of
+> [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) against the folded
+> text**. Stated plainly so a reader does not have to infer it: **this fold clears neither of KMI's
+> two counts.** The first (the [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md)
+> re-run) is **KCB's** work and is untouched here, so even a clean re-run of the second leaves KMI
+> **Candidate**. What the fold does to each spec's gate is set out in
+> [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md);
+> the ranking of what stands between each spec and `ratified` is kept once, in
+> [`../docs/reference/promotability.md`](../docs/reference/promotability.md).
 
 > **Status note (0.3.3):** folds the §9.5 additive-metadata-survival pressure break. A third-party
 > OTIO round-trip may remain structurally valid while dropping `metadata.koine.asset`; KMI now
@@ -119,6 +133,8 @@ those bytes and is **excluded from the id** (a re-encode is a different asset �
       { "kind": "audio", "codec": "aac", "sample_rate": 48000, "channels": 2 }
     ]
   },
+  "license":    "CC-BY-4.0",                   // OPTIONAL — the policy governing THESE BYTES (§7.1d/e)
+  "egress":     "exportable",                  // OPTIONAL — "exportable" | "local-only"; travels with a copy
   "prov": { /* W3C-PROV shape, as KINP §7.1 */ }
 }
 ```
@@ -137,6 +153,24 @@ those bytes and is **excluded from the id** (a re-encode is a different asset �
 - **`excerpt` (optional).** For an asset that is a rendered sub-range of another, records
   `{ "source": <asset id>, "start_ms", "end_ms" }` — the cut range that the binary
   `media:excerpt_of` link (§3) deliberately omits.
+- **`license` and `egress` (optional; MA-5).** The policy that governs **these bytes**, so that the
+  gate at an authority boundary has an operand to decide with (§7.1(e)). Both are **excluded from
+  the id** like every other field here: attaching a policy does not mint a new asset, and changing
+  one never moves an `asset` id. The values are KGP's, **reused and not redefined** — `license` is a
+  licence class / SPDX identifier per KGP §7.1 and
+  [`../policy/license-classes.json`](../policy/license-classes.json); `egress` is a KGP §7.2 egress
+  class, `exportable` or `local-only`.
+  - **Where they are enforced is KMI's to state, and it is not where KGP enforces its own.** KGP
+    §7.2 filters `local-only` **records** out at pack construction. These fields govern **bytes**,
+    and they are evaluated by the participant that *serves* them, in its own authority domain, at
+    the moment of a `fetch` — §7.1(e). No KGP clause changes and no KGP enforcement point moves.
+  - **Both are optional, and absent is not `exportable`.** An envelope carrying neither is
+    conformant and is exactly a 0.3.4 envelope; what absence means at a domain boundary is fixed by
+    §7.1(e), which fails closed on it.
+  - They are envelope fields, so they are asserted by whoever asserted the envelope and are read off
+    its `prov` — never off the store that served the bytes (§7.1(d)). KMI requires no signing or
+    hard binding on the pair; a deployment that wants one uses the signing shape KCB §5 already
+    defines.
 
 ---
 
@@ -653,9 +687,11 @@ hard dependency.** KINP applies that decision to the identity-authority role (§
 there) and KCB to discovery (KCB §3.1); this section applies it to the bytes.
 
 This section is **additive**. A deployment that runs exactly one shared store (§7) is conformant
-unchanged: no envelope field is added (§2), no lineage relation is added or narrowed (§3), the
-`fetch` verb and its grant are untouched (KCB §4/§5), and nothing below is required of a
-participant whose deployment has one store.
+unchanged: no lineage relation is added or narrowed (§3), the `fetch` verb and its grant are
+untouched (KCB §4/§5), and nothing below is required of a participant whose deployment has one
+store. At 0.3.5 the fold of **MA-5** adds two **optional** fields to the §2 envelope — `license` and
+`egress`, excluded from the id — which (d) and (e) below read; an envelope that carries neither is
+conformant, and a single-store deployment behaves exactly as at 0.3.4.
 
 **a. Federation composes stores; it never touches asset identity.** The `asset` id *is* the hash
 of the bytes (§2, KINP §2/§6), so the same bytes carry the **same id in every store** — identity
@@ -692,6 +728,17 @@ a `derived_from` / `variant_of` / `excerpt_of` edge (§3) — a copy is the same
 envelope's `prov`, never off the store the bytes came from; the §3.2/§3.3 projections are likewise
 unaffected, since a C2PA hard binding and an OMC derivation both bind to content, not to a holder.
 
+**The one exception, and it is narrow: the governing policy travels with the bytes (MA-5).** The
+`license` / `egress` pair on the §2 envelope is the **single** thing this clause permits to
+accompany a replication besides the bytes themselves, and it travels precisely because it is
+**not** synthesized: it is the asset's own governing policy, carried from the envelope the
+requesting participant already holds, not a fact the receiving store invents about bytes it just
+received. Everything else here stands unchanged — no envelope is fabricated, no lineage edge is
+written, no `prov` record is minted, and the pair is **not** authorship or provenance: who asserted
+an envelope is still read off that envelope's `prov`, never off the store the bytes came from. A
+store that receives bytes and no policy has received bytes and no policy; (e) says what it may then
+do with them.
+
 **e. The authority boundary is observable, and egress is evaluated at it.** A participant that
 serves an asset is a participant (§8) and MUST be identifiable by its **KINP id**, so a consumer
 can tell whose copy it holds and attribute availability and cost to that holder. Replication on
@@ -703,6 +750,29 @@ closed** where a
 from an authority domain MUST NOT be replicated across that boundary, and a peer's willingness to
 serve a copy MUST NOT be read as having pre-cleared that decision for anyone else.
 
+**The gate has an operand, and a copy whose policy did not travel is not served onward (MA-5).**
+Before 0.3.5 the rule above was right about *where* the decision is made and had nothing to decide
+with at a second holder: the §2 envelope carried no `license` and no `egress`, KGP §7's classes are
+properties of **records** filtered at pack construction rather than properties of bytes, and (d)
+rightly forbids synthesizing the envelope that would carry them. A second holder could therefore
+only refuse everything — replication inoperative — or serve under **its own** domain's policy,
+after which one legitimate fetch plus (b)'s *MAY retain* ends the originating domain's control
+permanently. With §2's pair the gate is decidable at every holder:
+
+- A participant that serves a copy MUST evaluate the asset's **own** `license` and `egress` — the
+  values that travelled with it under (d) — **in addition to**, never instead of, its own authority
+  domain's policy. Both must permit the serve; either alone may refuse it.
+- Where an asset's `egress` is `local-only`, it MUST NOT be replicated across an authority-domain
+  boundary and no holder may serve it across one, irrespective of that holder's own policy.
+- A holder that holds bytes **without** the governing policy — a copy taken before this clause, or
+  one whose envelope it never received — MUST NOT serve them onward across an authority-domain
+  boundary. It MAY still serve them inside its own domain, and it MUST NOT synthesize the missing
+  pair in order to pass this gate; (d) forbids that, and passing a gate is not a reason to invent an
+  assertion. **Fail closed.**
+
+This adds no new decision point and moves none: the serving participant decides, in its own domain,
+as it already did.
+
 **f. An unreachable store delays retrieval; it invalidates nothing.** Per ADR-0012, an authority
 role is not a hard dependency. A store that cannot be reached MAY delay or deny byte retrieval —
 which §7 already tolerates, since a reference can legitimately arrive before its bytes propagate
@@ -710,6 +780,24 @@ which §7 already tolerates, since a reference can legitimately arrive before it
 timeline that references it (§4), an analysis claim derived from it (§5), or a grant already
 issued (KCB §5). A reference whose bytes are not yet reachable is a **pending fetch**, never a
 broken identifier.
+
+**Absence must be answerable, not merely unreached (MA-10).** *Pending* is the right default and it
+becomes unfalsifiable when the only two answers are *here* and *silence*: retention is a **MAY**
+(b), no clause requires a minimum replica count or a durable holder, and a consumer that polls every
+store it can reach cannot tell *not yet propagated* from *no holder remains*. So a store MUST be
+able to answer, for an id it is asked for, **not held, and not expected** — it holds no copy and has
+no replication of that id in flight or scheduled — **distinctly from** *not reachable* and from
+*not held, pending*. A consumer that reaches every store in the set it can see and gets *not held,
+and not expected* from all of them MAY conclude for **that set**; it MUST NOT conclude anything
+about a store it could not reach, and nothing above changes — the id, the envelope, a lineage edge,
+a timeline, and an already-issued grant all stay valid whatever the answer is.
+
+That is a **contract**, not an operational mandate: no minimum replica count, no retention
+obligation, no durability guarantee — koine specifies what crosses a boundary, not how a store is
+operated. The optional *designated durable holder* the break test also proposed is deliberately not
+written, and is deferred with its forcing trigger stated in
+[`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md)
+(DEFER-C).
 
 **Re-ratification.** This section is new normative text and is candidate on the cross-authority
 break test in
@@ -731,8 +819,18 @@ no `license` and no `egress`, KGP §7's classes are record properties rather tha
 and (d) rightly forbids synthesizing the envelope that would carry them; so a second holder either
 refuses everything or serves under its own domain's policy) and **MA-10** ((b)'s *MAY retain* plus
 no minimum replica count makes (f)'s *pending fetch* unfalsifiable — a consumer cannot distinguish
-*not yet propagated* from *no holder remains*). Both are additive. The §7.1 count therefore stays
-open; see that scenario's *Re-ratification — what this pass gates* section.
+*not yet propagated* from *no holder remains*).
+
+**Both are folded at 0.3.5** — MA-5 by §2's optional `license` / `egress` pair, (d)'s narrow
+travels-with-the-bytes carve-out and (e)'s not-served-onward rule; MA-10 by (f)'s three-valued
+answer, where *not held, and not expected* is distinguishable from *not reachable*. The extent of
+each, and the one remainder deliberately not folded (**DEFER-C**, a designated durable holder), are
+reasoned in
+[`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
+**The §7.1 count nevertheless stays open**: a fold does not close its own gate, and this count now
+reads as a **re-run of Steps 8–10 against the folded text**. The outstanding KCB re-run count under
+**Pressure test** is unaffected and does not move. See that scenario's *Re-ratification — what this
+pass gates* section.
 
 ---
 
@@ -797,7 +895,7 @@ Promotion of both follows that pass.
 **Second count (0.3.4).** §7.1 is new normative text that this scenario does not exercise — it has
 one store. It is candidate on the cross-authority break test in
 [`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), the same
-test KINP 0.3.0 and KCB §3.1 name, which must hunt per-project CAS replication on reference that
+test KINP §11 decision 1 and KCB §3.1 name, which must hunt per-project CAS replication on reference that
 loses content identity, provenance, or availability semantics
 ([ADR-0012](../decisions/ADR-0012-federated-authority-roles.md), *Consequences*). It gates §7.1
 alone; the KCB re-run count above is unaffected and no delta is reopened. That test has now been
@@ -830,6 +928,40 @@ Neither closes a count, and one carries a caveat an owner must read before citin
   §7.1.
 
 ## Changelog
+
+- **0.3.5** (2026-08-26) — **The federation fold, media half.** Folds the two deltas
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the ADR-0012
+  cross-authority break test §7.1 names as this spec's second re-ratification count — recorded
+  against KMI. **MA-5** (blocking): the §2 asset envelope gains two **optional** fields, `license`
+  and `egress`, valued from KGP §7.1's licence classes and §7.2's egress classes and **excluded from
+  the id** like every other envelope field, so **no `asset` id moves**; §7.1(d) gains the one narrow
+  carve-out its own reasoning already implied — the governing policy is the single thing that
+  accompanies replicated bytes, and it travels precisely because it is *carried*, never synthesized;
+  and §7.1(e) gains the consequence that makes the gate decidable at a second holder — an asset's own
+  policy is evaluated **in addition to** the serving domain's, `local-only` never crosses an
+  authority-domain boundary, and a copy whose policy did **not** travel MUST NOT be served onward.
+  **MA-10**: §7.1(f) gains a three-valued answer — a store MUST be able to say *not held, and not
+  expected* distinctly from *not reachable* — which is what makes *pending* falsifiable for the
+  reachable set. (f)'s substance is untouched and still invalidates nothing.
+  **Patch, not minor:** every field is optional on read and write, an envelope carrying neither
+  behaves exactly as at 0.3.4, no lineage relation, media type, timeline shape or `fetch` grant
+  moves, and **0.4.0 is already spent** on §4.4's EDL removal (KCB §7.3c forbids declaring and
+  removing in the same publication) — the same reasoning KCB used to land §3.1 at 0.4.6 and §4.2 at
+  0.4.7.
+  **No KGP clause changes.** The classes are **reused, not redefined**: KGP §7.2 still filters
+  `local-only` **records** at pack construction, while these fields govern **bytes** and are
+  evaluated by the serving participant at `fetch` time (§7.1(e)) — stated in §2 so the two
+  enforcement points are not confused. **No schema twin changes** either: no `schemas/*.json` models
+  the §2 asset envelope, and `provenance.schema.json`'s `$defs.license` / `$defs.egress` are the
+  vocabularies reused rather than shapes altered.
+  **One remainder is deliberately not folded** — an asset reference naming a designated durable
+  holder (**DEFER-C**, from MA-10) — with the future break that would force it stated in
+  [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md),
+  along with what §7.1 deliberately still does **not** specify: no minimum replica count, no
+  retention obligation, no durability guarantee.
+  **Status: stays Candidate.** New normative text re-enters validation and a fold does not close its
+  own gate; the §7.1 count is now a **re-run of Steps 8–10 against the folded text**, and the
+  outstanding KCB re-run count under *Pressure test* is restated and does not move.
 
 - **Editorial** (2026-08-26) — Recorded the **downstream results** of both gating scenarios in
   *Pressure test*. The KCS encodings of

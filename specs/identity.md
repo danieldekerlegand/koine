@@ -1,6 +1,6 @@
 # Koine Identity & Namespace Protocol (KINP)
 
-**Spec version:** 0.3.0
+**Spec version:** 0.4.0
 **Status:** Candidate
 **Last updated:** 2026-08-26
 **Applies to:** every participant that mints, publishes, or resolves identifiers — producers,
@@ -131,6 +131,35 @@ published (changing it changes every identifier under it). Registration confers 
 privilege — the only namespace the protocol treats specially is the one a deployment designates
 as its identity authority for real-world entities (§6, §11 decision 1).
 
+**The prefix registry is the one deliberately non-federated commons (normative — MA-7).** Under
+[ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) an authority is a role and every
+authority role federates — except this one. The registry is a **shared naming convention, not a
+further authority role**: registration confers *a name, not a privilege* (above), so federating it
+buys nothing, while a federated namespace registry would make minting an identifier depend on
+reaching an online authority — precisely the dependency ADR-0012 exists to remove (§6). It is
+therefore held in common and not split per domain. That is a deliberate exception, stated here so a
+federated deployment does not have to infer it.
+
+What follows from it is a collision rule, because two domains that federate *after the fact* have
+no reason to have shared the registry and nothing obliged them to:
+
+- Two authority domains that federate MUST establish **prefix disjointness** — that no prefix names
+  a different minting authority in each — before merging any result set that attributes entries by
+  namespace (KCB §3.1(c)(d)).
+- A prefix held in good faith by a different authority in each domain is a **reportable defect**
+  that blocks attribution for every identifier under it. It MUST be reported. It MUST NOT be
+  resolved by silently merging the two, by preferring either, or by rewriting identifiers on one
+  side — a prefix is immutable once published (above), so a rewrite changes every identifier under
+  it.
+- The defect is **representable**, which is what makes it reportable rather than silent: a
+  federated `find` attributes every entry to the peer that served it by KINP id (KCB §3, §3.1(c)),
+  so two entries under the colliding prefix arrive visibly served by two different authorities.
+
+*Rejected: an authority-scoped prefix form* (`<authority>/<namespace>:…`) that makes a collision
+unrepresentable by construction. It would change the shape of **every identifier in the fabric** —
+§3.1, §3.2, §3.3 and every envelope — to represent a condition the rule above makes reportable at
+federation time. Recorded so the rejection is visibly a choice.
+
 **Illustrative registrations.** The rows below are the placeholder namespaces used by the worked
 examples throughout the Koine specs; they are **examples of what a registration looks like**, not
 a reserved set. Substitute your own.
@@ -143,6 +172,17 @@ a reserved set. Substitute your own.
 | `mediastore` | **media producer** | Assets, devices, instruments, plugins, hardware models. |
 | `orchestrator` | control-plane **host** | Agents, roles, orgs (control plane). |
 | `provider` | capability **provider** | Orgs/agents that execute capabilities on the bus (transforms, trainers, model providers). |
+
+The set above describes a **single** authority domain — one identity authority, one host, one media
+producer — which is the vocabulary every worked example in these specs is written in. A federated
+deployment has more than one of each, so the rows below are the placeholders the federation examples
+use (§4.2, §5); they are illustrative in exactly the same sense:
+
+| Namespace | Registered to (role) | Notes |
+|---|---|---|
+| `archivekb` | a **second** identity / knowledge **authority** | An independently operated holder of the role (§11 decision 1, ADR-0012), with its own `archivekb:world:consensus-reality` and its own §4 equivalence layer. |
+| `coordinator` | a **second** control-plane **host** | Its own registry (KCB §3) and its own grant issuance (KCB §5). |
+| `assetstore` | a **second** **media producer** | Its own store, advertising `fetch:asset` (KMI §7.1). |
 
 Two rows are **normative**, not illustrative:
 
@@ -167,6 +207,29 @@ confidence and provenance. "The merged entity" is a *view* computed at query tim
 This generalizes the intra-participant entity resolution such stores already run to the
 cross-participant case.
 
+**A closure that spans two authorities is governed by its weakest link (normative — MA-1).** The
+view above is computed over whatever links the consumer holds, and under
+[ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) those may have been issued by more
+than one holder of the identity-authority role. The confidence threshold and the review queue of
+§11 decision 2 are scoped **inside** an authority, so a path assembled across two of them can
+produce a merged identity that neither authority asserted and no review gate saw — every link on it
+conformant where it was issued. A consumer computing a `same_as` closure MUST therefore do one of:
+
+- **Cut the closure at the authority boundary** — traverse only links issued by a single authority
+  and present the domains separately; or
+- **Re-evaluate each imported link against its own threshold** before traversing it, exactly as if
+  the link had been proposed to it under §4.5, routing anything below that threshold to its own
+  review queue (§11 decision 2) rather than into the closure.
+
+Either way, a view reached over a **multi-authority path** MUST carry the **weakest issuer and the
+lowest confidence** on that path, so a consumer of the view can tell what it is resting on. The
+operand for all of this already exists and nothing is added to the envelope: a link is itself an
+assertion (§4.2, §7.1) and its `src` names the authority that issued it.
+
+This changes nothing about §4.1's non-destructive, query-time model — which is what makes an
+over-wide closure recoverable at all, since it is never written back over the sources — and nothing
+about §11 decision 2, whose per-world threshold is correct as it stands.
+
 ### 4.2 The equivalence layer
 
 Links are themselves assertions (§7), so they carry confidence, provenance, and time:
@@ -189,6 +252,45 @@ Relations in the equivalence layer:
 §7.1): `retracts` — withdraws a prior claim; `supersedes` — replaces a prior claim with a
 newer one. Because claims are immutable and content-addressed (§2), correction is *additive*:
 assert a `retracts`/`supersedes` with a later transaction time (§7.1) rather than deleting.
+
+**The layer ranges over worlds too (normative — MA-4).** The relations above range over
+**entities**. Under [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) each holder of
+the identity-authority role has its **own** default real world (§5), so the same fact stamped in
+two domains mints two `claim` ids (§6) even where both anchor the entity to the same external
+authority (§4.4) — and nothing above can assert that two such worlds denote the same context.
+`same_as` cannot be widened in place to cover them: a relation's signature is immutable once
+published, and widening it would change every claim id that already depends on it
+([`../registry/README.md`](../registry/README.md)). The layer therefore gains **one new core
+relation**, over two **world** ids:
+
+| Relation | Meaning | Licenses fact transfer? |
+|---|---|---|
+| `world_aligns_with` | the two **world** ids denote the same context | **No** — see the firewall note below |
+
+```prolog
+world_aligns_with(id(world, refkb, 'consensus-reality'),
+                  id(world, archivekb, 'consensus-reality'),
+                  confidence(1.0), src('refkb:agent:resolver')).
+```
+
+- It is an **assertion** like every other link here (§7.1): it carries confidence, provenance and
+  time, and §11 decision 2 auto-applies or queues it exactly as it does an entity link.
+- **§4.3's firewall semantics are preserved.** A `world_aligns_with` link MUST NOT be read as
+  inheritance-as-identity. It says two worlds are the same context; it never says either world
+  inherits identity from the other, and §4.5 continues to read a world's **own** inheritance
+  metadata (§5) — never this link — when choosing `same_as` vs `based_on`. Aligning two fictional
+  worlds does not make either of them real.
+- A consumer that needs to reason over worlds reads the **closure** of this relation, under the
+  same weakest-link rule §4.1 states for entities. That is what gives KGP §7's
+  `world = consensus-reality` filter a federated reading without KGP restating anything: the
+  filter's referent is a world id, which §5 defines here.
+- It is **not** a substitute for a shared hash. Two aligned worlds still mint two `claim` ids
+  (§6); the alignment is a query-time view, like everything else in this layer.
+
+*Rejected: a namespace-free canonical world token* for consensus reality that every authority
+stamps. It is one line of prose and it would re-hash **every real-world claim already minted** —
+the world is inside the §6 claim hash — to represent a condition this relation represents at no
+cost to identity. Recorded so the rejection is visibly a choice.
 
 ### 4.3 The firewall: `same_as` vs `based_on`
 
@@ -254,9 +356,31 @@ candidate, it MUST pick the relation by world and ontological status:
   fictional world from contaminating the real entity it was modeled on.
 - **same world, or an identity-inheriting world** → emit `same_as`.
 - **ambiguous / below threshold** → emit nothing; queue for review (§11, decision 2).
+- **an operand is unresolvable** → emit `based_on`, or nothing, and queue for review (§11,
+  decision 2); **never `same_as`**.
 
 A candidate reached only via an existing `based_on` chain (e.g. fiction → real figure) is
 never promoted to `same_as` by transitivity.
+
+**The fourth branch is fail-closed, and it is not the third (normative — MA-2).** The third branch
+is about **confidence** — a match the resolver is unsure of. The fourth is about a missing
+**operand**: the rule needs the candidate's **world** and that world's inherit-as-identity mode
+(§5), both of which are published by whoever produced the world — which, under
+[ADR-0012](../decisions/ADR-0012-federated-authority-roles.md), may be a participant in a different
+authority domain. A high-confidence match against a candidate whose world the resolver cannot
+resolve satisfies the threshold and does **not** satisfy the rule, and with only three branches it
+falls through to `same_as`. That is the firewall being **absent** on the second authority rather
+than over-merged. So: where the candidate's world, or that world's inheritance mode, cannot be
+resolved, the resolver MUST NOT emit `same_as`, irrespective of the match score.
+
+This is deliberately the whole of the fold. A **route** by which a world's inheritance mode crosses
+an authority boundary — a control-plane lookup in KCB §3/§4, or a KINP §8 operation — is *not*
+specified here. The branch above degrades rather than stops (same-domain reconciliation is
+untouched, and a cross-domain candidate whose world the resolver *can* resolve still auto-applies),
+and such a route needs a query axis no KCB §3 verb has, since the operand's holder is found by
+**namespace**. It is deferred with its forcing trigger stated in
+[`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md)
+(DEFER-A).
 
 ---
 
@@ -283,6 +407,16 @@ consensus-reality                          (the authority's default real world)
   (written `refkb:world:consensus-reality` in these examples).
 - A fictional world MAY inherit consensus reality (so "Paris is in France" holds in-fiction
   unless the fiction overrides it) — inheritance policy is per-world metadata.
+- **Under federation each authority's `…:world:consensus-reality` is its own (normative — MA-4).**
+  The default above is *the identity authority's* real world, and
+  [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) admits more than one holder of that
+  role — so a federation has more than one default real world, each a legitimately distinct world id
+  under its own namespace (§3.4). That two of them denote the same context is **asserted, never
+  assumed**: it is a `world_aligns_with` link in the §4.2 equivalence layer, subject to §11 decision
+  2 like any other link. A consumer MUST NOT infer world identity from the **local part** of a world
+  id — `refkb:world:consensus-reality` and `archivekb:world:consensus-reality` are two worlds until
+  something says otherwise — and MUST NOT rewrite either into the other, which would move claim ids
+  (§6).
 
 **Prolog representation:** an explicit context argument `@world(W)` (ratified over modules,
 §11 decision 3) so worlds round-trip cleanly to TSV and the grounding-pack.
@@ -322,8 +456,33 @@ is non-conformant.
 Note that *pre*-reconciliation, two producers describing the same fact still mint different
 `claim` ids because their entity references differ (provisional locals, §4). The claims
 converge only after the resolver links those entities and the claims are re-expressed against
-the canonical entity. Normalization guarantees convergence is *possible*; reconciliation makes
-it *happen*.
+the canonical entity **of the re-expressing participant's own authority domain** (see below).
+Normalization guarantees convergence is *possible*; reconciliation makes it *happen*.
+
+**Claim-id convergence is domain-scoped (normative — MA-3).** *The* canonical entity was written
+singular, for one holder of the role. Under
+[ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) a federation has more than one
+holder, hence more than one canonical entity for one referent — so the re-expression target has to
+be named, and it is named as the **re-expressing participant's own authority domain**.
+Content-addressed convergence — delta B's cross-producer dedup, which this section calls
+load-bearing and not optional — therefore holds **within** an authority domain and stops at its
+boundary. Two domains minting the same fact mint two `claim` ids, and that is **conformant, not a
+defect**.
+
+Across authorities the instrument is the **§4 equivalence layer**, not a shared hash: `same_as`
+over the entities (§4.2), `world_aligns_with` over the worlds (§4.2, §5), read as the query-time
+view §4.1 defines and governed by its weakest-link rule. A consumer that needs cross-domain dedup
+computes it over that view.
+
+Two things this deliberately does not do. It does **not** nominate a federation-wide re-expression
+target, which would reinstate a privileged holder — ADR-0012's rejected option (a) — and make
+minting depend on reaching it, breaking the offline-first rule this whole section states. And it
+does **not** define a federation-scoped canonical form re-expressing against §4.4's shared external
+anchor: to converge anything, such a form would have to be **mandatory** wherever an anchor exists,
+which changes what claims are hashed against and moves ids already minted, and it would still cover
+only the anchored subset. That remainder is deferred with its forcing trigger stated in
+[`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md)
+(DEFER-B). Silence was the one option not available.
 
 ---
 
@@ -560,9 +719,26 @@ rejected alternatives are recorded for provenance.
    written and run as
    [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md). That pass did
    **not** run clean — deltas MA-1…MA-11, of which **MA-1, MA-2, MA-3 and MA-4** are blocking on
-   this spec — so KINP stays **Candidate**. It is this spec's **only** re-ratification count; see
-   that scenario's *Re-ratification — what this pass gates* section for what a clean re-run would
-   license.
+   this spec, plus **MA-7** on §3.4. All five are **folded at 0.4.0**: §4.1's weakest-link rule for
+   a multi-authority closure (MA-1), §4.5's fourth fail-closed branch (MA-2), §6's domain-scoped
+   convergence rule (MA-3), §4.2's `world_aligns_with` relation together with §5's
+   two-consensus-realities statement (MA-4), and §3.4's non-federated-commons statement with its
+   collision rule (MA-7). The extent of each, and the three remainders deliberately **not** folded,
+   are reasoned in
+   [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
+   KINP nevertheless stays **Candidate** — a fold does not close its own gate. This is still this
+   spec's **only** re-ratification count, and it now reads as a **re-run of that pass against the
+   folded text**: Steps 2, 3, 4 and 6 are the ones that must flip, and Step 1 is the regression set.
+   See that scenario's *Re-ratification — what this pass gates* section for what a clean re-run
+   would license, including the second, fabric-wide condition recorded there — a machine-replayable
+   KCS encoding, itself gated on KCS open question 1. Stated plainly, because it is the whole of
+   KINP's promotion story: **the fold clears no part of this gate, and nothing else stands behind
+   it.** KINP has no second count, no outstanding fold, and no koine-side deliverable of its own —
+   one clean re-run is the entire prose leg. That re-run is currently **unowned**. The ranking of
+   what stands between each spec and `ratified` is kept once, in
+   [`../docs/reference/promotability.md`](../docs/reference/promotability.md); what the fold did to
+   each gate is reasoned in
+   [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
 2. **Merge aggressiveness → hybrid.** Auto-apply `same_as`/`based_on` above a confidence
    threshold; route high-impact or below-threshold links to a **review queue**, reusing the
    authority's convergence-QA gate. *Rejected:* always-auto (contamination risk) and
@@ -598,6 +774,45 @@ below — is **unaffected** by it, and MA-1…MA-4 stay blocking and unfolded.
 ---
 
 ## Changelog
+
+- **0.4.0** (2026-08-26) — **The federation fold.** Folds the five deltas
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the ADR-0012
+  cross-authority break test named as this spec's only gate — recorded against KINP: **MA-1**
+  (§4.1: a `same_as` closure spanning two authorities MUST be cut at the boundary or have each
+  imported link re-evaluated against the consumer's own threshold, and a multi-authority path
+  carries its **weakest issuer and lowest confidence** into the view — the operand is §4.2's
+  existing `src`, so no envelope field is added); **MA-2** (§4.5: a **fourth, fail-closed branch** —
+  operand unresolvable → `based_on` or nothing and queue, **never `same_as`** — distinct from the
+  third branch, which is about confidence); **MA-3** (§6: claim-id convergence is **domain-scoped**,
+  the re-expression target is the participant's **own** authority's canonical entity, and the
+  cross-domain instrument is the §4 equivalence view rather than a shared hash — no existing claim
+  id moves); **MA-4** (§4.2: one **new core relation** `world_aligns_with` over two world ids, with
+  §4.3's firewall semantics preserved, plus §5's statement that each authority's
+  `…:world:consensus-reality` is its own and cross-domain sameness is asserted, never assumed);
+  **MA-7** (§3.4: the prefix registry is the one deliberately **non-federated commons**, with the
+  prefix-disjointness obligation and the collision-is-a-reportable-defect rule). Also §3.4's
+  illustrative table gains three second-domain placeholder rows (`archivekb` / `coordinator` /
+  `assetstore`, the scenario's own) so the federation examples resolve — illustrative, not
+  normative, and the observation that drove it is one the scenario filed as documentation rather
+  than as a delta.
+  **Minor, not patch:** behaviour is additive — a single-authority deployment reconciles, converges
+  and mints exactly as at 0.3.0, `world_aligns_with` is a new name rather than a widened signature
+  (a relation's signature is immutable once published), and no identifier, envelope field, or claim
+  id moves — but four of the five folds are normative surface a reader implements against, including
+  a new branch on §4.5's relation-choice rule and a new consumer obligation on §4.1.
+  **Three remainders are deliberately not folded**, each with the future break that would force it
+  stated in
+  [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md):
+  the control-plane route by which world metadata crosses a boundary (DEFER-A, from MA-2) and a
+  federation-scoped canonical form over §4.4's external anchor (DEFER-B, from MA-3). Two
+  alternatives are **rejected on the record** rather than passed over: a namespace-free canonical
+  world token (§4.2 — it re-hashes every real-world claim already minted) and an authority-scoped
+  prefix form (§3.4 — it changes the shape of every identifier in the fabric).
+  **Status: stays Candidate.** New normative text re-enters validation, and a fold does not close
+  its own gate; the single count is now a **re-run of that pass against the folded text**
+  (§11 decision 1). No schema twin changes — no `schemas/*.json` models an equivalence link — and
+  `registry/relations.tsv` gains one row, never an edit in place. MA-5/MA-10 land in KMI and
+  MA-6/MA-8/MA-9 in KCB; MA-11 is closed as evidence for a KCS open question that already cites it.
 
 - **Editorial** (2026-08-26) — Recorded the **downstream result** of this spec's gating pressure
   test in *Pressure test*. `kcs:worlds-to-fabric`, the KCS encoding of
