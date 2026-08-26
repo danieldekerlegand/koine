@@ -556,7 +556,7 @@ rejected alternatives are recorded for provenance.
    it, while federation is additive; offline-first is preserved because minting is local and
    reconciliation is eventually-consistent (§6). Authority is a **role**, not a hard dependency.
    This normative change is candidate pending the cross-authority break test in
-   [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), now
+   [`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), now
    written and run as
    [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md). That pass did
    **not** run clean — deltas MA-1…MA-11, of which **MA-1, MA-2, MA-3 and MA-4** are blocking on
@@ -599,7 +599,7 @@ end-to-end pressure test that drove deltas A–E, all folded into this 0.2.0 rev
   rules and still bound by §4 reconciliation. This is additive: a single designated authority
   remains conformant, and §6 local offline-first minting does not require reaching any authority.
   **Candidate** pending the cross-authority break test in
-  [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json).
+  [`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json).
 - **Editorial** (2026-08-13) — Pointed KINP's two external references at the fabric-wide pin table,
   [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md): §4.5 now names the
   *Reconciliation Service API* (W3C Entity Reconciliation Community Group) as the published form of

@@ -21,7 +21,7 @@ carries.
 > (§3) stays conformant unchanged, and peering registries are specified as an additive composition
 > that returns *addresses* across an authority boundary — never a proxy (ADR-0001). It adds a
 > **third** re-ratification count, the cross-authority break test in
-> [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), which is
+> [`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), which is
 > the same test KINP 0.3.0 and KMI's federation clause name — now written and run as
 > [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), and **not clean**
 > (MA-6 blocking, MA-8/MA-9 should-fix), so that third count does not close. 0.3.0 changed the *shape* of the
@@ -498,7 +498,7 @@ pinned (§7.4), or a live `subscribe` (§4) — none of which is mediated by the
 
 **Re-ratification.** This section is new normative text and is candidate on the cross-authority
 break test in
-[`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), which must
+[`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), which must
 break-test the pattern ADR-0012 shares across all three planes — for this section specifically,
 peering that returns stale, conflicting, or unresolvable authority records. It is a **third** count
 on this spec's status and gates §3.1 alone; the two legs in the status note are unaffected.
@@ -895,7 +895,7 @@ outstanding and independent.
   unchanged, and **0.5.0 is spoken for** by §7.3's removal of §2.2's standalone manifest location,
   which §7.3c forbids folding into an unrelated publication. Status: this is new normative text, so
   it adds a **third** count to Candidate — the cross-authority break test in
-  [`chief/53-multi-authority-scenario`](../tasks/chief/53-multi-authority-scenario.json), the same
+  [`chief/53-multi-authority-scenario`](../tasks/chief/completed/53-multi-authority-scenario.json), the same
   test KINP 0.3.0 names — gating §3.1 alone. The two existing re-ratification legs are restated and
   neither moves.
 - **0.4.5** (2026-08-18) — **Candidate.** **§1.2**'s closing bullet — *no KCB clause implements G2
