@@ -452,3 +452,11 @@ belongs to the fold, not to this pass.
 > for by §2.2's removal. **KCB stays Candidate**, and this leg becomes its **fourth** re-ratification
 > count: a re-run of Steps 1–7 against the folded text, per *What a clean pass would license* above.
 > The three existing counts are restated and none moves.
+>
+> **One obligation this leg creates, and it is cross-repo.** This is koine's **eleventh** scenario
+> against a downstream encoding set of nine, and no koine guard checks that correspondence — so a
+> clean re-run is *necessary but not sufficient*: under
+> [the ratification gate](../specs/README.md#the-ratification-gate) §4.2 also needs a
+> machine-replayable **KCS encoding** of this document, which does not exist and is **unowned**.
+> Recorded in [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md) §6.2
+> and in [`../ROADMAP.md`](../ROADMAP.md).
