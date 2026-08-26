@@ -432,3 +432,23 @@ belongs to the fold, not to this pass.
 > fold lands, amend this note to name the version that closed each delta — as
 > [`e2e-media-transform.md`](e2e-media-transform.md)'s Resolution does for F–L — after which this
 > document stands as the historical record of what the pressure leg found.
+
+> **Amended (2026-08-26) — the fold landed at [KCB 0.4.7](../specs/capability-bus.md), normative
+> §4.2.** §8's last open question is **resolved in place** (numbering deliberately unshifted, so
+> every §8.1 reference still resolves), and §8 now holds none. Where each delta closed:
+>
+> | Delta | Closed by |
+> |---|---|
+> | **BP-5** | **§4.2** as a whole, and **§4.2d**. The mechanism is placed *between the two peers, on the binding's own axis*, because ADR-0001 admits nobody else; §4.2d states that it composes across §3.1 federation unchanged precisely because it never needed a party with jurisdiction over both ends. §8's parking sentence is struck, and the record says why it was wrong rather than merely incomplete. |
+> | **BP-3** | **§4.2b** (lossless-vs-lossy is the governing question, and **a retraction is never shed**) and **§4.2c** (an optional content-addressed `resume` operand — not a new verb — that a producer MUST answer resumed / `gap-unavailable` / `resume-unsupported`, never with silence; and a subscriber MUST NOT silently merge past an unseen `basis`). A gap is now **detectable**. |
+> | **BP-2** | **§4.2e** + a new §5 bullet: a port's `volume.cost` is the missing operand, delivery is the missing evaluation point, and an exhausted ceiling MUST NOT be the *first* signal — the producer signals on §4.2d first, which is what turns the cliff into a brake. |
+> | **BP-1** | **§4.2a** + §2.1: an optional port `volume` envelope, outside the `schema_id` digest as `cost` is, read *unknown* when absent and never *low*. §3's ranking rules are untouched. |
+> | **BP-4** | **§4.2f**: `volume.references` makes the fan-out predictable before binding, the fan-out is the *subscriber's* traffic and is bounded by its own `max_rate`, and a CAS holder's limit is a **refusal** that lands on delta L's existing pending-fetch tolerance. Holds unchanged under KMI §7.1 and §3.1. |
+> | **BP-6** | **Not closed, and not a demand** — evidence for a KCS open question, as recorded above. §4.2d does supply the missing handle: a control frame *is* an interaction between participants, so KCS §5 predicates can range over it where a stalled transport window cannot be reached. **No KCS version moves.** |
+>
+> Step 8's convergence note was taken: **§4.2d specifies one control channel in both directions** and
+> requires **V-7**'s fold to ride it rather than mint a second. The fold is a **patch** — every field
+> optional, a subscription that declares nothing unchanged, §7.2 undisturbed, and 0.5.0 still spoken
+> for by §2.2's removal. **KCB stays Candidate**, and this leg becomes its **fourth** re-ratification
+> count: a re-run of Steps 1–7 against the folded text, per *What a clean pass would license* above.
+> The three existing counts are restated and none moves.
