@@ -43,7 +43,7 @@ the first one that will have a runnable artefact behind it.
 | [KMI](../../specs/media-interchange.md) | 2026-07-17 (0.2.0) | **0.3.0**, 2026-08-02 — adopting OTIO as the canonical timeline model ([ADR-0005](../../decisions/ADR-0005-otio-canonical-timeline.md)) | **Two** counts, neither closed. (i) §7.1 CAS replication: [`e2e-multi-authority.md`](../../scenarios/e2e-multi-authority.md) ran and left **MA-5** blocking (+ MA-10) — four of §7.1's own clauses held under direct attack, but the egress gate has no operand. (ii) The [`e2e-media-transform.md`](../../scenarios/e2e-media-transform.md) re-run, which is **KCB's** to do — KMI's OTIO half is already re-validated clean. | (i) [`85`](../../tasks/chief/85-fold-the-federation-breaks.json) · (ii) rides with KCB — **unowned** |
 | [KCB](../../specs/capability-bus.md) | 2026-07-17 (0.2.0) | **0.3.0**, 2026-07-22 — the §2 manifest redefined as an A2A AgentCard extension | **Three** counts, none closed. (i) Re-run [`e2e-media-transform.md`](../../scenarios/e2e-media-transform.md) against the extension shape — outstanding since 2026-07-22 and **unowned**. (ii) §7.5 break-test: [`e2e-live-schema-mutation.md`](../../scenarios/e2e-live-schema-mutation.md) ran **not clean**, deltas **V-1…V-8** with V-2/V-4/V-5/V-7 blocking, all additively foldable into 0.5.0. (iii) §3.1 registry peering: [`e2e-multi-authority.md`](../../scenarios/e2e-multi-authority.md) left **MA-6** blocking (+ MA-8/MA-9). | (ii) [`86-fold-the-capability-versioning-breaks`](../../tasks/chief/86-fold-the-capability-versioning-breaks.json) · (iii) [`85`](../../tasks/chief/85-fold-the-federation-breaks.json) · (i) **unowned** |
 | [KCS](../../specs/conformance-scenario.md) | 2026-07-18 (0.2.0) — under the **previous** rule, grandfathered | **0.3.0**, 2026-08-20 — the determinism fold (delta Q: `structure_matches`, the stable-invariant rule) | A re-validation of that fold against [`kcs-format-stress.md`](../../scenarios/kcs-format-stress.md). The fold is additive and backward-compatible, and the grandfathered debt the previous rule left it was **paid 2026-08-19** — the nine encodings exist, `kcs:format-stress` among them. §7.1 (assertion extensibility) and §7.3 (recording fidelity) are open **questions**, not gates. | **unowned** |
-| [KFT](../../specs/fine-tuning.md) | 2026-07-23 (0.3.0), on two clean pressure passes | **0.4.0**, 2026-08-06 — the additive FT-M…FT-Q producer-exhaust intake fold | The owner's re-run of the *Re-validation — KFT 0.4.0* section of [`e2e-producer-exhaust-finetune.md`](../../scenarios/e2e-producer-exhaust-finetune.md). It walks clean **as written** but has not been executed since. 0.5.0 neither discharged nor widened it (§4's admission behavior is byte-unchanged). The dependency-pin precondition is **closed** ([`chief/71-kft-dep-repin`](../../tasks/chief/completed/71-kft-dep-repin.json)). Caveat: §3.3 and §8.1 are normative surface **no pass has exercised** — new text to the owner, not re-validated text. | **unowned** |
+| [KFT](../../specs/fine-tuning.md) | 2026-07-23 (0.3.0), on two clean pressure passes | **0.4.0**, 2026-08-06 — the additive FT-M…FT-Q producer-exhaust intake fold | **Two** counts as of **0.6.0** (2026-08-26). (i) The owner's re-run of the *Re-validation — KFT 0.4.0* section of [`e2e-producer-exhaust-finetune.md`](../../scenarios/e2e-producer-exhaust-finetune.md) — walks clean **as written**, never executed; its dependency-pin precondition is **closed** ([`chief/71-kft-dep-repin`](../../tasks/chief/completed/71-kft-dep-repin.json)). (ii) New at 0.6.0: a re-run of [`kft-resume-checkpoint.md`](../../scenarios/kft-resume-checkpoint.md), whose FT-R…FT-V the fold answers — its Steps 2–6 must now walk clean and its Steps 1/7 stay held. Caveat, and it grew: §3.3 and §8.1 were already normative surface **no pass has exercised**, and 0.6.0 is the first fold since the demotion to move §4's admission inputs (a `resume` ref joins §4.2's aggregate and §4.3's union), so §3.4/§4.2/§4.3/§5.4/§6/§7 are **changed** surface too. A cold job — every 0.4.0- and 0.5.0-era manifest — admits on exactly the inputs it did before, which is why (i) does not move. And the conformance gate, met for every other spec, is **not** met here: the tenth scenario has no KCS encoding yet. | **unowned** |
 
 ## Cheapest first
 
@@ -56,9 +56,14 @@ Ranked by what a promotion actually costs from here. This ordering is the point 
    promotes. **Nothing in koine blocks it.**
 2. **KCS — a re-validation, no fold.** The 0.3.0 change was additive and backward-compatible against
    a scenario that exists and whose encoding runs. This is a read-and-confirm pass, and nobody owns it.
-3. **KFT — a re-run of an existing section.** Same shape as KCS, with one asterisk: §3.3 and §8.1
-   are unexercised normative surface, so the owner reads two sections cold rather than re-reading
-   walked ones. Also unowned.
+3. **KFT — two re-runs, one missing artefact, and more cold reading than it looks.** One re-run is
+   the KCS shape (re-run a section that already walks clean); the other is the new resume-checkpoint
+   leg 0.6.0 folded on 2026-08-26. The asterisk grew with it: §3.3 and §8.1 were already
+   unexercised, and 0.6.0 changed §4's admission inputs for `resume`-carrying jobs, so the owner
+   reads six sections cold rather than re-reading walked ones. It also **lost its place in this
+   ranking's premise** — the tenth scenario has no KCS encoding, so unlike KCS above, KFT cannot be
+   promoted even on a clean re-run until that document is built downstream. Still unowned, now on
+   two fronts.
 4. **KMI — one small fold, then a wait.** MA-5 puts two fields on the §2 envelope and MA-10 makes
    absence answerable; both are additive and 0.4.0 is already spent on the EDL removal. After that
    KMI is blocked on **KCB's** re-run, which is not KMI's work.
@@ -72,11 +77,20 @@ Ranked by what a promotion actually costs from here. This ordering is the point 
 
 ## Two facts that apply to every row
 
-- **The conformance-gate is met for all six and blocks nothing.** All nine
-  [`../../scenarios/`](../../scenarios/) pressure tests have machine-replayable KCS encodings, built
-  downstream and run over live MCP/A2A links on 2026-08-19
-  ([`kcs-encoding-gate-verification.md`](kcs-encoding-gate-verification.md)). Every gate named above
-  is the spec's **own** outstanding pass.
+- **The conformance-gate is met for five of the six — KFT is the exception, as of 2026-08-26.**
+  Nine [`../../scenarios/`](../../scenarios/) pressure tests have machine-replayable KCS encodings,
+  built downstream and run over live MCP/A2A links on 2026-08-19
+  ([`kcs-encoding-gate-verification.md`](kcs-encoding-gate-verification.md)). But KFT 0.6.0 added a
+  **tenth** scenario, [`kft-resume-checkpoint.md`](../../scenarios/kft-resume-checkpoint.md), and it
+  has no encoding — so the clauses 0.6.0 folded (§3.4 `resume`, and §4.2/§4.3 reading it) have no
+  runnable document citing them, which is precisely what
+  [the gate](../../specs/README.md#the-ratification-gate) forbids promoting on. For the other five,
+  every gate named above is the spec's **own** outstanding pass. The gap is visible downstream
+  rather than assumed: `agora`'s `console/src/kcs/scenarios/coverage.test.ts` asserts set-equality
+  against this repo's `scenarios/*.md` and goes red naming the unencoded document. Building the
+  encoding is downstream work under [ADR-0001](../../decisions/ADR-0001-control-plane-topology.md)
+  and is **unowned**; the column that reports it rides with
+  [`84-record-the-downstream-results`](../../tasks/chief/84-record-the-downstream-results.json).
 - **The downstream run is not yet citable by any of them.** Under
   [`../../specs/README.md`](../../specs/README.md#the-ratification-gate) a result becomes evidence a
   gate may read only once recorded in the scenario it ran, as a `## Downstream results` section. All

@@ -110,8 +110,9 @@ of those has made a larger version of the mistake this repo already made once wi
 
 ## 6. What this means for the ladder
 
-- **The artefact gate is met for every spec.** No spec's promotion is blocked by this rule any
-  more; each is blocked by its own outstanding pass (ROADMAP Phase 1).
+- **The artefact gate is met for every spec** — *as of the 2026-08-19 run; see the amendment
+  below.* No spec's promotion is blocked by this rule any more; each is blocked by its own
+  outstanding pass (ROADMAP Phase 1).
 - **No spec is promoted by this record.** The encoding is a precondition, never a promotion.
 - **The run is not yet citable evidence.** Under the same section, a result an owner may cite is
   one recorded in koine, in the scenario it ran, as a `## Downstream results` section. All nine of
@@ -119,13 +120,41 @@ of those has made a larger version of the mistake this repo already made once wi
 - **`scenarios/README.md`'s KCS-encoding column is stale** — nine `planned`, zero `exists`, when
   the true reading is nine `exists`. Same owner.
 
+## 6.1 Amendment, 2026-08-26 — a tenth scenario, and the count gate is red
+
+The bullet above was true on the day it was written and is **no longer true for KFT**. KFT 0.6.0
+(`chief/69`, 2026-08-26) landed a tenth pressure test —
+[`../../scenarios/kft-resume-checkpoint.md`](../../scenarios/kft-resume-checkpoint.md) — a week after
+the nine encodings were built. Nothing about the nine changed: E1 and E2 above stand, the evidence
+artifact's content address is untouched, and no id or `source` moved.
+
+What changed is **coverage**. `coverage.test.ts` asserts `KOINE_SCENARIOS.length === 9` *and*
+set-equality with koine's `scenarios/*.md`, so against a koine checkout at this commit it goes
+**red**, naming the unencoded document. That is the gate working, not a defect in it — its own
+docstring says *"a partial encoding therefore cannot go green quietly."*
+
+Consequences, stated narrowly:
+
+- **KFT alone loses the artefact gate.** The clauses 0.6.0 folded (§3.4's `resume` ref, §4.2/§4.3
+  reading it) have no machine-replayable document citing them, and
+  [the gate](../../specs/README.md#the-ratification-gate) forbids promoting on that. The other five
+  specs are unaffected — their scenarios are all encoded.
+- **This was not caught by koine's own gates**, and could not be: `.chief/verify.sh` checks links,
+  status-table mirrors, schemas and the registry. The set-equality between koine's prose scenarios
+  and a downstream encoding set is enforced only in the implementing repo. Adding a scenario here is
+  therefore a cross-repo obligation with no local red light — worth knowing before the next one.
+- **Owner: unowned.** Building the encoding is downstream work under
+  [ADR-0001](../../decisions/ADR-0001-control-plane-topology.md). The stale-column correction still
+  rides with `84-record-the-downstream-results`; the tenth encoding does not, and nothing schedules
+  it today.
+
 ## 7. How to re-run this check
 
 From a checkout of the implementing repo, beside a koine checkout:
 
 ```
 git log --oneline --date=short --format='%h %ad %s' -- console/src/kcs/scenarios console/evidence
-ls console/src/kcs/scenarios/                    # nine encodings + their gates
+ls console/src/kcs/scenarios/                    # nine encodings + their gates (koine now holds TEN scenarios)
 grep -n "source: 'scenarios/" console/src/kcs/scenarios/index.ts   # must equal koine's scenarios/*.md
 node -e "console.log(require('./console/evidence/kcs-live-run.json').verdict)"
 node console/src/live/evidence.ts --check        # re-runs the suite, compares the content address

@@ -81,6 +81,15 @@ carries the per-spec table, what a clean re-run would license, and the dated **R
 > nine empty `## Downstream results` sections — the two are one job, and a column that says `exists`
 > above nine empty result sections would trade one wrong reading for another. Everything below is
 > historically accurate and no longer current.
+>
+> **Amended 2026-08-26 — there are now TEN scenarios and still nine encodings.**
+> [`kft-resume-checkpoint.md`](kft-resume-checkpoint.md) landed with `chief/69` on 2026-08-26,
+> after the nine encodings were built. Its **KCS encoding** column reads `⬜` correctly and is the
+> one row above that is *not* stale. The consequence is downstream and deliberate: `agora`'s
+> `console/src/kcs/scenarios/coverage.test.ts` asserts set-equality between `KOINE_SCENARIOS` and
+> this directory's `*.md`, so it goes **red** against a koine checkout at this commit and the
+> failure names the prose document that has no encoding — which is exactly what that gate is for.
+> Read "all nine encodings exist" above as a count of what was built, **not** as full coverage.
 
 Read the **KCS encoding** column honestly: it says `planned` eight times and `exists` zero times.
 Every pressure test in this directory is prose that a person walked; not one of them is a document a
