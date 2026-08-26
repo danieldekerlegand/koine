@@ -207,3 +207,89 @@ tasklist-categories OK (8 categorized), verify-selftest **30 passed / 0 failed**
 - **`notes: null` on a `passes: true` story is the tell, and it generalizes.** agora's `78` and `79`
   carry it too — their ROADMAP F5 rows were deliberately left ⬜ rather than flipped on a flag.
   Understating is the safe direction when you have not read the artifact.
+
+---
+
+## 2026-08-26 — US-3: The other five specs get an honest promotability line
+
+**Delivered as [`docs/reference/promotability.md`](../../docs/reference/promotability.md)** — six
+rows, one per spec, plus a *Cheapest first* ranking. Indexed in `docs/README.md` and reachable from
+the two places a reader actually asks the question: `specs/README.md`'s ratification-gate section
+and `ROADMAP.md` (Phase 0, Phase 1, Related Docs).
+
+### The premise turned over — again
+
+US-3's second criterion assumes *"a reader currently cannot tell a spec that never rose from one
+that fell."* Grepping every changelog for a `**Ratified.**` entry says there is no such distinction
+to draw: **all six specs were ratified, and all six were demoted.**
+
+| Spec | Ratified | Demoted at | By |
+|---|---|---|---|
+| KCB | 0.2.0, 2026-07-17 | **0.3.0**, 2026-07-22 | §2 manifest → A2A AgentCard extension |
+| KMI | 0.2.0, 2026-07-17 | **0.3.0**, 2026-08-02 | OTIO adoption (ADR-0005) |
+| KGP | 0.2.0, 2026-07-17 (held through 0.4.0) | **0.5.0**, 2026-08-02 | retained canonical + specified projection (ADR-0006) |
+| KFT | 0.3.0, 2026-07-23 | **0.4.0**, 2026-08-06 | FT-M…FT-Q producer-exhaust intake fold |
+| KCS | 0.2.0, 2026-07-18 (grandfathered) | **0.3.0**, 2026-08-20 | determinism fold (delta Q) |
+| KINP | 0.2.0, 2026-07-17 (held through 0.2.1) | **0.3.0**, 2026-08-23 | §11.1 federation fold (ADR-0012) |
+
+Every demotion was caused by **koine's own next normative edit** — not an implementer's defect
+report, not an upstream break — and five landed within five weeks of the promotion. That is
+`specs/README.md`'s *ratification treadmill* seen from the other end, with dates.
+
+`ROADMAP.md` Phase 0 said *"two specs were ratified in this phase"* and its KGP/KMI/KCB/KFT row said
+only *"first-authored & pressure-tested"*. Both were counting **the two still ratified when the rows
+were written**, not what happened. Corrected in place, with the correction dated so a reader can see
+it was a correction.
+
+### The gates, per spec
+
+- **KINP** — the MA-1…MA-4 fold. Its **only** count, so `e2e-multi-authority.md` is the whole gate. `85`.
+- **KGP** — the §4.1 round-trip fixture (US-1's verdict). Downstream; **zero koine edits**. `87` (agora).
+- **KMI** — two counts: MA-5 (+MA-10) fold `85`, and KCB's media-transform re-run, which is not KMI's work.
+- **KCB** — three counts: the media-transform re-run **outstanding since 2026-07-22**, V-2/V-4/V-5/V-7 → 0.5.0 (`86`), MA-6 (+MA-8/MA-9) (`85`).
+- **KCS** — a re-validation of its own additive 0.3.0 fold. Grandfathered debt **paid 2026-08-19**. §7.1/§7.3 are open **questions**, not gates.
+- **KFT** — the owner's re-run of `e2e-producer-exhaust-finetune.md`'s *Re-validation — KFT 0.4.0*. Dep-pin precondition closed by `chief/71-kft-dep-repin`. §3.3/§8.1 are unexercised normative surface.
+
+**Three gates are recorded as UNOWNED** — KCB's media-transform re-run, KCS's re-validation, KFT's
+re-run. Saying so is the point of the page; a blank cell would have read as "handled".
+
+### Design decisions worth reusing
+
+- **No current-version column, deliberately.** `check-doc-integrity.mjs` machine-checks exactly three
+  mirror files (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) against the spec headers. `docs/` is
+  not one of them, so a version column there would be a **fourth, unchecked mirror** — the same trap
+  `CLAUDE.md`'s *Current state* prose sits in. Only *historical* versions appear (the release that
+  ratified, the release that demoted); those are immutable and cannot rot. The page says this in as
+  many words so the next editor does not "helpfully" add the column.
+- **Program view vs status view kept separate.** `ROADMAP.md` Phase 1 is the program (tasklists,
+  phases, scale) and covers **four** of six — KINP and KCS were still ratified when it was scoped and
+  have no row. Rather than widen Phase 1, the new page is the six-row status view and Phase 1 now
+  says which two it omits and why.
+- **The `53` wrinkle is explained, not repeated.** Three specs cite
+  `chief/53-multi-authority-scenario` as a live gate while it sits in `completed/`. Not a bookkeeping
+  error: `53`'s scope was to **write and run** the break test and it did. What the specs wait on is
+  the **fold**, which is `85`. The page says the three status notes should be repointed when that
+  fold lands.
+
+**Files changed:** `docs/reference/promotability.md` (new), `docs/README.md` (index),
+`specs/README.md` (the per-spec pointer, replacing a ROADMAP-Phase-1 pointer that covered four of
+six), `ROADMAP.md` (Phase 0 paragraph + the KGP/KMI/KCB/KFT row, a Phase 1 note on the two missing
+specs, Related Docs).
+
+**Checks:** `.chief/verify.sh` — **all 4 selected gates green.** doc-integrity OK (46 files, 805
+links, all 3 status tables match their headers), doc-links 0 dead vs 0 on main, tasklist-categories
+OK (8 categorized), verify-selftest **30 passed / 0 failed**.
+
+**Learnings for future iterations**
+
+- **Three for three: every story in this tasklist overturned its own premise.** US-1 found a
+  downstream tasklist claiming more than it shipped, US-2 found koine claiming less than it had been
+  given, US-3 found a distinction ("never rose" vs "fell") that does not exist in this repo. The
+  cheap check each time was reading the primary artifact — the merge diff, the evidence file, the
+  changelog — rather than the summary that pointed at it.
+- **`grep '\*\*Ratified\.\*\*' specs/*.md` is the status-history query.** Each spec's changelog
+  carries its own promotions and demotions in entries that never change. That is a better source
+  than any roadmap paragraph, and it is machine-greppable.
+- **Before adding a table, check which files the integrity guard actually verifies.**
+  `MIRRORS` in `scripts/check-doc-integrity.mjs` is a three-element literal. A table outside those
+  three files is unguarded, which is fine for immutable facts and a liability for mutable ones.
