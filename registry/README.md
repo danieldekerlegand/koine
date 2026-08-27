@@ -77,9 +77,16 @@ in-place edit — the same discipline as an immutable relation signature; KGP §
   it is registered here — not in a deployment's own node/edge ontology, which describes the entities
   that deployment's knowledge authority stores (see *Deployment instance data* below).
 - [`enums/modality.tsv`](enums/modality.tsv) — the closed KFT `modality` enum
-  (`text-generation`, `image-text-to-text`, `video-text-to-text`, `text-to-image`, `text-to-video`),
-  shared by the model-entity `type` refinement (KFT §5), the `finetune` capability's port types
-  (KFT §2), and the job manifest (KFT §3.1). Additive: a new modality adds a row, never a new plane.
+  (`text-generation`, `image-text-to-text`, `video-text-to-text`, `text-to-image`, `text-to-video`,
+  `text-to-audio`, `audio-to-audio`), shared by the model-entity `type` refinement (KFT §5), the
+  `finetune` capability's port types (KFT §2), and the job manifest (KFT §3.1). Additive: a new
+  modality adds a row, never a new plane. The two audio rows were added at **KFT 0.7.0** over the
+  existing `media(audio)` plane; the decision that `audio-to-audio` belongs in a vocabulary whose
+  other generation rows are caption→asset is recorded in
+  [`../docs/reference/generative-audio-modalities.md`](../docs/reference/generative-audio-modalities.md).
+  **This prose list is a fourth statement of the vocabulary and no guard checks it** — the file
+  above, KFT §3.1's table, and `schemas/finetune-job.schema.json`'s `properties.modality.enum` are
+  the other three; on disagreement this bullet is the bug.
 - [`media-types.tsv`](media-types.tsv) — the weight/export `media_type`s (KFT §5.3):
   `application/vnd.koine.model+safetensors` (weights) and the `+gguf` / `+onnx` / `+coreml` / `+tflite`
   exports, plus `application/vnd.koine.dataset+jsonl` — a **training-record JSONL** (a

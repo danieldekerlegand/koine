@@ -1,5 +1,5 @@
 {
-  "kft_version": "0.6.0",
+  "kft_version": "0.7.0",
   "job": "orchestrator:activity:ft-run/9f2a-r1",
   "base_model": "refkb:model:qwen2.5-vl-3b-instruct",
   "base_model_descriptor": ["refkb:asset:blake3-mk1f2e3d4c5b"],

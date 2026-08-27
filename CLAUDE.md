@@ -374,7 +374,7 @@ vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
   scenarios to assert stable structure/invariants rather than exact bytes/content; §7.1 and §7.3
   remain open.
-- `specs/fine-tuning.md` — KFT 0.6.0, **candidate** (ratified 2026-07-23 on two pressure passes:
+- `specs/fine-tuning.md` — KFT 0.7.0, **candidate** (ratified 2026-07-23 on two pressure passes:
   `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L; a **third**
   pass, `scenarios/e2e-producer-exhaust-finetune.md`, then pressure-tested a *producing application's*
   training exhaust arriving via ADR-0008 and found the §4 **intake** incomplete — FT-M `dataset.records[]`
@@ -450,6 +450,32 @@ vocabulary.
   inputs it was before, and `resume` is not `required`), adopts no new external standard, and adds no
   plane, artifact kind, media type, or KCB verb. It **does** add a **second** gate: a re-run of that
   leg against the folded text, alongside the restated-and-unmoved *Re-validation — KFT 0.4.0* re-run.
+  0.7.0 (**minor**) adds **two `modality` tokens** to §3.1 — `text-to-audio` and `audio-to-audio` —
+  over the **existing** `media(audio)` plane, verified in four independent places in KMI (§2's IANA
+  `media_type`, §2's `probe` audio stream, **§6's own worked port example `media_types:
+  ["audio/wav"]`**, §8's Audio-producer role) rather than asserted. `text-to-audio` is the third
+  `text-to-image`/`text-to-video` diffusion row (`lora|full`; TTS rides it, deliberately not a sixth
+  row — splitting later is cheap, unsplitting impossible). `audio-to-audio` is a **decided**, not a
+  symmetric, row: the case against it (it is a filter, and KMI §6 already types `audio/wav →
+  audio/wav`) fails because the enum is not generation-only, because §6 types an **invocation** where
+  §3.1 types a **training target**, and because with no token a voice-conversion job must declare
+  `text-to-audio` — making **FT-F**'s admission check validate a false declaration. It lands on **its
+  own axes** (`typical_base` is small task-specific architectures — RVC, so-vits-svc, Demucs — not
+  foundation models, so `full` leads its method ordering; corpus is paired asset↔asset with **no
+  caption side**). **No clause of §4 moves** — checked, not inferred: both sides of a pair are
+  `dataset.media[]` entries already inside §4.2's most-restrictive union and §4.3's — and **no plane,
+  artifact kind, media type, KCB verb, or `registry/media-types.tsv` row** is added (`audio/wav` is
+  IANA's, as `video/mp4` is; the commissioning framing that KMI "lists `audio/*` in its media types"
+  is corrected on the record). Minor because §3.1's table is surface a reader implements against and
+  two new admissible tokens widen what a conformant provider must recognise. A **forward
+  declaration** with named consumers — formant (both rows; its `KftModality` must mirror this enum
+  verbatim), lugh (`audio-to-audio` especially — `personal`/`local-only` recordings route to local
+  compute by §4.2), agora (both, the all-`exportable` FT-F case). **No third gate**: both gates are
+  restated and neither moves, but no pass walks an audio job, so the two tokens are recorded as
+  **unexercised vocabulary** the way §3.3/§8.1 already are. Landed in all **four** statements of the
+  vocabulary — `registry/enums/modality.tsv`, §3.1's table, `schemas/finetune-job.schema.json`'s
+  `properties.modality.enum`, and `registry/README.md`'s prose bullet, the fourth being the one **no
+  guard checks**. Record: `docs/reference/generative-audio-modalities.md`.
 - `registry/` — shared **agnostic** vocabularies only: `relations.tsv` (core, **binary** relations
   only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
   `relations/social.tsv` (soc:), plus `entity-types.tsv`, `media-types.tsv`, and `enums/`.

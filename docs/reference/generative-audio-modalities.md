@@ -191,5 +191,11 @@ and `node scripts/check-doc-integrity.mjs` exist to catch; the registry README's
 fourth and **no guard checks it**, which is the same hazard `CLAUDE.md` records for the *Current
 state* prose.
 
-A normative vocabulary change re-enters validation rather than riding the existing status — KFT is
-`0.6.0` **Candidate**, and neither of these rows closes a gate.
+A normative vocabulary change re-enters validation rather than riding the existing status, and
+neither of these rows closes a gate.
+
+**Landed** at **KFT 0.7.0** (2026-08-27) in all four surfaces above; the spec's own header and its
+0.7.0 changelog entry are the record, and this page remains the *reasoning*, not a status mirror.
+Status stayed **Candidate**, both standing gates were restated and neither moved, and the two
+tokens are recorded in *Pressure test* as **unexercised vocabulary** — no pass or leg walks an audio
+job — rather than as a third gate.
