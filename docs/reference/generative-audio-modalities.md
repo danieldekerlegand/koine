@@ -160,8 +160,9 @@ Recorded so a later reader can tell an omission from a decision.
 A modality nobody can train today is still worth contracting when a named provider is waiting on
 the vocabulary. Both of these are. Roles below are read from
 [`../../ECOSYSTEM.md`](../../ECOSYSTEM.md) §2's role map, which is informative and shape-level; the
-statement of what each repo must do is [§6](#6-where-the-rows-land) and the separate downstream
-report.
+statement of what each repo must do is [§6](#6-where-the-rows-land) and the separate
+[downstream notice](generative-audio-modalities-downstream.md), which carries the per-repo actions
+as findings **AUD-1…AUD-6**.
 
 | Participant | Role (ECOSYSTEM §2) | Which row, and why |
 |---|---|---|
