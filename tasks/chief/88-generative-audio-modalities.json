@@ -1,0 +1,61 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/88-generative-audio-modalities",
+  "description": "**KFT's §3.1 modality enum has five rows and no audio, and a downstream product has been waiting on the two that are missing.**\n\n`registry/enums/modality.tsv` carries `text-generation`, `image-text-to-text`, `video-text-to-text`, `text-to-image`, `text-to-video`. There is no `text-to-audio` and no `audio-to-audio` — `grep -rn 'text-to-audio\\|audio-to-audio'` across the whole of koine returns **0 hits**.\n\n**formant cannot finish `38-kft-generative-audio-ratify-and-flip` until they exist.** That tasklist's acceptance criteria require its `KftModality` to be *\"a verbatim mirror of the ratified koine enum\"*, and a verbatim mirror of an enum that lacks your rows is not something an agent can honestly write. It ran five iterations, verified the enum four separate ways, and correctly refused to fake it. An 18-repo audit on 2026-08-25 recorded `38` as parked on koine and never checked whether the koine side had an owner. **It did not.**\n\n**It was also released prematurely.** `38` declared `dependsOn: koine:69-kft-open-questions`; `69` merged at `e8f5d85`, folding a §11 open question into `specs/fine-tuning.md` — worthwhile, and it never touched the modality enum. So the dependency was satisfied by adjacent work and `38` was dispatched into a wall. Its edge is being repointed here.\n\n**The generative-audio case is the one KFT's own shape predicts.** The two diffusion rows already there — `text-to-image` and `text-to-video` — are `media(image)` / `media(video)` planes taking a caption and producing an asset. Audio is the third medium of that family and KMI already carries `audio/*` in its media types, so the plane exists; only the modality rows are absent.\n\n**`audio-to-audio` is the row that needs thought.** It is not a caption-to-asset shape — it is transformation, closer to a filter than a generator, and its data plane and typical method may not follow the diffusion rows. Decide it deliberately rather than by symmetry with `text-to-audio`, and if it does not belong in this enum, say so and land only the row that does.",
+  "crossRepo": [
+    "formant",
+    "lugh",
+    "agora"
+  ],
+  "touches": [
+    "registry",
+    "specs",
+    "schemas"
+  ],
+  "iters": 6,
+  "warmup": [
+    "cat registry/enums/modality.tsv",
+    "grep -n 'text-to-image\\|text-to-video' specs/fine-tuning.md | head -8",
+    "python3 -c \"import json;d=json.load(open('schemas/finetune-job.schema.json'));print(d['properties']['modality']['enum'])\"",
+    "grep -rn 'audio' specs/media-interchange.md | head -6",
+    "grep -rn 'text-to-audio\\|audio-to-audio' . || echo 'absent everywhere, as expected'"
+  ],
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Decide which audio modalities the contract carries",
+      "acceptanceCriteria": [
+        "`text-to-audio` is specified against the same axes the existing rows use — data planes, typical base, typical method, description — following the `text-to-image` / `text-to-video` diffusion pattern it belongs to.",
+        "`audio-to-audio` gets a DECIDED verdict, not an assumed one. It is a transformation rather than a caption-to-asset generation, so its planes and methods may not mirror the diffusion rows; if it does not belong in this enum, record why and land only `text-to-audio`.",
+        "The decision names which media plane carries the training assets. KMI already lists `audio/*` in its media types, so verify the plane exists as described rather than asserting it.",
+        "A modality nobody can currently train is still worth contracting IF a downstream provider is waiting on the vocabulary — say which providers these rows are for, so a later reader knows whether an unimplemented row was an oversight or a deliberate forward declaration."
+      ],
+      "passes": false,
+      "notes": null
+    },
+    {
+      "id": "US-2",
+      "title": "The rows land in every place the enum is stated",
+      "acceptanceCriteria": [
+        "`registry/enums/modality.tsv` gains the decided row(s), matching the existing column shape exactly.",
+        "`specs/fine-tuning.md` §3.1 and `schemas/finetune-job.schema.json`'s `properties.modality.enum` agree with the registry. Three statements of one vocabulary that can disagree is the drift this repo's own gates exist to catch — verify all three, do not assume the schema follows the TSV.",
+        "The spec version is bumped and Status reconsidered against the ladder. KFT is at 0.6.0 Candidate; a normative vocabulary change re-enters validation rather than riding the existing status.",
+        "A changelog entry records what was added and, if `audio-to-audio` was declined, that decision too."
+      ],
+      "passes": false,
+      "notes": null
+    },
+    {
+      "id": "US-3",
+      "title": "The downstream mirrors are told, not left to discover it",
+      "acceptanceCriteria": [
+        "The consumers of this enum are named — formant's `KftModality`, lugh's narrow-provider envelope, agora's general trainer — with what each must do to pick the rows up.",
+        "Report, do not edit. These live in other repos and koine specifies rather than implements; the deliverable is a statement each repo's own tasklist can act on.",
+        "Flag the version drift found alongside this: formant's `KFT_VERSION` reads `0.3.0` against this spec's 0.6.0. That is a separate defect in a separate repo and it is exactly the kind of thing a vocabulary change makes worse, so it should be visible before these rows land."
+      ],
+      "passes": false,
+      "notes": null
+    }
+  ]
+}
