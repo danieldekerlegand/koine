@@ -109,3 +109,77 @@ branch could not have merged. Repointed all 5 files.
   implements. Deliverable is a statement each repo's tasklist can act on, plus the flagged drift:
   formant's `KFT_VERSION` reads `0.3.0` against this spec's (soon) 0.7.0. **Do not reach outside the
   worktree** to verify that — report it as the tasklist states it, attributed.
+
+---
+
+## US-2 — The rows land in every place the enum is stated (DONE)
+
+**`text-to-audio` and `audio-to-audio` landed at KFT 0.7.0**, in **four** surfaces (US-1's §6 list
+was right that there are four, and that only three are guarded).
+
+Files changed:
+- `registry/enums/modality.tsv` — +2 rows, 5-column shape held (`awk -F'\t' NF` = 5 on all 8 lines)
+- `specs/fine-tuning.md` — header `0.6.0 → 0.7.0`; §3.1 table +2 rows + a prose paragraph carrying
+  `audio-to-audio`'s differing axes; a 0.7.0 changelog entry; a *Pressure test* paragraph
+- `schemas/finetune-job.schema.json` — `properties.modality.enum`
+- `registry/README.md` — the prose bullet (now says in its own text that no guard checks it)
+- mirrors: `README.md`, `specs/README.md` (status table **and** the unguarded "Four sit there now"
+  prose list at ~L256), `ECOSYSTEM.md` §2, `CLAUDE.md` *Current state*, `ROADMAP.md` L153
+- `schemas/fixtures/finetune-job.json` — `kft_version` 0.6.0 → 0.7.0
+- `docs/reference/generative-audio-modalities.md` — §6 closing note now records the landing
+
+**The four-way agreement was verified mechanically, not by eye.** A throwaway python script parsed
+the TSV, the schema enum, the §3.1 table (`^\| \`token\` \|`, dropping the header cell) and the
+README bullet, and asserted **list equality including order** → `7 tokens each, ALL FOUR IDENTICAL
+AND IN ORDER: True`. The criterion says "do not assume the schema follows the TSV" — it didn't, and
+this is how that was discharged rather than claimed.
+
+**Version decision: minor, status stays Candidate.** §3.1's table is normative surface a reader
+implements against and **FT-F validates from**, so two new admissible tokens widen what a conformant
+provider must recognise (a token it does not know is a refusal) → **minor**, not patch. Status stays
+**Candidate** because a normative vocabulary change re-enters validation.
+
+**Gate decision: no third gate — the rows are recorded as *unexercised vocabulary* instead.** Both
+standing gates (`e2e-producer-exhaust-finetune.md` *Re-validation — KFT 0.4.0*, and
+`kft-resume-checkpoint.md`) are **restated and neither moves**. A new token cannot break a manifest
+that does not name it and FT-F's mechanism is byte-unchanged, so a scenario gate would be theatre.
+But no pass or leg walks an audio job, so the two tokens are recorded in *Pressure test* the way
+§3.3/§8.1 already are — **new normative surface no scenario has walked, uncitable in a
+re-ratification**. Worth noting in the same paragraph: the multimodal pass's stressor list says
+*"a media producer's audio LoRA (`text-to-image`-style…)"* — that parenthetical **is the coinage
+these rows exist to make unnecessary**, so it is not evidence for them.
+
+### Learnings for future iterations
+
+- **US-1's §6 landing list was accurate and saved real time.** The pattern (decision page names its
+  own landing zone; the next story executes it) is worth repeating.
+- **The §3.1 table has no `description` column** where the TSV does. The audio distinction that the
+  TSV carries in `description` (paired asset↔asset, **no caption side**; small task-specific bases)
+  had to go in **prose under the table**, not in a sixth column — adding a column would restate four
+  existing rows and is not what "matching the existing shape" means.
+- **A regex over the spec table picks up the header cell** (`| \`modality\` |`) — filter it, or the
+  four-way equality check fails on a false positive.
+- **`schemas/fixtures/finetune-job.json`'s `kft_version` tracks the spec version on every fold** —
+  `git log -p --follow` shows 0.3.0 → 0.4.0 → 0.6.0. It is not modelled by any guard
+  (`check-schemas.mjs` explicitly does **not** validate fixtures against schemas — that is
+  downstream per ADR-0001), so it is a fifth silent mirror. Bump it.
+- **`ROADMAP.md` L153 is a *live* KFT version mirror** ("Re-ratify KFT 0.6.0") that the CLAUDE.md
+  four-mirror rule does not mention and no guard checks. Add it to the mental list: README,
+  specs/README (×2 — table + prose), ECOSYSTEM, CLAUDE.md *Current state*, ROADMAP, fixture.
+- **Historical references to a version are not mirrors.** `docs/reference/promotability.md`,
+  `kcs-encoding-gate-verification.md`, `federation-fold-dispositions.md` and
+  `scenarios/kft-resume-checkpoint.md` all say "KFT 0.6.0" meaning *the 0.6.0 fold* — correct as
+  written, deliberately left alone. Only update a reference that names the **current** version.
+- **US-3 is report-only and is the last story.** Deliverable: a statement each of formant / lugh /
+  agora can act on (what to mirror, from which file, at which version), plus the flagged drift —
+  formant's `KFT_VERSION` reads `0.3.0` against this spec's **now-0.7.0**. **Do not reach outside the
+  worktree** to verify that; report it attributed to the tasklist.
+
+**Verification (all six gates, green):**
+- `check-doc-integrity.mjs` — OK, 55 files / **1316** links, all 3 status tables match their headers
+  (`fine-tuning  0.7.0  candidate`)
+- `check-doc-links.mjs --ratchet --base main` — **0 dead vs 2 on main**
+- `check-registry.mjs` — OK, `modality.tsv` **7 rows**, 29 relation names
+- `check-schemas.mjs` — OK, 9 schemas / 278 positions / 80 `$ref`s / 3 fixtures
+- `check-tasklist-categories.mjs` — OK, 2 tasklists categorized
+- `.chief/verify-test.sh` — **30 passed, 0 failed**
