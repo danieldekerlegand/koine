@@ -4,7 +4,7 @@
 **Deciders:** ecosystem owner
 **Answers:** the one finding returned by the cross-read of the **federation fold** (KCB 0.4.9,
 [`85`](../tasks/chief/completed/85-fold-the-federation-breaks.json)) against the **capability-versioning
-fold** (KCB 0.5.0, [`86`](../tasks/chief/86-fold-the-capability-versioning-breaks.json)) — recorded in
+fold** (KCB 0.5.0, [`86`](../tasks/chief/completed/86-fold-the-capability-versioning-breaks.json)) — recorded in
 [`../docs/reference/fold-coordination-federation-versioning.md`](../docs/reference/fold-coordination-federation-versioning.md).
 **Refines:** [`ADR-0012-federated-authority-roles.md`](ADR-0012-federated-authority-roles.md), whose
 discovery half KCB §3.1 applies, and

@@ -11,7 +11,7 @@ across an authority boundary is governed by both**:
 | Fold | Version | Tasklist | Pressure test | Deltas |
 |---|---|---|---|---|
 | **Federation** (the control-plane half) | KCB **0.4.9** | [`85`](../../tasks/chief/completed/85-fold-the-federation-breaks.json) | [`e2e-multi-authority.md`](../../scenarios/e2e-multi-authority.md) | MA-6 (blocking), MA-8, MA-9 |
-| **Capability versioning** | KCB **0.5.0** | [`86`](../../tasks/chief/86-fold-the-capability-versioning-breaks.json) | [`e2e-live-schema-mutation.md`](../../scenarios/e2e-live-schema-mutation.md) | V-1…V-8, four blocking |
+| **Capability versioning** | KCB **0.5.0** | [`86`](../../tasks/chief/completed/86-fold-the-capability-versioning-breaks.json) | [`e2e-live-schema-mutation.md`](../../scenarios/e2e-live-schema-mutation.md) | V-1…V-8, four blocking |
 
 The two folds' own reasoning is in
 [`federation-fold-dispositions.md`](federation-fold-dispositions.md) and

@@ -17,7 +17,7 @@ This page is the **first half** of the fold: what each of the eight gets, decide
 **before** a clause is touched. It changes **no clause and no version** — deciding what to fold and
 folding it are different acts, and conflating them is how a fold overreaches. The second half (the
 edits themselves) is
-[`86-fold-the-capability-versioning-breaks`](../../tasks/chief/86-fold-the-capability-versioning-breaks.json)
+[`86-fold-the-capability-versioning-breaks`](../../tasks/chief/completed/86-fold-the-capability-versioning-breaks.json)
 US-2, which lands each **FOLD** row below and nothing else.
 
 **What this page is not.** It binds no clause, and it is not a status mirror — each spec's own header

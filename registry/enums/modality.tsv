@@ -4,3 +4,5 @@ image-text-to-text	knowledge+media(image)	Qwen-VL, Llama-VL	lora|qlora	Vision-la
 video-text-to-text	knowledge+media(video)	Qwen-VL	lora|qlora	Vision-language video understanding; paired video (KMI) + text (KGP)
 text-to-image	media(image)	FLUX, SD3.5	lora|full	Diffusion image generation; caption→image (KMI image) training data
 text-to-video	media(video)	Wan, LTX, CogVideoX	lora	Diffusion video generation; caption→video (KMI video) training data
+text-to-audio	media(audio)	Stable Audio Open, MusicGen, AudioLDM 2	lora|full	Diffusion/autoregressive audio generation — music, SFX, and speech (TTS); caption→audio (KMI audio) training data
+audio-to-audio	media(audio)	RVC, so-vits-svc, Demucs	full|lora	Audio transformation — voice conversion, source separation, enhancement; paired audio→audio (KMI audio) training data, no caption side

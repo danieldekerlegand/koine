@@ -1,6 +1,6 @@
 # Koine Fine-Tuning Protocol (KFT)
 
-**Spec version:** 0.6.0
+**Spec version:** 0.7.0
 **Status:** Candidate
 **Last updated:** 2026-08-26
 **Applies to:** `finetune` capability providers (general and specialized), the control-plane host
@@ -273,10 +273,31 @@ capability's port types (§2). Initial set:
 | `video-text-to-text` | knowledge + media (KMI video) | Qwen-VL | lora / qlora |
 | `text-to-image` | media (KMI image) | FLUX, SD3.5 | lora / full |
 | `text-to-video` | media (KMI video) | Wan, LTX, CogVideoX | lora |
+| `text-to-audio` | media (KMI audio) | Stable Audio Open, MusicGen, AudioLDM 2 | lora / full |
+| `audio-to-audio` | media (KMI audio) | RVC, so-vits-svc, Demucs | full / lora |
 
 The vocabulary is additive; a new modality adds a row plus a capability variant (§2), never a new
 plane. A **media authority** holds the image/video/audio training assets these modalities
 consume, so multimodal fine-tuning inherits an existing, ratified data plane rather than a new one.
+
+**The two audio rows, and what distinguishes them.** `text-to-audio` is the third row of the
+`text-to-image` / `text-to-video` family and differs from them in nothing this table measures —
+music, sound effects and speech synthesis (TTS) all ride it, over a caption→audio corpus.
+`audio-to-audio` is **not** that shape: it is voice conversion, source separation and enhancement,
+its corpus is paired asset↔asset with **no caption side**, and both of its right-hand columns
+differ on purpose — its typical bases are small task-specific architectures rather than foundation
+models, which is why `full` leads its `method` ordering where the diffusion rows lead with `lora`.
+That a transformation modality belongs in this vocabulary at all is a decided question, not an
+assumed one: `modality` names what a **training run adapts a model to be**, which is a different
+question from what a finished transform **consumes and produces on the bus** (KMI §6), and without
+a token a voice-conversion job must declare `text-to-audio` — making FT-F's mandatory admission
+check below validate a declaration that is false. The full adjudication, the rejected alternatives
+(`text-to-speech` as a sixth row, an `audio-text-to-text` row, an `audio` plane), and the named
+providers these rows are published ahead of are in
+[`../docs/reference/generative-audio-modalities.md`](../docs/reference/generative-audio-modalities.md)
+(informative). Neither row moves a clause of §4: both sides of an audio pair are `dataset.media[]`
+entries, so §4.2's effective-egress union over *every media asset* and §4.3's license/trust union
+already reach them.
 
 `modality` and `method` are **not** independent: a provider **MUST validate** the
 `modality × method` combination (and the base model's architecture) **at admission** and reject an
@@ -1317,6 +1338,18 @@ it was before, which is why the third pass's re-run is unaffected; but the gate 
 over one field set for every job, and the owner should read §3.4, §4.2, §4.3, §5.4, §6 and §7 as
 **changed** normative surface rather than as re-validated text.
 
+**0.7.0 adds no third gate — it adds two rows of unexercised vocabulary.** The `text-to-audio` and
+`audio-to-audio` tokens (§3.1) are additive over the existing `media(audio)` plane: no clause of §4
+moves, FT-F's admission mechanism is byte-unchanged, and a cold pre-0.7.0 manifest is admitted and
+refused on exactly the inputs it was before — so **both gates above are restated and neither moves**.
+What the owner should carry forward instead is that **no pass or leg exercises an audio job**: the
+multimodal pass's audio stressor is listed above as *"a media producer's audio LoRA
+(`text-to-image`-style…)"*, which is precisely the coinage these rows exist to make unnecessary and
+is therefore not evidence for them. Read the two tokens the way §3.3 and §8.1 are read above — new
+normative surface no scenario has walked — and note that neither may be cited in a re-ratification
+until one does. A scenario leg would be the way to change that; none is opened here, because a token
+in a closed vocabulary cannot break a manifest that does not name it.
+
 **Downstream evidence (2026-08-24) — the gate fired, and the suite is a version behind.** The KCS
 encodings of the three end-to-end passes were run over real MCP/A2A links and all three came back
 `green`, recorded in each scenario's `## Downstream results`. What that is and is not worth to
@@ -1358,6 +1391,63 @@ re-ratification:
 ---
 
 ## Changelog
+
+- **0.7.0 — the generative-audio modalities** (2026-08-26) — **§3.1** gains two `modality` tokens,
+  `text-to-audio` and `audio-to-audio`, over the **existing** `media(audio)` plane. Strictly
+  additive: no plane, artifact kind, media type, KCB verb or authority role is added, no existing
+  token moves (they are immutable once published), and every 0.6.0-era manifest is admitted and
+  refused on exactly the inputs it was before. Status stays **Candidate**; the two standing gates
+  are restated below and **neither moves**.
+  - **The plane was verified, not assumed.** §3.1's own rule is that a new modality "adds a row plus
+    a capability variant (§2), **never a new plane**", so the first question was whether the plane
+    already carries audio. It does, in four independent places in
+    [`media-interchange.md`](media-interchange.md) none of which were added for this: §2's
+    `media_type` is an ordinary IANA type, §2's `probe.streams[]` example carries an `audio` stream,
+    **§6's own worked media-port example is `"media_types": ["audio/wav"]`**, and §8's role map lists
+    an **Audio producer** emitting `audio/*`. Consequently
+    [`../registry/media-types.tsv`](../registry/media-types.tsv) does **not** change — it registers
+    only the types koine *mints*, and `audio/wav` is IANA's exactly as `video/mp4` is.
+  - **`text-to-audio` is the third diffusion row.** `media(audio)` / `lora|full`, identical in every
+    axis this table measures to `text-to-image`. TTS rides it rather than getting a sixth row: the
+    upstream taxonomies that split speech out split on *pipeline routing*, which is a provider
+    concern and not a column §3.1 carries. Splitting later is additive and cheap; unsplitting is
+    impossible, which is the asymmetry that decides it.
+  - **`audio-to-audio` is a decided row, not a symmetric one.** The case against is that it is a
+    filter, and KMI §6 can already type `audio/wav → audio/wav` as a transform without KFT hearing
+    about it. It fails three ways: the enum is not generation-only (three of its five existing rows
+    are understanding modalities); §6 types an **invocation** where §3.1 types a **training target**,
+    and a model that performs a transform is still a model that gets trained; and excluding it does
+    not remove the case but corrupts it — with no token a per-speaker voice-conversion job must
+    declare `text-to-audio`, which makes **FT-F**'s mandatory `modality × method` admission check
+    validate a false declaration, the one outcome a closed vocabulary exists to prevent. It lands on
+    **its own axes**: `typical_base` is small task-specific architectures (RVC, so-vits-svc, Demucs)
+    rather than foundation models, and that is why `full` leads its `method` ordering.
+  - **No clause of §4 moves, and this was checked rather than inferred.** Both sides of an
+    `audio-to-audio` pair are KMI assets referenced through `dataset.media[]`, so §4.2's
+    effective-egress union over *"every media asset"* and §4.3's license/trust union already cover
+    the case where a target stem is `local-only` and its input is not. §5.1's `model` entity takes a
+    new `modality` refinement by construction and §5.3's export matrix is architecture-agnostic.
+  - **Published ahead of the providers, deliberately.** Both rows are a **forward declaration** with
+    named consumers, so a later reader can tell this from an oversight: **formant** (both rows — its
+    `KftModality` is required to be a verbatim mirror of this enum and was blocked on their
+    existence), **lugh** (`audio-to-audio` especially — a user's own recordings classify `personal`
+    and commonly `local-only`, which §4.2's placement rule routes to local/in-tier compute), and
+    **agora** (both, as the all-`exportable` case whose FT-F check this is). The adjudication, the
+    deliberate non-mints with their re-open triggers, and the provider statement are recorded in
+    [`../docs/reference/generative-audio-modalities.md`](../docs/reference/generative-audio-modalities.md).
+  - **Minor, not patch.** §3.1's table is normative surface a reader implements against and FT-F
+    validates from, so two new admissible tokens widen what a conformant provider must recognise —
+    a token it does not know is a refusal. Landed in all four statements of the vocabulary in one
+    change: [`../registry/enums/modality.tsv`](../registry/enums/modality.tsv), this table,
+    [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json)'s
+    `properties.modality.enum`, and [`../registry/README.md`](../registry/README.md)'s prose bullet —
+    the fourth being the one **no guard checks**.
+  - **No third gate; two rows of unexercised vocabulary.** Neither gate below is discharged, widened
+    or replaced, and neither row closes one. But no pass or leg exercises an audio job, so the owner
+    should read these two tokens the way *Pressure test* already records §3.3 and §8.1 — as
+    normative surface no scenario has walked — rather than as re-validated text. This is a
+    qualification on §3.1, not a scenario gate: a new token cannot break an existing manifest, and
+    the mechanism it is admitted by (FT-F) is byte-unchanged.
 
 - **Editorial** (2026-08-26) — Recorded the **downstream results** of the three end-to-end passes in
   *Pressure test*. Their KCS encodings were run over real MCP/A2A links on 2026-08-24 and all three

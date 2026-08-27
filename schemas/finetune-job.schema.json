@@ -31,7 +31,7 @@
     },
     "modality": {
       "type": "string",
-      "enum": ["text-generation", "image-text-to-text", "video-text-to-text", "text-to-image", "text-to-video"],
+      "enum": ["text-generation", "image-text-to-text", "video-text-to-text", "text-to-image", "text-to-video", "text-to-audio", "audio-to-audio"],
       "description": "KFT §3.1 modality vocabulary. Registered in koine registry/. modality × method compatibility is validated at admission (FT-F)."
     },
     "method": {
