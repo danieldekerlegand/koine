@@ -1,58 +1,61 @@
 {
   "project": "koine",
-  "category": "feature",
-  "branchName": "chief/86-fold-the-capability-versioning-breaks",
-  "description": "**KCB 0.5.0's capability-versioning fold — V-1 through V-8 — has no tasklist anywhere.** Same shape as the federation fold, one phase over: `54`, `55` and `56` merged and produced eight findings, and the specs still describe the pre-finding design. An 18-repo audit on 2026-08-25 confirmed nothing in any repo owns it.\n\n**KCB is the most-implemented plane and the most-gated spec.** agora's `registry/`, `grants/` and both routers are built against it, and it carries three separate counts holding it at Candidate. So the divergence here is not theoretical: real routing code is running against a contract whose known gaps are unwritten.\n\n**Capability versioning is where a fabric quietly breaks.** A provider advertises a capability, a consumer resolves it, and the two disagree about what version means — that failure surfaces as a runtime mismatch far from its cause. koine `ADR-0001` puts discovery on the bus with the registry returning ADDRESSES rather than proxying, so version negotiation happens peer to peer with no hub to arbitrate. Whatever V-1…V-8 found about that has to end up in the clause, because there is no central component that could compensate for a vague one.\n\n**Same reactive discipline as `85`.** Fold each break to the extent it forces and no further; close the ones already covered or found to be scenario errors, with reasoning. Eight findings do not obligate eight clauses.\n\n**And check it against `85`.** Federation and capability versioning meet: a capability advertised across an authority boundary is both. The two folds must not contradict each other, and if they conflict, that conflict is itself a finding worth an ADR rather than a quiet reconciliation in one of them.",
-  "touches": [
-    "specs",
-    "scenarios",
-    "registry",
-    "docs"
+  "category": "unblock",
+  "branchName": "chief/88-generative-audio-modalities",
+  "description": "**KFT's §3.1 modality enum has five rows and no audio, and a downstream product has been waiting on the two that are missing.**\n\n`registry/enums/modality.tsv` carries `text-generation`, `image-text-to-text`, `video-text-to-text`, `text-to-image`, `text-to-video`. There is no `text-to-audio` and no `audio-to-audio` — `grep -rn 'text-to-audio\\|audio-to-audio'` across the whole of koine returns **0 hits**.\n\n**formant cannot finish `38-kft-generative-audio-ratify-and-flip` until they exist.** That tasklist's acceptance criteria require its `KftModality` to be *\"a verbatim mirror of the ratified koine enum\"*, and a verbatim mirror of an enum that lacks your rows is not something an agent can honestly write. It ran five iterations, verified the enum four separate ways, and correctly refused to fake it. An 18-repo audit on 2026-08-25 recorded `38` as parked on koine and never checked whether the koine side had an owner. **It did not.**\n\n**It was also released prematurely.** `38` declared `dependsOn: koine:69-kft-open-questions`; `69` merged at `e8f5d85`, folding a §11 open question into `specs/fine-tuning.md` — worthwhile, and it never touched the modality enum. So the dependency was satisfied by adjacent work and `38` was dispatched into a wall. Its edge is being repointed here.\n\n**The generative-audio case is the one KFT's own shape predicts.** The two diffusion rows already there — `text-to-image` and `text-to-video` — are `media(image)` / `media(video)` planes taking a caption and producing an asset. Audio is the third medium of that family and KMI already carries `audio/*` in its media types, so the plane exists; only the modality rows are absent.\n\n**`audio-to-audio` is the row that needs thought.** It is not a caption-to-asset shape — it is transformation, closer to a filter than a generator, and its data plane and typical method may not follow the diffusion rows. Decide it deliberately rather than by symmetry with `text-to-audio`, and if it does not belong in this enum, say so and land only the row that does.",
+  "crossRepo": [
+    "formant",
+    "lugh",
+    "agora"
   ],
-  "iters": 8,
+  "touches": [
+    "registry",
+    "specs",
+    "schemas"
+  ],
+  "iters": 6,
   "warmup": [
-    "grep -n 'V-[1-8]\\b' scenarios/*.md specs/capability-bus.md | head -20",
-    "grep -n 'Status\\|0.5.0\\|version' specs/capability-bus.md | head -14",
-    "python3 -c \"import json,glob;[print(f.split('/')[-1], json.load(open(f)).get('mergedToMain')) for f in sorted(glob.glob('tasks/chief/completed/5[456]-*.json'))]\"",
-    "sed -n '/ADR-0001/,+14p' decisions/ADR-0001-control-plane-topology.md | head -20",
-    "grep -rn 'kcb' ../agora/registry/src/*.ts 2>/dev/null | head -5"
+    "cat registry/enums/modality.tsv",
+    "grep -n 'text-to-image\\|text-to-video' specs/fine-tuning.md | head -8",
+    "python3 -c \"import json;d=json.load(open('schemas/finetune-job.schema.json'));print(d['properties']['modality']['enum'])\"",
+    "grep -rn 'audio' specs/media-interchange.md | head -6",
+    "grep -rn 'text-to-audio\\|audio-to-audio' . || echo 'absent everywhere, as expected'"
   ],
   "userStories": [
     {
       "id": "US-1",
-      "title": "Each of the eight findings gets a disposition",
+      "title": "Decide which audio modalities the contract carries",
       "acceptanceCriteria": [
-        "V-1 through V-8 are each classified FOLD, CLOSE (already covered, or the finding was wrong — with reasoning) or DEFER (with the future break that would force it).",
-        "Each disposition names the spec section it lands in, and whether it also touches the schema twin or the relation registry.",
-        "The three counts currently holding KCB at Candidate are identified and mapped against these findings, so it is clear which of them this fold clears and which it does not.",
-        "Table only — no clause changes in this story."
+        "`text-to-audio` is specified against the same axes the existing rows use — data planes, typical base, typical method, description — following the `text-to-image` / `text-to-video` diffusion pattern it belongs to.",
+        "`audio-to-audio` gets a DECIDED verdict, not an assumed one. It is a transformation rather than a caption-to-asset generation, so its planes and methods may not mirror the diffusion rows; if it does not belong in this enum, record why and land only `text-to-audio`.",
+        "The decision names which media plane carries the training assets. KMI already lists `audio/*` in its media types, so verify the plane exists as described rather than asserting it.",
+        "A modality nobody can currently train is still worth contracting IF a downstream provider is waiting on the vocabulary — say which providers these rows are for, so a later reader knows whether an unimplemented row was an oversight or a deliberate forward declaration."
       ],
-      "notes": "docs/reference/capability-versioning-fold-dispositions.md: all 8 findings dispositioned (7 FOLD incl. 3 splits, 1 CLOSE, 2 DEFER-D/E + 1 rejected-on-record). Each names its KCB section; no schema twin and no registry file moves (V-2's shape-registry route rejected on federation grounds). Counts: the tasklist said three, the spec now carries FIVE — all five enumerated and mapped; this fold clears NONE, count (ii) changes shape only. No clause or version touched. check-doc-integrity.mjs: OK, 1226 links, 3 status tables match; check-tasklist-categories.mjs: OK.",
-      "passes": true
+      "passes": true,
+      "notes": "DECIDED: both rows land. text-to-audio = media(audio) / Stable Audio Open, MusicGen, AudioLDM 2 / lora|full, the third diffusion row. audio-to-audio ADMITTED on a stated-and-answered case against it (enum is not generation-only — 3 of 5 rows are understanding modalities; KMI §6 types an invocation, KFT §3.1 types a training target; excluding it forces FT-F to validate a false declaration). It lands on its OWN axes: same media(audio) plane but paired asset↔asset with no caption side, typical_base is small task-specific architectures (RVC, so-vits-svc, Demucs) not foundation models, so typical_method is full|lora with full LEADING. Media plane VERIFIED in 4 places in KMI, not asserted: §2 media_type is IANA, §2 probe carries kind:audio, §6's own worked port example is media_types:[audio/wav], §8 lists an Audio-producer role. Correction recorded: registry/media-types.tsv does NOT list audio/* and correctly so — it registers only koine-MINTED vendor types; the tasklist framing was loose. Checked §4.2 rather than assuming: both sides of a pair are dataset.media[] entries so the most-restrictive union already covers them — no §4 clause moves. Providers named from ECOSYSTEM §2: formant (audio-plugin/instrument IDE — both rows, blocked on them for its verbatim KftModality mirror), lugh (audio-to-audio especially — user recordings classify personal/local-only, which §4.2 routes to local compute i.e. to lugh), agora (both, as the all-exportable case). Deliberate non-mints recorded with triggers: no text-to-speech split, no audio-text-to-text, no audio plane, no media-types.tsv row. Record: docs/reference/generative-audio-modalities.md, linked from docs/README.md (that index states 'a document not linked here does not exist'). No spec/registry/schema file touched — US-2 lands the rows. ALSO FIXED pre-existing merge blocker: commit c6cae87 retired tasklist 86 into tasks/chief/completed/ without repointing 6 docs, leaving 7 dead links; guard-doc-integrity is a wall, so the branch could not have merged. GATES ALL GREEN: doc-integrity OK (55 files, 1308 links, 3 status tables match headers, 7 errors -> 0); doc-links 0 dead vs 2 on main (retired 2); registry OK (29 relations, modality 5 rows unchanged); schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures); tasklist-categories OK; verify-test 30 passed, 0 failed."
     },
     {
       "id": "US-2",
-      "title": "The folds land, and version negotiation is unambiguous",
+      "title": "The rows land in every place the enum is stated",
       "acceptanceCriteria": [
-        "Each FOLD is applied minimally to the named section, with a version bump, a reconsidered Status, and a changelog entry citing the V-id.",
-        "The resulting clause is specific enough that two independent implementations negotiate the same way without consulting each other. Under ADR-0001 the registry returns an address and peers dial directly — there is no hub to reconcile a disagreement, so a clause that leaves room for interpretation produces a runtime mismatch far from its cause.",
-        "A test or conformance case demonstrates the negotiated behaviour rather than only asserting the prose. Where KCS can encode it, encode it.",
-        "Schema twins updated where the shape moved; relation registry additions are new immutable names, never in-place signature edits."
+        "`registry/enums/modality.tsv` gains the decided row(s), matching the existing column shape exactly.",
+        "`specs/fine-tuning.md` §3.1 and `schemas/finetune-job.schema.json`'s `properties.modality.enum` agree with the registry. Three statements of one vocabulary that can disagree is the drift this repo's own gates exist to catch — verify all three, do not assume the schema follows the TSV.",
+        "The spec version is bumped and Status reconsidered against the ladder. KFT is at 0.6.0 Candidate; a normative vocabulary change re-enters validation rather than riding the existing status.",
+        "A changelog entry records what was added and, if `audio-to-audio` was declined, that decision too."
       ],
-      "notes": "KCB 0.4.9 -> 0.5.0 (minor), Candidate. V-1..V-7 folded, V-8 closed: new §2.4 (transport binding, V-4), new §4.4 (version operand + granted major in the token + refuse-for-want-of-one, V-5; quoted_cost + quote-mismatch refusal, V-1), §2.1+§7.1 (payload_schema_id + bare-shape-is-no-cross-check, V-2; shape registry rejected on the record), §7.1 step 5 (canonicalization rule id, absent=kcb1, no published digest moves, V-3), §7.3c (floor per axis, V-6), §7.3g (successor/deprecated/removal frames on §4.2d's existing channel, V-7), plus §5/§6/§4.1/§7.2 cross-refs. §2.2's standalone manifest REMOVED at 0.5.0 (declared obligation now due, not a fold); §2.3's window untouched at 0.6.0. Conformance case: scenarios/e2e-live-schema-mutation.md gains F1-F13, the assertion set the KCS encoding must grow (DR-7: re-running today's encoding proves nothing); no scenario file added, so downstream set-equality is unaffected. Schema twins: none moved (no twin models the KCB card extension) — vacuous. Registry: none moved (V-2's registry route rejected). Verification: node scripts/check-doc-integrity.mjs OK (52 files, 1249 links, 3 status tables match headers); check-schemas.mjs OK; check-registry.mjs OK; check-tasklist-categories.mjs OK; .chief/verify.sh green (verify-test: 30 passed, 0 failed).",
-      "passes": true
+      "passes": false,
+      "notes": null
     },
     {
       "id": "US-3",
-      "title": "This fold and the federation fold agree",
+      "title": "The downstream mirrors are told, not left to discover it",
       "acceptanceCriteria": [
-        "The result is read against `85-fold-the-federation-breaks`. A capability advertised across an authority boundary is governed by both, and the two must not specify different behaviour for it.",
-        "Any conflict is raised as an ADR rather than resolved silently inside one of the folds. A contradiction between two folds is a design finding about the fabric, and burying it in whichever fold merges second is how it becomes invisible.",
-        "agora's registry and grants are checked against the folded clause and any divergence is reported as an agora finding. koine specifies and agora implements — but a fold that the reference implementation already contradicts should be known before it ships, not after.",
-        "State whether KCB is now promotable. It is the most-implemented plane in the fabric and the answer matters to both organizations reading it."
+        "The consumers of this enum are named — formant's `KftModality`, lugh's narrow-provider envelope, agora's general trainer — with what each must do to pick the rows up.",
+        "Report, do not edit. These live in other repos and koine specifies rather than implements; the deliverable is a statement each repo's own tasklist can act on.",
+        "Flag the version drift found alongside this: formant's `KFT_VERSION` reads `0.3.0` against this spec's 0.6.0. That is a separate defect in a separate repo and it is exactly the kind of thing a vocabulary change makes worse, so it should be visible before these rows land."
       ],
-      "notes": "Cross-read landed as docs/reference/fold-coordination-federation-versioning.md (indexed in docs/README.md). AC1: eleven seams enumerated and read against the PUBLISHED text of both folds — the four the federation fold pre-registered plus seven added; TEN AGREE, one does not. The named near-miss is CLEAR: `version` is still in §3.1(d)'s de-dup key, §3.1(d) byte-unchanged at 0.5.0, so V-4 is not undone at discovery. AC2: the eleventh is a GAP AT THE SEAM (not a contradiction) and was escalated, not buried — ADR-0014 'a federated merge merges attributions, never contents': §7.3a/d's deprecated marking + removal version have NO carrier in §2 or §3 (MA-8's class, unreached), and §3.1(d)'s converse keys on (provider KINP id, (name, version), schema_id) — a marking moves none of the three (not shape, no §7.2 bump row), so two disagreeing attributions merge into one entry whose marking is undefined and §3.1(e) cannot fire; V-7/§7.3g is what makes it bite. Generalizes: of the five carriers outside the digest (cost, binding, volume, effect, marking) only two have a declared bump. NO KCB version moves and no count closes — the clause lands with counts (ii)+(iii). AC3: agora read read-only at commit 9fe2ee5 (2026-08-25), source only, no build/test run — six findings AG-1..AG-6 reported in §5 of the page (not filed there; koine cannot write to that repo and grows no dependency on it). AG-1 blocking and CREATED by publishing 0.5.0: /.well-known/kcb-manifest.json is still agora's only crawl path (registry/src/crawl.ts, grants/src/manifest.ts, apr_redirect_handler.erl 308). AG-2 blocking for §7: schemas/src/manifest.ts Capability has no `version` and no port carries `schema_id`. AG-3 Grant has no issuer/major/unit. AG-4 Capability.endpoint vs §2.4 binding.endpoint. AG-5 SPEC_VERSIONS.kcb pinned 0.4.6, four versions stale. AC4: KCB is NOT promotable — five counts, none closed, both folds clear zero of five; counts (ii)/(iv)/(v) also fail the artefact gate (DR-7/DR-12/DR-13); every re-run unowned. One correction folded in, not worked around: §3.1's 'three other counts' -> four (§4.3's count landed at 0.4.8 between that paragraph's planning and its writing); Editorial changelog entry, no version/clause/count moves. Mirrors: decisions/README (row + fixed a stray blank line that was splitting the table), ROADMAP ADR list, CLAUDE.md ADR list, promotability.md item 6, both dispositions pages amended to close the loop. Verification: check-doc-integrity.mjs OK (54 files, all relative links + 3 status tables match headers); check-schemas.mjs OK; check-registry.mjs OK; check-tasklist-categories.mjs OK; .chief/verify.sh green — verify-test: 30 passed, 0 failed.",
-      "passes": true
+      "passes": false,
+      "notes": null
     }
   ]
 }

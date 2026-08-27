@@ -176,7 +176,7 @@ pass against the folded text*.
 |---|---|---|---|
 | **KINP** | Yes — MA-1/2/3/4 (blocking) + MA-7 were the entirety of its **only** re-ratification count. | A re-run of [`e2e-multi-authority.md`](../../scenarios/e2e-multi-authority.md) against the folded text: **Steps 2, 3, 4 and 6 must flip**, Step 1 is the regression set. | **No.** But nothing else stands in the way — no second count, no fold outstanding, no koine-side deliverable. One clean re-run is the whole of the prose leg. |
 | **KMI** | Only for count (i). MA-5 (blocking) + MA-10 were §7.1's whole gate; KMI's **second** count is the [`e2e-media-transform.md`](../../scenarios/e2e-media-transform.md) re-run, which is **KCB's** work and untouched here. | A re-run of **Steps 8–10** against the folded text. | **No**, and it would not be even on a clean re-run — count (ii) is not KMI's to discharge. |
-| **KCB** | Only for count (iii) of five. | A re-run of **Steps 5–7**. | **No.** Four other counts stand, one of them [`86`](../../tasks/chief/86-fold-the-capability-versioning-breaks.json)'s fold, two of them also failing the conformance gate (**DR-12**, **DR-13**). |
+| **KCB** | Only for count (iii) of five. | A re-run of **Steps 5–7**. | **No.** Four other counts stand, one of them [`86`](../../tasks/chief/completed/86-fold-the-capability-versioning-breaks.json)'s fold, two of them also failing the conformance gate (**DR-12**, **DR-13**). |
 | **KGP** | It had no federation gate. MA-3/MA-4/MA-5 read *through* KGP and are answered in KINP and KMI by the define-once rule. | Unchanged — one downstream round-trip fixture. | **No**, for a reason that has nothing to do with federation. |
 
 **And the re-run is unowned.** No tasklist in any repo owns it: `53` wrote and ran the pass and is
@@ -194,7 +194,7 @@ against that page.
 
 ## Coordination with the sibling fold
 
-[`86-fold-the-capability-versioning-breaks`](../../tasks/chief/86-fold-the-capability-versioning-breaks.json)
+[`86-fold-the-capability-versioning-breaks`](../../tasks/chief/completed/86-fold-the-capability-versioning-breaks.json)
 folds KCB's **V-1…V-8** into the same spec. Where federation and capability versioning meet — a
 capability advertised across an authority boundary is both — the two folds must agree. The
 constraint this page fixes on its side, so 86 can plan against it:

@@ -1,223 +1,111 @@
-# Chief Progress — 86-fold-the-capability-versioning-breaks
-Started: Wed Aug 26 12:07:01 CDT 2026
+# Chief Progress — 88-generative-audio-modalities
+Started: Wed Aug 26 23:51:15 CDT 2026
 ---
 
 ## Codebase Patterns
-- **A fold is two acts, and koine separates them.** `docs/reference/*-fold-dispositions.md` is the
-  first half (decide + reason each finding, change no clause, no version); the spec edits are the
-  second. `federation-fold-dispositions.md` is the model to copy — same sections, same FOLD/CLOSE/
-  DEFER rule, same "verify the attributions rather than inheriting them" opening.
-- **Every DEFER states the future break that would force it.** A finding may *split*: fold the half
-  the break forces, defer the remainder with its own trigger. A rejected alternative gets a re-open
-  trigger too.
-- **`node scripts/check-doc-integrity.mjs` after ANY doc touch.** It caught 8 pre-existing broken
-  links: retiring a tasklist moves `tasks/chief/<n>.json` → `tasks/chief/completed/<n>.json`, and
-  every doc that linked to it silently breaks. **If you cite a tasklist that may be retired during
-  or after your run, expect this.** Fixed in this iteration for `85`.
-- **Read the spec header + `docs/reference/promotability.md` before trusting a PRD's count of
-  gates.** PRDs are written at a point in time; KCB's counts went 2 → 3 → 4 → 5 across 0.4.6–0.4.8.
+
+- **`docs/README.md` is a hard index.** It states "a document not linked here does not exist" —
+  every new `docs/reference/*.md` MUST get a bullet there, with a dash-clause saying what it holds.
+- **Retiring a tasklist breaks every doc that links it.** `tasks/chief/<n>.json` moves to
+  `tasks/chief/completed/<n>.json` on retire, and nothing repoints the prose. `guard-doc-integrity`
+  is a **wall** (not a ratchet), so the rot blocks the NEXT branch to touch docs, not the one that
+  caused it. Link a tasklist as `../../tasks/chief/completed/<n>.json` from the start, or don't link
+  it. Ran into this from `c6cae87` (86's retire) — 7 dead links, fixed here.
+- **Run the guards directly, not through `.chief/verify.sh --plan`** — a bare `--plan` under an
+  agent shell reads a tty-less stdin and reports nothing. Also `git diff --name-only HEAD` omits
+  untracked files, so the plan under-selects gates for a new file. Just run all five scripts plus
+  `bash .chief/verify-test.sh`; they take seconds.
+- **The KFT modality vocabulary is stated in FOUR places, and only three are guarded**:
+  `registry/enums/modality.tsv` (guarded), `specs/fine-tuning.md` §3.1 table, `schemas/finetune-job.schema.json`
+  `properties.modality.enum`, and — unguarded — `registry/README.md`'s prose bullet, which
+  enumerates the tokens inline. Same silent-staleness hazard `CLAUDE.md` records for *Current state*.
 
 ---
 
-## US-1 — Each of the eight findings gets a disposition (2026-08-26)
+## US-1 — Decide which audio modalities the contract carries (DONE)
 
-**Added:** `docs/reference/capability-versioning-fold-dispositions.md` (new, informative, binds no
-clause). **Repaired:** stale `85` tasklist links in `docs/reference/federation-fold-dispositions.md`
-and `docs/reference/promotability.md` (8 pre-existing doc-integrity errors, unrelated to this story
-but red).
+**Verdict: both `text-to-audio` and `audio-to-audio` land.** No spec, registry, or schema file was
+touched — US-1 is the decision, US-2 lands the rows (the same split `85` used: dispositions page
+first, edits second).
 
-**Dispositions decided** (source: `scenarios/e2e-live-schema-mutation.md`):
-- V-2 blocking → **FOLD (split)**: KCB §7.1/§2.1 — a bare knowledge-port `shape` name is normatively
-  NOT a cross-check (reads as §7.1's *no cross-check available*), plus an optional
-  `payload_schema_id`. The scenario's **shape-registry** route is **rejected on the record** — it
-  would mint a second non-federated commons against KINP §3.4/MA-7 and contradict ADR-0007.
-- V-4 blocking → **FOLD**: optional per-entry transport binding in §2 `params.capabilities[]`;
-  §7.1's ban on version-in-the-*name* untouched (two namespaces, only one governed).
-- V-5 blocking → **FOLD**: §4 version/range operand + granted major travels *in* the token (grant
-  name unchanged) + refuse-for-want-of-one instead of any default. Deliberately the same shape
-  0.4.9 gave `budget_units` (MA-6).
-- V-7 blocking → **FOLD (split)**: the duty + frame vocabulary ride §4.2d's EXISTING control channel
-  (0.4.7 already mandates this: "a fold of V-7 MUST carry its signals on this channel"). Cadence and
-  TTL → **DEFER-D**, whose trigger is the binding the frame cannot reach: a consumer holding only a
-  cached discovery binding with no stream open.
-- V-3 → **FOLD**: canonicalization *rule id* in the digest prefix. Note it is not optional given V-2
-  — V-2 grows §2.1's knowledge-port vocabulary, which is exactly what fires V-3.
-- V-6 → **FOLD (split)**: floor raised for a retiring *capability major* only (successor's next
-  major); §7.3c's one-minor floor retained where the axis is a koine spec version, so §2.2/§2.3/KMI
-  §4.4 removal versions do not move. `deprecated_at` → **DEFER-E**.
-- V-1 → **FOLD (minimal)**: optional quoted-cost operand on `invoke`, refusal names *quote mismatch*.
-- V-8 → **CLOSE**: already discharged — KCS §7 open question 1 cites it by name.
+Files changed:
+- `docs/reference/generative-audio-modalities.md` (new) — the decision record.
+- `docs/README.md` — index bullet for it.
+- 5 docs repointed at `tasks/chief/completed/86-…json` (pre-existing breakage, see below).
 
-**Three corrections recorded** (not silently worked around): the PRD says three counts, the spec
-carries **five**; the scenario's own regression set mis-files Step 3 (it carries 🔴 V-1 while being
-listed as "held"); V-8's "no demand on a ratified spec" is stale (KCS is now 0.3.0 **Candidate**).
+What was decided, and on what evidence:
+- **The plane was verified, not asserted** (the criterion asked for this explicitly). `media(audio)`
+  exists in four independent places in KMI: §2's `media_type` is an ordinary IANA type; §2's `probe`
+  example carries `{"kind":"audio","codec":"aac",…}`; **§6's own worked media-port example is
+  `"media_types": ["audio/wav"]`** and it names `mood(knowledge) → score(audio)`; §8's role map lists
+  an **Audio producer** emitting `audio/*`.
+- **The commissioning tasklist's framing was loose and is corrected on the record.** It says "KMI
+  already lists `audio/*` in its media types". `registry/media-types.tsv` does **not** — it registers
+  only the types koine *mints* (`+safetensors`, `+gguf`/`+onnx`/`+coreml`/`+tflite`, `+jsonl`).
+  `audio/wav` is IANA's and needs no koine row, exactly as `video/mp4` has none. **So no
+  `media-types.tsv` row for these modalities** — a later reader who looks there has not found a gap.
+- **`audio-to-audio` got a real adjudication, not symmetry.** The case *against* is stated at full
+  strength (it is a filter, and KMI §6 can already type `audio/wav → audio/wav` as a transform) and
+  answered three ways: (1) the enum is not generation-only — 3 of its 5 rows are understanding
+  modalities, so "it's a transform" excludes nothing; (2) KMI §6 types an **invocation**, KFT §3.1
+  types a **training target** — a model that performs a transform is still a model that gets trained;
+  (3) with no token a provider must abuse `text-to-audio`, which makes **FT-F's mandatory
+  `modality × method` admission check validate a false declaration** — the one thing a closed
+  vocabulary exists to prevent.
+- **It lands on its own axes.** Two columns differ from the diffusion rows: `typical_base` is small
+  task-specific architectures (RVC, so-vits-svc, Demucs), *not* foundation models, and that is why
+  `typical_method` is `full|lora` with **`full` leading** where `text-to-image`/`text-to-audio` lead
+  with `lora`. Its corpus is paired asset↔asset with **no caption side** — carried in `description`,
+  not by inventing a plane notation the other four rows don't use.
+- **Checked §4.2 rather than assuming additivity.** Both sides of an audio pair are `dataset.media[]`
+  entries, and §4.2's effective-egress union is over "every media asset", so the most-restrictive
+  rule already covers a `local-only` target stem. **No §4 clause moves.**
+- **Forward declaration is on the record with named providers** (read from `ECOSYSTEM.md` §2, not
+  invented): **formant** (audio-plugin/instrument IDE — both rows; its `KftModality` must be a
+  verbatim mirror, so it is blocked on their existence), **lugh** (`audio-to-audio` especially — a
+  user's own recordings classify `personal`/`local-only`, and §4.2's placement rule then routes the
+  run to local/in-tier compute, i.e. to lugh and not the general trainer), **agora** (both, as the
+  all-`exportable` case; FT-F's admission check is its).
+- **Deliberate non-mints, each with a re-open trigger**: no `text-to-speech` split (TTS rides
+  `text-to-audio`; §3.1 tokens are immutable once published, so splitting later is cheap and
+  unsplitting is impossible), no `audio-text-to-text` (a genuine gap, but no participant is waiting),
+  no `audio` plane, no `media-types.tsv` row.
 
-**Verification:** `node scripts/check-doc-integrity.mjs` → OK (52 files, 1226 links, 3 status tables
-match headers). `node scripts/check-tasklist-categories.mjs` → OK. No spec, schema, or registry file
-touched, per the story's "table only" criterion.
+**Pre-existing merge blocker found and fixed.** `c6cae87` retired tasklist 86 into
+`tasks/chief/completed/` and left **7 dead links** across `decisions/ADR-0014…`,
+`docs/reference/{capability-versioning-fold-dispositions,federation-fold-dispositions,
+fold-coordination-federation-versioning,promotability}.md`. `guard-doc-integrity` is a wall, so this
+branch could not have merged. Repointed all 5 files.
 
-### Learnings for future iterations
-- **US-2 must land two things that are not folds.** (1) Publishing **0.5.0 IS §2.2's removal** — the
-  standalone `/.well-known/kcb-manifest.json` is declared "removed at KCB 0.5.0" and §7.3f makes the
-  publication the removal. (2) §2.3's legacy URI root window runs to 0.6.0 and must NOT move.
-- **US-2's conformance case cannot be a re-run of today's encoding.** DR-7: `kcs:live-schema-mutation`
-  came back `green` over all four blocking deltas because the encoding deliberately does not assert
-  an unfolded delta. The encoding must be *extended*, and V-8 says the needed predicates are not in
-  KCS §5 — use the escape hatch (declared console extensions), which KCS §7 oq1 already blesses.
-- **V-4 and V-5 are two halves of one hole** ("a fold must close both or close neither"). Do not land
-  one without the other.
-- **No schema twin exists for the KCB card extension**, so "schema twins updated where the shape
-  moved" (US-2 criterion 4) is satisfied vacuously — say so rather than inventing one. Likewise no
-  relation-registry addition is needed; the V-2 route that would have touched `registry/` is rejected.
-- **US-3's material is already staged** in the page's final section: four named places where this
-  fold and `85`'s meet, two of which (V-2's rejection, V-5's refuse-for-want-of-one) were *decided*
-  on federation grounds. US-3's job is to look for a contradiction, not to assume there is none.
-
----
-
-## US-2 — The folds land, and version negotiation is unambiguous (2026-08-26)
-
-**KCB 0.4.9 → 0.5.0, minor, stays Candidate.** Every FOLD row of the US-1 disposition page applied
-and nothing else. V-8 stays closed.
-
-**Spec (`specs/capability-bus.md`):**
-- **§2.4 (new)** — optional per-entry transport `binding` (V-4). Two namespaces, only one governed:
-  the capability *name* stays version-free (§7.1 untouched), the transport id is local. A provider
-  serving two majors that resolve to one transport id is now non-conformant.
-- **§4.4 (new)** — V-5 + V-1 together. Optional `version` operand; granted major readable *in* the
-  token (grant NAME unchanged); resolution stated as an ordered, exhaustive rule — operand, else
-  grant, else **refuse for want of a version**, with *highest published* forbidden **by name**; one
-  published major still answers a bare call, which is what keeps it additive. Plus optional
-  `quoted_cost` and a *quote mismatch* refusal.
-- **§2.1 + §7.1** — optional knowledge-port `payload_schema_id`, and the rule that carries the fold:
-  a bare `shape` is **routing** identity, not payload identity, so a consumer MUST read it as *no
-  cross-check available*. Shape registry rejected on the record with a re-open trigger.
-- **§7.1 step 5** — canonicalization **rule id** in the prefix; **absent = `kcb1`**, this version
-  states `kcb2`, and a port declaring no `payload_schema_id` canonicalizes byte-identically under
-  both, so **no published digest moves**. Unknown rule id reads *incomparable*, never *mutated*.
-- **§7.3c** — floor split by axis (capability major → successor's next major; koine-spec axis keeps
-  one full minor, so §2.3 and KMI §4.4 do not move). **§7.3g** — three named frames on §4.2d's
-  *existing* channel, each before the fact it announces; the two binding forms it cannot reach are
-  stated (DEFER-D), not implied closed.
-- **§2.2** — the standalone manifest is **removed at this version**. Not a fold: an obligation
-  declared earlier and now due (§7.3f). §2.3's window untouched, still 0.6.0.
-- §5 / §6 / §4.1 / §7.2 carry the cross-references and the two new reader obligations; §7.5, the
-  status note, the Pressure test § and a full Changelog entry cite every V-id.
-
-**Scenario (`scenarios/e2e-live-schema-mutation.md`):** a *Fold status* section (per-finding re-read,
-85's shape) and a **Conformance case** section carrying **F1–F13** — the assertion set the KCS
-encoding must grow. Resolution notes and the "clean pass would license" conditions amended.
-
-**Mirrors:** README, specs/README, ECOSYSTEM (the three checked tables), CLAUDE.md *Current state*
-(NOT checked by CI — hand-edited and read back), ROADMAP F2 + the KCB re-ratify row,
-`docs/reference/promotability.md`, `scenarios/README.md` (encoding column + DR-7 framing),
-`docs/README.md` (the dispositions page was never indexed — added).
-
-**Verification:** `check-doc-integrity.mjs` OK (52 files, 1249 links, 3 tables match);
-`check-schemas.mjs` OK; `check-registry.mjs` OK; `check-tasklist-categories.mjs` OK;
-`.chief/verify.sh` green — *verify-test: 30 passed, 0 failed*.
+**Verification (all six gates, green):**
+- `check-doc-integrity.mjs` — OK, 55 markdown files / **1308** relative links, all 3 status tables
+  match their headers (was **7 errors**, now **0**)
+- `check-doc-links.mjs --ratchet --base main` — **0 dead vs 2 on main**, retired 2
+- `check-registry.mjs` — OK, 29 relation names, `modality.tsv` still 5 rows (untouched by design)
+- `check-schemas.mjs` — OK, 9 schemas / 278 positions / 80 `$ref`s / 3 fixtures
+- `check-tasklist-categories.mjs` — OK, 2 tasklists categorized
+- `.chief/verify-test.sh` — **30 passed, 0 failed**
 
 ### Learnings for future iterations
-- **The anchor slug drops the em dash entirely, and collapses runs of whitespace once.**
-  `## Conformance case — the assertions…` → `#conformance-case-the-assertions…`, NOT
-  `…case--the-assertions…`. Compute it with the `slugify` in `scripts/check-doc-integrity.mjs`
-  rather than guessing; it is 10 lines and it is the authority.
-- **A "no digest moves" claim has to be *engineered*, not asserted.** Adding `payload_schema_id` to
-  §7.1's key set would fork every digest, so the fold had to make the rule id **optional with an
-  absent-means-`kcb1` default** AND forbid emitting `kcb2` for a port whose bytes are `kcb1`-identical.
-  The interop argument closes because a port that *does* declare the new key has also moved its
-  version, so an old consumer meets the moved digest on the ordinary re-discovery path.
-- **Fold order matters when one fold fires another.** V-2 grows §2.1's vocabulary, which is exactly
-  the event V-3 says breaks two conformant parties. Folding V-2 without V-3 would have fired V-3 on
-  publication day. Look for this pair shape in any fold that adds a hashed field.
-- **`python3` heredoc + `assert s.count(old)==1` is the right tool for these edits.** Several
-  search strings that *look* copy-exact fail to match (invisible char drift in long prose lines);
-  the assert catches it immediately, and nothing is written because the write is at the end. When one
-  fails, bisect the string with short probes rather than re-reading the whole file.
-- **US-3's material is staged but its answer is not.** The dispositions page names four places where
-  this fold and `85`'s meet, two decided ON federation grounds (V-2's rejection, V-5's
-  refuse-for-want-of-one). §2.4 makes one explicit claim US-3 must verify rather than repeat: a
-  `binding` is outside §3.1(d)'s three-part de-dup key `(provider KINP id, (name, version), schema_id)`.
-  Also unchecked: agora's `registry/` and `grants/` against §4.4c and §7.3g — criterion 3 requires
-  reporting divergence as an **agora finding**, and the worktree cannot reach that repo, so state that
-  limit rather than implying a check happened.
-- **KCB now has no minor left in reserve.** 0.5.0 spent the one that was held for §2.2's removal. The
-  next retirement (§2.3's legacy URI root, at 0.6.0) is the only scheduled one; any future additive
-  fold has to argue for patch, as 0.4.6–0.4.9 all did.
 
----
-
-## US-3 — This fold and the federation fold agree (2026-08-26)
-
-**Answer: they do, at ten of eleven seams. The eleventh is an ADR.**
-
-**The read** — `docs/reference/fold-coordination-federation-versioning.md` (informative, binds no
-clause; indexed in `docs/README.md`). Eleven seams enumerated where a KCB **0.4.9** clause and a KCB
-**0.5.0** clause govern the same object, each read against the **published** text of both rather than
-either fold's intent. The four the federation fold pre-registered all hold, including its **named
-near-miss**: §3.1(d)'s converse is byte-unchanged and `version` is still in the de-dup key, so two
-majors of one name stay two entries and V-4 is not undone at the discovery layer. Seven more seams
-added by this read (S5–S11) — the unreadable-granted-major case across a boundary, §4.4c case 4 under
-a foreign grant, `kcb2` across two release cadences, `binding` vs staleness, the `removal` frame vs
-§3.1(f), `accepted_issuers` vs the digest, and `effect` vs V-1's digest reasoning.
-
-**The one finding → `decisions/ADR-0014-federated-merge-merges-attributions.md`.** §7.3a/d's
-**deprecated marking** and its **removal version** have **no carrier** in §2's manifest or §3's `find`
-response — MA-8's class, which the federation fold folded for §3.1's own clauses and did not extend to
-§7.3. §3.1(d)'s converse keys on `(provider KINP id, (name, version), schema_id)`; a marking moves none
-of the three (it is not shape, and §7.2 has **no bump row** for marking something deprecated), so a
-stale attribution and a fresh one merge into **one** entry whose marking is undefined, and §3.1(e)'s
-*resolve-against-the-card* rule cannot fire because the disagreement is gone. **V-7 is what makes it
-bite**: §7.3g had just established that for a discovery binding the pull side is the *whole* contract.
-It generalizes — §3.1(d)'s key is the digest key plus `version`, so all five carriers deliberately kept
-outside the digest (`cost`, `binding`, `volume`, `effect`, the marking) are outside the merge key, and
-only the two with a declared bump are rescued. **Not a contradiction** — a gap at the seam, owned by
-neither fold — so nothing was folded into 0.5.0 and **no version and no count moves**; the clause lands
-with counts (ii) and (iii).
-
-**agora** read read-only at `9fe2ee5` (2026-08-25), source only, no build or test run. Six findings
-**AG-1…AG-6** in §5 of the page. AG-1 is blocking *and created by publishing 0.5.0*: the standalone
-`/.well-known/kcb-manifest.json` is still agora's only crawl path. AG-2 is the larger fact: its
-`Capability` type has no `version` and no port carries a `schema_id`, so **§7 as a whole is unexercised
-outside this tree**.
-
-**Promotability: NO.** Five counts, none closed, both folds clear zero of five; (ii)/(iv)/(v) also fail
-the artefact gate (DR-7/DR-12/DR-13); every re-run unowned.
-
-**One correction, folded in rather than worked around:** §3.1's closing paragraph said *"the three
-other counts"* — §4.3's count had landed at 0.4.8 from a third tasklist between that paragraph's
-planning and its writing. Now four, enumerated. Editorial changelog entry; no clause, version or count
-moves.
-
-**Files:** new `decisions/ADR-0014-federated-merge-merges-attributions.md`, new
-`docs/reference/fold-coordination-federation-versioning.md`; edited `specs/capability-bus.md` (§3.1
-count sentence + Editorial changelog entry), `decisions/README.md` (row, and fixed a stray blank line
-that was splitting the table in two), `docs/README.md`, `ROADMAP.md` (ADR list), `CLAUDE.md` (ADR
-list), `docs/reference/promotability.md` (item 6), and both dispositions pages (loop closed).
-
-**Verification:** `check-doc-integrity.mjs` OK (54 files, all links + 3 status tables match);
-`check-schemas.mjs` OK; `check-registry.mjs` OK; `check-tasklist-categories.mjs` OK; `.chief/verify.sh`
-green — *verify-test: 30 passed, 0 failed*.
-
-### Learnings for future iterations
-- **agora IS reachable from the worktree** — `~/Development/agora`, a sibling of `~/Development/koine`,
-  not `../agora`. US-2's learning note said the worktree could not reach it; that was wrong, and a
-  read-only inspection is both possible and in scope. Do not write there (the worktree rule), and do
-  not link there from a spec/schema/registry/policy file (CLAUDE.md) — a `docs/` page naming files as
-  plain code spans is the right shape, and it is what `implementability-audit.md` /
-  `interop-trial.md` already do.
-- **The cross-read finds things because it reads for CARRIERS, not for contradictions.** Both folds
-  were internally consistent; what the seam exposed was a clause (§7.3d) whose *carrier* was never
-  minted, meeting a merge key (§3.1(d)) that is entitled to ignore it. When two folds meet, the
-  question that pays is *"what field does this clause ride on, and is that field in the other clause's
-  key?"* — not *"do these two paragraphs disagree?"*
-- **Every operand kept outside the `schema_id` digest is also outside §3.1(d)'s merge key.** Four folds
-  in four consecutive versions did this for the same correct reason. Any future fold that mints an
-  out-of-digest operand inherits ADR-0014's question and should say which of its parts covers it.
-- **A "gap at the seam" is still an ADR when it is owned by neither fold.** The alternative — patching
-  it into whichever fold merges second — puts a defect in fold A's clause into fold B's changelog,
-  which is the last place anyone looks. Say *gap*, not *contradiction*, and say who it lands with.
-- **Check the ADR-list mirrors when adding an ADR.** Four places, and CI checks none of them for
-  completeness: `decisions/README.md` (the table of record), `ROADMAP.md`'s repo-map bullet,
-  `CLAUDE.md`'s `decisions/` bullet, and `docs/README.md` if a companion doc is added. `decisions/README.md`
-  also had a stray blank line splitting its table in two since ADR-0012 — worth a glance when editing it.
+- **US-2's landing list is already written**, in the new doc's §6: `registry/enums/modality.tsv`
+  (append 2 rows, 5-column shape), `registry/README.md` (the **unguarded** prose bullet — easy to
+  miss), `specs/fine-tuning.md` §3.1 table + changelog, `schemas/finetune-job.schema.json`
+  `properties.modality.enum`. Verify all four; do not assume the schema follows the TSV.
+- **Exact row text to land** (tab-separated, matching the existing five):
+  - `text-to-audio` · `media(audio)` · `Stable Audio Open, MusicGen, AudioLDM 2` · `lora|full` ·
+    `Diffusion/autoregressive audio generation — music, SFX, and speech (TTS); caption→audio (KMI audio) training data`
+  - `audio-to-audio` · `media(audio)` · `RVC, so-vits-svc, Demucs` · `full|lora` ·
+    `Audio transformation — voice conversion, source separation, enhancement; paired audio→audio (KMI audio) training data, no caption side`
+- **US-2's version question.** KFT is `0.6.0` Candidate. A new modality token is **additive normative
+  surface** (a reader implements against §3.1's table and FT-F validates from it) → **minor, 0.7.0**,
+  status **stays Candidate**. Note `specs/fine-tuning.md` has *two* live gates already (the
+  `e2e-producer-exhaust-finetune.md` re-run and the `kft-resume-checkpoint.md` re-run) — restate both,
+  move neither, and consider whether the audio rows add a third or ride the existing pass.
+- **Bumping KFT's version touches four mirrors**, three of them guarded: `README.md`,
+  `specs/README.md`, `ECOSYSTEM.md` §2 (all three diffed by `check-doc-integrity.mjs`) and
+  **`CLAUDE.md`'s *Current state* prose, which no guard checks** — update it by hand and read it back.
+- **US-3 is report-only** — formant / lugh / agora live in other repos, koine specifies rather than
+  implements. Deliverable is a statement each repo's tasklist can act on, plus the flagged drift:
+  formant's `KFT_VERSION` reads `0.3.0` against this spec's (soon) 0.7.0. **Do not reach outside the
+  worktree** to verify that — report it as the tasklist states it, attributed.
