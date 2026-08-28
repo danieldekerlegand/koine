@@ -30,6 +30,15 @@ vocabulary.
   Both failures are otherwise silent. It checks **three of the four mirrors** — the *Current
   state* prose below is **not** checked, so a stale version there passes CI; update that line by
   hand and read it back. `node scripts/check-tasklist-categories.mjs` guards `tasks/chief/`.
+- **A status change reaches further than the four mirrors.** The guard passes on a table row that
+  merely contains the version and the status *word*; it says nothing about the prose all over the
+  repo that **counts** statuses ("six of six remain candidate", "0 of 6 specs ratified", "four sit
+  there now") or **ranks** what is closest to promotion. Before flipping a spec's status, grep for
+  `candidate` and `ratified` across `*.md` and read every hit that carries a count, a ranking or an
+  owner — `ROADMAP.md`'s status line, `docs/reference/promotability.md`, `specs/README.md` § *The
+  ratification gate*, and `scenarios/README.md` are the dense ones. And when a change is meant to
+  move no clause, **prove it**: slice the old and new file on section headers
+  (`git show HEAD:specs/<x>.md`) and compare, rather than eyeballing `git diff --stat`.
 - The other two machine-readable surfaces have guards of their own, and both are things a
   downstream repo vendors by drift-gated copy: `node scripts/check-schemas.mjs` checks every
   `schemas/*.schema.json` for the draft-2020-12 dialect, keywords that are actually keywords
