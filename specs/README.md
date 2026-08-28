@@ -12,7 +12,7 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 | Spec | Protocol | Plane | Version · status |
 |---|---|---|---|
 | [`identity.md`](identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.4.0 · 🟡 candidate |
-| [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.5.2 · 🚧 candidate |
+| [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.5.2 · ✅ ratified |
 | [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.5 · 🚧 candidate |
 | [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.5.0 · 🚧 candidate |
 | [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data that drives **N real** participants over their actual MCP/A2A connections, asserting cross-plane properties, each cited to the clause it checks | 0.3.0 · 🚧 candidate |
@@ -166,7 +166,9 @@ content-addressed run record that koine has verified **exists and covers all nin
 
 So the **artefact gate is met for four of the six specs**, and for those four what a promotion
 waits on is no longer this rule. It is each spec's own outstanding pass — an unfolded delta set, an
-un-re-run scenario, a missing downstream fixture. **Two are still blocked by this rule**, both since
+un-re-run scenario, a missing downstream fixture. For **KGP** that outstanding pass was the whole of
+what remained, and it closed on 2026-08-28: the §4.1 round-trip fixture landed downstream, was read
+and perturbed at a named sha, and KGP 0.5.2 is now `ratified` — this rule's first promotion. **Two are still blocked by this rule**, both since
 2026-08-26 and both narrowly: KFT, whose 0.6.0 fold is gated by
 [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), and KCB on **two**
 counts — §4.2, gated by [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md),
@@ -174,8 +176,13 @@ and §4.3, gated by [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb
 each is a scenario written **after** the nine encodings were built, none has an encoding, and no
 encoding is owned (findings **DR-11**, **DR-12** and **DR-13**). Adding a document to
 [`../scenarios/`](../scenarios/) incurs this gate, and no koine guard notices — the red light is
-downstream. **Six of six specs remain `candidate` and zero are promotable today**, but otherwise for
-spec-specific reasons that this section no longer supplies. One line per
+downstream. **One of the six is now `ratified`** — KGP 0.5.2, promoted 2026-08-28 once the last thing between
+it and the status, the §4.1 round-trip fixture, was delivered downstream and **read at a named sha**
+rather than taken from a tasklist's `passes` flags
+([`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md)).
+It is the first promotion under this rule, and the first with a runnable artefact behind it. **The
+other five remain `candidate` and none is promotable today**, for spec-specific reasons that this
+section no longer supplies. One line per
 spec naming that reason — and ranking the six by what a promotion actually costs from here — is
 [`../docs/reference/promotability.md`](../docs/reference/promotability.md); the *program* view, with
 tasklists and phases, stays in [`../ROADMAP.md`](../ROADMAP.md) *Phase 1*, which covers four of the
@@ -253,8 +260,10 @@ that no SPDX release has ever defined — which no amount of careful reading wou
 - **Status is a lifecycle:** `draft → candidate → ratified`, and the two promotions are gated
   differently — the second is **conformance-gated** ([The ratification gate](#the-ratification-gate)
   above). A spec is also demoted back to **candidate** when a later change touches its model shape.
-  Four sit there now — KGP 0.5.2, KMI 0.3.5, KCB 0.5.0, KFT 0.7.0 — each for its own reason; which
-  re-validation is outstanding for which spec is tracked in [`../ROADMAP.md`](../ROADMAP.md).
+  Four sit there now — KINP 0.4.0, KMI 0.3.5, KCB 0.5.0, KFT 0.7.0 — each for its own reason (KCS
+  0.3.0 likewise); which re-validation is outstanding for which spec is tracked in
+  [`../ROADMAP.md`](../ROADMAP.md). **KGP 0.5.2 is `ratified`** as of 2026-08-28, the first
+  promotion under the conformance gate.
 - **Clauses are §-numbered and normative.** MUST / SHOULD / MAY carry RFC-2119 weight; other specs
   and the schemas cite these section numbers (e.g. "KGP §7.2", "KINP §4.3"), so the numbering is a
   stable reference surface.

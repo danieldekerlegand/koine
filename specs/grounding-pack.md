@@ -1,8 +1,8 @@
 # Koine Grounding-Pack Protocol (KGP)
 
 **Spec version:** 0.5.2
-**Status:** Candidate
-**Last updated:** 2026-08-26
+**Status:** ratified
+**Last updated:** 2026-08-28
 **Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
 and control-plane hosts that broker packs on behalf of agents.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
@@ -368,43 +368,51 @@ terms, so two conformant producers could emit structurally identical, mutually u
 projections — is closed by the annotation vocabulary above, which names a term for every
 annotation this section carries.
 
-With both closed, the one gate remaining before KGP 0.5.x returns to **ratified** is a
-**machine-checked round-trip fixture** for this projection: a fixture that takes a canonical pack,
-emits the RDF-star / PROV / JSON-LD projection, reads it back, and shows the recovered canonical
-re-derives the same `claim` ids (rule 2). The round-trip is desk-verified in prose in that scenario
-and made a standing obligation by ADR-0006, but the fixture itself is a **downstream validator**
-artifact per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) — conformance fixtures and
-validators live with the implementing runtime, not in koine.
+With both closed, the last gate before KGP 0.5.x returned to **ratified** was a **machine-checked
+round-trip fixture** for this projection: a fixture that takes a canonical pack, emits the RDF-star /
+PROV / JSON-LD projection, reads it back, and shows the recovered canonical re-derives the same
+`claim` ids (rule 2). The round-trip is desk-verified in prose in that scenario and made a standing
+obligation by ADR-0006, but the fixture itself is a **downstream validator** artifact per
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) — conformance fixtures and validators
+live with the implementing runtime, not in koine.
 
-**Gate status (verified 2026-08-26): the forward half has landed, the gate has not.** The downstream
-work merged, and reading what it delivered against the sentence above is recorded in
+**Gate status (verified 2026-08-28): the fixture has landed and this gate is CLOSED.** The artifact
+is `agora` at `af5b7dd3a1201eff70067f45e7824614a81769ac`; reading it against the sentence above,
+obligation by obligation and by running and perturbing it rather than by trusting a tasklist's
+`passes` flags, is recorded in
 [`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md).
-The emitter exists and uses the terms this section names; **no reader does**. Nothing downstream
-converts an RDF-star / PROV / JSON-LD projection back to a canonical pack, so rule 2 — re-derive the
-`claim` id from the recovered canonical and reject on disagreement — is untested and, without a
-reader, untestable. A `claim` id carried as an annotation and never parsed back proves nothing about
-losslessness. §3.3 convergence and the §7 filters are likewise unexercised across the projection,
-and no mutation test shows the check would bite.
+All four things this section required are met:
 
-So what remains is **narrower than it was and still open**, and it is these four things:
+1. a **reader** — `readProjection()` inverts the emitter for each of the three encodings;
+2. **rule 2** enforced on the result — every recovered claim's id is re-derived per §3 from the
+   **recovered graph**, under the registry's relation signature rather than from a carried hash
+   input, and a disagreement is **rejected**, not reported;
+3. a corpus wider than one binary claim — four packs × three encodings, twelve round trips, all
+   byte-identical, with §3.3's two-producer convergence (two producers, one id, both `prov` records
+   retained) and §7's confidence, license and `local-only` filters asserted **per encoding**;
+   `local-only` does not occur as a substring in any of the three;
+4. a **mutation** test per encoding — and the reading did not take that on the fixture's word.
+   Eight perturbations inside §3.1's hashed set (RDF-star ×6, PROV ×1, JSON-LD ×1) were made by
+   hand against the delivered code and **every one was refused**, with untouched controls reading
+   clean. A rule-2 checker that has only ever seen conformant input is an untripped wire, which is
+   why this obligation is stated separately from rule 2 itself.
 
-1. a **reader** — a §4.1 projection back to a canonical pack, for each of the three encodings;
-2. **rule 2** enforced on the result — every recovered claim's id re-derived per §3, and a
-   disagreement rejected rather than reported;
-3. a corpus wider than one binary claim — §3.3's two-producer convergence and §7's confidence,
-   license and `local-only` filters asserted **per encoding**, since a `local-only` claim that
-   round-trips into a shareable one is a containment breach;
-4. a **mutation** test per encoding, so a clean result is evidence rather than an untripped wire.
+The check is reproducible from §5 of that record: `make check-knowledge` downstream (152 assertions,
+0 failures) and `node knowledge/src/evidence.ts --check` (exit 0, artifact current at
+`sha256-27fd7839…b4edb`). Two limits on what the close licenses. It closes **this** gate and nothing
+else; and a `ratified` status does not freeze the evidence behind it — the artifact is current only
+while that check stays green downstream, and a failure there is a finding against this section,
+re-opening it the ordinary way.
 
 The tracking marker `64-kgp-projection-roundtrip-fixture` was retired on 2026-08-22 on the
-understanding that the gate had closed; that retirement was premature and this section no longer
-points at it. The open remainder is owned by `87-kgp-projection-reader-and-roundtrip` (see
-`../tasks/chief/`), a cross-repo marker on the same ADR-0001 terms. Until it lands, this spec stays
-**candidate**.
+understanding that the gate had closed, and that retirement was **premature**: the work it rested on
+delivered the emitter only. The remainder was taken by `87-kgp-projection-reader-and-roundtrip`,
+which closed it by reading the artifact rather than the flag. **This section now owns no open
+remainder and names no owner for one.**
 
-**And it is now the only thing between this spec and `ratified`.** KGP's promotion answers to a
-second gate as well — [`README.md`](README.md#the-ratification-gate) requires a machine-replayable
-KCS encoding of the scenario that gates the spec — and that one has been **met** since 2026-08-19:
+**And it was not the only count.** KGP's promotion answers to a second gate as well —
+[`README.md`](README.md#the-ratification-gate) requires a machine-replayable KCS encoding of the
+scenario that gates the spec — and that one has been **met** since 2026-08-19:
 `kcs:worlds-to-fabric`, the encoding of
 [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) whose *Re-validation*
 section carries KGP's pass, exists downstream and returned `live-pass` on a fully live three-role
@@ -422,15 +430,13 @@ and it is positive evidence for two things this spec asserts:
   record rejected per record with a report. A filter that has never refused anything is a field in
   a schema.
 
-**And two riders, neither of which promotes anything.** First, a `green` run is *the encoded
-assertions held*, not a verdict on this spec. Second and specific to KGP: the encoding covers R1
-and R2 of that pass but **not R3**, the §4.1 projection round-trip, because KCS §5 has no
-round-trip predicate and the encoding mints no extension for one (**DR-3**). So the fully-live pass
-above leaves the fixture gate of this section **exactly where it was** — an owner citing
-`live-pass` as evidence that the projection round-trips has cited a run that never attempted it.
-Promotion of this spec is not this section's to make and is owned by
-`87-kgp-projection-reader-and-roundtrip`; the audit that established the gate is still open is
-[`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md).
+**And two riders, neither of which is what promoted this spec.** First, a `green` run is *the
+encoded assertions held*, not a verdict on this spec. Second and specific to KGP: the encoding
+covers R1 and R2 of that pass but **not R3**, the §4.1 projection round-trip, because KCS §5 has no
+round-trip predicate and the encoding mints no extension for one (**DR-3**). The two counts are
+separate evidence for separate things, and they stay separate now that both are met — an owner
+citing `live-pass` as evidence that the projection round-trips would still be citing a run that
+never attempted it. What discharged the round-trip is the fixture above, read at a named sha.
 
 ---
 
@@ -592,6 +598,38 @@ Ratified 2026-07-17.
    attributable. Token issuance/rotation lives in the control-plane host's infra, not here.
 
 ## Changelog
+
+- **Status: Candidate → ratified** (2026-08-28) — **the §4.1 round-trip gate is closed and both
+  ratification counts are discharged.** No clause moves: this entry records a **status change**, not
+  a fold. The gate — a machine-checked fixture that emits the RDF-star / PROV / JSON-LD projection,
+  **reads it back**, and shows the recovered canonical re-derives the same `claim` ids (rule 2) —
+  is met by the downstream artifact at `agora`
+  **`af5b7dd3a1201eff70067f45e7824614a81769ac`** (a validator, downstream per
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md)), and the promotion rests on that sha.
+  All four obligations §4.1 stated on 2026-08-26 are met — a **reader** for each encoding; **rule 2**
+  re-derived from the recovered graph under the registry signature and **rejected** on disagreement;
+  a corpus of four packs × three encodings, twelve byte-identical round trips carrying §3.3's
+  two-producer convergence and §7's confidence / license / `local-only` filters per encoding; and a
+  **mutation** test per encoding, checked by perturbing eight projections inside §3.1's hashed set by
+  hand and observing every one refused. The verdict was derived by **running and perturbing** the
+  artifact, never from the downstream tasklist's `passes` flags — which is the whole point, because
+  the 2026-08-22 retirement of `64-kgp-projection-roundtrip-fixture` was exactly that error and the
+  work it rested on had delivered the emitter only. The obligation-by-obligation record is
+  [`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md)
+  (§6 keeps the superseded 2026-08-26 reading, because a verdict is worth what its method is).
+  KGP's **other** count — [`README.md`](README.md#the-ratification-gate)'s KCS-encoding requirement —
+  has been met since 2026-08-19 (`kcs:worlds-to-fabric`, `live-pass`); the two remain **separate
+  evidence for separate things**, since **DR-3** records that the encoding never attempts the
+  round-trip. §4.1's gate paragraph is rewritten to record the close and **names no owner for an
+  open remainder**, because there is none; `87-kgp-projection-reader-and-roundtrip` closed it.
+  **Everything else is byte-unchanged** — §2, §3 and its canonical, §3.1's hashed set, §3.2, §3.3's
+  convergence, §3.4, §4 and §4.1's mapping and annotation-vocabulary tables, §5, §6, §7.1's six
+  classes, §7.2, §8 and §9 — so **no claim id moves** and no implementation changes. Two limits on
+  what this licenses: ratification does not freeze the evidence (the artifact is current only while
+  `check-kgp-roundtrip-evidence` stays green downstream, and a failure there is a finding that
+  re-opens §4.1's gate the ordinary way), and per [`README.md`](README.md#the-ratification-gate) a
+  later change to KGP's **model shape** returns it to `candidate`, where the re-ratification is a
+  replay of `kcs:worlds-to-fabric` and of this fixture rather than a fresh hand-walk.
 
 - **Editorial** (2026-08-26) — **KGP's reading under federation, stated at no version cost.**
   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) names KGP a

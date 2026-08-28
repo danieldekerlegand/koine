@@ -1,258 +1,90 @@
-# Chief Progress — 88-generative-audio-modalities
-Started: Wed Aug 26 23:51:15 CDT 2026
+# Chief Progress — 87-kgp-projection-reader-and-roundtrip
+Started: Fri Aug 28 03:01:07 CDT 2026
 ---
 
-## Codebase Patterns
+## US-1 — The verdict is re-taken against the delivered artifact (2026-08-28)
 
-- **`docs/README.md` is a hard index.** It states "a document not linked here does not exist" —
-  every new `docs/reference/*.md` MUST get a bullet there, with a dash-clause saying what it holds.
-- **Retiring a tasklist breaks every doc that links it.** `tasks/chief/<n>.json` moves to
-  `tasks/chief/completed/<n>.json` on retire, and nothing repoints the prose. `guard-doc-integrity`
-  is a **wall** (not a ratchet), so the rot blocks the NEXT branch to touch docs, not the one that
-  caused it. Link a tasklist as `../../tasks/chief/completed/<n>.json` from the start, or don't link
-  it. Ran into this from `c6cae87` (86's retire) — 7 dead links, fixed here.
-- **Run the guards directly, not through `.chief/verify.sh --plan`** — a bare `--plan` under an
-  agent shell reads a tty-less stdin and reports nothing. Also `git diff --name-only HEAD` omits
-  untracked files, so the plan under-selects gates for a new file. Just run all five scripts plus
-  `bash .chief/verify-test.sh`; they take seconds.
-- **The KFT modality vocabulary is stated in FOUR places, and only three are guarded**:
-  `registry/enums/modality.tsv` (guarded), `specs/fine-tuning.md` §3.1 table, `schemas/finetune-job.schema.json`
-  `properties.modality.enum`, and — unguarded — `registry/README.md`'s prose bullet, which
-  enumerates the tokens inline. Same silent-staleness hazard `CLAUDE.md` records for *Current state*.
+**Outcome: the gate is MET.** G1, G2, G3, G4 all satisfied at agora
+`af5b7dd3a1201eff70067f45e7824614a81769ac`. This is the opposite of the 2026-08-26 reading,
+and it is the opposite because the artifact changed, not because the bar did.
 
----
+Files changed (koine): `docs/reference/kgp-projection-gate-verification.md` — rewritten. §2 and §3
+re-taken at the named sha; §4 states what it means for the spec; §5 is the re-run recipe, now
+including a hand-mutation snippet because a green suite over conformant input does not pass G3;
+**§6 keeps the superseded 2026-08-26 reading** (the verdict is only worth what the method is).
+Banner + binds-no-clause disclaimer retained. Commit `a11afec`.
 
-## US-1 — Decide which audio modalities the contract carries (DONE)
+Evidence, all first-hand:
+- `make check-knowledge` in agora → green, 152 passed / 0 failed across 8 files.
+- `node knowledge/src/evidence.ts --check` → exit 0, artifact current at `sha256-27fd7839…b4edb`.
+- **8 mutations of my own** inside §3.1's hashed set (RDF-star ×6, PROV ×1, JSON-LD ×1) → all
+  `ProjectionError` / `claim-id-mismatch`; untouched controls read clean.
+- OWL-Time counted off the emitted graph; `local-only` absent as a substring from all three
+  encodings; arity-3 omitted with a report and 1 of 2 claims recovered.
 
-**Verdict: both `text-to-audio` and `audio-to-audio` land.** No spec, registry, or schema file was
-touched — US-1 is the decision, US-2 lands the rows (the same split `85` used: dispositions page
-first, edits second).
-
-Files changed:
-- `docs/reference/generative-audio-modalities.md` (new) — the decision record.
-- `docs/README.md` — index bullet for it.
-- 5 docs repointed at `tasks/chief/completed/86-…json` (pre-existing breakage, see below).
-
-What was decided, and on what evidence:
-- **The plane was verified, not asserted** (the criterion asked for this explicitly). `media(audio)`
-  exists in four independent places in KMI: §2's `media_type` is an ordinary IANA type; §2's `probe`
-  example carries `{"kind":"audio","codec":"aac",…}`; **§6's own worked media-port example is
-  `"media_types": ["audio/wav"]`** and it names `mood(knowledge) → score(audio)`; §8's role map lists
-  an **Audio producer** emitting `audio/*`.
-- **The commissioning tasklist's framing was loose and is corrected on the record.** It says "KMI
-  already lists `audio/*` in its media types". `registry/media-types.tsv` does **not** — it registers
-  only the types koine *mints* (`+safetensors`, `+gguf`/`+onnx`/`+coreml`/`+tflite`, `+jsonl`).
-  `audio/wav` is IANA's and needs no koine row, exactly as `video/mp4` has none. **So no
-  `media-types.tsv` row for these modalities** — a later reader who looks there has not found a gap.
-- **`audio-to-audio` got a real adjudication, not symmetry.** The case *against* is stated at full
-  strength (it is a filter, and KMI §6 can already type `audio/wav → audio/wav` as a transform) and
-  answered three ways: (1) the enum is not generation-only — 3 of its 5 rows are understanding
-  modalities, so "it's a transform" excludes nothing; (2) KMI §6 types an **invocation**, KFT §3.1
-  types a **training target** — a model that performs a transform is still a model that gets trained;
-  (3) with no token a provider must abuse `text-to-audio`, which makes **FT-F's mandatory
-  `modality × method` admission check validate a false declaration** — the one thing a closed
-  vocabulary exists to prevent.
-- **It lands on its own axes.** Two columns differ from the diffusion rows: `typical_base` is small
-  task-specific architectures (RVC, so-vits-svc, Demucs), *not* foundation models, and that is why
-  `typical_method` is `full|lora` with **`full` leading** where `text-to-image`/`text-to-audio` lead
-  with `lora`. Its corpus is paired asset↔asset with **no caption side** — carried in `description`,
-  not by inventing a plane notation the other four rows don't use.
-- **Checked §4.2 rather than assuming additivity.** Both sides of an audio pair are `dataset.media[]`
-  entries, and §4.2's effective-egress union is over "every media asset", so the most-restrictive
-  rule already covers a `local-only` target stem. **No §4 clause moves.**
-- **Forward declaration is on the record with named providers** (read from `ECOSYSTEM.md` §2, not
-  invented): **formant** (audio-plugin/instrument IDE — both rows; its `KftModality` must be a
-  verbatim mirror, so it is blocked on their existence), **lugh** (`audio-to-audio` especially — a
-  user's own recordings classify `personal`/`local-only`, and §4.2's placement rule then routes the
-  run to local/in-tier compute, i.e. to lugh and not the general trainer), **agora** (both, as the
-  all-`exportable` case; FT-F's admission check is its).
-- **Deliberate non-mints, each with a re-open trigger**: no `text-to-speech` split (TTS rides
-  `text-to-audio`; §3.1 tokens are immutable once published, so splitting later is cheap and
-  unsplitting is impossible), no `audio-text-to-text` (a genuine gap, but no participant is waiting),
-  no `audio` plane, no `media-types.tsv` row.
-
-**Pre-existing merge blocker found and fixed.** `c6cae87` retired tasklist 86 into
-`tasks/chief/completed/` and left **7 dead links** across `decisions/ADR-0014…`,
-`docs/reference/{capability-versioning-fold-dispositions,federation-fold-dispositions,
-fold-coordination-federation-versioning,promotability}.md`. `guard-doc-integrity` is a wall, so this
-branch could not have merged. Repointed all 5 files.
-
-**Verification (all six gates, green):**
-- `check-doc-integrity.mjs` — OK, 55 markdown files / **1308** relative links, all 3 status tables
-  match their headers (was **7 errors**, now **0**)
-- `check-doc-links.mjs --ratchet --base main` — **0 dead vs 2 on main**, retired 2
-- `check-registry.mjs` — OK, 29 relation names, `modality.tsv` still 5 rows (untouched by design)
-- `check-schemas.mjs` — OK, 9 schemas / 278 positions / 80 `$ref`s / 3 fixtures
-- `check-tasklist-categories.mjs` — OK, 2 tasklists categorized
-- `.chief/verify-test.sh` — **30 passed, 0 failed**
+Gates: `.chief/verify.sh --run docs/reference/kgp-projection-gate-verification.md` → green
+(guard-doc-integrity 1333 links + 3 status tables; guard-doc-links 0 dead vs 0 on main).
 
 ### Learnings for future iterations
 
-- **US-2's landing list is already written**, in the new doc's §6: `registry/enums/modality.tsv`
-  (append 2 rows, 5-column shape), `registry/README.md` (the **unguarded** prose bullet — easy to
-  miss), `specs/fine-tuning.md` §3.1 table + changelog, `schemas/finetune-job.schema.json`
-  `properties.modality.enum`. Verify all four; do not assume the schema follows the TSV.
-- **Exact row text to land** (tab-separated, matching the existing five):
-  - `text-to-audio` · `media(audio)` · `Stable Audio Open, MusicGen, AudioLDM 2` · `lora|full` ·
-    `Diffusion/autoregressive audio generation — music, SFX, and speech (TTS); caption→audio (KMI audio) training data`
-  - `audio-to-audio` · `media(audio)` · `RVC, so-vits-svc, Demucs` · `full|lora` ·
-    `Audio transformation — voice conversion, source separation, enhancement; paired audio→audio (KMI audio) training data, no caption side`
-- **US-2's version question.** KFT is `0.6.0` Candidate. A new modality token is **additive normative
-  surface** (a reader implements against §3.1's table and FT-F validates from it) → **minor, 0.7.0**,
-  status **stays Candidate**. Note `specs/fine-tuning.md` has *two* live gates already (the
-  `e2e-producer-exhaust-finetune.md` re-run and the `kft-resume-checkpoint.md` re-run) — restate both,
-  move neither, and consider whether the audio rows add a third or ride the existing pass.
-- **Bumping KFT's version touches four mirrors**, three of them guarded: `README.md`,
-  `specs/README.md`, `ECOSYSTEM.md` §2 (all three diffed by `check-doc-integrity.mjs`) and
-  **`CLAUDE.md`'s *Current state* prose, which no guard checks** — update it by hand and read it back.
-- **US-3 is report-only** — formant / lugh / agora live in other repos, koine specifies rather than
-  implements. Deliverable is a statement each repo's tasklist can act on, plus the flagged drift:
-  formant's `KFT_VERSION` reads `0.3.0` against this spec's (soon) 0.7.0. **Do not reach outside the
-  worktree** to verify that — report it as the tasklist states it, attributed.
+- **`--check` is the safe half of a regenerate command.** agora's evidence artifact regenerates with
+  `node knowledge/src/evidence.ts` (writes) and verifies with the same command `--check` (re-runs the
+  whole corpus, compares the content address, writes nothing). US-2's "no agora file is edited"
+  constraint and US-1's "run the regenerate command" criterion are both satisfiable at once because
+  of that seam. Reach for `--check` first in any cross-repo read.
+- **agora TS modules run directly under node 22 with no build step.** `cd ~/Development/agora && node
+  --input-type=module -e "import {...} from './knowledge/src/roundtrip.ts'"` works. That is what made
+  the independent mutation probe cheap — do this rather than trusting an implementer's test names.
+- **Perturb inside §3.1's hashed set, not outside it.** My first probe perturbed `confidence`, which
+  is deliberately NOT in the hashed set, so a clean read would have been correct behaviour and the
+  probe would have proved nothing. World / relation / argument / literal datatype are the fields that
+  make rule 2 fire.
+- **Read the merge stat before believing it.** agora `af5b7dd` touches 26 files, but 15 are an
+  unrelated KFT 0.7.0 adoption carried on the same branch. Say which files are the gate.
+- The research map in the tasklist description was accurate; nothing in it needed correcting.
 
----
 
-## US-2 — The rows land in every place the enum is stated (DONE)
+## US-2 — The status moves only if the gate is met (2026-08-28)
 
-**`text-to-audio` and `audio-to-audio` landed at KFT 0.7.0**, in **four** surfaces (US-1's §6 list
-was right that there are four, and that only three are guarded).
+**KGP 0.5.2 is `ratified`.** The IF-AND-ONLY-IF branch fired: US-1's verdict was gate MET on all
+four obligations, taken by running and perturbing agora `af5b7dd`, so the promotion is the story's
+first branch and not its second. Commit `5055f0f`.
 
-Files changed:
-- `registry/enums/modality.tsv` — +2 rows, 5-column shape held (`awk -F'\t' NF` = 5 on all 8 lines)
-- `specs/fine-tuning.md` — header `0.6.0 → 0.7.0`; §3.1 table +2 rows + a prose paragraph carrying
-  `audio-to-audio`'s differing axes; a 0.7.0 changelog entry; a *Pressure test* paragraph
-- `schemas/finetune-job.schema.json` — `properties.modality.enum`
-- `registry/README.md` — the prose bullet (now says in its own text that no guard checks it)
-- mirrors: `README.md`, `specs/README.md` (status table **and** the unguarded "Four sit there now"
-  prose list at ~L256), `ECOSYSTEM.md` §2, `CLAUDE.md` *Current state*, `ROADMAP.md` L153
-- `schemas/fixtures/finetune-job.json` — `kft_version` 0.6.0 → 0.7.0
-- `docs/reference/generative-audio-modalities.md` — §6 closing note now records the landing
+Files changed (10, all koine, none in agora):
+- `specs/grounding-pack.md` — header `Candidate → ratified` + date; §4.1's gate paragraph rewritten
+  to record the close, list the four obligations as met, name the sha and the re-run recipe, and
+  state that **it owns no open remainder and names no owner for one**; one dated changelog entry.
+- The three guard-checked mirrors: `README.md`, `specs/README.md`, `ECOSYSTEM.md` → `0.5.2 · ✅ ratified`.
+- The fourth, unchecked mirror: `CLAUDE.md` *Current state*, by hand.
+- Prose that would otherwise have flatly contradicted the header: `specs/README.md` (*six of six
+  remain candidate*, *four sit there now*), `ROADMAP.md` (status line 0-of-6 → 1-of-6, Phase 1 KGP
+  row, Phase F5 fixture row, two stale drift notes), `docs/reference/promotability.md` (banner,
+  intro, KGP row, Cheapest-first #1), `scenarios/README.md`, `federation-fold-dispositions.md`,
+  and a done-marker in `docs/reference/kgp-projection-gate-verification.md` §4.
 
-**The four-way agreement was verified mechanically, not by eye.** A throwaway python script parsed
-the TSV, the schema enum, the §3.1 table (`^\| \`token\` \|`, dropping the header cell) and the
-README bullet, and asserted **list equality including order** → `7 tokens each, ALL FOUR IDENTICAL
-AND IN ORDER: True`. The criterion says "do not assume the schema follows the TSV" — it didn't, and
-this is how that was discharged rather than claimed.
+Byte-stability **checked, not asserted**: `git show HEAD:specs/grounding-pack.md` vs the working
+copy, section by section — §3 block 9394 bytes identical, §4/§4.1 up to the gate paragraph 12003
+identical, §5–§9 10093 identical, changelog tail identical. `git diff -U0` = three hunks (line 4,
+371–433, 602+). No claim id moves.
 
-**Version decision: minor, status stays Candidate.** §3.1's table is normative surface a reader
-implements against and **FT-F validates from**, so two new admissible tokens widen what a conformant
-provider must recognise (a token it does not know is a refusal) → **minor**, not patch. Status stays
-**Candidate** because a normative vocabulary change re-enters validation.
-
-**Gate decision: no third gate — the rows are recorded as *unexercised vocabulary* instead.** Both
-standing gates (`e2e-producer-exhaust-finetune.md` *Re-validation — KFT 0.4.0*, and
-`kft-resume-checkpoint.md`) are **restated and neither moves**. A new token cannot break a manifest
-that does not name it and FT-F's mechanism is byte-unchanged, so a scenario gate would be theatre.
-But no pass or leg walks an audio job, so the two tokens are recorded in *Pressure test* the way
-§3.3/§8.1 already are — **new normative surface no scenario has walked, uncitable in a
-re-ratification**. Worth noting in the same paragraph: the multimodal pass's stressor list says
-*"a media producer's audio LoRA (`text-to-image`-style…)"* — that parenthetical **is the coinage
-these rows exist to make unnecessary**, so it is not evidence for them.
+Gates: `check-doc-integrity` (56 files, 1339 links, all 3 tables match headers, grounding-pack 0.5.2
+ratified) · `check-schemas` OK · `check-registry` OK · `check-tasklist-categories` OK ·
+`.chief/verify.sh --run` green (guard-doc-links 0 dead vs 0 on main; verify-selftest 30/0).
 
 ### Learnings for future iterations
 
-- **US-1's §6 landing list was accurate and saved real time.** The pattern (decision page names its
-  own landing zone; the next story executes it) is worth repeating.
-- **The §3.1 table has no `description` column** where the TSV does. The audio distinction that the
-  TSV carries in `description` (paired asset↔asset, **no caption side**; small task-specific bases)
-  had to go in **prose under the table**, not in a sixth column — adding a column would restate four
-  existing rows and is not what "matching the existing shape" means.
-- **A regex over the spec table picks up the header cell** (`| \`modality\` |`) — filter it, or the
-  four-way equality check fails on a false positive.
-- **`schemas/fixtures/finetune-job.json`'s `kft_version` tracks the spec version on every fold** —
-  `git log -p --follow` shows 0.3.0 → 0.4.0 → 0.6.0. It is not modelled by any guard
-  (`check-schemas.mjs` explicitly does **not** validate fixtures against schemas — that is
-  downstream per ADR-0001), so it is a fifth silent mirror. Bump it.
-- **`ROADMAP.md` L153 is a *live* KFT version mirror** ("Re-ratify KFT 0.6.0") that the CLAUDE.md
-  four-mirror rule does not mention and no guard checks. Add it to the mental list: README,
-  specs/README (×2 — table + prose), ECOSYSTEM, CLAUDE.md *Current state*, ROADMAP, fixture.
-- **Historical references to a version are not mirrors.** `docs/reference/promotability.md`,
-  `kcs-encoding-gate-verification.md`, `federation-fold-dispositions.md` and
-  `scenarios/kft-resume-checkpoint.md` all say "KFT 0.6.0" meaning *the 0.6.0 fold* — correct as
-  written, deliberately left alone. Only update a reference that names the **current** version.
-- **US-3 is report-only and is the last story.** Deliverable: a statement each of formant / lugh /
-  agora can act on (what to mirror, from which file, at which version), plus the flagged drift —
-  formant's `KFT_VERSION` reads `0.3.0` against this spec's **now-0.7.0**. **Do not reach outside the
-  worktree** to verify that; report it attributed to the tasklist.
-
-**Verification (all six gates, green):**
-- `check-doc-integrity.mjs` — OK, 55 files / **1316** links, all 3 status tables match their headers
-  (`fine-tuning  0.7.0  candidate`)
-- `check-doc-links.mjs --ratchet --base main` — **0 dead vs 2 on main**
-- `check-registry.mjs` — OK, `modality.tsv` **7 rows**, 29 relation names
-- `check-schemas.mjs` — OK, 9 schemas / 278 positions / 80 `$ref`s / 3 fixtures
-- `check-tasklist-categories.mjs` — OK, 2 tasklists categorized
-- `.chief/verify-test.sh` — **30 passed, 0 failed**
-
----
-
-## US-3 — The downstream mirrors are told, not left to discover it (DONE)
-
-**Report, not an edit.** No file outside this worktree was written *or read* — the deliverable is a
-statement each sibling repo's own tasklist can lift.
-
-Files changed:
-- `docs/reference/generative-audio-modalities-downstream.md` (new) — the notice, carrying findings
-  **AUD-1…AUD-6**
-- `docs/README.md` — index bullet (the hard index: "a document not linked here does not exist")
-- `docs/reference/generative-audio-modalities.md` §5 — its forward reference to "the separate
-  downstream report" now links the page US-1 anticipated
-- `ROADMAP.md` Phase F3 — a cross-repo obligation row, per the CLAUDE.md convention that a
-  cross-repo obligation with no local red light gets *said* in ROADMAP
-
-**The findings, numbered so a downstream tasklist cites a row rather than paraphrasing prose:**
-- **AUD-1** formant — `KftModality` re-vendors from `registry/enums/modality.tsv` at **KFT 0.7.0**,
-  all 7 tokens **in file order**. §1 says *which* of koine's four statements to mirror and why the
-  other three are wrong sources (the §3.1 table has no `description` column; `registry/README.md` is
-  unguarded prose; the schema is what a validator enforces, not the vocabulary's home).
-- **AUD-2** formant — *found while writing, not commissioned.* `38`'s criterion asks for a mirror of
-  the **ratified** enum; KFT is **0.7.0 candidate** on two unmoved gates, so read literally `38` is
-  still blocked. Resolution is formant's (restate as *published at 0.7.0*, or accept a candidate
-  deliberately). koine does not promote a spec to unblock a mirror — worth stating in the record.
-- **AUD-3** formant — the flagged drift: `KFT_VERSION` `0.3.0` (reported) vs 0.7.0, **four minors**
-  behind. The criterion asked to make it visible *before* the rows land; the page says concretely why
-  a vocabulary change makes it worse rather than merely untidy — after AUD-1 the mirror carries
-  tokens that exist **only** at 0.7.0 while the pin claims 0.3.0, and `kft_version` travels on the wire.
-- **AUD-4** lugh — the koine-internal chain verified link by link (`personal` recordings → KGP
-  §7.1/§7.2 `local-only` → KFT §4.2 most-restrictive union → §4.2 placement → in-tier compute), so a
-  token lugh does not know collapses `out-of-envelope` (re-routable) into `invalid` (terminal), and
-  §8.1's no-breach rule then makes an **empty** `route_to[]` the correct answer. Manifest cost:
-  KFT §2's own worked manifest already lists `audio/*`, so no new field/port/plane — but widening a
-  *narrower* published port moves its `schema_id`, and KCB §7.2 rules that a **minor bump** (its own
-  table rules a widened input port minor and non-breaking).
-- **AUD-5** agora — re-vendor `finetune-job.schema.json`; a validator still on the 0.6.0 enum rejects
-  a **conformant** 0.7.0 job as `invalid`. The one place a vocabulary lag yields a *wrong answer*
-  rather than a missing capability.
-- **AUD-6** any — no scenario walks an audio job, so no KCS encoding can assert one and neither row
-  is citable in a re-ratification. That scenario + its encoding are **unowned**, like DR-11…DR-13.
-
-**Provenance kept in two classes throughout**, which is the discipline this page needed most: koine
-claims are cited by file and section; every claim about formant / lugh / agora is marked
-**(reported)** and attributed to the commissioning tasklist. Reading a sibling repo to verify them
-would have violated "report, do not edit" *and* the stay-inside-your-worktree rule.
-
-### Learnings for future iterations
-
-- **`check-doc-integrity.mjs` checks heading anchors, and its slug drops the em dash.** `## 5. agora
-  — the general trainer, and the validator` → `#5-agora-the-general-trainer-and-the-validator`, i.e.
-  the `—` is stripped and the resulting double space collapses to **one** dash, not two. Writing
-  `--` (the natural guess) fails. Same guard also caught a wrong-depth relative path
-  (`../decisions/…` from `docs/reference/` needs `../../`). Both were caught before commit; run the
-  guard after writing any new doc, not after committing it.
-- **Directory links are legal** (`[`../../scenarios/`](../../scenarios/)`) — precedent in
-  `README.md`, `specs/README.md`, `ROADMAP.md`, `implementability-audit.md`.
-- **A finding-id namespace per fold is this repo's idiom** (MA-, V-, BP-, AP-, DR-, AG-, KGP-, FT-).
-  `AUD-` was minted here for the audio fold's downstream findings and does not collide.
-- **`tasks/chief/88-generative-audio-modalities.json` exists in this worktree**, so both it and
-  `.chief/state/prd.json` were flipped (a `repo:<submodule>` tasklist would have had only the latter).
-- **This tasklist is complete** — US-1/US-2/US-3 all `passes: true`, no
-  `⚠️ PRIOR VERIFICATION FAILED` block anywhere in this log.
-
-**Verification (all six gates, green):**
-- `check-doc-integrity.mjs` — OK, **56** files / **1332** links, all 3 status tables match their
-  headers (`fine-tuning  0.7.0  candidate`)
-- `check-doc-links.mjs --ratchet --base main` — **0 dead vs 2 on main**
-- `check-registry.mjs` — OK, `modality.tsv` 7 rows, 29 relation names
-- `check-schemas.mjs` — OK, 9 schemas / 278 positions / 80 `$ref`s / 3 fixtures
-- `check-tasklist-categories.mjs` — OK, 2 tasklists categorized
-- `.chief/verify-test.sh` — **30 passed, 0 failed**
+- **A status change has a blast radius the guard does not cover.** `check-doc-integrity.mjs` checks
+  three tables and passes on a row containing the version string and the status *word* — it says
+  nothing about the dozens of prose sentences that count candidates ("six of six remain candidate",
+  "0 of 6 specs ratified", "four sit there now"). Before flipping a status, run
+  `grep -rn 'candidate\|ratified' --include='*.md' .` and read the hits: the ones that carry a
+  **count** or a **ranking** are the ones that go false. `promotability.md` and `ROADMAP.md`'s status
+  line are the two densest.
+- **Splice long prose blocks with python, not `sed`.** These documents wrap at ~100 columns and a
+  replaced paragraph must re-wrap; assert on the boundary lines (`assert lines[370].startswith(...)`)
+  before writing, so a shifted line number fails loudly instead of corrupting a section.
+- **Prove "byte-unchanged" with `git show HEAD:<file>` + section slicing.** A criterion that says
+  *confirm it* wants an observation, and `git diff --stat` does not supply one. Slice both versions
+  on section headers and compare lengths and equality; it takes six lines and it is the only thing
+  that distinguishes a status edit from a silent clause edit.
+- The research map in the tasklist description was accurate; nothing needed correcting.

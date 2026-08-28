@@ -30,6 +30,15 @@ vocabulary.
   Both failures are otherwise silent. It checks **three of the four mirrors** — the *Current
   state* prose below is **not** checked, so a stale version there passes CI; update that line by
   hand and read it back. `node scripts/check-tasklist-categories.mjs` guards `tasks/chief/`.
+- **A status change reaches further than the four mirrors.** The guard passes on a table row that
+  merely contains the version and the status *word*; it says nothing about the prose all over the
+  repo that **counts** statuses ("six of six remain candidate", "0 of 6 specs ratified", "four sit
+  there now") or **ranks** what is closest to promotion. Before flipping a spec's status, grep for
+  `candidate` and `ratified` across `*.md` and read every hit that carries a count, a ranking or an
+  owner — `ROADMAP.md`'s status line, `docs/reference/promotability.md`, `specs/README.md` § *The
+  ratification gate*, and `scenarios/README.md` are the dense ones. And when a change is meant to
+  move no clause, **prove it**: slice the old and new file on section headers
+  (`git show HEAD:specs/<x>.md`) and compare, rather than eyeballing `git diff --stat`.
 - The other two machine-readable surfaces have guards of their own, and both are things a
   downstream repo vendors by drift-gated copy: `node scripts/check-schemas.mjs` checks every
   `schemas/*.schema.json` for the draft-2020-12 dialect, keywords that are actually keywords
@@ -88,7 +97,7 @@ vocabulary.
   Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
-- `specs/grounding-pack.md` — KGP 0.5.2, **candidate**. Knowledge data plane; normative §3
+- `specs/grounding-pack.md` — KGP 0.5.2, **ratified** (2026-08-28). Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
   **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
   the requirements RDF-star / PROV / JSON-LD do not meet natively plus the re-open test, and §4.1
@@ -105,9 +114,21 @@ vocabulary.
   a Trusty URI hashes all four graphs and so fingerprints a *publication event*, where §3 hashes
   the **claim alone** so producers converge; and **Frictionless / Data Package**, dismissed because
   it packages files and discharges no clause of §3/§3.3/§7) — with §3, §3.1 and §3.3
-  byte-unchanged, so no claim id moves. Stays candidate on the one
-  remaining gate: the **still-missing downstream round-trip fixture** (a validator artifact per
-  ADR-0001, tracked cross-repo). The federation fold (2026-08-26) touches KGP **not at all**: an
+  byte-unchanged, so no claim id moves. **Promoted 2026-08-28** on the last gate it had — the
+  downstream §4.1 **round-trip fixture** (a validator artifact per ADR-0001, cross-repo), verified
+  2026-08-26 as *not delivered* (emitter, no reader, so rule 2 had never run) and delivered since:
+  reader, rule 2 re-derived from the recovered graph and rejecting, four packs × three encodings and
+  a mutation test per encoding, read at `agora af5b7dd3a1201eff70067f45e7824614a81769ac` by
+  **running and perturbing** it (152/0 green; eight hand-made perturbations inside §3.1's hashed set,
+  all refused) — never from a `passes` flag, which is the 2026-08-22 error the record exists to not
+  repeat. Its other count, the KCS encoding, was met 2026-08-19 (`kcs:worlds-to-fabric`,
+  `live-pass`); the two stay **separate evidence for separate things** (**DR-3**: the encoding never
+  attempts the round-trip). Ratification does **not** freeze the evidence — the artifact is current
+  only while `check-kgp-roundtrip-evidence` is green downstream — and a model-shape change returns
+  KGP to candidate the ordinary way. Record:
+  `docs/reference/kgp-projection-gate-verification.md`; §4.1 now names **no owner for an open
+  remainder**, because it has none. The status change moved **no clause**: §2–§9 outside §4.1's gate
+  paragraph are byte-unchanged and no claim id moves. The federation fold (2026-08-26) touches KGP **not at all**: an
   **Editorial** entry records its reading of MA-3/MA-4/MA-5 — the scenario names KGP a *consequence
   surface, not a gated spec* — and all three are answered in KINP §6/§4.2/§5 and KMI §2 by the
   define-once rule. §3.3's convergence is correct and intact (Step 4 records byte-identical canonical

@@ -156,9 +156,9 @@ defined once in KINP and referenced, never redefined, by other specs*:
   envelope and cites KGP for their meaning. No KGP clause changes: egress stays enforced at pack
   construction for knowledge records, and KMI states separately where it is enforced for bytes.
 
-KGP is at `candidate` on **one** remaining item — a downstream round-trip fixture
-([`promotability.md`](promotability.md)) — and adding normative text here would add a **second**
-gate to the spec closest to promotion, to restate semantics another spec already owns. The
+KGP was at `candidate` on **one** remaining item — a downstream round-trip fixture, since delivered,
+read on 2026-08-28 and closed, so KGP 0.5.2 is now `ratified` ([`promotability.md`](promotability.md))
+— and adding normative text here would have added a **second** gate to the spec closest to promotion, to restate semantics another spec already owns. The
 appropriate record is a dated **Editorial** changelog entry citing this page and the three readings,
 which moves no version and adds no gate. US-2 writes it.
 
