@@ -1,60 +1,51 @@
 {
-  "name": null,
-  "project": "agora",
+  "project": "koine",
   "category": "unblock",
   "branchName": "chief/87-kgp-projection-reader-and-roundtrip",
-  "description": "CROSS-REPO — owned and built in AGORA, not koine (ADR-0001: conformance fixtures and validators live with the implementing runtime). This is the OPEN REMAINDER of KGP §4.1's round-trip gate, and it replaces the retired marker 64-kgp-projection-roundtrip-fixture.\n\nWHAT ALREADY LANDED. agora:77-kgp-projection-and-roundtrip-fixture merged at 85eb207 (2026-08-20) and delivered the EMITTER: knowledge/src/projection.ts, 223 lines, one mapping core with RDF-star / PROV / JSON-LD views, using §4.1's normative annotation terms. That half is done and is not re-litigated here.\n\nWHAT DID NOT. The branch carries two commits, both US-1. US-2 (round-trip) and US-3 (the evidence artifact) were flipped to passes:true with notes:null by the retire commit a73b967 — bookkeeping, not work. There is no reader for any of the three encodings anywhere in the repo, so §4.1 rule 2 — re-derive the claim id from the recovered canonical and reject on disagreement — has never run. Verified 2026-08-26 and recorded in koine docs/reference/kgp-projection-gate-verification.md.\n\nWHY IT MATTERS. This is the ONLY thing holding KGP 0.5.2 at Candidate. A claim id that is carried as an annotation and never parsed back proves nothing about losslessness, so the gate cannot be waived on the emitter alone.",
-  "parked": true,
-  "dependsOn": [],
+  "dependsOn": [
+    "agora:84-kgp-projection-reader-and-roundtrip"
+  ],
+  "crossRepo": [
+    "agora"
+  ],
   "touches": [
-    "agora:validators"
+    "specs/grounding-pack.md",
+    "docs"
   ],
-  "iters": 5,
+  "iters": 4,
   "warmup": [
-    "echo 'Cross-repo: implement in agora against koine specs/grounding-pack.md §4.1 rules 1-2 + ADR-0006'",
-    "echo 'Read koine docs/reference/kgp-projection-gate-verification.md §1 (G1-G4) and §3 first'"
+    "sed -n '/## 1. What the gate requires/,/## 4/p' docs/reference/kgp-projection-gate-verification.md",
+    "grep -n '87-kgp-projection-reader-and-roundtrip' specs/grounding-pack.md",
+    "ls ~/Development/agora/knowledge/src/ && grep -n 'export' ~/Development/agora/knowledge/src/index.ts | head -20",
+    "git -C ~/Development/agora log --oneline -8"
   ],
+  "description": "The koine HALF of KGP §4.1's round-trip gate: closing it by READING the downstream evidence, which is the step that was skipped last time.\n\nUNPARKED 2026-08-28 on its own stated condition — 'unpark only to author the agora-side tasklist from it'. That tasklist now exists as `agora:84-kgp-projection-reader-and-roundtrip`, authored from this record, and this one depends on it.\n\nWHAT CHANGED IN THIS RECORD. It was a cross-repo MARKER carrying agora's implementation stories while sitting in koine's tree with `project: agora`. chief resolves the repo from where it is invoked (`REPO=\"$CHIEF_PROJECT\"` in driver.sh) and NOT from the `project` field — `crossRepo` is a lint escape hatch for criteria, not a dispatch mechanism — so running it here would have put an agent in a koine worktree and asked it to write `knowledge/src/`, which lives in agora. Its own last criterion forbade exactly that. The implementation stories moved to `agora:84` verbatim in substance; what remains here is the work that is genuinely koine's.\n\nTHE NUMBER AND SLUG ARE LOAD-BEARING. `specs/grounding-pack.md` §4.1 names `87-kgp-projection-reader-and-roundtrip` as the owner of the open remainder in four places, and `83-promote-kgp` recorded that naming. Do not renumber.\n\nWHY THIS IS NOT A RUBBER STAMP. KGP 0.5.2 sits at Candidate on one gate. On 2026-08-22 koine retired its tracking marker on the strength of a downstream tasklist whose stories all read `passes: true`; `docs/reference/kgp-projection-gate-verification.md` is the record of checking that claim and finding G2, G3 and G4 unmet — the round trip had never been written. THIS TASKLIST MUST NOT REPEAT THAT. It closes the gate by reading the artifact and re-running the obligations against it, and it moves the status only if they are actually met.",
   "userStories": [
     {
       "id": "US-1",
-      "title": "A reader: a §4.1 projection back to a canonical pack",
-      "description": "In agora, the inverse of projectPack() for each of the three encodings. koine marker; work is downstream per ADR-0001.",
-      "acceptanceCriteria": [
-        "knowledge/src parses an RDF-star, a PROV and a JSON-LD projection back to a GroundingPack — 3 encodings, 3 readers or one reader over 3 inputs, exported alongside projectPack.",
-        "The recovered pack is compared to the original and the comparison is byte-identical, not equivalent-after-normalisation: a normalisation step is where losslessness quietly goes to die.",
-        "An annotation the reader does not recognise is carried through or reported, never silently dropped — §4.1's complete-or-reported obligation runs in BOTH directions.",
-        "GATES: agora's own checks are green."
-      ],
+      "title": "The verdict is re-taken against the delivered artifact, obligation by obligation",
       "passes": false,
-      "notes": null
+      "notes": null,
+      "acceptanceCriteria": [
+        "`docs/reference/kgp-projection-gate-verification.md` §2 and §3 are re-taken against agora's delivered artifact at a NAMED sha, the same way the 2026-08-26 reading was: files, line counts, what each obligation's evidence actually is.",
+        "Each of G1, G2, G3 and G4 gets a verdict derived from RUNNING or READING the artifact — not from `agora:84`'s `passes` flags. The `passes` flag is the thing this document exists to distrust; citing it as evidence would reproduce the 2026-08-22 retire exactly.",
+        "The mutation tests are the specific thing checked for G3: confirm a perturbed projection actually FAILS, because a rule-2 checker that has only seen conformant input proves nothing. If the artifact's regenerate command is one command, run it.",
+        "The document keeps its `Status · Updated · Owner` banner and its standing disclaimer that it binds no clause. It records a verification, not a contract.",
+        "An obligation that is still unmet is recorded as unmet, with what is missing. A partial close is a legitimate outcome of this story and must not be rounded up."
+      ]
     },
     {
       "id": "US-2",
-      "title": "Rule 2 enforced: every recovered claim id is re-derived and disagreement is rejected",
-      "description": "koine marker; work is downstream per ADR-0001.",
-      "acceptanceCriteria": [
-        "For every claim in the recovered canonical, the §3 claim id is re-derived with the repo's existing claimId() and checked against the kgp:claimId annotation.",
-        "A disagreement is REJECTED with a named error, not reported and carried — §4.1 rule 2 says reject, and a reported-but-accepted mismatch is the same failure with a log line.",
-        "A mutation test per encoding proves the check bites: perturb one field, the round trip must FAIL. 3 mutations, 3 failures, 0 false passes.",
-        "GATES: agora's own checks are green."
-      ],
+      "title": "The status moves only if the gate is met, and the spec says which",
       "passes": false,
-      "notes": null
-    },
-    {
-      "id": "US-3",
-      "title": "A corpus wider than one binary claim, and the evidence artifact",
-      "description": "koine marker; work is downstream per ADR-0001.",
+      "notes": null,
       "acceptanceCriteria": [
-        "§3.3 claim-id convergence survives every encoding: the same fact from two producers still mints one id and merges, and BOTH provenance records survive the round trip.",
-        "The §7 confidence, license and local-only filters are asserted PER ENCODING — a local-only claim that round-trips into a shareable one is a containment breach, so once is not enough.",
-        "valid_time round-trips through the OWL-Time shape §4.1's vocabulary table names (time:hasTime → ProperInterval), which the emitter declares in its context but never emits.",
-        "A committed artifact records the packs used, the encodings, the per-encoding result and the one command that regenerates it, and it runs in agora's standing checks — so losslessness stays proven rather than having been proven once.",
-        "No koine file is edited by this tasklist; the evidence flows back by citation, per ADR-0001. koine closes its own gate by reading the artifact, not by trusting a passes flag — that is the mistake this tasklist exists to correct."
-      ],
-      "passes": false,
-      "notes": null
+        "IF AND ONLY IF G1–G4 are all met per US-1: `specs/grounding-pack.md` moves from **Candidate** to **ratified** — the banner, §4.1's gate paragraph, and a changelog entry naming the agora sha the promotion rests on.",
+        "IF ANY OBLIGATION IS UNMET: the status does NOT move, §4.1 is updated to state the narrowed remainder and who owns it, and this tasklist says so plainly. A gate that promotes on a partial close is not a gate — and the whole point of this record is that it was retired once on a claim that had not been checked.",
+        "§4.1's owner reference is repointed from this tasklist to whatever now owns any remainder, or removed if nothing remains. A spec citing a completed tasklist as the owner of open work is a stale pointer of the kind that started this.",
+        "Clause text outside the gate paragraph is byte-unchanged and no claim id moves. Confirm it — §3, §3.1, §3.3, the §4.1 mapping tables, §5, §6 and §7 have been held byte-stable across every 0.5.x editorial pass and this is not the one that breaks that.",
+        "No agora file is edited by this tasklist. Evidence flows koine-ward by citation, per ADR-0001."
+      ]
     }
-  ],
-  "parkedReason": "Cross-repo MARKER. The work belongs to agora (ADR-0001); koine holds this record only so KGP §4.1's gate has a named owner and is not retired a second time on a passes flag. Unpark only to author the agora-side tasklist from it."
+  ]
 }
