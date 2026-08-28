@@ -50,9 +50,11 @@ KFT 0.4.0* section). **KGP 0.5.0**'s standards decision
 has been re-validated against [`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) (see its
 *Re-validation* section — claim-id convergence, the §7 filters, and every projection's round-trip all
 hold). Its two minor projection findings, **KGP-1/KGP-2**, are **closed** in **KGP 0.5.1** (§4's
-ProbLog rule and §4.1's annotation vocabulary); KGP nonetheless stays **candidate** on the one
-remaining gate — the downstream RDF-star / PROV / JSON-LD **round-trip fixture**, a validator
-artifact per [ADR-0001](../decisions/ADR-0001-control-plane-topology.md).
+ProbLog rule and §4.1's annotation vocabulary). KGP then sat at **candidate** on one remaining gate —
+the downstream RDF-star / PROV / JSON-LD **round-trip fixture**, a validator artifact per
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) — which was **delivered and read at a
+named sha on 2026-08-28**, closing it; **KGP 0.5.2 is `ratified`**
+([`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md)).
 **KMI**'s OTIO adoption has been re-validated against
 [`e2e-media-transform.md`](e2e-media-transform.md) (see its *Re-validation* section — the additive
 layer holds, no delta reopened). Both **KCB 0.4.0** and **KMI 0.3.1** nonetheless remain

@@ -130,7 +130,9 @@ Two things a reader of the artifact should not over-read. Neither is an unmet ob
 perturbing it, and KGP's other ratification count — the KCS encoding
 [`../../specs/README.md`](../../specs/README.md#the-ratification-gate) requires — has been met since
 2026-08-19 (`kcs:worlds-to-fabric`, `live-pass`). With both counts discharged, §4.1's gate paragraph
-records the close and KGP 0.5.2 moves to **ratified**, resting on that sha.
+records the close and KGP 0.5.2 moves to **ratified**, resting on that sha. **Done the same day:** the
+header reads `ratified`, §4.1's gate paragraph is rewritten and names no owner for an open remainder
+(there is none), and the promotion is recorded as a dated changelog entry citing `af5b7dd`.
 
 Two limits on what this record licenses. It closes §4.1's fixture gate and **nothing else**: finding
 **DR-3** still stands — the KCS encoding covers R1 and R2 of the *Re-validation — KGP 0.5.0* pass but
