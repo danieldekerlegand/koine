@@ -167,6 +167,43 @@ finding the fold actively creates, and it is a path change. The larger fact is A
 implementation sits at the **pre-§7** manifest shape, so the seven folds this tasklist landed are
 unexercised there, and the interoperability evidence for them is not yet stronger than the prose.
 
+### 5.1 Re-read at `c971fc2`, 2026-09-03 — two findings moved, and the two blocking ones did not
+
+The §5 table above was read at `9fe2ee5` on **2026-08-25**, the day before KCB 0.5.0 published. It is
+re-read here at `agora` `main` = **`c971fc206a7e3890911911b10c362ac470b41894`** (working tree clean),
+because a downstream finding that is *stated* and never *re-checked* is the same defect this page was
+written to catch, one repo over. Same method: read-only source inspection, plus — new here — the two
+console gates **run**. Findings are still reported, never filed there.
+
+| # | At `9fe2ee5` | At `c971fc2` | What the source says today |
+|---|---|---|---|
+| **AG-1** | Blocking | **Stands, unchanged** | `registry/src/crawl.ts` still exports `KCB_MANIFEST_PATH = '/.well-known/kcb-manifest.json'` and `manifestUrl()` still builds only that address; it is the only outbound call the registry makes. The card path `/.well-known/agent-card.json` appears in the tree exclusively as a *provider endpoint value* in fixtures and `select.test.ts` — never as a crawl target. **The removal 0.5.0 published is still uncrawled.** |
+| **AG-2** | Blocking for §7 as a whole | **Stands, unchanged** | `schemas/src/manifest.ts`'s `Capability` is `{name, effect?, inputs?, outputs?, cost?, endpoint?, provider?, model?, modality?, methods?}` — **no `version`** — and `KnowledgePort` is `{plane, shape?, dialect?, worlds?}`, `MediaPort` `{plane, media_types, world_pattern?, shape?}`, `EntityPort` `{plane, types}` — **no `schema_id`** on any of the three. §7's identity pair is still uncarried, so the break-test's premise (two majors of one name served side by side) is still not representable. |
+| **AG-3** | Should-fix | **Two-thirds closed** | `IssuedGrant` now carries `issuer` (the issuing host by KINP id, **inside the signature**) and `budget_unit`, both with §5/MA-6 cited in the type — the federation half landed. The third part is **not** there: no **granted major** (§4.4b, V-5), because that is 0.5.0 surface and this build is held at 0.4.9. |
+| **AG-4** | Should-fix | Stands | `Capability.endpoint` is still *"where this specific capability is invoked, when it differs from the provider's endpoints"* — §2.4's `binding.endpoint` job under a name KCB §2 does not define. |
+| **AG-5** | Should-fix | **CLOSED** | `schemas/src/versions.ts` now pins `SPEC_VERSIONS.kcb = '0.4.9'` (was 0.4.6) and **0.5.0 is a declared lag** — the register's first — with a written reason and ending condition, which is exactly the discipline AG-5 said was missing. |
+| **AG-6** | Informative | Stands | `KnowledgePort.shape` still sits with no digest beside it. **V-9 sharpens rather than softens this**: the fold's answer to V-2 was an optional `payload_schema_id`, and the 2026-09-03 walk found it is not consumer-verifiable, so a port on the *declaring* branch is barely better off than this one on the silent branch. |
+
+**The one new fact, and it is the load-bearing one.** AG-5's closure is not bookkeeping — the reason
+written into that register is a finding about **KCB itself**. `SPEC_VERSIONS.kcb` is held at 0.4.9
+deliberately, because a **pre-1.0 minor is breaking** under the convention `isCompatibleKcbVersion`
+enforces, so advancing the pin to 0.5.0 would make every 0.4.x fixture and every peer still publishing
+0.4.x **unreadable** by that build. That is *precisely* the reader's obligation §7.2's table gained in
+the 0.5.0 fold, met by declining to move rather than by moving — a conformant response, recorded here
+so nobody reads the held pin as neglect. It also says what §7's evidence costs: the reference
+implementation cannot exercise the seven folds without first making the change 0.5.0 asks of a reader.
+
+**And the two console gates were run, not read** — `bun test console/src/kcs/scenarios/coverage.test.ts`
+→ **3 pass / 0 fail** (53 assertions), `bun test console/src/live/evidence.test.ts` → **13 pass /
+0 fail** (98 assertions), the artifact reporting itself current at
+`sha256-eb8fdc9ce041162db78ef80df42998e25793dc6a20e7ac8974f77d7615236dd5`. Its twelve entries include
+`kcs:subscription-firehose` (`gates: KCB §4.2`) and `kcs:cross-owner-posture` (`gates: KCB §4.3
+(ADR-0013)`), both `green` / `partial-live`. **DR-12 and DR-13 are closed on evidence taken here, not
+inherited** — and note what the `gates` field does *not* say: neither entry claims to close a count,
+and both greens sit alongside §6's `kcs:live-schema-mutation` green over four blocking deltas.
+
+---
+
 ---
 
 ## 6. Is KCB promotable?
@@ -199,3 +236,35 @@ to both organizations reading it: the contract moved twice in one day and the ev
 all. The cheapest thing that would change this answer is not another fold — it is one hand-walk of
 [`e2e-live-schema-mutation.md`](../../scenarios/e2e-live-schema-mutation.md) against the folded text,
 plus the encoding extension **DR-7** makes unavoidable.
+
+### 6.1 The hand-walk happened, 2026-09-03 — and the answer is still no
+
+All four of the remaining counts were walked by hand on 2026-09-03, count (iii) having been walked the
+same day by `chief/89`. **None closes**, and the verdicts belong in this page because two of the six
+new findings are this read's own material.
+
+- **Every folded delta holds under re-attack** — F/G/J/K/L, V-1/V-2/V-4/V-5/V-7, BP-1…BP-5 (including
+  blocking BP-5) and AP-1…AP-8, eight of eight. §7's model, §4.2's placement and §4.3's intersection
+  rule are all confirmed. No fold is reopened.
+- **Every new finding is a carrier or perimeter break**: **MT-1** on count (i), **V-9**/**V-11**/**V-10**
+  on (ii), **BP-7**/**BP-8** on (iv), **AP-9** on (v).
+- **Four of the six sit on the axis §3 named in advance** — *an operand deliberately kept outside the
+  `schema_id` digest, with a declared normative consequence and nothing carrying it.* V-10, BP-8 and
+  AP-9 are §4.2a's and §4.3a's declared **minor** bumps and §7.2's `binding` MUST, all routed at a
+  §7.2 row or a §7.3g frame that does not exist; the fourth is ADR-0014's marking. §3's closing
+  paragraph enumerated the five operands outside the digest — `cost`, `binding`, `volume`, `effect`,
+  the marking — and observed that only the first two have a declared bump to be rescued by. **The walk
+  found the other three failing in exactly that way**, which is the strongest form of confirmation
+  available to a record like this one: the generalization was written before the evidence.
+- **ADR-0014 is a base carrier gap, not a federation one.** §3 reached it by reading a federated merge,
+  and the ADR filed it against counts (ii) and (iii) on that basis. Count (ii)'s walk reproduces it at
+  Step 9 with a **single registry and no peering anywhere** — §7.3a(ii), §7.3d and §3's ranking bullet
+  read a marking and a removal version no field in §2 or §3 carries. The filing was right; the reason
+  was narrower than the defect.
+- **DR-12 and DR-13 are closed** (§5.1, verified by running the gates at `c971fc2`), so the third
+  bullet above is fully superseded. **DR-7 is untouched**, and it is now the only artefact objection
+  KCB carries.
+
+**The counterfactual, stated because it is the trap:** four clean re-runs would not have promoted KCB
+either. Count (iii) stands on ADR-0014's unwritten clause and §4.3 carries ADR-0013's **W3**
+regardless. Nothing in this page, and nothing on 2026-09-03, moves KCB a step closer to `ratified`.

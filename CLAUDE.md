@@ -393,6 +393,27 @@ vocabulary.
   edit is a *Pressure test* paragraph, a changelog entry and four scenario sections. **KCB is not
   promoted and is not promotable**: count (iii) and ADR-0013's **W3** stand regardless, and four clean
   re-runs would not have promoted it either.
+  **What remains is written down flat, with an owner or an explicit *unowned*, in
+  `docs/reference/promotability.md` § *The seven things that stand between KCB and `ratified`*** — seven
+  items, **all unowned in this repo and in every other**: (1) ADR-0014's four-part clause, a
+  precondition of counts **(ii) and (iii)**, not one; (2) the **MT-1** fold (§3/§4.4c); (3) **V-9 +
+  V-11** (§7.1); (4) **V-10 + BP-8 + AP-9**, *one* §7.2/§7.3g edit for three findings; (5) **BP-7**
+  (§4.2b/d); (6) **DR-7**, the encoding extension to the F1–F13 set — downstream under ADR-0001, and
+  the **only** artefact objection KCB still carries, since **DR-12 and DR-13 are CLOSED** (encoded at
+  `agora 378fd3c`, re-verified 2026-09-03 by **running** the gates at `agora c971fc2`: coverage 3
+  passed, evidence 13 passed, both entries `green`/`partial-live` and naming §4.2 and §4.3 as what they
+  gate); (7) **W3**, external to koine. Items 1–5 are additive and KCB-only; 6 and 7 are not koine work
+  at all, which is why a reader watching only this repo will see KCB stop moving before it is
+  promotable. Two **downstream** facts stand beside them, re-confirmed at `agora c971fc2` and stated
+  here rather than fixed here (`docs/reference/fold-coordination-federation-versioning.md` §5.1):
+  **AG-1** — the standalone `/.well-known/kcb-manifest.json` that 0.5.0 removed is still the reference
+  registry's **only** crawl path — and **AG-2** — its `Capability` carries no `version` and no port
+  carries a `schema_id`, so §7's identity pair is uncarried and the break-test's own premise is not
+  representable there. **§7 is unexercised outside this tree.** AG-3 is two-thirds closed and **AG-5 is
+  closed** in the way that matters: the downstream register pins KCB at **0.4.9** and *declares* the
+  0.5.0 lag with a reason — a pre-1.0 minor is breaking under that build's own compatibility rule, so
+  advancing would make every 0.4.x peer unreadable. That is §7.2's new reader obligation met by
+  declining to move, not neglect.
 - `specs/media-interchange.md` — KMI 0.3.5, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the

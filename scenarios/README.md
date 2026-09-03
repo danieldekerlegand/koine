@@ -169,10 +169,15 @@ this directory is now a document a participant can be handed as well as prose a 
 [the ratification gate](../specs/README.md#the-ratification-gate) an encoding is a **precondition**,
 never a promotion, and every spec that was blocked on one is still blocked on the count the encoding
 was a precondition *of* — KFT on two re-runs that were both walked on 2026-09-03 and neither of which
-closed, KCB §4.2 and §4.3 on their own re-runs (with ADR-0013's **W3** on §4.3). Two qualifications
+closed, KCB §4.2 and §4.3 on their own re-runs, **also walked that day (`chief/92`) and neither of
+which closed either** (§4.2 → **BP-7**/**BP-8**, though blocking BP-5 does not reproduce; §4.3 →
+**AP-9**, with eight of eight AP deltas flipping and ADR-0013's **W3** unmoved). Two qualifications
 survive intact and are the ones a promotion argument now has to answer: **DR-7** (count (ii)'s
 encoding **predates** its fold, so it must be *extended*, not re-run) and **DR-8** (the same for
-`kcs:multi-authority`).
+`kcs:multi-authority`). **This is the cleanest demonstration the register has of what the gate is
+worth**: the two encodings arrived, the artefact objection lifted, and the two counts they
+preconditioned are exactly as open as they were — because an encoding is a precondition and never a
+verdict.
 
 The column's three states mean:
 
