@@ -44,5 +44,13 @@
         "GATES: the repo's own verify green."
       ]
     }
-  ]
+  ],
+  "mergedToMain": "23eaa78",
+  "gates": {
+    "local": {
+      "state": "passed",
+      "detail": "the project verify hook (verify.sh) ran and exited 0"
+    },
+    "ci": []
+  }
 }
