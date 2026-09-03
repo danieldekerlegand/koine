@@ -89,6 +89,29 @@ stream path**, so the parking assignment cannot be discharged downstream by anyo
 **fourth** count against the same KCB candidate; its *Re-ratification — what this pass gates* section
 carries the per-spec table and the dated **Resolution**.
 
+**All four of those KCB counts were re-run on 2026-09-03, by hand against the prose, and none of them
+closes.** Each carries its own verdict in its own document — *Re-run — the KCB legs walked by hand
+against KCB 0.5.0* in [`e2e-media-transform.md`](e2e-media-transform.md), *Re-run — Steps 3, 5, 6, 7,
+8, 9 and 10* in [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md), *Re-run — Steps 1–8
+walked by hand against §4.2* in [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md), and
+*Re-run — Steps 1–8 walked by hand against §4.3* in
+[`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md). **Every folded delta holds under
+re-attack** — F/G/J/K/L against the card extension, V-1/V-2/V-4/V-5/V-7, BP-1…BP-5 (including blocking
+BP-5) and AP-1…AP-8 (eight of eight, including blocking AP-5) — so no fold is reopened and no model is
+in question. What each count grew instead is a **carrier** or **perimeter** break: **MT-1** (a §3 path
+plan names no version per leg, and §4.4c(2) silently resolves one), **V-9** (`payload_schema_id` is not
+consumer-verifiable), **V-11** (the canonicalization rule id is `MAY` on the branch that needs a MUST),
+**V-10** (§7.2's `binding` row routes a MUST to a frame §7.3g does not name), **BP-7** (§4.2b's
+honour-or-refuse rule stops at registration and says nothing about a live adjustment), and **BP-8** /
+**AP-9** (§4.2a's and §4.3a's declared **minor** bumps have no row in §7.2's normative table). Four of
+those six are the *same* defect on the *same* axis — an operand kept **outside** the `schema_id` digest
+with a declared consequence and nothing carrying it — which is the axis
+[ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) named in advance; and the
+walks establish that ADR-0014's own missing carrier for §7.3's *deprecated marking* reproduces with a
+**single registry**, so it is a base gap rather than a federation one and blocks count (ii) as well as
+count (iii). **All five KCB counts stand.** None of these verdicts is a `green` line: three of the four
+encodings return green over open blocking deltas, which is what **DR-7** and **DR-8** are the record of.
+
 The **three federation §-edits** — [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
 applied to KINP §11 decision 1, KCB §3.1 and KMI §7.1 — are gated the same way, by
 [`e2e-multi-authority.md`](e2e-multi-authority.md), which has now landed and been run and also did

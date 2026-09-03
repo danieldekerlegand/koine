@@ -355,6 +355,44 @@ vocabulary.
   per **DR-7** that re-run needs the KCS encoding **extended** to the scenario's new **F1–F13** set
   first, since the existing one deliberately asserts no unfolded delta — and the other four counts are
   restated, none moved.
+  **The other four counts were walked by hand on 2026-09-03 and NONE of them closes** — one verdict per
+  count, per scenario, never a replay (three of the four encodings return `green` over open blocking
+  deltas: DR-7, DR-8). **Every folded delta holds under re-attack**, which is the headline: F/G/J/K/L
+  against the card extension, V-1/V-2/V-4/V-5/V-7 against §2.4/§4.4/§7.1/§7.3g, BP-1…BP-5 against §4.2
+  (including blocking BP-5 — §8's parking sentence is struck and no clause assigns the host anything),
+  and AP-1…AP-8 against §4.3, **eight of eight**, including blocking AP-5. No fold is reopened and no
+  model is in question; **every** new finding is a **carrier** or **perimeter** break. **(i)** →
+  **MT-1** (High): §3's path plan names no `(name, version)` per leg and §4.4c(2) resolves a
+  version-free `invoke` to the **granted** major, so a caller that planned over the top-ranked successor
+  and holds a predecessor grant is served the predecessor **silently** — the symmetric case to the
+  *highest published* default §4.4c forbids by name, disagreeing not with the grant but with §3's own
+  plan. **(ii)** → **V-9** (High, `payload_schema_id` is not consumer-verifiable — no verb retrieves the
+  declaration it digests and §7.1 states a canonicalization for `schema_id` and none for it, so failure
+  mode 2 stays open on the branch that *declares* one), **V-11** (Med-High, the §7.1 step 5 rule id is
+  `MAY` with a MUST NOT on the branch that does not need it and no MUST on the branch that does, so a
+  `kcb2` digest published under the absent prefix restores V-3's non-recoverable verdict) and **V-10**
+  (Med, §7.2's `binding` row and §2.4 route a MUST to §4.2d's channel *"(§7.3g)"* and §7.3g names no
+  such frame, while the binding form that actually dials has no channel — DEFER-D). **(iv)** →
+  **BP-7** (Med-High, §4.2b's *MUST refuse if it cannot honour* is stated at **registration** only and
+  no clause says what a producer owes a **live** adjustment, so §4.2c's *silence is not one of them*
+  stops one paragraph short of the lever Step 3 needs) and **BP-8** (Med). **(v)** → **AP-9** (Med).
+  **BP-8 and AP-9 are one defect twice**: §4.2a and §4.3a each declare a **minor** bump under §7.2 for a
+  field §7.2's normative table has **no row for** — the nearest reads *patch* — so the version movement
+  both visibility claims rest on is unauthorized by the table that governs bumps. With **V-10** and
+  ADR-0014's marking that is **four of six findings on one axis**: an operand deliberately kept
+  **outside** the `schema_id` digest, with a declared consequence and nothing carrying it — the axis
+  ADR-0014 named in advance. The walk also establishes that **ADR-0014 is a base carrier gap, not a
+  federation one**: §7.3a(ii)/§7.3d/§3's ranking bullet read a *deprecated marking* and *removal
+  version* that no field in §2 or §3 carries, and that reproduces at count (ii)'s Step 9 with a
+  **single** registry and no peering, so the ADR's clause is a precondition of count **(ii)** as well as
+  count (iii). One bookkeeping correction: count (ii)'s published step list mis-files **Step 6** exactly
+  as *Fold status* found it mis-filing Step 3, so the flip list is Steps **3, 5, 6, 7, 8, 9, 10**. Every
+  count **changed shape rather than closing**, every new fold is additive and KCB-only (V-10/BP-8/AP-9
+  are literally one edit), and all are **unowned**. **No version moves and no clause moves** for any of
+  the four walks — §1–§8 byte-unchanged, no canonicalization changes, no published digest moves; the
+  edit is a *Pressure test* paragraph, a changelog entry and four scenario sections. **KCB is not
+  promoted and is not promotable**: count (iii) and ADR-0013's **W3** stand regardless, and four clean
+  re-runs would not have promoted it either.
 - `specs/media-interchange.md` — KMI 0.3.5, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the

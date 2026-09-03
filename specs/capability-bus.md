@@ -1905,6 +1905,80 @@ re-run for §4.2, and a clean cross-owner-posture re-run for §4.3 — plus ADR-
 alone. What did change is that 0.5.0 discharges §2.2's declared removal (§7.3f); that is a deadline
 arriving, not a fold, and it closes nothing.
 
+**2026-09-03 — the other four counts were re-run, and none of them closes.** Count (iii) was walked
+on this date (changelog, below) and did not close. The remaining four have now been walked the same
+way — **by hand, against the prose**, because per **DR-7**/**DR-8** an encoding does not assert an
+unfolded delta and three of these four have returned `green` over open blocking deltas. Each carries its
+own verdict against the section it gates; **no version moves and no clause moves** for any of them.
+
+- **(i) the extension-shape re-run** —
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) § *Re-run — the KCB legs
+  walked by hand against KCB 0.5.0*. **Does not close.** The question the count exists to ask is
+  answered **yes** and answered by execution: F, G, J, K and L all hold against the card extension, and
+  the three folds that landed on Steps 1/3/4 after the count opened (§4.2, §4.3, §4.4) are confirmed
+  additive by running them rather than by citing their own additivity claims. It does not close on new
+  delta **MT-1** (High, structural): §3's path plan names no `(name, version)` per leg, and §4.4c(2)
+  resolves a version-free `invoke` to the **granted** major — so a caller that planned over the
+  top-ranked successor and holds a predecessor grant is served the predecessor **silently**, no gate
+  having been breached. §4.4c forbids *highest published* by name as the fail-open inversion; the
+  grant-major default is the symmetric silent selection and disagrees not with the grant but with §3's
+  own plan. Fold: §3 names the version a path leg was matched over, and §4.4c refuses a resolved major
+  that differs from a presented plan leg. Additive; **unowned**.
+- **(ii) the §7.5 mutate-live-schema re-run** —
+  [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) § *Re-run —
+  Steps 3, 5, 6, 7, 8, 9 and 10 walked by hand against KCB 0.5.0*. **Does not close.** Five flips are
+  clean — **V-1** (§4.4d's quote mismatch), **V-4** (§2.4's addressable second major), **V-5** (§4.4c's
+  exhaustive resolution, *highest published* forbidden by name), the stream half of **V-7** (§7.3g's
+  three frames) and the *declared absence* half of **V-2** — and the regression set holds, with F9's
+  *no published digest moved* confirmed by construction rather than asserted. Three new perimeter
+  deltas: **V-9** (High) — `payload_schema_id` is not consumer-verifiable, since no verb retrieves the
+  declaration it digests and §7.1 states a canonicalization for `schema_id` and none for it, so failure
+  mode 2 stays open on the branch that **declares** one while the consumer is told a cross-check exists;
+  **V-11** (Med-High) — §7.1 step 5's rule id is `MAY`, with a MUST NOT on the branch that does not need
+  it and no MUST on the branch that does, so a `kcb2` digest may be published under the prefix that
+  means `kcb1` and restore V-3's non-recoverable verdict; **V-10** (Med) — §7.2's `binding` row and
+  §2.4 route a normative MUST to §4.2d's channel *"(§7.3g)"* and §7.3g names no such frame, while the
+  binding form that actually dials has no channel at all (**DEFER-D**). The walk also establishes that
+  **[ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) is a base carrier gap, not
+  a federation one**: §7.3a(ii), §7.3d and §3's ranking bullet read a *deprecated marking* and a
+  *removal version* that no field in §2 or §3 carries, and that reproduces at Step 9 with a **single**
+  registry and no peering anywhere — so the ADR's clause is a precondition of **this** count as well as
+  count (iii). One bookkeeping correction: the published step list mis-files **Step 6** exactly as *Fold
+  status* found it mis-filing Step 3, so the flip list is Steps **3, 5, 6, 7, 8, 9, 10** and the
+  regression set is Steps **1, 2, 4, 11**. **DR-7** is untouched and independent. **Unowned.**
+- **(iv) the §4.2 firehose re-run** —
+  [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) § *Re-run —
+  Steps 1–8 walked by hand against §4.2*. **Does not close.** Five of the six conditions that leg names
+  are met, and **BP-5** — the blocking delta, and the one the leg was built to find — does not
+  reproduce: §4.2 places the mechanism between the two peers, §8's parking sentence is struck, and no
+  clause assigns the host anything. BP-1, BP-2 and BP-4 do not reproduce either. Two new deltas:
+  **BP-7** (Med-High) — §4.2b's *MUST refuse if it cannot honour* is stated **at registration** only,
+  and no clause says what a producer owes a **live** adjustment on §4.2d's channel, so §4.2c's
+  *silence is not one of them* discipline stops one paragraph short of the lever Step 3 needs;
+  **BP-8** (Med) — §4.2a states that a `volume` change is a **minor** bump *"(§7.2)"* and §7.2's
+  normative table has no row for it, the nearest reading being *patch*, so the visibility BP-1's fix
+  depends on is asserted in §4.2 and absent from the table that governs bumps. **Unowned.**
+- **(v) the §4.3 cross-owner-posture re-run** —
+  [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md) § *Re-run —
+  Steps 1–8 walked by hand against §4.3*. **Does not close.** All five conditions that leg names are
+  met and **eight of eight deltas flip**, including blocking **AP-5** — §4.3e's leg-covering class and
+  its no-widening chain rule close both halves of it — and Step 6's `fetch` carve-out is *more* clearly
+  right after KMI 0.3.5's MA-5 than when it was written. One new delta: **AP-9** (Med, carrier) — §4.3a
+  asserts that an effect-class change on a live `subscribe` is signalled on §4.2d's channel, and no
+  section names such a frame (§7.3g names three, none of them this), so an undefined signal and an
+  absent one are the same signal; and it asserts a **minor** bump under §7.2 for a field §7.2's table
+  has no row for, which is BP-8's defect a second time. ADR-0013's **W3** is restated and **unmoved**.
+  **Unowned.**
+
+**What the four walks establish together, and it is one sentence.** §7's model, §4.2's placement and
+§4.3's intersection rule are all sound and all confirmed under re-attack; **every** new delta is a
+**carrier** or **perimeter** break — a normative consequence stated in one section with no field, frame
+or table row in another to carry it — and **four of the six** (V-10, BP-8, AP-9, and ADR-0014's marking)
+are the *same* defect on the *same* axis: an operand deliberately kept **outside** the `schema_id`
+digest, with a declared consequence and nothing carrying it. ADR-0014 named that axis in advance. All
+five counts remain open; **KCB is not promoted, and would not have been on four clean re-runs**, because
+count (iii) and ADR-0013's W3 stand regardless.
+
 **Downstream evidence (2026-08-24) — and this spec is where reading it wrong costs the most.** The
 KCS encodings of three of the five gating scenarios were run over real MCP/A2A links and all three
 came back `green` (`kcs:media-transform`, `kcs:live-schema-mutation`, `kcs:multi-authority`; recorded
@@ -1951,6 +2025,28 @@ most important thing an owner citing this run must understand:
 
 ## Changelog
 
+- **Editorial** (2026-09-03, third entry this day) — **counts (i), (ii), (iv) and (v) were re-run, and
+  none of them closes.** All four were walked **by hand** against the prose, never replayed: three of
+  the four encodings return `green` over open blocking deltas (**DR-7**, **DR-8**), and an encoding does
+  not assert an unfolded delta. Each verdict is recorded in the scenario it belongs to and is restated
+  in the *Pressure test* section above. **Every folded delta holds under re-attack** — F/G/J/K/L against
+  the card extension, V-1/V-2/V-4/V-5/V-7 against §2.4/§4.4/§7.1/§7.3g, BP-1…BP-5 against §4.2, and
+  AP-1…AP-8 against §4.3, eight of eight — so no fold is reopened and no model is in question. Six new
+  findings, every one a **carrier** or **perimeter** break: **MT-1** (a path plan carries no version and
+  §4.4c(2) silently selects one), **V-9** (`payload_schema_id` is not consumer-verifiable),
+  **V-11** (the canonicalization rule id is `MAY` on the branch that needs a MUST), **V-10** (§7.2's
+  `binding` row and §2.4 route a MUST to a frame §7.3g does not name), **BP-7** (§4.2b's honour-or-refuse
+  rule stops at registration), **BP-8** / **AP-9** (§4.2a's and §4.3a's declared **minor** bumps have no
+  row in §7.2's normative table). The walk also establishes that
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s missing carrier for §7.3's
+  *deprecated marking* reproduces with a **single registry** and no peering, so it is a base gap rather
+  than a federation one and is a precondition of count **(ii)** as well as count (iii). And it corrects
+  count (ii)'s published step list, which mis-files **Step 6** exactly as *Fold status* found it
+  mis-filing Step 3. **No version moves and no clause moves** — §1–§8 are byte-unchanged, no
+  `schema_id` canonicalization changes and no published digest moves; the edit is the *Pressure test*
+  paragraph above, this entry, and four scenario sections. **All five counts stand and KCB is not
+  promotable**: clearing none of five is not a promotion, and four clean re-runs would not have been one
+  either, count (iii) and ADR-0013's **W3** standing regardless.
 - **Editorial** (2026-09-03, second entry this day) — **DR-12 and DR-13 are closed, and KCB is no
   closer to `ratified`.** The *Pressure test* bullet above recorded counts (iv) and (v) as
   additionally failing [the ratification gate](README.md#the-ratification-gate) for want of a KCS

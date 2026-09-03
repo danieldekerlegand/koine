@@ -461,6 +461,259 @@ belongs to the fold, not to this pass.
 > Recorded in [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md) §6.2
 > and in [`../ROADMAP.md`](../ROADMAP.md).
 
+## Re-run — Steps 1–8 walked by hand against §4.2 (2026-09-03)
+
+**What this is.** KCB's **count (iv)**, opened by 0.4.7 and gating **§4.2 alone**: a re-run of this leg
+against the folded text, on the conditions *What a clean pass would license* states — *"Step 1
+distinguishes the two worlds before binding, Step 2's meter moves, Step 3's table has a lever that is
+not disconnect, Step 4 resumes without a snapshot and cannot silently miss a retraction, Step 5's limit
+survives the hop, and Step 6 names a party that is actually on the path."*
+
+**Method, and why it is not a replay.** By hand, against the prose. `kcs:subscription-firehose` exists —
+it landed downstream at `agora` `378fd3c` on 2026-08-26 and ran `green` / `partial-live`, which is why
+**DR-12 is closed** — and a `green` there is not this verdict. The encoding asserts what koine had
+folded when it was written, and the predicates KCS §5 cannot state are declared console extensions
+(**BP-6**); it cannot report a clause that has no carrier. Same standing reason as **DR-7** and
+**DR-8**.
+
+### Per-step verdicts
+
+| Step | Delta under test | Verdict |
+|---|---|---|
+| **1** — Discovery cannot tell a firehose from a trickle | **BP-1** | ✅ **flips** |
+| **2** — The grant is issued, and never fires | **BP-2** | ✅ **flips** |
+| **3** — Saturated. Every lever the contract offers | **BP-3** *(the brake)* | 🟡 **half-flips** → new delta **BP-7** |
+| **4** — Disconnecting is where the loss becomes silent | **BP-3** *(the gap)* | ✅ **flips**, one declared residual |
+| **5** — One stream, and a third participant nobody asked | **BP-4** | ✅ **flips** |
+| **6** — The cost advisor is not on the path | **BP-5** *(blocking)* | ✅ **flips** |
+| **7** — Transport flow control says nothing | **BP-6** | ✅ **holds** *(regression)*; BP-6 gains a handle, not a predicate |
+| **8** — What held | four holds | 🟡 **three hold; the fourth is where BP-8 lands** |
+
+### Step 1 — Discovery cannot tell a firehose from a trickle ✅ *flips*
+
+§4.2a puts a `volume` on the port, so the two entries that were identical on every indexed field are
+now distinguishable **before** either is bound: `worldsim`'s `alderforest` port declares
+`unit: "delta"`, `rate {typical 4, peak 20}`, `payload_bytes {typical 6000000}`, `references {typical
+120}` and a `resume_horizon`; `refkb`'s `consensus-reality` port declares a handful a day. Six orders of
+magnitude, on a field the registry returns.
+
+Re-attacked three ways and it holds:
+
+- *Declare nothing.* An **absent** `volume` reads *unknown*, **never** *low*, and a consumer MAY decline
+  to bind a port that declares none. The un-cooperative producer is not made cooperative, but its
+  silence is now a **declared absence** the subscriber can act on rather than an invisible one — the
+  same move V-2's fold makes at the knowledge port, and the fail-safe direction §4.3a then reuses for
+  `effect`.
+- *Game the ranking.* §4.2a states in terms that §3's ranking rules do not change and that **no registry
+  may reorder on volume**; a consumer MAY rank locally. So a high-volume port cannot be buried or
+  promoted by the registry, and BP-1's fix does not smuggle a trust weighting into §3 — the thing
+  §3.1(d) refuses.
+- *Move it silently.* `volume` sits outside the `schema_id` digest, so a re-declared envelope does not
+  present as a payload break — but §4.2a makes changing it a **minor** bump, so a pinned subscriber sees
+  the version move. That claim is where **BP-8** lands; see Step 8.
+
+**BP-1's own disclaimer is confirmed rather than assumed:** a `volume` is an estimate of an envelope,
+never a guarantee and never an SLA, and a producer that exceeds it is not in breach. What BP-1 asked for
+was *"the ability to choose before it binds"*, and that is exactly and only what arrived.
+
+### Step 2 — The grant is issued, and never fires ✅ *flips*
+
+Both halves of BP-2 are answered, and separately. **The operand:** §4.2e lets a port's `volume` carry a
+`cost` in §2.1's shape, denominated per `unit` — so a **world**, which has no entry in
+`params.capabilities` to price, is priced where it *is* addressable, on the port that delivers it.
+**The evaluation point:** the `budget_units` ceiling decrements **on delivery** rather than at invoke,
+so the four-hour, 3.4 TB stream that left the ceiling at 50,000 now moves it on every delta.
+
+The probe that mattered: *what if the producer declares no `volume.cost`?* §4.2e answers in terms —
+*"Where it does not, the subscription is unmetered exactly as it is today"* — and, crucially, `volume`
+rides the **port**, which §3 returns at discovery. So a host issuing `subscribe:world/alderforest` with
+a ceiling can see **before it issues** whether that ceiling has an operand. The inert-ceiling condition
+survives, but it is now readable pre-bind rather than discoverable only by watching a number fail to
+move. That is a different fact from BP-2, and it is the one §4.2e claims.
+
+**And the brake is the part that matters more.** §4.2e makes an exhausted ceiling MUST NOT be the
+**first** signal: a producer approaching it signals on the §4.2d channel first. §5's *"fails at the
+gate"* on a stream can only mean stopping, and this is what turns the cliff into a brake — BP-2's own
+framing, answered in its own words.
+
+### Step 3 — Saturated. Every lever the contract offers 🟡 *half-flips*
+
+**The half that flips.** §4.2b gives `subscribe` the operands the table went looking for — `max_rate`,
+`max_in_flight`, `window`, `on_overflow` — and §4.2d makes them adjustable in-band, so Step 3's
+one-working-lever table now has a lever that is not disconnect. The governing rule is right and is the
+one Step 8 predicted: the contract's question is not *how fast* but **whether an adaptation is
+lossless**. `coalesce` and `defer` are lossless for KGP payloads by construction; `drop` is lossy and
+must be named by the subscriber that chooses it; a producer MAY apply a lossless adaptation unasked and
+MUST NOT apply a lossy one that was not asked for. And **a retraction is never shed**, which is the one
+payload that is not rate-safe. The verb is unchanged, which is what Step 3 said it should be.
+
+**🔴 BROKE (BP-7, medium-high). The lever is normative at registration and advisory thereafter — and
+Step 3 is a mid-stream step.** §4.2b's enforcement clause is stated once and it is stated at one
+moment: *"A producer that cannot honour a declared limit MUST refuse the subscription **at
+registration**, with a stated reason, rather than accept it and exceed it."* §4.2d then says the
+operands are *"adjustable in-band"* and that the subscriber→producer direction is *"the lever Step 3 of
+the leg went looking for and did not find."* But **no clause states what a producer owes a live
+adjustment**. It is not required to honour it, not required to answer it, and not required to say it
+cannot — and §4.2d's own tolerance rule, *"a subscriber MUST tolerate a producer that never sends
+one,"* makes silence conformant on the return path.
+
+Set that beside §4.2c, which governs the *other* in-band operand and gets this exactly right: *"A
+producer MUST answer a `resume` in exactly one of three ways, and **silence is not one of them**"* —
+resumed, `gap-unavailable`, or `resume-unsupported`. The discipline exists, in the same subsection, one
+paragraph away, and it is not extended to (b)'s operands on a live subscription.
+
+The consequence is Step 3's own situation, unrepaired. `analyzer` did not learn it was 13× behind at
+registration; it learned ninety seconds in, which is when a merge queue tells you. It sends a
+`max_rate` adjustment on the channel §4.2d mints. A conformant producer may ignore it entirely, and
+`analyzer` cannot distinguish *honoured*, *refused*, and *not implemented* — so it is back to the one
+lever that always worked, which is disconnect, which is Step 4. The registration-time rule does not
+help: a subscriber that could have declared the right limit at registration would not have needed the
+channel.
+
+*The fold is one sentence and it is already drafted elsewhere in the section.* Extend §4.2c's
+answer-or-be-non-conformant discipline to a live (b) adjustment: a producer receiving one MUST answer
+applied / `cannot-honour` (with the limit it can meet) / `unsupported`, and silence is not one of them.
+Additive — the frame rides §4.2d's existing channel, no verb, no second mechanism — and it is what makes
+the lever assertable by a KCS scenario, which §4.2d's last bullet argues is the reason to prefer a frame
+over transport flow control at all. → KCB §4.2b/§4.2d.
+
+### Step 4 — Disconnecting is where the loss becomes silent ✅ *flips, with one declared residual*
+
+The gap is **detectable**, which is what BP-3 asked for. §4.2c adds an optional content-addressed
+`resume {after: <KGP pack id>}` — an operand, deliberately **not** a sixth verb, so §4's table still has
+five entries — that a producer MUST answer resumed / `gap-unavailable` (naming the earliest point it
+can resume from) / `resume-unsupported`, and **never with silence**. Beside it, the rule that closes
+Step 4's sharp edge: *"A subscriber that receives a delivery whose `basis` (KGP §6) it has not seen MUST
+NOT merge it silently. It MUST resume, or record the gap."* Delta 1,573 arriving with delta 1,572's
+unseen `basis` is now a stop, not a merge. And §4.2b's *a retraction is never shed* closes the other
+half — the graph that was *"internally consistent and factually wrong"* is no longer reachable by a
+conformant party.
+
+The congestion-collapse half is answered too: recovery is a `resume` on the existing subscription rather
+than an `invoke` against a snapshot capability, so the most expensive request in the fabric is no longer
+the only route back. And §4.2a's `resume_horizon` on the port lets a subscriber tell **before it binds**
+whether resumption after a plausible outage is available at all.
+
+**Declared residual, and it is stated by the fold rather than found by this walk.** *Recovery* remains
+provider-optional: *"A producer that cannot resume is conformant."* What is mandatory is **detection**
+and an **answer**. That is the correct line — BP-3's own words are *"the requirement is that a gap be
+detectable, which before this clause it was not"* — but it means a subscriber against a
+`resume-unsupported` producer is still re-established at now, with a recorded gap rather than a silent
+one. Recorded so a future re-runner does not read Step 4 as promising more than it does.
+
+### Step 5 — One stream, and a third participant nobody asked ✅ *flips*
+
+§4.2f answers all three of BP-4's parts. **Predictable:** `volume.references` makes the derived `fetch`
+rate the delivery rate multiplied by that count, readable before binding — 4 × 120 = ~480/s, the number
+Step 5 had to compute by hand from facts no field carried. **Attributed:** the fan-out is the
+**subscriber's** traffic, because delta L makes the `fetch` the consumer's own action, so it is bounded
+by `analyzer`'s own declared `max_rate` and `analyzer` is accountable for the load it places on a third
+participant. **Refusable:** a CAS holder MAY apply its own limit and MUST **signal a refusal** rather
+than stall or drop silently — and because `fetch` is request/response (§4.1), that refusal needs no
+stream frame: it is a **pending fetch**, which delta L already requires every consumer to handle. The
+backpressure lands on machinery that already existed, which is why nothing in §4 or §5 had to change.
+
+Both amplifiers were re-probed. **KMI §7.1**: the limit is applied by the participant that **holds the
+bytes**, in its own authority domain, fail-closed — the same placement §7.1 already fixes for license,
+egress and trust tier, and KMI 0.3.5's MA-5 fold strengthens it rather than disturbing it, since the
+asset's own policy now travels with the bytes. **§3.1**: peering forwards a *query* and merges entries,
+never traffic, so there is still nothing at the boundary to throttle — and there no longer needs to be,
+because the limit is at the holder.
+
+### Step 6 — The cost advisor is not on the path ✅ *flips*
+
+BP-5 is answered by placement rather than by mechanism, and the answer is stated where it can be
+checked. §8's parking sentence is **struck**: open question 1 is marked *resolved in place at 0.4.7*,
+its numbering deliberately unshifted, and the record says the second clause was *"wrong rather than
+incomplete"* — the host cannot be the addressee at all. §4.2 puts the mechanism between the two peers on
+the binding's own axis, §4.2d states that it composes across §3.1 federation unchanged *precisely
+because it never needed a party with jurisdiction over both ends*, and §4.2g fixes the boundary so the
+clause does not quietly become a QoS contract.
+
+Probed for the failure the leg was built to find and it does not reproduce: every instrument in Step 6's
+table is still off the path, and **none of them is now assigned anything**. `orchestrator` is not named
+in §4.2 as an actor at all. ADR-0001's topology is intact — no traffic flows through the registry, and
+no clause makes the optional aggregator facade mandatory.
+
+### Step 7 — Transport flow control is real, and says nothing ✅ *holds (regression)*
+
+All three reasons stand unchanged: a stalled A2A window is still unattributable, still unassertable, and
+still converts into BP-3 for a producer whose send buffer fills. What §4.2 adds is the alternative, not
+a repair to the transport: §4.2d's last bullet argues that a **frame is an interaction between
+participants**, so KCS §5's vocabulary can range over it where it cannot reach a stalled window — *"a
+clause nothing can test is not a clause."*
+
+**BP-6 gains a handle and not a predicate, and it is still open as evidence.** KCS §5 has no
+backpressure vocabulary today, so *"the subscriber applied backpressure and the producer honoured it"*
+is still unassertable in the fixed core; what changed is that it is now expressible **about** something
+observable. That is input to KCS open question 1 alongside V-8 and MA-11, and **no KCS version moves**.
+BP-7 above sharpens it: an adjustment a producer is not obliged to answer is not observable even with a
+predicate, so the vocabulary gap and the carrier gap have to close in that order.
+
+### Step 8 — What held 🟡 *three of four hold*
+
+- ✅ **The payload layer is rate-safe by construction.** Unchanged, and it is why §4.2b can state
+  losslessness as the governing question. No KGP clause moved.
+- ✅ **The grant shape is already right.** Confirmed by execution: §4.2e added a *reading rule plus an
+  operand*, and the grant's name, scope and `budget_units` field are byte-unchanged, exactly as the hold
+  predicted.
+- ✅ **No new verb, plane, port kind, media type or artifact kind.** Checked against §4's table, which
+  still has five entries, and against §2.1's port table, which still has three planes. `resume` is an
+  operand and §4.2c says so in terms.
+- 🔴 **BROKE (BP-8, medium). *"§7.2's compatibility table is not disturbed"* held for the fold and does
+  not hold for the fold's own bump claim.** §4.2a states that changing a port's `volume` is *"a **minor**
+  bump on the capability that carries it (§7.2) — the version moves, so a pinned subscriber can see
+  it."* §7.2's table is **normative** and *"fixes what a provider MAY change under a given bump"* — and
+  it has **no row for `volume`**. It gained rows for `cost` and, at 0.5.0, for an added
+  `payload_schema_id` and a changed `binding`; it never gained one here. The nearest row a provider
+  reading the table will land on is *"Editorial only — `description`, examples; no `schema_id` change →
+  **patch**"*, since `volume` is outside the digest and is not a payload change — which contradicts
+  §4.2a's *minor* and, under a patch, gives a pinned subscriber no version movement to see. So the
+  mechanism BP-1's fix depends on for visibility is asserted in §4.2a and absent from the table that
+  governs it.
+
+  **The same defect reproduces once more, at §4.3a**, which states an `effect` change is a minor bump
+  under §7.2 against a table with no row for it — recorded on count (v) as
+  [`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md)'s **AP-9**. And it is the same **class** as
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s: a normative consequence
+  attached to an operand deliberately kept **outside** the `schema_id` digest, with nothing carrying it.
+  ADR-0014 generalizes the point already — *"every operand deliberately kept outside the digest —
+  `cost`, `binding`, `volume`, `effect`, the marking — is outside the merge key too, and only the two
+  with a declared §7.2 bump are rescued."* This walk establishes that **`volume` is not one of the two**:
+  its bump is declared in §4.2a and not in §7.2.
+
+  *The fold is two table rows.* Add *Change a port's `volume` (§4.2a) → minor → No* and *Change a
+  capability's or port's `effect` (§4.3a) → minor → No*, beside the `cost` and `binding` rows that are
+  already there. Additive, moves no digest, breaks no subscriber. → KCB §7.2 (+ §4.2a, §4.3a).
+
+### What this re-run does and does not close
+
+**Count (iv) does NOT close.** Five of the six conditions *What a clean pass would license* names are
+met, and met by walking rather than by reading: Step 1 distinguishes the two worlds before binding,
+Step 2's meter moves and its cliff became a brake, Step 4 resumes without a snapshot and cannot silently
+miss a retraction, Step 5's limit survives the hop, and Step 6 names a party actually on the path — the
+two peers, which is the only party the topology admits. **BP-5, the blocking delta and the one this leg
+was built to find, does not reproduce**, and neither do BP-1, BP-2 or BP-4.
+
+The sixth condition — *"Step 3's table has a lever that is not disconnect"* — is met **at registration
+and not on a live subscription**, which is the moment Step 3 occupies. That is **BP-7**. And Step 8's
+fourth hold does not hold: §4.2a's own visibility mechanism is asserted against a §7.2 table that has no
+row for it, which is **BP-8**.
+
+So the count **changes shape** rather than closing: from *re-run this leg against the folded text* to
+**fold BP-7 (§4.2b/d — extend §4.2c's answer-or-be-non-conformant discipline to a live adjustment) and
+BP-8 (two rows in §7.2's table), then re-run Steps 1–8 again**. Both are additive, both are KCB-only,
+neither moves a digest or a verb, and both are **unowned**.
+
+**What this walk does not touch.** KGP, KMI, KFT and `../schemas/` are unmoved, exactly as *Only §8.1 is
+forced* said they would be; V-1…V-11, MA-6…MA-12 and AP-1…AP-8 are not reopened by anything here, and
+the two cross-references above (BP-8 at §4.3a, BP-7's dependency on KCS open question 1) are recorded
+rather than folded. **No version moves and no clause moves** — the edit is this section, a gate paragraph
+in [`../specs/capability-bus.md`](../specs/capability-bus.md) and a changelog entry. **KCB is not
+promoted**, and this count alone was never going to promote it.
+
+---
+
 ## Downstream results
 
 > **What this section is.** The recorded result of a **downstream run** of this pressure test's
