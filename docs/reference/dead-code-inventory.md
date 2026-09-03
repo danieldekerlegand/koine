@@ -410,8 +410,13 @@ nothing.
 ### C-4 — `SKIP_DIR` / `SKIP_EXT` in `check-doc-links.mjs`
 
 `scripts/check-doc-links.mjs:36-37`. None of `/node_modules/`, `/target/`, `/.venv/`,
-`/dist/`, `/build/` exists here, `/.chief/state/` is gitignored so `git ls-files` never
-returns it, and:
+`/dist/`, `/build/` exists here, ~~`/.chief/state/` is gitignored so `git ls-files` never
+returns it~~ — **that clause is wrong, corrected by US-3**: `.gitignore` carries
+`.chief/state/`, but `prd.json` and `progress.txt` were tracked before the rule and an ignore
+rule does not untrack, so `git ls-files` does return them and that one entry is live (it hides
+8 bare `docs/…` citations, 0 of them dead today). The **verdict is unchanged — keep** — but the
+entry belongs with the other deliberately-unexercised skips, not with the inert constants; see
+[the correction](dead-code-undecidable.md#one-correction-to-the-inventory). And:
 
 ```
 $ git ls-files | grep -icE '\.(png|jpg|jpeg|gif|pdf|svg|ico|woff2?|gz|zip|lock)$'
@@ -456,8 +461,15 @@ this portfolio has already been bitten by exactly that mistake. C-1's eight regi
 the clearest case — a static search over koine can prove only that *koine* does not cite
 them.
 
+That register now exists and is the companion to this document:
+**[What the sweep could not decide](dead-code-undecidable.md)** — the candidates no search
+inside this tree resolves (U-1…U-5), the four limits of the method stated in full, and the one
+claim above that was asserted rather than run.
+
 ## See also
 
+- [What the sweep could not decide — the undecidable register, and the limits of the method](dead-code-undecidable.md)
+  — the companion document: what was left in place because nothing in this tree can decide it
 - [Promotability — what stands between each spec and `ratified`](promotability.md)
 - [`decisions/ADR-0001`](../../decisions/ADR-0001-control-plane-topology.md) — why there is no
   runtime code here to sweep
