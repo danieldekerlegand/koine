@@ -82,3 +82,84 @@ the fourth mirror, which no guard checks).
   and it no longer clearly outranks KINP (which has zero koine-side work). I recorded the verdicts
   in the row and left the numbering alone, because US-2's verdict may move it again. **US-3 should
   do the single re-rank**, once gate (ii) is in.
+
+---
+
+## US-2 — Gate (ii) walked cold (2026-09-03) · commit d7fd36a
+
+**What I did.** Walked KFT's count (ii) — the re-run of `scenarios/kft-resume-checkpoint.md` against
+the 0.6.0 folded text. The gate asks for six sections read **cold** (0.6.0 moved §4's admission
+inputs), so each of §3.4/§4.2/§4.3/§5.4/§6/§7 got its own verdict, plus the leg's Steps 1–7.
+**No replay was available** — this leg has no KCS encoding (DR-11) — so every verdict is hand-read,
+and the evidence table says so rather than leaving it implied.
+
+**Verdict: NOT CLEAN.** FT-R / FT-T / FT-V flip outright; Steps 1 and 7 hold. **The fold's model was
+never in question; its perimeter was** — both breaks came from plane folds that landed *later on the
+same day* as KFT 0.6.0 (`49e63e6`), which no reading of KFT alone can see.
+
+- **FT-S half-flips → FT-X (High, gate integrity).** The `hyperparams` bypass is closed twice over
+  and the continued-pre-training front door is shut. But §4.2/§4.3 read the checkpoint's class off
+  the **KMI §2 envelope** (MA-5, `7ee8da0`) and state **no rule for a silent one** — reachable by
+  resuming a 0.5.0-era run (before §5.4's bind-at-publication existed) or by holding bytes replicated
+  without an envelope (KMI §7.1(d) forbids synthesizing one; §7.1(e) permits serving them *inside*
+  the domain). The two planes state **opposite** absence defaults. So the FT-S breach returns through
+  the **carrier** rather than the slot, in-domain, where KMI §7.1(e) never sees it — the placement is
+  KFT's gate, not KMI's.
+- **FT-U half-flips → FT-Y (High, operand durability).** The `job+step` collision is gone and the
+  join rule is right. But §3.4's REQUIRED `checkpoint`/`at_step` live **only** on §6's telemetry
+  stream (§5.2 does not carry them; `generated[]` is written at completion, which an interrupted leg
+  never reaches), and **KCB §4.2b** (`7c82abc`) then made that stream sheddable on a losslessness
+  argument stated for *KGP payloads*. §4.2c's recovery operand is typed to a KGP pack id → no
+  admissible value here. §7's *MUST verify `at_step`* has no durable source.
+
+**One clause was RESCUED, not broken**, and it is recorded because nothing else records it: §5.4's
+*"carries them on its KMI envelope"* named a slot KMI §2 **did not have** when §5.4 was published;
+MA-5 added it hours later. The second axis moved *toward* a clause as often as out from under one.
+
+**Cold-job path: confirmed unchanged for §4 admission — walked, not inherited.** `resume` is absent
+from the schema's top-level `required`, and §4.2/§4.3/§7's resume clauses each open *"Where the job
+carries `resume`"*. **US-1's premise holds.** One precision recorded: §3.4's *"every clause below is
+inert"* is true of the four rules below it and **not** of the whole fold — §5.4's bind-at-publication
+deliberately binds a cold run. That is output-side, downstream of admission, so gate (i) is
+unaffected either way.
+
+**Count (ii) changes shape**: *re-run the leg* → **fold FT-X and FT-Y (additive, KFT-only — KMI and
+KCB need no change), then re-run**. FT-X belongs in the same §4.2/§4.3 edit as FT-W. **Fourth** row
+to take that shape in two days.
+
+**No version and no clause moved.** `specs/fine-tuning.md`'s diff is two **pure insertions**
+(`@@ -1367,0` at the Pressure test §, `@@ -1421,0` at the Changelog) — §2–§7 are below line 1266 and
+untouched; `schemas/` and `registry/` are not in the diff at all.
+
+**Files changed.** `scenarios/kft-resume-checkpoint.md` (new § *Re-run — the FT-R…FT-V resumption
+fold walked against KFT 0.7.0 (2026-09-03)*: evidence split, per-delta table, **per-section table**,
+seven step subsections, a cold-job subsection, findings with FT-X/FT-Y, verdict);
+`specs/fine-tuning.md` (gate (ii) paragraph + dated Editorial changelog entry);
+`docs/reference/promotability.md` (KFT row: gate (ii) verdict + **the deferred re-rank, now
+discharged**); `ROADMAP.md` (Phase-1 KFT row (ii)); `CLAUDE.md` (*Current state* KFT bullet — the
+unguarded fourth mirror).
+
+**Gates.** doc-integrity OK · doc-links 0 dead vs 0 on main · tasklist-categories OK · schemas OK
+(9/278/80/3) · registry OK (29 relations) · `.chief/verify.sh --run <5 changed>`: all selected gates
+green · `.chief/verify-test.sh`: 30 passed, 0 failed.
+
+### Learnings for future iterations
+- **The "two-axis read" pattern now has a third edge: a plane can move TOWARD you.** Every prior
+  2026-09-03 walk recorded the second axis as a source of breaks. This one found a clause (§5.4) that
+  was *wrong when published and correct now*, because MA-5 landed hours later the same day. Record
+  those too — otherwise the only clause nobody can explain is the one that quietly started working.
+- **`git log` the same-day folds before walking a gate.** `git log --oneline -- specs/*.md` for the
+  fold's date gives the ordering *within* the day, which the changelogs (dated to the day) cannot.
+  Both of this walk's deltas and its one rescue turned on that ordering. 0.6.0 = `49e63e6`,
+  KCB §4.2 = `7c82abc`, KMI 0.3.5/MA-5 = `7ee8da0`, all 2026-08-26 and all AFTER 0.6.0.
+- **A gate that names sections wants a per-section table, not only a per-delta one.** Two of KFT's
+  six sections are read by more than one delta and §5.2 is read by none of the six; a delta-only
+  table would have silently skipped the §5.4 rescue and buried §4.3.
+- **US-3's premise is now doubly conditional and should NOT promote KFT.** Both counts are open, each
+  is *a fold plus a re-run*, and both folds are unowned. US-3's remaining independent work: verify the
+  agora sha (criterion 1), land the dated DR-11 correction (criterion 3), record the AUD-1…AUD-6
+  per-repo actions (criterion 4). Criterion 2's IF does not fire. The `promotability.md` re-rank US-1
+  deferred is **already done here** — do not redo it.
+- **`docs/reference/promotability.md` line 3's DR-11 sentence is still the stale one** ("KFT cannot be
+  promoted even on a clean re-run until that document is built downstream"). I deliberately left it
+  for US-3, whose criterion 3 owns the dated correction. Don't read it as current.
