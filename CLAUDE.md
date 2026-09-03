@@ -425,7 +425,34 @@ vocabulary.
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
   scenarios to assert stable structure/invariants rather than exact bytes/content; §7.1 and §7.3
-  remain open.
+  remain open. Its single count — a re-validation of that fold against
+  `scenarios/kcs-format-stress.md` — was **walked by hand on 2026-09-03 and did NOT close**. The walk
+  states per delta which evidence carried it, deliberately: **M/N/O** and the assertion half of **P**
+  lean on the 2026-08-24 run of `kcs:format-stress`, while **Q** in full, the firing half of **P** and
+  every replayed delta's clause were **hand-read** — Q by necessity, since **DR-10** leaves the runner
+  without the predicate. The regression set flips (**P** with one declared residual: no run has ever
+  exceeded a `timeout_ms`, so §4's fails-liveness path is unexercised — a suite-coverage gap, not a
+  delta). **Q half-flips**: byte equality is forbidden normatively, but `structure_matches` entered
+  the fixed core with *only* that negative constraint and its **comparison basis is fixed nowhere** —
+  no slot in §2/§3 where a scenario declares which invariants must match (the signature is fixed at
+  two operands), no plane clause behind the *Determinism/invariants* group where every other §5
+  predicate delegates to one, and two operands that are `asset` ids, i.e. hashes of
+  deliberately-differing bytes. Two conformant runners may return different verdicts for one document
+  and §4's content-addressed report hides the divergence → new blocking delta **R**. **KCS stays
+  0.3.0 candidate; no version and no clause moved** (§2/§2.1/§3/§4/§5 byte-unchanged — a
+  read-and-confirm pass, not a fold; the edit is a *Pressure test* record, a §7.2 evidence note and a
+  changelog entry). The count **changed shape**: from *re-validate the fold* to **fold R — fix the
+  basis in §5 by delegating it to named clauses one plane over, or give §2/§3 a declaration slot —
+  then re-validate again**, a normal minor revision gated by a pressure test, and **unowned**. It is
+  deliberately *not* §7.1 (that escape hatch is for predicates §5 cannot express; R is one it *does*
+  express with an open basis) and §7.2 is **not reopened** — the fold is incomplete, its clause
+  stands. **DR-10 is now two things**: as a *qualification* on this count it is **discharged** (a
+  hand-walk did what a replay could not, and R is what was under it — a replay could not have found R
+  even with the predicate implemented, one runner being internally consistent); as a *drift* it is
+  untouched and stays **downstream and unowned** under ADR-0001, and must not be closed by editing the
+  console's vocabulary from this repo. When KCS does promote it is under the **ordinary,
+  conformance-gated** rule, not 0.2.0's grandfathering — that clause does not survive a demotion, and
+  the artefact debt it covered was paid 2026-08-19.
 - `specs/fine-tuning.md` — KFT 0.7.0, **candidate** (ratified 2026-07-23 on two pressure passes:
   `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L; a **third**
   pass, `scenarios/e2e-producer-exhaust-finetune.md`, then pressure-tested a *producing application's*

@@ -197,6 +197,15 @@ re-open input for KCS's owner against a **ratified** spec, alongside `INT-11`.
 Suite-wide limits **DR-1** and **DR-2** are recorded in
 [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).
 
+**DR-10 after 2026-09-03 — the qualification is discharged, the drift is not.** The spec recorded
+DR-10 as a *qualification* on KCS's pending re-validation rather than a second gate, because a
+hand-walk could still do what a replay could not. That walk is the next section, and it happened —
+so consequence (1) no longer blocks the re-validation, which returned its own verdict instead
+(**delta R**). Consequence (2), the drift itself, is **untouched**: the runner's vocabulary still
+omits `structure_matches` and still declares `media_map_complete`. It stays **downstream work under
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and unowned**, and koine does not close
+it — this repo specifies the §5 vocabulary and does not hold the console that implements it.
+
 ---
 
 ## Re-validation — KCS 0.3.0, walked 2026-09-03

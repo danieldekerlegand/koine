@@ -159,8 +159,19 @@ is unchanged; what changed is that clearing it no longer finishes the job.
 **Two of the six specs have no row here.** Phase 1 was scoped to the four candidates of its day;
 **KINP** and **KCS** were still ratified then and were demoted later (2026-08-23 and 2026-08-20).
 Their gates are real — KINP's MA-1…MA-4 fold landed at 0.4.0 (`85`) and its re-run was walked clean
-on 2026-09-03 (`89`), leaving only the **KCS-encoding extension**, unowned and downstream; KCS's is a
-re-validation of its own determinism fold, unowned — and both are carried in
+on 2026-09-03 (`89`), leaving only the **KCS-encoding extension**, unowned and downstream; **KCS's own
+re-validation was walked on 2026-09-03 (`90`) and was NOT clean**, so that count did not close — it
+changed shape. Deltas M/N/O/P flip (three corroborated by the 2026-08-24 run, with one declared
+residual on P: no run has ever exceeded a `timeout_ms`), but the 0.3.0 determinism fold under test
+only **half-flips** — `structure_matches` carries a normative *MUST NOT be byte equality* and no
+positive statement of what it compares, so two conformant runners may return different verdicts for
+one document (new blocking delta **R**). KCS stays **0.3.0 Candidate**, no version and no clause
+moved, and the count now reads *fold R — fix the basis in §5 or give §2/§3 a declaration slot — then
+re-validate again*, a normal minor revision gated by a pressure test and **unowned**. **DR-10** is
+discharged as a *qualification* on that count (a hand-walk did what a replay could not) but is
+untouched as a *drift*, and it stays **downstream and unowned** under
+[ADR-0001](decisions/ADR-0001-control-plane-topology.md) — koine specifies the §5 vocabulary, the
+console implements it. Both specs' gates are carried in
 [`docs/reference/promotability.md`](docs/reference/promotability.md), which is the six-row view this
 four-row table is the program half of.
 
