@@ -30,6 +30,18 @@ Started: Thu Sep  3 01:18:28 CDT 2026
   requirement one tasklist away — that is how US-2 nearly deleted the `docs/archive/` skip
   that `901-docs-tell-the-truth` mandates. Re-run every search AT REMOVAL TIME, not only at
   inventory time.
+- **A citation count is not evidence when the counter is inside the corpus.** A document that
+  enumerates its findings by name becomes a citer of every one of them, so re-running the
+  search that produced it returns 0. Exclude the document explicitly
+  (`':!docs/reference/<the-doc>.md'`) and say so in the document. Measured on US-3's register:
+  23 findings → naive replay 0, correct replay 23.
+- **`git ls-files` only sees TRACKED files, so every count in a new document is off by one
+  until `git add`.** `check-doc-integrity` reads the filesystem and `check-doc-links` reads
+  `git ls-files`, which is why the two disagree by exactly the new files during a session and
+  agree after staging. Verify every count AFTER staging.
+- **An assertion about tooling behaviour is a search that was not run.** US-1 wrote
+  "`.chief/state/` is gitignored so `git ls-files` never returns it"; both files are tracked
+  (an ignore rule does not untrack) and `git check-ignore -v` prints nothing. Run the command.
 
 ---
 
@@ -186,3 +198,95 @@ is the standard of proof.
   retraction as the concrete case of what a static search over this tree cannot see, alongside
   C-1's eight registry rows (cross-repo consumers) and B-1's ratchet-vs-wall duplication that
   was deliberately not merged.
+
+---
+
+## 2026-09-03 — US-3: What the sweep could not decide
+
+**Done, and nothing was removed** — which is the point. Wrote
+`docs/reference/dead-code-undecidable.md`, linked it from `docs/README.md`'s Reference
+section, and cross-linked it both ways with the inventory.
+
+Files changed: `docs/reference/dead-code-undecidable.md` (new, 320 lines),
+`docs/README.md` (+1), `docs/reference/dead-code-inventory.md` (C-4 annotated, closing
+paragraph and *See also* pointed at the register), `.chief/state/prd.json`,
+`tasks/chief/900-dead-code-paydown.json`.
+
+**Gate:** `.chief/verify.sh --run docs/reference/dead-code-undecidable.md docs/README.md
+tasks/chief/900-dead-code-paydown.json .chief/state/prd.json` → `guard-doc-integrity` OK
+(58 markdown files, 1449 relative links, 0 errors, 3 status tables match),
+`guard-doc-links` `0 dead vs 0 on main`, `guard-categories` OK 4 tasklists,
+`verify-selftest` **30 passed, 0 failed** → **all selected gates green**.
+
+### The five entries, and how the four named mechanisms actually distribute here
+
+The story names four ways a thing can be reachable without a static search seeing it. They
+do **not** divide evenly over this tree, and the distribution is the finding:
+
+| Mechanism | Instances |
+|---|---|
+| a consumer **outside this repo** | the dominant class — U-1, U-2, U-3 |
+| **reflection** over data-read keys | U-4 |
+| **dynamic dispatch** by string/glob | decided, and clean — recorded so it is not re-filed |
+| **generated code** | **zero** — U-5 is the search that found nothing to be undecided about |
+
+- **U-1 — 23 of 125 distinct schema property names** are cited by no file outside
+  `schemas/`. Split by *why the reader is elsewhere*: 5 camelCase names in
+  `canonical-world-export` / `canonical-graph-export` (the downstream runtime mirror
+  `CLAUDE.md` says to keep identical — includes `prologKb`, which is the "Prolog corpus
+  reached by a path nobody found" shape again, and `predicateSchemaHash`); 4 that are
+  **OTIO's own field names** and so not koine's to remove (ADR-0005); 4 external identifier
+  vocabularies; 10 on `participant-self-description`, whose reader is a *participant* by
+  ADR-0007. **The camelCase set is the sharpest case in the whole sweep**: the single
+  strongest local signal that something is foreign is also the reason it must not be touched.
+- **U-2 — the 13 scenario files.** `CLAUDE.md` states the downstream KCS encoding set is held
+  to set-equality by a test in the implementing repo, with no local red light;
+  `.chief/verify.sh --list-gates | grep -c scenario` → **0**. Nine of twelve have an encoding,
+  three do not (DR-11/12/13) and look identical from here to dead scaffolding. **The unusual
+  part: here a CREATION is as dangerous as a deletion**, and nothing local catches either.
+- **U-3 — all 6 `.chief/config` engine variables at 0 in-tree readers**, plus
+  `.chief/agent-context.md` (the one `.md` file of 59 outside `DOC_DIRS`, and the file with
+  the fewest inbound links in the repo) and `CHIEF_BASE_BRANCH`'s non-default branch. A
+  commented-out default in `.chief/config` is **published interface documentation for an
+  out-of-repo caller**; the fact that it is spelled as shell comments is incidental.
+- **U-4 — 25 of 56 draft-2020-12 keyword branches in `check-schemas.mjs` never fire** over
+  the 9 schemas (two of them carrying hand-written validation, not just a table row), plus
+  `TIERS`' `full-prolog` at **0 of 29** relation rows. Filed as undecidable rather than
+  Class C because deciding it needs a *judgement about what the guard is for*: trimming
+  `KNOWN` to today's 31 would make the guard **reject** the first schema that legitimately
+  used `maxItems`, since the unreached branch and the misspelling check are the same object.
+- **U-5 — generated code: zero instances**, with the searches that establish it. Stating that
+  is the result, not an omission; the next sweep can skip the search.
+
+### Two things worth carrying forward
+
+- **A citation count is not evidence when the counter is inside the corpus.** Publishing this
+  register makes its own U-1 search return **0**, because the document names all 23. Measured,
+  not predicted: the naive replay returned **1** while staged — and that 1 is how a *dropped*
+  23rd name (`aliases`, omitted from a table) was caught — then **0** once fixed, and **23**
+  with the register excluded via `':!docs/reference/dead-code-undecidable.md'`. The exclusion
+  is written into the document. Any future doc that enumerates findings has this problem.
+- **An assertion about tooling behaviour is a search that was not run.** US-1's C-4 said
+  `/.chief/state/` is gitignored so `git ls-files` never returns it. False: `.gitignore` does
+  carry the directory, but `prd.json` and `progress.txt` were tracked before the rule and an
+  ignore rule does not untrack. `git check-ignore -v` prints nothing; `git ls-files` returns
+  both. So that skip is **live** — it hides 8 bare `docs/…` citations (0 dead today). Verdict
+  unchanged (**keep**), class corrected to *deliberately unexercised*. Annotated in place with
+  a strikethrough rather than rewritten, so the inventory keeps its own error visible.
+
+### Learnings for future iterations
+
+- **Verify counts AFTER staging, not before.** `git ls-files` only sees tracked files, so
+  every `*.md` count in a new document is off by one until `git add`. Two numbers in this
+  document (`59` md files, the `*.md → 59` glob row) were wrong on first write for exactly
+  that reason and were caught by re-measuring post-`git add`.
+- **`check-doc-integrity` reads the filesystem, `check-doc-links` reads `git ls-files`.** So
+  the two disagree by exactly the untracked/new files during a working session, and agree
+  after staging. Useful when a count looks off by one.
+- **Anchor gotcha, again:** `### C-4 — `SKIP_DIR` / `SKIP_EXT` in `check-doc-links.mjs``
+  slugifies to `#c-4-skipdir-skipext-in-check-doc-linksmjs` — **one** hyphen where the ` / `
+  was, because `slugify` drops `/` then collapses the whole whitespace run to a single hyphen.
+  Cost one red gate. This is the third distinct way that function has bitten this branch.
+- **The tasklist is now complete** (US-1, US-2, US-3 all `passes: true`). `901-docs-tell-the-truth`
+  runs next and depends on this one; it should read the undecidable register before touching
+  `scenarios/` or `schemas/`, since U-1 and U-2 name what a docs sweep must not "tidy".
