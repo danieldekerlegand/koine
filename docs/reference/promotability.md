@@ -105,11 +105,30 @@ Ranked by what a promotion actually costs from here. This ordering is the point 
    **dependency-pin precondition** this row had recorded as closed: three of five pins went stale on
    2026-08-26 and the header's own re-check trigger fired unpulled. Neither the FT-W fold nor the pin
    re-read is owned.
-   **The re-rank this implies is deliberately deferred.** On cost alone KFT no longer clearly outranks
-   KINP below, which has *no* koine-side work left at all. Gate (ii) — the resume-checkpoint re-run —
-   has not been walked yet and may move the number again, so re-ordering twice in one pass would be
-   churn rather than information. The verdicts are recorded here in the row; the ordering is revisited
-   once (ii) is in.
+   **Gate (ii) has now been walked too — same day, same tasklist — and it was not clean either.** The
+   six sections were read cold against `resume`-carrying jobs, with **no replay available** (DR-11, see
+   below). **FT-R, FT-T and FT-V flip** and Steps 1 and 7 hold. **FT-S and FT-U half-flip**, giving two
+   new deltas, and both came from folds that landed *later on 2026-08-26* than KFT 0.6.0 itself:
+   **FT-X** (§4.2/§4.3 read the checkpoint's egress class and license off the KMI §2 envelope and state
+   no rule for a **silent** one, where KMI 0.3.5 now says *absent is not `exportable`* and §4.2's
+   nearest stated default is fail-open — so the FT-S breach returns through the carrier, in-domain,
+   where KMI §7.1(e) cannot see it) and **FT-Y** (§3.4's REQUIRED `checkpoint`/`at_step` live only on
+   §6's telemetry stream, which KCB §4.2b then made sheddable, leaving §7's MUST-verify with no durable
+   source). So count (ii) is **a fold plus a re-run** as well. Both folds are additive and **KFT-only** —
+   KMI and KCB need no change — and FT-X belongs in the same §4.2 edit as FT-W. **Neither is owned.**
+   **The cold-job independence of the two gates was walked, not assumed, and it holds** — `resume` is
+   absent from the schema's top-level `required` and every resume clause is conditioned on its presence
+   — so gate (i)'s verdict above stands on its own.
+   **The re-rank, now that both gates are in: the ordering does not move, and the margin is thinner
+   than it was.** KFT's remaining koine-side work is three additive folds in **one** spec (FT-W and
+   FT-X in the same §4.2/§4.3 edit, FT-Y in §5.2/§6) plus two re-runs — less than KMI's two-spec MA-12
+   fold below it, and far less than KCB's pile, so it keeps 3rd on volume. It stays ahead of **KINP**
+   only on the argument KINP's own row already makes — KINP's last blocker sits *downstream of KCS's
+   unresolved open question 1*, which KFT's does not — and that is now the whole of the margin, because
+   KINP has no koine-side work at all and KFT has three folds. Anyone re-reading this page after the
+   FT-W/FT-X edit lands should expect these two to swap. The **KCS-encoding** condition on gate (ii)
+   is a separate axis and is re-checked on its own terms below, not inherited into this ordering. The
+   deferral recorded here earlier on 2026-09-03 is discharged.
 4. **KINP — no koine-side work is left, and this walk is why it now outranks KMI.** The four
    blocking deltas plus MA-7 landed at **0.4.0** on 2026-08-26: §6's convergence target is
    domain-scoped, §4.5 has its fail-closed fourth branch, §4.2 has `world_aligns_with`, §4.1 carries

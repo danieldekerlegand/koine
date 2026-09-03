@@ -1365,6 +1365,57 @@ it was before, which is why the third pass's re-run is unaffected; but the gate 
 over one field set for every job, and the owner should read §3.4, §4.2, §4.3, §5.4, §6 and §7 as
 **changed** normative surface rather than as re-validated text.
 
+**Gate (ii) was walked on 2026-09-03, and it does not close either.** The six sections were read cold
+against `resume`-carrying jobs — and, because the fold is a composition point, against the plane text
+those clauses cite today, which is not the plane text of the hour they were written. The record is
+[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) § *Re-run — the
+FT-R…FT-V resumption fold walked against KFT 0.7.0 (2026-09-03)*. **Three of five deltas flip
+outright** — **FT-R** has its slot in §3.4 and in the schema (`resume` optional, its trio REQUIRED,
+`additionalProperties: false`, absent from the top-level `required`), **FT-T** has `continues`
+registered in [`../registry/relations.tsv`](../registry/relations.tsv) with the right signature and
+both disclaimers, **FT-V** has its remainder estimate and its chain-cumulative ceiling — and Steps 1
+and 7 hold, including *no new plane, artifact kind, media type, or KCB verb*. **The fold's model was
+never in question; its perimeter was**, and both breaks come from plane folds that landed **later the
+same day** and that no reading of KFT alone can see:
+
+- **FT-S half-flips → new delta FT-X (High, gate integrity).** The `hyperparams` bypass is closed
+  twice over and the continued-pre-training front door is shut. But §4.2/§4.3 read the checkpoint's
+  class off the KMI §2 envelope and state **no rule for a silent one** — reachable by resuming a run
+  started under 0.5.0 (before §5.4's bind-at-publication existed), or by holding bytes replicated
+  without an envelope (KMI §7.1(d) forbids synthesizing one and §7.1(e) permits serving them inside
+  the domain). The two planes now state **opposite** absence defaults for the same field: §4.2's
+  nearest stated default is KGP §7.2's `exportable`, fail-open, while KMI §2 says *absent is not
+  `exportable`* and §7.1(e) fails closed. So the FT-S breach returns through the **carrier** rather
+  than the slot — an unclassified checkpoint of a `local-only` corpus admitted to cross-boundary
+  compute by a provider **inside** the originating domain, where KMI §7.1(e) never sees it. Same
+  plane fold as **FT-W** and a different failure: FT-W is a two-carrier *ranking* problem, FT-X a
+  one-carrier *absence* problem, and FT-W's fix does not reach it. Fold both in one §4.2/§4.3 edit.
+- **FT-U half-flips → new delta FT-Y (High, operand durability).** The `job+step` collision is gone
+  and the join rule is right. But §3.4's REQUIRED `checkpoint` and `at_step` live **only** on §6's
+  telemetry stream — §5.2's record does not carry them and `generated[]` is written at completion,
+  which an interrupted leg never reaches — and **KCB §4.2b then made that stream sheddable**
+  (`on_overflow: drop`, plus `coalesce`/`defer` a producer may apply unasked on a losslessness
+  argument stated for *KGP payloads*, which a telemetry event is not). KCB §4.2c's recovery operand
+  is typed to a KGP pack id and has no admissible value here, and §2 declares no telemetry port to
+  carry a `volume`. §7's *MUST verify `at_step` against the prior leg's provenance and telemetry* has
+  no durable source. Fold: **§5.2** records the last published checkpoint id and step per leg
+  (including a `failed` leg), **§6** makes a checkpoint-bearing event non-sheddable.
+
+**One clause was rescued rather than broken, and it is recorded because nothing else records it.**
+§5.4 requires a checkpoint to carry its class *on its KMI envelope*; the KMI §2 envelope had **no**
+`license`/`egress` field when §5.4 was published (`49e63e6`), and MA-5 added it hours later
+(`7ee8da0`). The near-miss landed on the right side.
+
+Count (ii) therefore **changes shape**, from *re-run the leg* to **fold FT-X and FT-Y (additive,
+KFT-only — KMI and KCB need no change), then re-run that section again**. Gate (i) is **restated and
+does not move**, and the walk confirmed why by execution rather than by inheritance: §3.4's `resume`
+is absent from the schema's top-level `required`, and §4.2's, §4.3's and §7's resume clauses each open
+*"Where the job carries `resume`"* — so a **cold** job is fed exactly the input set it was fed at
+0.5.0. The one precision 0.6.0's own summary overstates: §3.4's *"every clause below is inert"* is true
+of the four rules below it, and §5.4's bind-at-publication deliberately binds a cold run too. That is
+an **output-side publication obligation**, downstream of admission, so gate (i) is unaffected. **KFT is
+not promotable**, and the reason is two open counts.
+
 **0.7.0 adds no third gate — it adds two rows of unexercised vocabulary.** The `text-to-audio` and
 `audio-to-audio` tokens (§3.1) are additive over the existing `media(audio)` plane: no clause of §4
 moves, FT-F's admission mechanism is byte-unchanged, and a cold pre-0.7.0 manifest is admitted and
@@ -1419,6 +1470,36 @@ re-ratification:
 
 ## Changelog
 
+- **Editorial** (2026-09-03) — **Gate (ii) was walked, and it does not close.** The
+  [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) re-run 0.6.0 added
+  as this spec's second count was executed the same day as gate (i): the six sections it names —
+  §3.4, §4.2, §4.3, §5.4, §6, §7 — read **cold** against `resume`-carrying jobs, by hand, with **no
+  replay available** (this leg has no KCS encoding, **DR-11**), and against the plane text those
+  clauses cite today. **FT-R, FT-T and FT-V flip** — the `resume` slot and its schema twin, the
+  `continues` registry row with its two disclaimers, the remainder estimate against a
+  chain-cumulative ceiling — and **Steps 1 and 7 hold**, including *no new plane, artifact kind,
+  media type, or KCB verb* (`continues` being a registry row, which Step 4 anticipated as *"a
+  registration decision"*). **The fold's model was never in question; its perimeter was.** Both
+  breaks come from folds that landed **later on 2026-08-26**, hours after 0.6.0 at `49e63e6`:
+  **FT-S half-flips** → **FT-X** (High) — §4.2/§4.3 read the checkpoint's class off the KMI §2
+  envelope and state no rule for a **silent** one, while KMI 0.3.5 (`7ee8da0`) says *absent is not
+  `exportable`* and §7.1(e) fails closed where §4.2's nearest stated default is fail-open, so the
+  FT-S breach returns through the carrier, in-domain, where KMI §7.1(e) cannot see it; **FT-U
+  half-flips** → **FT-Y** (High) — §3.4's REQUIRED `checkpoint`/`at_step` live only on §6's stream,
+  §5.2 does not carry them, and KCB §4.2b (`7c82abc`) made that stream sheddable on a losslessness
+  argument stated for KGP payloads, leaving §7's MUST-verify without a durable source. One clause was
+  **rescued** rather than broken and it is recorded here because nowhere else records it: §5.4's
+  *"carries them on its KMI envelope"* named a slot KMI §2 did not have until MA-5 landed hours
+  later. Count (ii) changes shape to **fold FT-X and FT-Y (additive, KFT-only), then re-run**; FT-X
+  belongs in the same §4.2 edit as **FT-W**. Gate (i) is restated and **does not move** — the cold-job
+  path was walked, not inherited: `resume` is absent from the schema's top-level `required` and every
+  resume clause opens *"Where the job carries `resume`"*, with §5.4's bind-at-publication the one
+  cold-run obligation 0.6.0 added and it is output-side, downstream of admission. **No version moves
+  and no clause moves**: §2, §3, §3.3, §3.4, §4, §5, §6, §7,
+  [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json) and
+  [`../registry/relations.tsv`](../registry/relations.tsv) are byte-unchanged; the edit is the
+  scenario section, this entry and the gate paragraph above. **KFT stays 0.7.0 Candidate and is not
+  promotable** — two open counts, both now a fold plus a re-run.
 - **Editorial** (2026-09-03) — **Gate (i) was executed, and it does not close.** The FT-M…FT-Q
   producer-exhaust intake fold — the count open since 0.4.0, restated by 0.5.0, 0.6.0 and 0.7.0 and
   never run — was walked by hand against **0.7.0 as published**, and against the plane text those

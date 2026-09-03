@@ -580,6 +580,37 @@ vocabulary.
   `chief/71` closed on 2026-08-13 and that has reopened, **not** a third gate. Record:
   `scenarios/e2e-producer-exhaust-finetune.md` § *Re-run — the FT-M…FT-Q intake fold walked against
   KFT 0.7.0 (2026-09-03)*.
+  **Gate (ii) was walked the same day and did NOT close either.** The six sections 0.6.0 changed —
+  §3.4/§4.2/§4.3/§5.4/§6/§7 — were read **cold** against `resume`-carrying jobs, by hand, with **no
+  replay available** (this leg has no KCS encoding, DR-11). **FT-R/FT-T/FT-V flip** (the `resume` slot
+  and its schema twin; `continues` registered with the right signature; the remainder estimate against
+  a chain-cumulative ceiling) and Steps 1/7 hold, so **the fold's model was never in question — its
+  perimeter was.** Both breaks come from folds that landed *later on 2026-08-26* than KFT 0.6.0
+  (`49e63e6`). **FT-S half-flips → FT-X** (High): the `hyperparams` bypass is closed twice over, but
+  §4.2/§4.3 read the checkpoint's class off the **KMI §2 envelope** (MA-5, `7ee8da0`) and state no rule
+  for a **silent** one — reachable by resuming a 0.5.0-era run or by holding bytes replicated without
+  an envelope (KMI §7.1(d)) — and the two planes state **opposite** absence defaults (§4.2's nearest is
+  KGP §7.2's fail-open `exportable`; KMI §2 says *absent is not `exportable`* and §7.1(e) fails closed),
+  so the FT-S breach returns through the **carrier** rather than the slot, in-domain, where KMI §7.1(e)
+  never sees it. Same plane fold as FT-W and a different failure — FT-W is a two-carrier *ranking*
+  problem, FT-X a one-carrier *absence* problem — so fold both in one §4.2/§4.3 edit. **FT-U half-flips
+  → FT-Y** (High): the `job+step` collision is gone and the join rule is right, but §3.4's REQUIRED
+  `checkpoint`/`at_step` live **only** on §6's telemetry stream (§5.2 does not carry them; `generated[]`
+  is written at completion, which an interrupted leg never reaches), and **KCB §4.2b** (`7c82abc`) then
+  made that stream sheddable on a losslessness argument stated for *KGP payloads* — which a telemetry
+  event is not — while §4.2c's recovery operand is typed to a KGP pack id and has no admissible value
+  here; §7's *MUST verify `at_step`* therefore has no durable source. Fold: §5.2 records the last
+  published checkpoint id + step per leg (including a `failed` leg), §6 makes a checkpoint-bearing event
+  non-sheddable. **One clause was rescued rather than broken**, recorded because nothing else records
+  it: §5.4's *"carries them on its KMI envelope"* named a slot KMI §2 did not have until MA-5 landed
+  hours later. Count (ii) changes shape to **fold FT-X and FT-Y (additive, KFT-only), then re-run**;
+  gate (i) is restated and **does not move**, its independence walked rather than inherited (`resume` is
+  absent from the schema's top-level `required` and every resume clause opens *"Where the job carries
+  `resume`"*; §5.4's bind-at-publication is the one cold-run obligation 0.6.0 added and it is
+  output-side, downstream of admission). The walk moved **no version and no clause** (§2–§7, the schema
+  and `registry/relations.tsv` byte-unchanged; the edit is a scenario section, a gate paragraph and a
+  changelog entry). Record: `scenarios/kft-resume-checkpoint.md` § *Re-run — the FT-R…FT-V resumption
+  fold walked against KFT 0.7.0 (2026-09-03)*.
 - `registry/` — shared **agnostic** vocabularies only: `relations.tsv` (core, **binary** relations
   only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
   `relations/social.tsv` (soc:), plus `entity-types.tsv`, `media-types.tsv`, and `enums/`.
