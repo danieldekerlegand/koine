@@ -457,9 +457,11 @@ demand on a ratified spec. → KCS §5/§7.1.
 | **MA-10** | Med | §7.1(f)'s *pending fetch, never a broken identifier* is right and becomes unfalsifiable under federation: retention is *MAY* (b), no clause requires a minimum replica count or a durable holder, and a consumer polling every reachable store cannot distinguish *not yet propagated* from *no holder remains*. A detectable outage becomes a permanent maybe. | Not a durability mandate — koine specifies contracts, not operations. A **stateable** one: an asset reference MAY name a designated durable holder, and a store MUST be able to answer *not held, and not expected* distinctly from *not reachable*, so a consumer can conclude. | KMI §7.1(b)(f), KCB delta L |
 | **MA-11** | Cleanup | KCS §5 has no vocabulary for an authority boundary — five of this pass's ten assertions have no predicate and three borrow a neighbour's meaning. Every §5 predicate was written for a fabric with one holder of each authority role. | Evidence for KCS open question 1 (*fixed core + escape hatch*); no demand on the ratified spec. | KCS §5/§7.1 |
 
-**MA-12 is not in the table above, deliberately.** It was returned by the **2026-09-03 re-run** of
-the folded text, not by this pass, and the table is the record of what the 2026-08-24 pass found. It
-is defined once, in *Re-run — Steps 1–10 walked by hand against the folded text*, under Step 10.
+**MA-12 and MA-13 are not in the table above, deliberately.** Both were returned by the
+**2026-09-03 re-runs** of the folded text, not by this pass, and the table is the record of what the
+2026-08-24 pass found. Each is defined once: **MA-12** in *Re-run — Steps 1–10 walked by hand against
+the folded text*, under Step 10; **MA-13** in *Re-run — Steps 8–10 re-attacked after the KCB walks*,
+under Step 9.
 
 **Not deltas — what this pass tried to break and could not.** **Offline-first minting** survived
 both authorities being gone, including the world-stamp back door, and there is no clause that could
@@ -618,7 +620,7 @@ fold reached.
 | **6** | MA-7 | KINP | ✅ **Flips.** §3.4 states the exception, the disjointness precondition, and the collision rule. |
 | **7** | MA-6 | KCB | ✅ **Flips.** A grant names its issuer, a provider names the issuers it accepts, and an unrecognized one fails closed. |
 | **8** | — (regression set) | KMI | ✅ **Holds**, including through §2's two new fields. |
-| **9** | MA-5 | KMI | ✅ **Flips.** The gate has an operand and the retainer is where it now bites. |
+| **9** | MA-5 | KMI | ✅ **Flips.** The gate has an operand and the retainer is where it now bites. *(Superseded the same day — the second pass below reverses this on **MA-13**.)* |
 | **10** | MA-10 | KMI | 🔴 **Does not flip.** The three-valued answer is required of a store and **no wire carries it** → new delta **MA-12**. |
 
 ### Step 1 — Both authorities go dark ✅ *holds (regression)*
@@ -932,6 +934,12 @@ attributable but not hard-bound to the bytes (above); and a holder without the p
 freely **inside** its own domain, the originating domain's consent point having been its own outbound
 decision under (e).
 
+> **Superseded the same day — do not cite this ✅ on its own.** Step 9 was re-attacked in *Re-run —
+> Steps 8–10 re-attacked after the KCB walks* below and **does not flip**: the first residual above
+> was walked as a **downgrade** (a falsified pair, answered by attribution), and the case that breaks
+> it is **divergence** — two conformant envelopes for one id, no misbehaviour, and no rule for which
+> pair governs. New delta **MA-13** (High, structural).
+
 ### Step 10 — The asset that will never arrive 🔴 *does not flip*
 
 **§7.1(f)'s substance still holds** and was re-attacked: store A decommissioned, a domain-B timeline
@@ -1021,6 +1029,208 @@ operated* are corroborated by this hand-walk only as far as a reading of the con
 > unwritten) and **KMI count (i) does not close** (Step 10, new delta **MA-12**). No spec version
 > moves for this walk: nothing normative changed in it. The findings above are the fold each of the
 > two counts is now waiting on.
+
+---
+
+## Re-run — Steps 8–10 re-attacked after the KCB walks (2026-09-03, second pass)
+
+**Why there is a second pass on the same day, and what would make it waste.** The section above
+walked Steps 1–10 and gave **KMI count (i)** its verdict — 🔴, on **MA-12**. Nothing normative moved
+between that pass and this one, so a re-read of the same clauses against the same bytes would be
+bookkeeping and is not what this is. This pass exists because, later the same day, KCB's **four**
+other counts were walked
+([`e2e-media-transform.md`](e2e-media-transform.md), [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md),
+[`kcb-subscription-firehose.md`](kcb-subscription-firehose.md), [`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md))
+and returned seven new findings — **MT-1, V-9, V-10, V-11, BP-7, BP-8, AP-9** — of which **four sit
+on one axis**: *an operand deliberately kept outside a content digest, carrying a declared normative
+consequence, with nothing that carries it.*
+[ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) named that axis in advance,
+for KCB's `schema_id` digest and the registry merge key built on it.
+
+**KMI §2's `license` / `egress` pair is outside the `asset` id by exactly the same design**, and
+§7.1(d)/(e) hang a gate on it. An axis that produced four findings one plane over is not a reason to
+assume the byte plane is unaffected; it is a reason to go and look. This pass looked, and **Step 9 —
+which the first pass flipped — does not survive it.**
+
+**Method.** Prose, by hand, adversarial, against **KMI 0.3.5 / KCB 0.5.0** as published, with the
+first pass's verdicts treated as claims to attack rather than results to carry forward. Deliberately
+not a replay: **DR-8** stands, and `kcs:multi-authority` predates the fold either pass is testing.
+Where this pass agrees with the first it says so and does not restate the argument.
+
+### Per-step verdicts (second pass)
+
+| Step | Gates | First pass | This pass |
+|---|---|---|---|
+| **8** | §7.1(a)(c)(d) | ✅ holds | ✅ **Holds.** The axis was put to §7.1(a) directly and it is the wrong kind of hazard for an identifier. |
+| **9** | §2, §7.1(d)(e) | ✅ flips | 🔴 **Does not flip** → new delta **MA-13** (High, structural). |
+| **10** | §7.1(b)(f) | 🔴 MA-12 | 🔴 **MA-12 re-confirmed**, and two of the KCB findings **constrain how it may be folded**. |
+
+### Step 8 — The bytes cross the boundary ✅ *holds (re-confirmed)*
+
+The first pass's attacks on content identity are not repeated; they held and nothing since touches
+them. What this pass added is the axis question, asked of §7.1(a) directly: **does an operand
+excluded from the digest put pressure on the digest?**
+
+It does not, and the reason is worth stating because it is what separates this plane's exposure from
+KCB's. §7.1(a) is a claim about *what the id is a hash of* — the bytes — and no envelope field enters
+it; §2 says in terms that *"attaching a policy does not mint a new asset, and changing one never
+moves an `asset` id."* An operand outside a digest is a hazard for **decisions taken over it**, never
+for the identity the digest establishes. That is why every finding on this axis, here and in KCB, is
+a **carrier or perimeter** break and none is a model break. Step 8 is where that distinction is
+visible on the byte plane, and it is intact.
+
+✅ **Holds.**
+
+### Step 9 — The copy escapes the policy that governed it 🔴 *does not flip (reverses the first pass)*
+
+**MA-5's fold is not what breaks, and the first pass's reasoning about it is not disputed.** §2
+carries the pair; §7.1(d) lets it travel *carried, never synthesized*; §7.1(e) evaluates the asset's
+own pair **in addition to** the serving domain's; and (e)'s third bullet closes
+laundering-by-retention at a holder that has **no** pair. Re-walked, all four still hold, and
+`local-only` is still refused on the outbound leg.
+
+**What neither pass had asked: *which* envelope.** §2 fixes the pair as an ordinary envelope field —
+*"asserted by whoever asserted the envelope and ... read off its `prov`"*, with *"no signing or hard
+binding on the pair"* required. An envelope is therefore **per-asserter**, while the `asset` id binds
+**bytes**. Two participants holding the same bytes hold the same id by construction (§7.1(a), and it
+is the property the whole section relies on) and may each assert their own envelope — both
+conformant, both attributable, neither derived from the other. **No clause in §2, §7.1(d) or §7.1(e)
+says an asset has one envelope, ranks two, or names which one governs.**
+
+Read (e)'s two operative bullets against that, and they are about two different objects:
+
+- **Bullet 1 is written over an envelope.** A serving participant evaluates *"the asset's own
+  `license` and `egress` — the values that travelled with it under (d)"*, and (d) sources those from
+  *"the envelope the requesting participant already holds."*
+- **Bullet 2 is written over the asset.** *"Where an asset's `egress` is `local-only`, it MUST NOT be
+  replicated across an authority-domain boundary and no holder may serve it across one, irrespective
+  of that holder's own policy."*
+
+The walk that separates them, with no participant misbehaving at any hop:
+
+1. Domain A ingests a master under `egress: local-only` and asserts envelope **E_A**. Store A refuses
+   every outbound request — correct, and the half that already held.
+2. Participant **B**, in domain B, obtains the **same bytes** by a route this contract does not forbid
+   and could not forbid: the vendor's own delivery, an independent second ingest, or a copy taken
+   before 0.3.5 existed. The id is the hash, so it is **the same asset** — that is (a), working.
+3. B asserts **its own** envelope **E_B** with `egress: exportable`, honestly, because under the
+   licence B holds it is. E_B's `prov` is clean and names B.
+4. B serves across an authority-domain boundary to **C**. C holds bytes and E_B, evaluates the only
+   pair it has ever seen, and serves onward.
+
+Every participant satisfies **bullet 1** on the only pair available to it. **Bullet 2 is breached at
+every hop after the first**, by participants for whom the fact that breaches it is **unreachable**:
+no verb returns *the other envelopes for this id*, §7.1(d) forbids B and C from synthesizing one, and
+E_A never travels because A, correctly, never serves. The MUST is stated over a property of the
+asset; every operand any participant can obtain is a property of **an envelope**; and §2 makes those
+two different things.
+
+**This is not the downgrade attack the first pass declared a residual, and the difference is what
+makes it a delta.** There, a requester supplies a **falsified** pair, and the spec's answer — the
+pair is attributable through its envelope's `prov`, cryptographic binding declined by choice, with
+KCB §5's signing shape named for a deployment that wants one — is a real answer, because there is a
+misdeclaration and a declarant to hang it on. **Here nobody misdeclares.** Two conformant assertions
+disagree, both prov chains are clean, and attribution resolves nothing: it says who said what, and
+the question is which one *governs*. A serving participant must decide at the moment of a `fetch`,
+and (e) presupposes there is one pair to decide with.
+
+🔴 **BROKE (MA-13, High — structural). The gate has an operand and no rule for which value it
+takes.** MA-5's finding was *the gate has no operand*; 0.3.5 gave it one; this is *the operand is not
+determined*, and it arrives at the same destination MA-5 named — an asset's governing policy ends at
+an authority boundary — through a door the fold did not close. It is reachable with **no
+misbehaviour anywhere in the chain**, which the retention hole (e)'s third bullet closed was not, and
+it is not answerable by attribution, which is the answer §2 gives for the pair generally.
+
+**The fold, and it is KMI-only and additive.** Three parts, none of which mints a field:
+
+1. **§7.1(d) names *whose* pair travels.** The pair that accompanies a replication is the one the
+   **serving** participant evaluated under (e) — a policy that has already been through a gate — not
+   whichever copy the requester happens to hold. (d)'s *carried, never synthesized* rule is unchanged;
+   this only fixes the source.
+2. **§7.1(e) states the conflict rule.** Where a holder has more than one conformant pair for an id,
+   **the most restrictive governs**, and a holder MUST NOT prefer the pair it asserted itself. This is
+   [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md)'s monotone-restrictive
+   discipline reused for a gate — exactly as
+   [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) reuses it for a registry's
+   merged attributions, and exactly as KFT §4.2 already takes the most restrictive `egress` across a
+   job's inputs. koine has decided this question twice on other surfaces and not on this one.
+3. **Bullet 2's MUST is scoped to what a holder can know** — the pairs it holds or has received — so
+   the clause becomes decidable rather than a duty over facts no verb returns. (e)'s existing
+   fail-closed default for **absence** is unchanged and is what still covers the copy that arrived
+   with no policy at all.
+
+No `asset` id moves (the pair stays excluded from the id), no envelope field is added, no lineage
+relation, media type, timeline shape or `fetch` grant moves, **no KGP clause moves** and no
+`schemas/*.json` models the §2 envelope. A deployment in which one asserter's envelope is the only
+one behaves exactly as at 0.3.5. **DEFER-C is unmoved**, and this is not a durability, replica-count
+or retention obligation.
+
+### Step 10 — The asset that will never arrive 🔴 *does not flip (MA-12 re-confirmed)*
+
+MA-12 was re-attacked and reproduces unchanged: (f)'s substance holds, MA-10's three-valued answer is
+still the right fold, and **KCB §4 still types `fetch` with no response vocabulary**, still cites
+§7.1(f) nowhere, and still spends *pending fetch* on §4.2f's rate-limited refusal. The first pass's
+argument stands and is not restated.
+
+**What this pass adds is a constraint on the fold, from two of the KCB findings.** MA-12's fold is
+two-spec (KCB §4 + KMI §7.1(f)), so the failure modes KCB produced on the same day bound it:
+
+- **V-10** is a MUST routed to a frame table that names no such frame — a normative consequence
+  written in one section and left uncarried by the table that governs it. MA-12's three answers must
+  therefore land as a **named response vocabulary on §4's `fetch`**, in the table that types the verb,
+  not as prose in §7.1(f) with §4 left to be read as implying it. That is the failure this fold exists
+  to remove, and KCB has now produced it twice.
+- **BP-7** is a rule stated at one moment of a binding's life and silently absent at another
+  (registration, not live adjustment). §7.1(f)'s answers are owed **per request**; the fold must say
+  so on the verb, or it becomes a registration-time property of a store rather than an answer a
+  consumer can rely on for the id it asked about.
+- **ADR-0014's second decision applies verbatim**: a store **MUST NOT synthesize** *not held, and not
+  expected*. Absent reads *pending* — which the first pass already specified, and which is the same
+  never-invent-a-value-for-an-uncarried-field rule ADR-0014 decided for the registry.
+
+🔴 **Does not flip.** MA-12 unchanged in substance, narrowed in shape.
+
+| # | Severity | Gap | Delta | Spec |
+|---|---|---|---|---|
+| **MA-13** | **High (structural)** | §7.1(e) bullet 2 is a MUST over *"an asset's `egress`"*, but §2 makes `license`/`egress` ordinary envelope fields — per-asserter, unsigned, read off the envelope's own `prov` — while the `asset` id binds **bytes**. Two participants holding the same bytes may each assert a conformant envelope with a different pair, and (d) sources the travelling pair from *"the envelope the requesting participant already holds"*. So a holder that has only the permissive envelope satisfies bullet 1 while breaching bullet 2, cannot discover the restrictive one (no verb returns it, and (d) forbids synthesizing it), and serves onward across a boundary with every clause it can evaluate satisfied. MA-5's laundering hole returns through **divergence** rather than absence, with **no misbehaviour at any hop** — so attribution, which is §2's stated answer for the pair, resolves nothing. | KMI-only and additive, minting no field: (d) names the **serving** participant's evaluated pair as the one that travels; (e) states that where a holder has more than one conformant pair the **most restrictive governs** and a holder MUST NOT prefer its own; and bullet 2's MUST is scoped to the pairs a holder holds or has received, leaving (e)'s fail-closed default for **absence** unchanged. Reuses ADR-0013's monotone-restrictive discipline as ADR-0014 does, and KFT §4.2's most-restrictive-egress rule. No `asset` id moves, no envelope field is added, no KGP clause moves, and DEFER-C is unmoved. | KMI §2, §7.1(d)(e) |
+
+### What this second pass does and does not close
+
+| Count | Steps | Outcome |
+|---|---|---|
+| **KMI** — count (i) of **two**, gating §7.1 alone | 8, 9, 10 | 🔴 **Does not close, and it now needs *two* folds.** Step 8 holds. Step 9 **reverses** the first pass on **MA-13** (KMI-only, additive). Step 10 re-confirms **MA-12** (two-spec: KCB §4 + KMI §7.1(f)). Count (ii) is **KCB's** work and is untouched by this pass. |
+
+**The count changed shape a third time**: from *re-run Steps 8–10 against the folded text* (first
+pass) → *fold MA-12, then re-run* → **fold MA-12 and MA-13, then re-run Steps 8–10 again**. Both
+folds are additive, neither moves an `asset` id or an envelope field, and **both are unowned**.
+
+**One premise of the walk was tested rather than inherited.** Count (i) is routinely described as
+*KMI's own work, independent of KCB*. As a **count** that is still true — it gates §7.1 alone and no
+KCB re-run moves it. As **work** it is now half false: MA-12's fold cannot be written in this spec
+alone, because the carrier belongs on KCB §4's verb. MA-13 is the half that genuinely is KMI's own.
+
+### KMI's status — the conditions, and which hold
+
+KMI's promotion needs **all** of the following. Recorded together because the failure this document's
+*Re-ratification* section exists to prevent is a reader concluding a spec is promotable from one
+satisfied gate:
+
+| # | Condition | Holds? |
+|---|---|---|
+| 1 | **Count (i)** — §7.1 CAS federation, gated by Steps 8–10 of this pass | ❌ **No.** Re-run twice on 2026-09-03; **MA-12** and **MA-13** open, both unowned. |
+| 2 | **Count (ii)** — the [`e2e-media-transform.md`](e2e-media-transform.md) re-run against KCB's §2 AgentCard-extension manifest | ❌ **No.** Walked the same day and **not clean** → **MT-1**. KMI's OTIO half was re-validated clean at 0.3.0 and is not what blocks this; the count is **KCB's** work and no KMI edit moves it. |
+| 3 | **The conformance gate** ([`../specs/README.md`](../specs/README.md#the-ratification-gate)) — a machine-replayable KCS encoding whose assertions **cite the clauses being ratified** | ❌ **No**, and for two different reasons on two documents. `kcs:media-transform` (Phase F4) exists and ran green, but `kcs:kmi-otio-roundtrip` is that same encoding re-titled over the same fixture and asserts nothing OTIO-specific (**DR-4**). `kcs:multi-authority` exists and ran green **over six blocking deltas** (**DR-8**) — it predates the 0.3.5 fold and asserts none of §2's `license`/`egress` or §7.1(d)(e)(f), so §7.1's folded clauses have **no encoded assertion at all** and the encoding must be **extended**, the same shape **DR-7** records for KCB count (ii). Downstream under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md), bounded by **MA-11**, and **unowned**. |
+
+**None of the three holds. KMI stays Candidate**, and would have stayed Candidate on a clean pass of
+count (i): one of its two counts is not KMI's to discharge, and the conformance gate binds on top of
+both.
+
+> **Second-pass note (2026-09-03).** Steps 8–10 re-attacked against **KMI 0.3.5 / KCB 0.5.0** after
+> KCB's four counts were walked, because four of those walks' seven findings sit on the axis KMI's
+> `license`/`egress` pair also sits on. **Step 8 holds; Step 10 re-confirms MA-12; Step 9 reverses
+> the first pass on new delta MA-13.** **No spec version moves and no clause moves** — nothing
+> normative changed in this walk. Count (i) now waits on **two** additive folds, and KMI is not
+> promotable.
 
 ---
 

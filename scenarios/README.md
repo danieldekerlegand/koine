@@ -28,7 +28,7 @@ what the 2026-08-24 run of it did.
 | [`e2e-producer-exhaust-finetune.md`](e2e-producer-exhaust-finetune.md) | KFT, third pass | A producing **application's own training exhaust** (accepted edits, generations, preference pairs, QA labels) offered as a training set through the thin adapter of [`../decisions/ADR-0008-fabric-producer-adapter.md`](../decisions/ADR-0008-fabric-producer-adapter.md) — a corpus that is neither KGP claims nor image/video/audio bytes, arriving from a producer rather than an authority. | FT-M…Q | ✅ **exists** — `kcs:producer-exhaust-finetune` · agora `console/src/kcs/scenarios/producer-exhaust-finetune.ts`. Ran 2026-08-24, green → [results](e2e-producer-exhaust-finetune.md#downstream-results) |
 | [`kft-resume-checkpoint.md`](kft-resume-checkpoint.md) | KFT §11.3 ([`../specs/fine-tuning.md`](../specs/fine-tuning.md)) | **Resuming an interrupted run** — §6 calls a checkpoint *resumable* and §3 has no slot that can name one, so the FT-C reproducibility anchor stops determining the run and the only slot that accepts the ref is the one no gate reads. Confirms the warm-start half of §11.3 first, then breaks the resume half. | FT-R…V | ✅ **exists** (*focused pressure leg* — follow-up to `e2e-producer-exhaust-finetune`; **folded into KFT 0.6.0**, and a re-run against the folded text is one of KFT's two gates) — `kcs:resume-checkpoint` · agora `console/src/kcs/scenarios/resume-checkpoint.ts`, which walks the seven steps against the **folded** text and names three properties it leaves unasserted for want of a §5 predicate. Ran 2026-08-26, **green**, `partial-live` (2/4). **[DR-11](kft-resume-checkpoint.md#findings-from-the-absence-of-a-downstream-run) is CLOSED** — recorded here as absent until 2026-09-02, a week stale. KFT keeps the conformance gate on this count and is still blocked by both of its re-runs → [results](kft-resume-checkpoint.md#downstream-results) |
 | [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md) | KCB §7 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) | **Evolution without a break** — a provider widens, re-prices, mutates-without-bumping, then ships a capability **v2 beside v1** and retires v1, all while a **live subscriber** keeps running. Hunts the one invariant of [ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md): *a subscriber never learns of a break by failing.* | V-1…V-8 | ✅ **exists, and must be extended** — `kcs:live-schema-mutation` · agora `console/src/kcs/scenarios/live-schema-mutation.ts`. Ran 2026-08-24 and came back **green over four blocking deltas** ([DR-7](e2e-live-schema-mutation.md#findings-from-the-downstream-run)). Those deltas were **folded at KCB 0.5.0** on 2026-08-26, so the encoding now asserts a subset that predates the fold: the extended set it needs is [**F1–F13**](e2e-live-schema-mutation.md#conformance-case-the-assertions-the-folded-text-requires-kcb-050), ten of thirteen needing declared console extensions (V-8). **Unowned.** → [results](e2e-live-schema-mutation.md#downstream-results) |
-| [`e2e-multi-authority.md`](e2e-multi-authority.md) | KINP §11.1 + KCB §3.1 + KMI §7.1 ([`../specs/identity.md`](../specs/identity.md), [`../specs/capability-bus.md`](../specs/capability-bus.md), [`../specs/media-interchange.md`](../specs/media-interchange.md)) | **Federation without a privileged holder** — two independently built authority domains compose into one fabric: cross-authority `same_as` reconciliation, peering registries, and per-project CAS replication on reference. Hunts the three hazards [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) names — a firewall bypassed, a peered record that cannot be attributed, a replicated copy that loses identity, provenance or availability. | MA-1…MA-12 | ✅ **exists** — `kcs:multi-authority` · agora `console/src/kcs/scenarios/multi-authority.ts`. Ran 2026-08-24 and came back **green over six blocking deltas**, with every live slot in domain A ([DR-8](e2e-multi-authority.md#findings-from-the-downstream-run), [DR-9](e2e-multi-authority.md#findings-from-the-downstream-run)) → [results](e2e-multi-authority.md#downstream-results) |
+| [`e2e-multi-authority.md`](e2e-multi-authority.md) | KINP §11.1 + KCB §3.1 + KMI §7.1 ([`../specs/identity.md`](../specs/identity.md), [`../specs/capability-bus.md`](../specs/capability-bus.md), [`../specs/media-interchange.md`](../specs/media-interchange.md)) | **Federation without a privileged holder** — two independently built authority domains compose into one fabric: cross-authority `same_as` reconciliation, peering registries, and per-project CAS replication on reference. Hunts the three hazards [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) names — a firewall bypassed, a peered record that cannot be attributed, a replicated copy that loses identity, provenance or availability. | MA-1…MA-13 | ✅ **exists** — `kcs:multi-authority` · agora `console/src/kcs/scenarios/multi-authority.ts`. Ran 2026-08-24 and came back **green over six blocking deltas**, with every live slot in domain A ([DR-8](e2e-multi-authority.md#findings-from-the-downstream-run), [DR-9](e2e-multi-authority.md#findings-from-the-downstream-run)) → [results](e2e-multi-authority.md#downstream-results) |
 | [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md) | KCB §8.1 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) | **A firehose world drowns its subscriber** — the last open question KCB has. Hunts whether `cost` + spend ceilings (§2.1/§5) reach a *stream* at all, what a saturated subscriber may do other than disconnect, and whether the host §8.1 parks flow control on is even on the path that ADR-0001 routes peer-to-peer. | BP-1…BP-6 | ✅ **exists** (*focused pressure leg* — follow-up to `e2e-live-schema-mutation`; **folded into KCB 0.4.7**, and a re-run against the folded text is the fourth of KCB's gates) — `kcs:subscription-firehose` · agora `console/src/kcs/scenarios/subscription-firehose.ts`, with the predicates §5 cannot state declared as console extensions (BP-6). Ran 2026-08-26, **green**, `partial-live` (3/4). **[DR-12](kcb-subscription-firehose.md#findings-from-the-absence-of-a-downstream-run) is CLOSED**; §4.2's count is open on its **re-run**, not on a missing artefact → [results](kcb-subscription-firehose.md#downstream-results) |
 | [`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md) | KCB §4.3 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) + [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md) | **A caller's autonomy posture crosses an ownership boundary** — the two cross-owner edges of [`../ECOSYSTEM.md`](../ECOSYSTEM.md) §3, walked with a caller whose rule is *nothing a person cannot undo tomorrow runs unattended*. Hunts whether the fabric can state that rule at all, which posture wins when caller and callee disagree, and whether a posture survives a delegated leg to a third owner the caller never sees. | AP-1…AP-8 | ✅ **exists** (*focused pressure leg* — follow-up to `kcb-subscription-firehose`; **folded into KCB 0.4.8**, and a re-run against the folded text is the fifth of KCB's gates) — `kcs:cross-owner-posture` · agora `console/src/kcs/scenarios/cross-owner-posture.ts`, with AP-1/AP-7's predicates declared as console extensions. Ran 2026-08-26, **green**, `partial-live` (2/4). **[DR-13](kcb-cross-owner-posture.md#findings-from-the-absence-of-a-downstream-run) is CLOSED**; §4.3's count is open on its **re-run** plus ADR-0013's **W3** → [results](kcb-cross-owner-posture.md#downstream-results) |
 | [`kcs-format-stress.md`](kcs-format-stress.md) | KCS ([`../specs/conformance-scenario.md`](../specs/conformance-scenario.md)) | The **scenario format itself** — by trying to encode the other hand-written scenarios above as KCS documents and finding where the format can't express what they need. | M…Q, **R** | ✅ **exists** — `kcs:format-stress` · agora `console/src/kcs/scenarios/format-stress.ts`. Ran 2026-08-24, green — but KCS's artefact is the *attempt* at the nine above, not this run (see below), and that attempt drifted from §5 ([DR-10](kcs-format-stress.md#findings-from-the-downstream-run)). **Re-validated by hand on 2026-09-03 and not clean**: M/N/O/P flip (three corroborated by the run), but the 0.3.0 fold under test only half-flips → new blocking delta **R** ([`structure_matches`'s comparison basis is fixed nowhere](kcs-format-stress.md#findings-from-the-re-validation)), so KCS stays candidate → [results](kcs-format-stress.md#downstream-results) · [re-validation](kcs-format-stress.md#re-validation-kcs-030-walked-2026-09-03) |
@@ -89,6 +89,29 @@ stream path**, so the parking assignment cannot be discharged downstream by anyo
 **fourth** count against the same KCB candidate; its *Re-ratification — what this pass gates* section
 carries the per-spec table and the dated **Resolution**.
 
+**All four of those KCB counts were re-run on 2026-09-03, by hand against the prose, and none of them
+closes.** Each carries its own verdict in its own document — *Re-run — the KCB legs walked by hand
+against KCB 0.5.0* in [`e2e-media-transform.md`](e2e-media-transform.md), *Re-run — Steps 3, 5, 6, 7,
+8, 9 and 10* in [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md), *Re-run — Steps 1–8
+walked by hand against §4.2* in [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md), and
+*Re-run — Steps 1–8 walked by hand against §4.3* in
+[`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md). **Every folded delta holds under
+re-attack** — F/G/J/K/L against the card extension, V-1/V-2/V-4/V-5/V-7, BP-1…BP-5 (including blocking
+BP-5) and AP-1…AP-8 (eight of eight, including blocking AP-5) — so no fold is reopened and no model is
+in question. What each count grew instead is a **carrier** or **perimeter** break: **MT-1** (a §3 path
+plan names no version per leg, and §4.4c(2) silently resolves one), **V-9** (`payload_schema_id` is not
+consumer-verifiable), **V-11** (the canonicalization rule id is `MAY` on the branch that needs a MUST),
+**V-10** (§7.2's `binding` row routes a MUST to a frame §7.3g does not name), **BP-7** (§4.2b's
+honour-or-refuse rule stops at registration and says nothing about a live adjustment), and **BP-8** /
+**AP-9** (§4.2a's and §4.3a's declared **minor** bumps have no row in §7.2's normative table). Four of
+those six are the *same* defect on the *same* axis — an operand kept **outside** the `schema_id` digest
+with a declared consequence and nothing carrying it — which is the axis
+[ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) named in advance; and the
+walks establish that ADR-0014's own missing carrier for §7.3's *deprecated marking* reproduces with a
+**single registry**, so it is a base gap rather than a federation one and blocks count (ii) as well as
+count (iii). **All five KCB counts stand.** None of these verdicts is a `green` line: three of the four
+encodings return green over open blocking deltas, which is what **DR-7** and **DR-8** are the record of.
+
 The **three federation §-edits** — [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
 applied to KINP §11 decision 1, KCB §3.1 and KMI §7.1 — are gated the same way, by
 [`e2e-multi-authority.md`](e2e-multi-authority.md), which has now landed and been run and also did
@@ -96,9 +119,21 @@ applied to KINP §11 decision 1, KCB §3.1 and KMI §7.1 — are gated the same 
 were folded on 2026-08-26** (`chief/85`) — **KINP 0.4.0**, **KMI 0.3.5**, **KCB 0.4.9**, with KGP
 taking an Editorial entry and no version move, and MA-11 closed unfolded as evidence for KCS §7 open
 question 1. **All three specs nevertheless stay candidate**: a fold does not close its own gate, so
-each count now reads as a **re-run of that pass against the folded text**, and that re-run has not
-happened. That pass is still the whole of KINP's gate, one of KCB's four counts, and one of KMI's
-two. Its *Fold status* section re-reads each finding against the folded specs, and
+each count reads as a **re-run of that pass against the folded text** — and **those re-runs have now
+happened, by hand, on 2026-09-03, and only KINP's flips in full.** Steps 1–10 were walked first
+(`chief/89`): KINP's four gating steps flip and its prose leg is discharged with one declared residual;
+**KCB count (iii) does not close** (Step 5, [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s
+decided-but-unwritten clause); **KMI count (i) does not close** (Step 10, new delta **MA-12**, whose
+carrier belongs on KCB §4's `fetch`). Steps 8–10 were then **re-attacked** the same day, after the four
+KCB walks above, because four of their seven findings sit on the axis KMI's `license`/`egress` pair also
+sits on — an operand kept outside a content digest with a declared consequence and nothing carrying it.
+Step 8 holds and Step 10 re-confirms MA-12, but **Step 9 reverses**: two conformant envelopes for one
+`asset` id may carry different policies, §7.1(e)'s MUST is written over *the asset* while every operand
+a holder can obtain is a property of *an envelope*, and nothing ranks them → new delta **MA-13** (High,
+structural, KMI-only and additive). That pass is still the whole of KINP's gate, one of KCB's five
+counts, and one of KMI's two; **KINP is not promoted** (its encoding predates the fold and must be
+extended — **DR-8**, the **DR-7** shape) and **neither KCB nor KMI is promotable**. Both walks are
+recorded in the scenario, one section each. Its *Fold status* section re-reads each finding against the folded specs, and
 *Re-ratification — what this pass gates* carries the per-spec table, what a clean re-run would
 license, and the dated **Resolution**.
 
@@ -134,10 +169,15 @@ this directory is now a document a participant can be handed as well as prose a 
 [the ratification gate](../specs/README.md#the-ratification-gate) an encoding is a **precondition**,
 never a promotion, and every spec that was blocked on one is still blocked on the count the encoding
 was a precondition *of* — KFT on two re-runs that were both walked on 2026-09-03 and neither of which
-closed, KCB §4.2 and §4.3 on their own re-runs (with ADR-0013's **W3** on §4.3). Two qualifications
+closed, KCB §4.2 and §4.3 on their own re-runs, **also walked that day (`chief/92`) and neither of
+which closed either** (§4.2 → **BP-7**/**BP-8**, though blocking BP-5 does not reproduce; §4.3 →
+**AP-9**, with eight of eight AP deltas flipping and ADR-0013's **W3** unmoved). Two qualifications
 survive intact and are the ones a promotion argument now has to answer: **DR-7** (count (ii)'s
 encoding **predates** its fold, so it must be *extended*, not re-run) and **DR-8** (the same for
-`kcs:multi-authority`).
+`kcs:multi-authority`). **This is the cleanest demonstration the register has of what the gate is
+worth**: the two encodings arrived, the artefact objection lifted, and the two counts they
+preconditioned are exactly as open as they were — because an encoding is a precondition and never a
+verdict.
 
 The column's three states mean:
 

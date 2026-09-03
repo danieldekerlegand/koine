@@ -216,6 +216,160 @@ rather than re-broken — the same gap, in the adopted model, with the same fix.
 
 ---
 
+## Re-run — the KCB legs walked by hand against KCB 0.5.0 (2026-09-03)
+
+**What this is.** KCB's **count (i)**, outstanding since 2026-07-22 and the oldest of its five: *re-run
+this pass against the §2 AgentCard-extension manifest shape*. It is walked here against KCB **0.5.0 as
+published**, not against 0.3.0 as the count was declared, because a re-run is against the **current**
+folded text and five folds have landed on the surfaces this scenario reads since the count opened —
+0.4.6 (§3.1), 0.4.7 (§4.2), 0.4.8 (§4.3), 0.4.9 (§3/§5) and 0.5.0 (§2.4/§4.4/§7). A re-run that
+skipped them would discharge a gate against text nobody runs.
+
+**Method, and why it is not a replay.** By hand, against the prose. `kcs:media-transform` ran
+`green` / `partial-live` on 2026-08-24 and is recorded above; it is **not** the verdict here, for two
+separate reasons. **DR-7/DR-8**: an encoding deliberately does not assert an unfolded delta, and this
+one was written before §2.4, §4.4 and §7.3g existed. **DR-1**: the one participant this scenario is
+about on the provider side — the composer — answered from a `standin` recording, so the provider half
+of Steps 3 and 4 was never live. The green line is evidence for what it encodes and for nothing here.
+
+**Which steps this walk covers.** Steps **1, 3, 4** and **8** are the KCB legs — deltas F (cross-plane
+ports), K (capability `cost` + spend ceiling), G (`fetch` verb + grant), J (`world_pattern`) and L
+(dangling-reference tolerance). Steps **2, 5, 6, 7** are KMI legs; the manifest's shape and location do
+not reach them, and they were re-validated clean at KMI 0.3.0 in *Re-validation — KMI 0.3.0* above.
+KMI 0.3.5's MA-5 fold adds optional `license`/`egress` to the §2 asset envelope and moves no clause
+those four steps read — `source_world` still rides the envelope per-asset (Steps 2, 7), lineage is
+still a graph over assets outside the timeline (Steps 5, 6) — so the OTIO re-validation stands
+unamended.
+
+### Per-step verdicts
+
+| Step | Delta under test | Verdict |
+|---|---|---|
+| **1** — Discovery & path planning | F, J, K | 🟡 **holds for F/J/K, and breaks on a new seam** → **MT-1** |
+| **3** — Cross-participant `invoke` | K | ✅ **holds** *(regression)* — and the two folds that touch it are confirmed additive by execution |
+| **4** — Fetch the master bytes | G, L | ✅ **holds** *(regression)* |
+| **8** — Discover-by-world | J | ✅ **holds** *(regression)* |
+| 2, 5, 6, 7 | H, I, and the OTIO layer | — *not reached by the manifest shape; re-validated at KMI 0.3.0 and unmoved by MA-5* |
+
+### Step 1 — Discovery & path planning 🟡 *holds for F/J/K, breaks on a new seam*
+
+**What holds, and it is the whole of what the count asked.** The collapse of the standalone manifest
+onto the AgentCard is a change of *shape and location*, not of the port model, and every leg of Step 1
+resolves off the card extension:
+
+- **F.** §2.1 states the plane-typed port table inside the extension's `params`, and the `compose`
+  entry in §2's own example card carries a `knowledge` input and a `media` output — the mood→score leg
+  itself, on the card. §3's *Composition* bullet computes the path *"by matching the ports crawled off
+  peers' card extensions"*. The cross-plane leg is matched, and it is matched where the count asked.
+- **J.** `world_pattern` rides a media port in `params.produces` (§2.1), and §3's *Query* bullet
+  matches media ports by `media_type` **and** `world_pattern`. Step 8 is the same fact from the other
+  side.
+- **K.** `cost` rides a capability in `params.capabilities` (§2.1) and §3's path search *"prefers
+  zero-`cost` routes … and returns the path's projected cost"*. Unchanged.
+- **The crawl itself.** §3's *Population* bullet reads the extension entry whose `uri` is
+  `https://w3id.org/koine/kcb/manifest/0.3` off `/.well-known/agent-card.json`, and §2.3's dual-accept
+  window makes the legacy root match the same extension until 0.6.0. 0.5.0's discharge of §2.2's
+  standalone-manifest removal (§7.3f) takes nothing away from this leg: it ends an *obligation* to
+  crawl a second file that this scenario never needed.
+
+**🔴 BROKE (MT-1, high — structural). A path plan carries no version, and §4.4c's second case selects
+one silently.** The re-run finds it by putting Step 1 next to a fact that did not exist when Step 1 was
+written: §7.2 now **mandates** a dual-serving window, and §2.4 has just made one operable.
+
+§7.1 makes `(name, version)` — *"not the name alone"* — the unit of discovery, and §3 ranks the
+**highest satisfying version first**. So where `mediastore` serves `compose 1.4.0` and `compose 2.0.0`
+side by side, the leg §3 matches into the plan is **`2.0.0`'s** ports. `analyzer` then invokes to
+execute that leg. §4.4a's `version` operand is **optional**; §4.4c resolves *operand, else the grant's
+major, else refuse*; and `analyzer`'s grant is `invoke:compose`, issued at major 1. With no operand the
+call resolves to **`1.4.0`** — a major the grant authorizes, so §5's gate does not fire, nothing is
+refused, and **the leg that runs is not the leg that was planned**. Where the two majors differ in
+their ports — 2.0.0 adds a required `style_ref` input and tightens the output `world_pattern`, which is
+[`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md)'s Step 7 exactly — the caller receives a
+**different contract than the one path search matched**, with no signal at either end.
+
+*Why this is not V-5 restated.* V-5 was an **authorization** hole: a version-free call resolved to
+*highest published* let a v1-granted caller reach v2, inverting fail-closed into fail-open. §4.4c
+closes it, and forbids that default **by name**. MT-1 is the **symmetric** selection one plane over,
+and it is not forbidden: resolving to the *granted* major is a silent selection too, and the party it
+silently disagrees with is not the grant — the grant is satisfied — but **§3's own path plan**. §4.4c's
+stated reasoning transfers without amendment (*"there is no hub to arbitrate a disagreement about which
+major was meant"*); what is new is that here the two disagreeing parties are two sections of KCB.
+
+*Why it is High.* It lands on **delta F**, the cross-plane leg that is the any-to-any promise and the
+one this scenario exists for; and it fails **silently** rather than closed, which is the class §7.2
+rates non-recoverable everywhere else it appears.
+
+*The fold is additive and one spec.* §3 already indexes each capability's `version` (*Population*) and
+MA-8's response shape already carries per-entry manifest data, so a returned path leg can **name the
+`(name, version)` it was matched over** at no new field; and §4.4c gains one further rule — an `invoke`
+fulfilling a named plan leg whose resolved major differs from the planned one is **refused**, naming
+both, in the instrument §4.4c and §5 already share. The minimal alternative is to make §4.4a's operand
+REQUIRED of a caller fulfilling a §3 path leg against a provider publishing more than one major. Either
+is additive; neither moves a digest, a grant name, a verb, or §7.1's ban on version-in-the-name.
+→ KCB §3/§4.4.
+
+### Step 3 — Cross-participant `invoke` ✅ *holds (regression)*
+
+Delta K reproduces nothing. The chain knowledge-producer → media-producer → paid model runs under
+`invoke:compose` with `budget_units`, path search returns the projected cost before the call, and a
+raise beyond the remaining ceiling fails at the gate (§5). Three folds since 0.3.0 touch this step and
+**all three are confirmed additive by walking it rather than by reading their additivity claims**:
+
+- **§4.4d (`quoted_cost`, V-1).** Optional. `analyzer` carries none and behaviour is 0.4.9's exactly.
+- **§4.3 (posture).** `analyzer` declares no `posture` operand, so per §4.3b the dispatch *"gates on
+  nothing and is served exactly as it was at 0.4.7"*. `compose` declares no `effect`, which reads
+  *unknown* — and `unknown` is refused only *"wherever a posture gates on class"*, which here is
+  nowhere. Every leg of this scenario still runs. This is the additivity claim of 0.4.8 executed
+  against a pass that predates it.
+- **§5's MA-6 rules.** The issuer-naming and unit rules bite a grant *crossing an authority-domain
+  boundary*; this scenario is single-domain, so they are silent, which is what 0.4.9 said they would be.
+- **§4.4c(4).** `mediastore` publishes one major of `compose` in this scenario's cast, so a version-free
+  call is served exactly as at 0.4.9. MT-1 above is the two-major case, and it is Step 1's.
+
+### Step 4 — Fetch the master bytes ✅ *holds (regression)*
+
+Delta G is intact: `fetch` is one of §4's five verbs, addressed by `asset` id, integrity self-verifying
+against the hash, gated by a `fetch:asset` grant (§5). Three later clauses were probed against it and
+none reopens it. §4.3a gives `fetch` **no** effect class deliberately, because KMI §7.1 over KGP §7
+already gates it fail-closed in the right domain — so a posture adds no second gate here. §4.2f lets a
+CAS holder limit the fan-out, and requires the limit to be a **refusal**, which lands on delta L's
+existing pending-fetch tolerance rather than on a new surface. KMI 0.3.5's §7.1(d)(e) evaluates the
+asset's own `license`/`egress` in addition to the serving domain's — this fetch is in-domain, so the
+added evaluation is a no-op, which is MA-5's own claim executed. **MA-12 is not reached by this step**:
+`worldsim` holds the bytes and serves them, so §7.1(f)'s *not held, and not expected* answer — the one
+with no carrier — never has to be given.
+
+### Step 8 — Discover-by-world ✅ *holds (regression)*
+
+Delta J is intact and is the same fact as Step 1's J leg read from the query side: media `produces`
+entries in the extension's `params` carry `world_pattern`, and §3's *Query* bullet matches on it. §3's
+0.4.9 response shape (`served_by`, `observed_at`, `incomplete[]`) is emitted only by a federating
+deployment and is absent here, exactly as MA-8's fold said it would be.
+
+### What this re-run does and does not close
+
+**Count (i) does NOT close.** The question it was opened to ask — *does the port/cost/world model
+survive being served as an AgentCard extension?* — is answered **yes**, and answered by execution
+rather than by the *0.3.0 re-check* paragraph's reading. Every one of F, G, J, K and L holds against
+the card, and the three folds that landed on these steps after the count opened are confirmed additive
+by running them rather than by citing their own additivity claims. That is the substance of the count,
+and it is the first time it has been walked.
+
+It does not close because the walk found **MT-1**, and MT-1 is a break in the leg the count gates:
+§3's path planning, which is delta F's surface and this scenario's Step 1. So the count **changes
+shape** rather than closing, in the same way KINP's, KMI's, KFT's and KCB count (iii)'s did on this
+date: from *re-run this pass against the extension shape* to **fold MT-1 (additive; KCB §3 + §4.4, no
+digest moves, no grant name moves, no verb added), then re-run Steps 1, 3, 4 and 8 again**. It is
+**unowned**.
+
+**What it does not touch.** KMI's own half of this scenario is unmoved: the OTIO re-validation above
+stands, no KMI clause is read differently, and KMI's count (ii) — *"rides with KCB"* — therefore stays
+open on this count, not on a KMI edit. No spec version moves for this walk and **no clause moves**:
+the edit is this section, a gate paragraph in
+[`../specs/capability-bus.md`](../specs/capability-bus.md) and a changelog entry.
+
+---
+
 ## Downstream results
 
 > **What this section is.** The recorded result of a **downstream run** of this pressure test's

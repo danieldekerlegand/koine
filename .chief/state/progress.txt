@@ -1,252 +1,219 @@
-# Chief Progress — 91-kfts-two-gates-and-the-missing-encoding
-Started: Thu Sep  3 02:02:27 CDT 2026
+# Chief Progress — 92-kcbs-four-re-runs-and-kmis-wait
+Started: Thu Sep  3 02:41:14 CDT 2026
 ---
 
-## Codebase Patterns
-- **Anchor slugs: this repo's guard is NOT GitHub's.** `scripts/check-doc-integrity.mjs` `slugify()`
-  strips `[^\w\s-]` then collapses a whitespace RUN to ONE hyphen. So `## Re-validation — KCS 0.3.0`
-  is `#re-validation-kcs-030` (single hyphen), where GitHub would give `#re-validation--kcs-030`.
-  Write the link, run the guard, fix — do not hand-derive it.
-- **A "re-run the fold" gate is a two-axis read.** Walk the deltas against the spec's CURRENT text
-  *and* against the CURRENT text of every plane it cites. Three of this repo's four 2026-09-03 walks
-  (KMI MA-12, KCB/ADR-0014, KFT FT-W) broke on the second axis, not the first: the fold was fine, a
-  neighbouring plane moved under it afterwards. Diff the plane's changelog since the fold's date.
-- **A green KCS encoding is dated evidence.** It asserts the fold as of the run date against the
-  spec version it pins. `kcs:producer-exhaust-finetune` ran 2026-08-24 pinning KFT 0.5.0 — it cannot
-  see a break introduced by KMI 0.3.5 on 2026-08-26. Say which half of a walk is replay and which is
-  hand-walk, per delta (the DR-7/DR-8 discipline).
+## US-1 — The four KCB re-runs, walked against folded text, one verdict each (2026-09-03)
 
----
+Four independent hand-walks of KCB's counts (i), (ii), (iv), (v) against the CURRENT folded text
+(KCB 0.5.0 as published, not the version each count was declared at). **None closes.** Each verdict
+lives in its own scenario document, one section per count — the acceptance criterion is explicit that
+a combined verdict destroys the five-counts-each-gating-its-own-section structure.
 
-## US-1 — Gate (i) executed (2026-09-03) · commit c9c6dbf
+Files changed
+- scenarios/e2e-media-transform.md      — new § *Re-run — the KCB legs walked by hand against KCB 0.5.0*
+- scenarios/e2e-live-schema-mutation.md — new § *Re-run — Steps 3, 5, 6, 7, 8, 9 and 10 …*
+- scenarios/kcb-subscription-firehose.md— new § *Re-run — Steps 1–8 walked by hand against §4.2*
+- scenarios/kcb-cross-owner-posture.md  — new § *Re-run — Steps 1–8 walked by hand against §4.3*
+- specs/capability-bus.md               — one *Pressure test* paragraph + one changelog entry. NO version, NO clause.
+- scenarios/README.md                   — one consolidated paragraph (it is the register of record)
+- CLAUDE.md                             — *Current state* KCB bullet (the fourth mirror; no guard checks it)
 
-**What I did.** Executed KFT's count (i) — the FT-M…FT-Q producer-exhaust intake fold — rather than
-re-reading it. Open since 0.4.0 (2026-08-06), restated by 0.5.0/0.6.0/0.7.0, never run. Walked by
-hand against KFT 0.7.0 as published AND against the plane text those clauses cite today.
+Verdicts
+- (i)  e2e-media-transform  — F/G/J/K/L all hold against the card extension; the 0.4.2/0.4.3/0.4.7/
+       0.4.8/0.5.0 folds confirmed additive **by execution**. NOT clean → **MT-1** (High): §3's path
+       plan names no `(name, version)` per leg and §4.4c(2) resolves a version-free invoke to the
+       *granted* major, so a caller that planned over the top-ranked successor and holds a predecessor
+       grant is served the predecessor **silently**.
+- (ii) e2e-live-schema-mutation — V-1/V-2/V-4/V-5/V-7 all flip (V-2/V-4/V-5/V-7 individually
+       re-checked, per the acceptance criterion). NOT clean → **V-9** (payload_schema_id is not
+       consumer-verifiable), **V-11** (the §7.1 step 5 rule id is MAY on the branch that needs a MUST),
+       **V-10** (§7.2's binding row routes a MUST to a frame §7.3g does not name). Plus: **ADR-0014
+       reproduces with a SINGLE registry** — it is a base carrier gap, not a federation one, so it
+       blocks count (ii) as well as (iii). Plus a bookkeeping correction: the published step list
+       mis-files Step 6 exactly as *Fold status* found it mis-filing Step 3.
+- (iv) kcb-subscription-firehose — blocking **BP-5 does not reproduce** (§8's parking sentence struck,
+       no clause assigns the host anything); BP-1/BP-2/BP-4 do not either. NOT clean → **BP-7**
+       (§4.2b's honour-or-refuse rule is stated at *registration* only; §4.2c's *silence is not one of
+       them* stops one paragraph short of a live adjustment) and **BP-8**.
+- (v)  kcb-cross-owner-posture — **eight of eight AP deltas flip**, including blocking AP-5. NOT clean
+       → **AP-9** (Med, carrier). ADR-0013's **W3** restated and unmoved.
 
-**Verdict: NOT CLEAN.** FT-M / FT-O / FT-P / FT-Q flip; Steps 1/6/7 hold as the regression set (three
-corroborated by the 2026-08-24 green run). **FT-N half-flips → new delta FT-W.** §4.2's normative
-half is intact (gate reads the header, never `tier`), but the sentence carrying it calls the header
-"the only descriptor available at admission" — and **KMI 0.3.5's MA-5 fold (2026-08-26) made that
-false**: a `dataset.records[]` file is a KMI asset whose §2 envelope may now carry its own `egress`.
-Two carriers, no ranking clause, and OPPOSITE absence defaults (KFT §4.2 = KGP's `exportable`;
-KMI §2/§7.1(e) = fail closed). Consequences, both concrete: a permissive envelope lets KMI §7.1(e)
-replicate out of the authority domain a corpus §4.2 correctly pinned `local-only`; and a job
-declaring `egress` nowhere is admitted at §4.2 then fails at the fetch — after placement, around
-FT-J's impossible-to-place-is-rejected rule.
+Gates: all five guards green; `git diff --name-only main | .chief/verify.sh --run` → verify-test
+30 passed / 0 failed, "all selected gates green".
 
-Count (i) changes shape: **fold FT-W in KFT §4.1/§4.2 (additive, one spec — KMI needs no change),
-then re-run.** Third row to take that shape on the same day, after KMI count (i)/MA-12 and KCB
-count (iii)/ADR-0014. Unowned.
+## Learnings for future iterations
 
-**Two residuals declared** (not deltas): the `header`↔`records[]` positional coupling is prose-only
-(JSON Schema cannot express the length equality, and §4.1 states the coupling without an explicit
-MUST-reject; the refusal is derivable via §8.1 `invalid` and the downstream run exercised it); and
-two `koine:10` citations survive in `scenarios/e2e-finetune-multimodal.md`, outside FT-Q's named
-scope (§3/§4.1 + schemas/README.md, all four fixed).
+- **The single sharpest analytic move in this repo is: find a clause that states a normative
+  consequence and then check whether ANY field, frame or table row carries it.** Four of this walk's
+  six findings are that shape (V-10, BP-8, AP-9, ADR-0014's marking), and ADR-0014 had already named
+  the axis in advance — *every operand kept outside the `schema_id` digest is outside the merge key
+  too*. When walking a KCB fold, enumerate the operands outside the digest (`cost`, `volume`,
+  `effect`, `binding`, the deprecated marking) and check each against §7.2's table and §7.3g's frame
+  table. `cost` and `binding` have rows; `volume` and `effect` do not.
+- **A fold's own MAY/MUST asymmetry is where a folded delta comes back.** V-11 and BP-7 are both
+  "the section states the discipline correctly one paragraph away and does not extend it": §7.1 step 5
+  has a MUST NOT on the branch that doesn't need the rule id and no MUST on the branch that does;
+  §4.2c says *silence is not one of them* for `resume` and §4.2b/d say nothing for a live adjustment.
+  Read a folded section for which branch got the MUST.
+- **Check the published flip/regression step lists before walking them.** `e2e-live-schema-mutation`'s
+  *Fold status* corrected Step 3's mis-filing and made the identical error for Step 6 in the same
+  breath. A count's step list is prose and is not guarded.
+- **`.chief/verify.sh` with no args reports "no changed files" under an agent shell** (its `--plan`
+  reads STDIN only when stdin is not a tty, which it never is here). Run it as
+  `git diff --name-only main | .chief/verify.sh --run` — or pass the list with `xargs`.
+- The five guards are: check-doc-integrity, check-doc-links (`--ratchet --base main`),
+  check-tasklist-categories, check-schemas, check-registry. `verify.sh` selects them from changed
+  paths and `verify-test.sh` asserts that mapping — the selftest runs as one of the gates.
+- **CLAUDE.md's *Current state* prose is the unchecked fourth mirror.** doc-integrity checks three
+  status tables against the spec headers and never this. Update it by hand every time.
+- Insert new sections with a python `str.index('## Downstream results')` splice — every scenario keeps
+  *Downstream results* last, so that marker is a stable insertion point ahead of it.
 
-**One precondition REOPENED, and it matters for US-3.** KFT's `Depends on:` header states a
-track-current pin rule and a re-check trigger on any minor/major plane bump. Three of five pins are
-stale: KINP reads 0.2.x (is 0.4.0), KCB reads 0.4.x (is 0.5.0), KCS reads 0.2.x (is 0.3.0) — all
-three minor bumps landed 2026-08-26. At least one cited clause moved with them: §7's grant paragraph
-is labelled "(KCB 0.4.x)" and KCB 0.5.0's V-5 added an `invoke` `version` operand with an exhaustive
-operand-else-grant-else-refuse rule. ROADMAP and promotability both said "✅ closed by chief/71" —
-true on 2026-08-13, false since. Recorded as a precondition on the STATUS TRANSITION, not a third
-gate, and not a finding against the fold (it is on §7's grant surface, not §4's admission path).
-**US-3 must not promote KFT without pulling that trigger** — and on this walk's verdict it cannot
-promote anyway, count (i) being open.
+## US-2 — KMI's Steps 8–10, and its wait recorded honestly (2026-09-03)
 
-**No version and no clause moved.** §3/§4/§5/§7 and every schema are byte-unchanged.
+**The story as written was already half-done by the dependency, and saying so was the first job.**
+`chief/89` walked Steps 1–10 earlier the same day and gave count (i) its verdict (🔴, MA-12). Nothing
+normative moved in between, so re-reading the same clauses against the same bytes would have been
+bookkeeping. What made a second pass real: US-1's four KCB walks landed **seven** new findings, of
+which **four sit on one axis** — *an operand kept outside a content digest, with a declared normative
+consequence and nothing carrying it* (the axis ADR-0014 named). **KMI §2's `license`/`egress` pair is
+outside the `asset` id by exactly that design**, so the byte plane had to be read against the axis
+rather than assumed unaffected by findings in a sibling plane. It was, and **Step 9 reversed.**
 
-**Files changed.** `scenarios/e2e-producer-exhaust-finetune.md` (new § *Re-run — the FT-M…FT-Q
-intake fold walked against KFT 0.7.0 (2026-09-03)*: evidence-split table, per-delta verdicts, eight
-step subsections, findings table with FT-W, verdict); `specs/fine-tuning.md` (§ *Pressure test* gate
-(i) paragraph + the pin-trigger paragraph + a dated **Editorial** changelog entry — no version
-bump); `docs/reference/promotability.md` (KFT table row count (i) + *Cheapest first* item 3);
-`ROADMAP.md` (Phase-1 KFT re-ratify row + Last updated); `CLAUDE.md` (*Current state* KFT bullet —
-the fourth mirror, which no guard checks).
+Files changed
+- scenarios/e2e-multi-authority.md — new § *Re-run — Steps 8–10 re-attacked after the KCB walks
+  (2026-09-03, second pass)*; a `> Superseded` block + a table caveat on the first pass's Step 9 so
+  its ✅ is never cited alone; the MA-12 paragraph extended to MA-13
+- specs/media-interchange.md — a §7.1 closing paragraph, two *Pressure test* sentences, one Editorial
+  changelog entry. **NO version, NO clause.**
+- scenarios/README.md — delta range → MA-1…MA-13, and the federation paragraph (which still said
+  "that re-run has not happened") rewritten to carry both walks
+- ROADMAP.md — Phase F1 prose (two folds → three), a ✅ row for this re-attack, a ⬜ row for the MA-13
+  fold, and the KMI re-ratification row rewritten as **three conditions, none holding**
+- docs/reference/promotability.md — KMI table row + ranking entry 5 + blocker cell
+- CLAUDE.md — *Current state* KMI bullet (the unchecked fourth mirror)
 
-**Gates.** doc-integrity OK · doc-links 0 dead vs 0 on main · tasklist-categories OK · schemas OK
-(9/278/80/3) · registry OK (29 relations) · `.chief/verify.sh --run <changed>`: 30 passed, 0 failed.
+Verdict — count (i), second pass
+- **Step 8 ✅ holds.** The axis was put to §7.1(a) directly: an operand outside a digest is a hazard
+  for **decisions taken over it**, never for the identity the digest establishes. That is exactly why
+  every finding on this axis (both planes) is a carrier/perimeter break and none is a model break.
+- **Step 9 🔴 REVERSES → MA-13 (High, structural).** §7.1(e) bullet 2 is a MUST over *"an asset's
+  `egress`"*; §2 makes the pair a **per-asserter** envelope field while the `asset` id binds **bytes**.
+  Two participants holding the same bytes hold the same id and may each assert a conformant envelope
+  with a different pair; (d) sources the travelling pair from *the requester's* copy. A holder with
+  only the permissive envelope satisfies bullet 1, breaches bullet 2, and **cannot discover** the pair
+  that would have stopped it. **No misbehaviour at any hop** — which is why §2's attribution answer,
+  sufficient for the *downgrade* case the first pass declared a residual, does not reach it.
+  Fold: KMI-only, additive, mints no field.
+- **Step 10 🔴 MA-12 re-confirmed**, and its fold **constrained** by V-10 (land the vocabulary on
+  §4's verb, not as prose §4 is left to imply) and BP-7 (owed per request, not at registration).
+- Count (i) changed shape a **third** time: *fold MA-12 **and** MA-13, then re-run Steps 8–10 again.*
+- Premise corrected: count (i) is KMI's own as a **count**, only half KMI's as **work** — MA-12's
+  carrier belongs on KCB §4's verb.
+- **Three conditions recorded, none holds**: (i) above · (ii) media-transform re-run, walked the same
+  day, not clean (MT-1), KCB's work · (iii) the conformance gate, failing on two documents for two
+  reasons (DR-4; DR-8/DR-7). KMI stays Candidate and would not have promoted on a clean count (i).
 
-### Learnings for future iterations
-- **The tasklist description is a starting point, not a finding.** It asserted gate (i) "walks clean
-  as written" and that its pin precondition was closed. Both were true when written; the walk found
-  the second one false and the first one no longer true. Same lesson the tasklist itself teaches
-  about DR-11 — check a blocking OR a satisfied claim with equal suspicion.
-- **US-3's premise is now conditional.** Its criterion 2 is an explicit IF. Count (i) is open, so KFT
-  is not promotable regardless of the artefact-gate answer. US-3 should still verify the agora sha
-  (criterion 1) and land the DR-11 correction (criterion 3) — those are independent of the verdict —
-  and state the honest reason KFT does not promote: two open counts, not a missing encoding.
-- **promotability.md's "Cheapest first" ordering is now deferred, deliberately.** KFT's cost went up
-  and it no longer clearly outranks KINP (which has zero koine-side work). I recorded the verdicts
-  in the row and left the numbering alone, because US-2's verdict may move it again. **US-3 should
-  do the single re-rank**, once gate (ii) is in.
+Gates: all five guards green; `git diff --name-only main | .chief/verify.sh --run` → verify-test
+30 passed / 0 failed, "all selected gates green".
 
----
+## Learnings for future iterations
 
-## US-2 — Gate (ii) walked cold (2026-09-03) · commit d7fd36a
+- **When a dependency tasklist already executed your story's literal instruction, the value is in what
+  changed since — not in re-performing it.** The honest move was to state that `chief/89` did the
+  first pass, then find the one thing that made a second pass non-redundant (US-1's findings landing
+  on a shared axis). Restating a dependency's verdict as your own would have passed the acceptance
+  criterion and taught the record nothing.
+- **The axis generalizes across planes, and koine's own ADR says so without anyone having applied it.**
+  ADR-0014 generalized *every operand kept outside the digest is outside the merge key too* for KCB.
+  The same sentence read over KMI gives MA-13 immediately. When walking any spec, list the fields
+  **excluded from that spec's content hash** and ask, for each: who asserts it, can two asserters
+  disagree, and does any clause rank them? (`license`/`egress` on the `asset` id; `cost`/`volume`/
+  `effect`/`binding`/the deprecated marking on `schema_id`.)
+- **A MUST written over one object whose operand only exists on another object is a delta.** §7.1(e)
+  bullet 2 says *an asset's egress*; every operand a holder can obtain is a property of *an envelope*.
+  Same shape as V-10 (a MUST routed to a frame table with no such frame) and ADR-0014's marking.
+- **Check whether a "declared residual" covers the case you found.** The first pass declared the
+  *downgrade* (falsified pair) a residual answered by attribution. Divergence is not that case:
+  nobody misdeclares, both prov chains are clean, and attribution says who said what when the
+  question is which one governs. Naming the difference explicitly is what makes the finding stick.
+- **Register-of-record files go stale in the direction of optimism.** `scenarios/README.md`'s
+  federation paragraph still read *"that re-run has not happened"* after `chief/89` ran it; only the
+  delta-range cell had been updated. When you touch a scenario, grep its filename across
+  `scenarios/README.md`, `ROADMAP.md`, `docs/reference/promotability.md` and `CLAUDE.md` and read
+  every prose hit, not just the table cells — **no guard checks prose.**
 
-**What I did.** Walked KFT's count (ii) — the re-run of `scenarios/kft-resume-checkpoint.md` against
-the 0.6.0 folded text. The gate asks for six sections read **cold** (0.6.0 moved §4's admission
-inputs), so each of §3.4/§4.2/§4.3/§5.4/§6/§7 got its own verdict, plus the leg's Steps 1–7.
-**No replay was available** — this leg has no KCS encoding (DR-11) — so every verdict is hand-read,
-and the evidence table says so rather than leaving it implied.
+## US-3 — What remains after clean re-runs is written down, not left to be rediscovered (2026-09-03)
 
-**Verdict: NOT CLEAN.** FT-R / FT-T / FT-V flip outright; Steps 1 and 7 hold. **The fold's model was
-never in question; its perimeter was** — both breaks came from plane folds that landed *later on the
-same day* as KFT 0.6.0 (`49e63e6`), which no reading of KFT alone can see.
+**The story is a bookkeeping story only if you take its inputs on trust; the value was in refusing to.**
+Its own acceptance criterion says so — *"verify that against agora at a named sha rather than taking this
+description's word for it"* — and doing it turned two of the six downstream findings around.
 
-- **FT-S half-flips → FT-X (High, gate integrity).** The `hyperparams` bypass is closed twice over
-  and the continued-pre-training front door is shut. But §4.2/§4.3 read the checkpoint's class off
-  the **KMI §2 envelope** (MA-5, `7ee8da0`) and state **no rule for a silent one** — reachable by
-  resuming a 0.5.0-era run (before §5.4's bind-at-publication existed) or by holding bytes replicated
-  without an envelope (KMI §7.1(d) forbids synthesizing one; §7.1(e) permits serving them *inside*
-  the domain). The two planes state **opposite** absence defaults. So the FT-S breach returns through
-  the **carrier** rather than the slot, in-domain, where KMI §7.1(e) never sees it — the placement is
-  KFT's gate, not KMI's.
-- **FT-U half-flips → FT-Y (High, operand durability).** The `job+step` collision is gone and the
-  join rule is right. But §3.4's REQUIRED `checkpoint`/`at_step` live **only** on §6's telemetry
-  stream (§5.2 does not carry them; `generated[]` is written at completion, which an interrupted leg
-  never reaches), and **KCB §4.2b** (`7c82abc`) then made that stream sheddable on a losslessness
-  argument stated for *KGP payloads*. §4.2c's recovery operand is typed to a KGP pack id → no
-  admissible value here. §7's *MUST verify `at_step`* has no durable source.
+Files changed
+- docs/reference/promotability.md — KCB table row rewritten with all five verdicts and an owner cell that
+  is now a register; ranking entry 6 rewritten; new § *The ranking, re-derived after the 2026-09-03 walks*
+  (a six-row table + three reading notes); new § *The seven things that stand between KCB and `ratified`,
+  and who owns each*; the conformance-gate bullet given the independently-run numbers; the
+  "neither KCB nor KMI moved a step closer" paragraph restated for the counterfactual now that all
+  eleven verdicts are in
+- docs/reference/fold-coordination-federation-versioning.md — new **§5.1**, the AG-1…AG-6 re-read at
+  `agora c971fc2` (a before/after table), and new **§6.1**, *the hand-walk happened and the answer is
+  still no*
+- ROADMAP.md — the KCB re-ratification row (title 0.4.1 → 0.5.0, ⬜ → 🚧, the stale "no KCS encoding"
+  claim corrected, five verdicts added); six new Phase F2 rows (the count (ii) re-run ✅ + four ⬜ folds
+  + DR-7's extension); a ⬜ W3 row in the autonomy-posture section
+- scenarios/README.md — the *what that does to the ladder* paragraph, which still read as though §4.2's
+  and §4.3's re-runs were pending
+- CLAUDE.md — the KCB *Current state* bullet (the unchecked fourth mirror)
 
-**One clause was RESCUED, not broken**, and it is recorded because nothing else records it: §5.4's
-*"carries them on its KMI envelope"* named a slot KMI §2 **did not have** when §5.4 was published;
-MA-5 added it hours later. The second axis moved *toward* a clause as often as out from under one.
+What was verified rather than inherited, at `agora` `c971fc2` (working tree clean)
+- **DR-12 / DR-13 CLOSED** — `coverage.test.ts` **3 pass / 0 fail** (53 assertions), `evidence.test.ts`
+  **13 pass / 0 fail** (98 assertions), artifact current at `sha256-eb8fdc9c…36dd5`, twelve scenarios.
+  The two entries name what they gate *in the artifact*: `kcs:subscription-firehose` → `KCB §4.2`,
+  `kcs:cross-owner-posture` → `KCB §4.3 (ADR-0013)`. That is what makes them evidence for those counts
+  and not generic greens.
+- **AG-1 stands** — `registry/src/crawl.ts` still exports `KCB_MANIFEST_PATH` and `manifestUrl()` builds
+  only it; `/.well-known/agent-card.json` appears only as a provider endpoint value, never as a crawl target.
+- **AG-2 stands** — `Capability` = `{name, effect?, inputs?, outputs?, cost?, endpoint?, provider?, model?,
+  modality?, methods?}`, no `version`; `KnowledgePort`/`MediaPort`/`EntityPort` carry no `schema_id`.
+- **AG-3 two-thirds closed** — `IssuedGrant` now carries `issuer` (inside the signature) and `budget_unit`.
+  The granted major is missing because it is 0.5.0 surface and that build is held at 0.4.9.
+- **AG-5 CLOSED, and the reason is a finding about KCB** — `SPEC_VERSIONS.kcb` moved 0.4.6 → 0.4.9 and
+  0.5.0 is a *declared* lag with a written reason: a pre-1.0 minor is breaking under that build's own
+  `isCompatibleKcbVersion`, so advancing would make every 0.4.x peer unreadable. That is §7.2's new
+  reader obligation met by **declining to move** — a conformant response, not neglect.
 
-**Cold-job path: confirmed unchanged for §4 admission — walked, not inherited.** `resume` is absent
-from the schema's top-level `required`, and §4.2/§4.3/§7's resume clauses each open *"Where the job
-carries `resume`"*. **US-1's premise holds.** One precision recorded: §3.4's *"every clause below is
-inert"* is true of the four rules below it and **not** of the whole fold — §5.4's bind-at-publication
-deliberately binds a cold run. That is output-side, downstream of admission, so gate (i) is
-unaffected either way.
+The register, and it is the deliverable: seven items, **all unowned in this repo and every other** —
+ADR-0014's clause (a precondition of counts **(ii) and (iii)**, not one), MT-1, V-9+V-11,
+**V-10+BP-8+AP-9 as one §7.2/§7.3g edit**, BP-7, DR-7's encoding extension (downstream), W3 (external).
 
-**Count (ii) changes shape**: *re-run the leg* → **fold FT-X and FT-Y (additive, KFT-only — KMI and
-KCB need no change), then re-run**. FT-X belongs in the same §4.2/§4.3 edit as FT-W. **Fourth** row
-to take that shape in two days.
+The re-order: **the ordering 2–6 does not move**, re-derived across all eleven verdicts with the proof
+and the next-move trigger stated per row. One thing genuinely changed: **rows 5 and 6 are now coupled** —
+KMI's remainder strictly contains KCB count (i) (the MT-1 fold + the media-transform re-run are KCB's
+work), so any promotion argument for KMI is partly one for KCB's count (i).
 
-**No version and no clause moved.** `specs/fine-tuning.md`'s diff is two **pure insertions**
-(`@@ -1367,0` at the Pressure test §, `@@ -1421,0` at the Changelog) — §2–§7 are below line 1266 and
-untouched; `schemas/` and `registry/` are not in the diff at all.
+Gates: all five guards green (doc-integrity OK / doc-links 0 dead vs 0 on main / tasklist-categories OK /
+schemas OK / registry OK); `git diff --name-only main | .chief/verify.sh --run` → verify-test
+**30 passed / 0 failed**, "all selected gates green".
 
-**Files changed.** `scenarios/kft-resume-checkpoint.md` (new § *Re-run — the FT-R…FT-V resumption
-fold walked against KFT 0.7.0 (2026-09-03)*: evidence split, per-delta table, **per-section table**,
-seven step subsections, a cold-job subsection, findings with FT-X/FT-Y, verdict);
-`specs/fine-tuning.md` (gate (ii) paragraph + dated Editorial changelog entry);
-`docs/reference/promotability.md` (KFT row: gate (ii) verdict + **the deferred re-rank, now
-discharged**); `ROADMAP.md` (Phase-1 KFT row (ii)); `CLAUDE.md` (*Current state* KFT bullet — the
-unguarded fourth mirror).
+## Learnings for future iterations
 
-**Gates.** doc-integrity OK · doc-links 0 dead vs 0 on main · tasklist-categories OK · schemas OK
-(9/278/80/3) · registry OK (29 relations) · `.chief/verify.sh --run <5 changed>`: all selected gates
-green · `.chief/verify-test.sh`: 30 passed, 0 failed.
-
-### Learnings for future iterations
-- **The "two-axis read" pattern now has a third edge: a plane can move TOWARD you.** Every prior
-  2026-09-03 walk recorded the second axis as a source of breaks. This one found a clause (§5.4) that
-  was *wrong when published and correct now*, because MA-5 landed hours later the same day. Record
-  those too — otherwise the only clause nobody can explain is the one that quietly started working.
-- **`git log` the same-day folds before walking a gate.** `git log --oneline -- specs/*.md` for the
-  fold's date gives the ordering *within* the day, which the changelogs (dated to the day) cannot.
-  Both of this walk's deltas and its one rescue turned on that ordering. 0.6.0 = `49e63e6`,
-  KCB §4.2 = `7c82abc`, KMI 0.3.5/MA-5 = `7ee8da0`, all 2026-08-26 and all AFTER 0.6.0.
-- **A gate that names sections wants a per-section table, not only a per-delta one.** Two of KFT's
-  six sections are read by more than one delta and §5.2 is read by none of the six; a delta-only
-  table would have silently skipped the §5.4 rescue and buried §4.3.
-- **US-3's premise is now doubly conditional and should NOT promote KFT.** Both counts are open, each
-  is *a fold plus a re-run*, and both folds are unowned. US-3's remaining independent work: verify the
-  agora sha (criterion 1), land the dated DR-11 correction (criterion 3), record the AUD-1…AUD-6
-  per-repo actions (criterion 4). Criterion 2's IF does not fire. The `promotability.md` re-rank US-1
-  deferred is **already done here** — do not redo it.
-- **`docs/reference/promotability.md` line 3's DR-11 sentence is still the stale one** ("KFT cannot be
-  promoted even on a clean re-run until that document is built downstream"). I deliberately left it
-  for US-3, whose criterion 3 owns the dated correction. Don't read it as current.
-
----
-
-## US-3 — the encoding claim re-checked, by running it (2026-09-03)
-
-**What I did.** Took KFT's artefact gate at a **named sha** and by **execution**, not by reading a
-status line — then landed the dated corrections it forced, in koine only.
-
-**1. The artefact gate is met, and DR-11/DR-12/DR-13 are CLOSED.** At `agora` `main` =
-`c971fc206a7e3890911911b10c362ac470b41894` (clean tree): `coverage.test.ts` **3 passed / 0 failed**
-(`KOINE_SCENARIOS.length === 12`, twelve distinct ids and sources, set-equal to koine's
-`scenarios/*.md`, **0 skipped**), `evidence.test.ts` **13 passed / 0 failed**, printing
-`kcs-live-run.json is current (sha256-eb8fdc9c…36dd5)`. All three encodings landed at `agora`
-**`378fd3c`**, 2026-08-26 12:30:18 — forty-nine minutes after koine's gate doc was last written.
-
-**2. The tasklist's own correction was itself incomplete, and this is the finding of the story.**
-`378fd3c` did not only add three encodings: it **regenerated the evidence artifact**. koine's entire
-`## Downstream results` corpus cited `sha256-2d9e6c43…c17bb3` (2026-08-24, **9** scenarios, 19/32
-live) when the artifact of record is `sha256-eb8fdc9c…36dd5` (2026-08-26T17:26:10Z, **12**
-scenarios, 26/44 live, `partial-live`, every scenario `green`). I diffed the nine carried-over
-per-scenario entries old-vs-new: **0 differing, byte-identical** — so every recorded reading stands
-and only the address, date and count moved. Swept across nine scenarios plus the register.
-Third staleness: **DR-5**'s *"the suite pins KFT 0.5.0"* — `agora/schemas/src/versions.ts` pins
-**KFT 0.7.0 / KCS 0.3.0**, with **KCB a DECLARED LAG at 0.4.9** (reason + ending condition recorded
-downstream). DR-5's substance is intact; its version is not.
-
-**3. Criterion 2's IF does not fire — KFT is NOT promoted.** Both re-runs came back not clean
-(US-1 → FT-W, US-2 → FT-X/FT-Y). What blocks KFT is now three additive **KFT-only** folds plus two
-re-runs plus the reopened dependency-pin precondition — all koine-side, all unowned. The
-counterfactual is recorded in `promotability.md`: had either gate been clean, the artefact answer
-would have been the difference, and koine's record would have got it wrong.
-
-**4. US-2's own evidence table was wrong and is corrected, dated.** It said *"Replay — nothing
-(DR-11)"*. A replay existed and came back **`green`**. The verdict does not move: the encoding
-asserts only folded clauses, leaves three of the five deltas explicitly unasserted for want of a KCS
-§5 predicate, and reaches neither FT-X nor FT-Y (perimeter breaks in KMI §2 / KCB §4.2). Recorded as
-**DR-7/DR-8's hazard reaching a third spec** — the third green-over-not-clean.
-
-**5. Audio (criterion 4), verified at named shas instead of left `(reported)`.** New §8 in the
-downstream notice: **AUD-1/2/3 discharged** (`formant` `25c5ab5` — seven tokens in file order,
-`KFT_VERSION = '0.7.0'`, tasklist `38` completed with the *ratified* wording resolved on formant's
-side); **AUD-5 discharged** (`agora` `c971fc2` — both tokens in the vendored enum, audio job refused
-`out-of-envelope` not `invalid`); **AUD-4 open but OWNED** (`lugh` `36f6f09`, dated ADR-0007 deferral
-at KFT 0.4.0 with the adoption task recorded); **AUD-6 open, unowned, koine's own**. No sibling repo
-was written.
-
-**No version and no clause moved.** `specs/fine-tuning.md`'s hunks are all ≥ line 1429 (Pressure test
-+ Changelog; §2–§7 end below 1266); `specs/capability-bus.md`'s all ≥ 1936. `schemas/` and
-`registry/` are not in the diff.
-
-**Files changed (24).** `docs/reference/kcs-encoding-gate-verification.md` (new **§6.4**, the executed
-verification); `docs/reference/promotability.md` (the *Two facts* bullet, the KFT and KCB rows, item 3,
-item 6, and a new *three things that would have promoted KFT* paragraph);
-`docs/reference/generative-audio-modalities-downstream.md` (new **§8**); `scenarios/README.md`
-(encoding column ×3, the section heading + legend, the DR index ×3 + a dated note, the Evidence row);
-`scenarios/kft-resume-checkpoint.md`, `scenarios/kcb-subscription-firehose.md`,
-`scenarios/kcb-cross-owner-posture.md` (Downstream results rewritten, DR rows marked CLOSED);
-nine scenarios (artifact supersession); `specs/README.md` (the artefact-gate paragraph);
-`specs/fine-tuning.md` + `specs/capability-bus.md` (Pressure-test bullets + dated Editorial entries);
-`ROADMAP.md`, `CLAUDE.md`, `docs/reference/dead-code-undecidable.md`,
-`docs/reference/federation-fold-dispositions.md`,
-`docs/reference/fold-coordination-federation-versioning.md`.
-
-**Gates.** doc-integrity OK (59 files, 1554 links, 3 status tables match headers) · doc-links 0 dead
-vs 0 on main · tasklist-categories OK (2) · schemas OK (9/278/80/3) · registry OK (29 relations) ·
-`.chief/verify.sh --run <24 changed>`: all selected gates green · `verify-test`: 30 passed, 0 failed.
-
-### Learnings for future iterations
-- **Verify a correction the same way you verify a claim.** The tasklist description carried a
-  correction dated 2026-09-02 that was *right and incomplete*: it checked that three files existed
-  and missed that the same commit replaced the evidence artifact every scenario in this repo cites.
-  A partial correction reads exactly like a complete one.
-- **Run the downstream gate; do not read it.** Both facts that mattered here came from
-  `npx vitest run` and a `node -e` diff of two artifact revisions, not from any prose. The two
-  commands are now in §7 of the gate doc so the next reader does not have to invent them.
-- **koine has no red light for a cross-repo obligation in EITHER direction.** It cannot notice a
-  scenario added without an encoding, and it cannot notice the encoding arriving. The second is the
-  expensive one (a week of six specs recorded as more blocked than they were), and it is now stated
-  in `CLAUDE.md`, `scenarios/README.md` and each affected scenario.
-- **When a register is superseded, prove the readings survived before sweeping the address.** The
-  nine per-scenario entries were byte-identical across the two artifacts — checked with a script, not
-  asserted — which is what made a one-line supersession note honest instead of a rewrite.
-- **For `92` (KCB's four re-runs and KMI's wait):** DR-12 and DR-13 are closed, so counts (iv) and
-  (v) are open on their **re-runs alone** — but **DR-7 is untouched** and is now the only artefact
-  objection in the fabric: `kcs:live-schema-mutation` predates its fold and must be **extended** to
-  the F1–F13 set, ten of which need declared console extensions. Same shape as **DR-8** for KINP.
-  Do not read "the artefact gate is met for all six" as covering that.
+- **A "write it down" story is where you re-check the claims you are about to write down.** Two of the
+  six AG findings had moved since the 2026-08-25 read and nobody had looked; had this iteration copied
+  the table forward, koine's record would have gone on saying *four versions stale, reason unwritten*
+  about a register that now declares its lag properly. The generic form: **when a doc quotes another
+  repo at a sha, re-take it at the current sha before repeating it.**
+- **A closed finding can be more informative than an open one.** AG-5 looked like bookkeeping; the reason
+  written into its fix says the reference implementation *cannot* advance to KCB 0.5.0 without making the
+  exact change §7.2's fold asks of a reader. Read what a downstream fix says, not just that it happened.
+- **`agora` is read-only from here (ADR-0001).** Reading source and *running* its gates is right;
+  editing anything there is not, and the AG findings are deliberately reported in koine, never filed there.
+  `bun test <path>` needs the path to contain `.test.` — `console/src/live/evidence.test.ts` is the
+  evidence gate, not `console/src/kcs/…`.
+- **The evidence artifact's per-scenario `gates` field is the thing that makes a green citable.** It names
+  the spec section the encoding was written for. A green with the wrong `gates` value is DR-4's defect
+  (`kcs:kmi-otio-roundtrip`); a green with the right one is still only a precondition.
+- **When a re-derivation concludes "unchanged", publish the derivation anyway.** The page's own idiom is
+  *"the ordering below is unchanged, and that is a claim worth checking rather than assuming"* — a table
+  with a per-row *what would move this* column is more useful than a re-ordered list would have been, and
+  it is what surfaced the KMI/KCB coupling.

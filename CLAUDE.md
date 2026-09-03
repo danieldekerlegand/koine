@@ -355,6 +355,65 @@ vocabulary.
   per **DR-7** that re-run needs the KCS encoding **extended** to the scenario's new **F1–F13** set
   first, since the existing one deliberately asserts no unfolded delta — and the other four counts are
   restated, none moved.
+  **The other four counts were walked by hand on 2026-09-03 and NONE of them closes** — one verdict per
+  count, per scenario, never a replay (three of the four encodings return `green` over open blocking
+  deltas: DR-7, DR-8). **Every folded delta holds under re-attack**, which is the headline: F/G/J/K/L
+  against the card extension, V-1/V-2/V-4/V-5/V-7 against §2.4/§4.4/§7.1/§7.3g, BP-1…BP-5 against §4.2
+  (including blocking BP-5 — §8's parking sentence is struck and no clause assigns the host anything),
+  and AP-1…AP-8 against §4.3, **eight of eight**, including blocking AP-5. No fold is reopened and no
+  model is in question; **every** new finding is a **carrier** or **perimeter** break. **(i)** →
+  **MT-1** (High): §3's path plan names no `(name, version)` per leg and §4.4c(2) resolves a
+  version-free `invoke` to the **granted** major, so a caller that planned over the top-ranked successor
+  and holds a predecessor grant is served the predecessor **silently** — the symmetric case to the
+  *highest published* default §4.4c forbids by name, disagreeing not with the grant but with §3's own
+  plan. **(ii)** → **V-9** (High, `payload_schema_id` is not consumer-verifiable — no verb retrieves the
+  declaration it digests and §7.1 states a canonicalization for `schema_id` and none for it, so failure
+  mode 2 stays open on the branch that *declares* one), **V-11** (Med-High, the §7.1 step 5 rule id is
+  `MAY` with a MUST NOT on the branch that does not need it and no MUST on the branch that does, so a
+  `kcb2` digest published under the absent prefix restores V-3's non-recoverable verdict) and **V-10**
+  (Med, §7.2's `binding` row and §2.4 route a MUST to §4.2d's channel *"(§7.3g)"* and §7.3g names no
+  such frame, while the binding form that actually dials has no channel — DEFER-D). **(iv)** →
+  **BP-7** (Med-High, §4.2b's *MUST refuse if it cannot honour* is stated at **registration** only and
+  no clause says what a producer owes a **live** adjustment, so §4.2c's *silence is not one of them*
+  stops one paragraph short of the lever Step 3 needs) and **BP-8** (Med). **(v)** → **AP-9** (Med).
+  **BP-8 and AP-9 are one defect twice**: §4.2a and §4.3a each declare a **minor** bump under §7.2 for a
+  field §7.2's normative table has **no row for** — the nearest reads *patch* — so the version movement
+  both visibility claims rest on is unauthorized by the table that governs bumps. With **V-10** and
+  ADR-0014's marking that is **four of six findings on one axis**: an operand deliberately kept
+  **outside** the `schema_id` digest, with a declared consequence and nothing carrying it — the axis
+  ADR-0014 named in advance. The walk also establishes that **ADR-0014 is a base carrier gap, not a
+  federation one**: §7.3a(ii)/§7.3d/§3's ranking bullet read a *deprecated marking* and *removal
+  version* that no field in §2 or §3 carries, and that reproduces at count (ii)'s Step 9 with a
+  **single** registry and no peering, so the ADR's clause is a precondition of count **(ii)** as well as
+  count (iii). One bookkeeping correction: count (ii)'s published step list mis-files **Step 6** exactly
+  as *Fold status* found it mis-filing Step 3, so the flip list is Steps **3, 5, 6, 7, 8, 9, 10**. Every
+  count **changed shape rather than closing**, every new fold is additive and KCB-only (V-10/BP-8/AP-9
+  are literally one edit), and all are **unowned**. **No version moves and no clause moves** for any of
+  the four walks — §1–§8 byte-unchanged, no canonicalization changes, no published digest moves; the
+  edit is a *Pressure test* paragraph, a changelog entry and four scenario sections. **KCB is not
+  promoted and is not promotable**: count (iii) and ADR-0013's **W3** stand regardless, and four clean
+  re-runs would not have promoted it either.
+  **What remains is written down flat, with an owner or an explicit *unowned*, in
+  `docs/reference/promotability.md` § *The seven things that stand between KCB and `ratified`*** — seven
+  items, **all unowned in this repo and in every other**: (1) ADR-0014's four-part clause, a
+  precondition of counts **(ii) and (iii)**, not one; (2) the **MT-1** fold (§3/§4.4c); (3) **V-9 +
+  V-11** (§7.1); (4) **V-10 + BP-8 + AP-9**, *one* §7.2/§7.3g edit for three findings; (5) **BP-7**
+  (§4.2b/d); (6) **DR-7**, the encoding extension to the F1–F13 set — downstream under ADR-0001, and
+  the **only** artefact objection KCB still carries, since **DR-12 and DR-13 are CLOSED** (encoded at
+  `agora 378fd3c`, re-verified 2026-09-03 by **running** the gates at `agora c971fc2`: coverage 3
+  passed, evidence 13 passed, both entries `green`/`partial-live` and naming §4.2 and §4.3 as what they
+  gate); (7) **W3**, external to koine. Items 1–5 are additive and KCB-only; 6 and 7 are not koine work
+  at all, which is why a reader watching only this repo will see KCB stop moving before it is
+  promotable. Two **downstream** facts stand beside them, re-confirmed at `agora c971fc2` and stated
+  here rather than fixed here (`docs/reference/fold-coordination-federation-versioning.md` §5.1):
+  **AG-1** — the standalone `/.well-known/kcb-manifest.json` that 0.5.0 removed is still the reference
+  registry's **only** crawl path — and **AG-2** — its `Capability` carries no `version` and no port
+  carries a `schema_id`, so §7's identity pair is uncarried and the break-test's own premise is not
+  representable there. **§7 is unexercised outside this tree.** AG-3 is two-thirds closed and **AG-5 is
+  closed** in the way that matters: the downstream register pins KCB at **0.4.9** and *declares* the
+  0.5.0 lag with a reason — a pre-1.0 minor is breaking under that build's own compatibility rule, so
+  advancing would make every 0.4.x peer unreadable. That is §7.2's new reader obligation met by
+  declining to move, not neglect.
 - `specs/media-interchange.md` — KMI 0.3.5, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
@@ -427,6 +486,44 @@ vocabulary.
   unmoved**), then re-run Steps 8–10*; count (ii) is KCB's work, untouched, so **KMI is not promoted**
   and would not have been on a clean pass. The walk moved **no version and no clause**: a gate
   paragraph and an Editorial changelog entry only.
+  **Steps 8–10 were then re-attacked the same day, after KCB's four walks, and Step 9 REVERSES.** The
+  re-attack was run for one reason: four of the seven findings those walks returned sit on **one
+  axis** — *an operand deliberately kept outside a content digest, with a declared normative
+  consequence and nothing carrying it*, the axis ADR-0014 named — and §2's `license`/`egress` pair is
+  outside the `asset` id by exactly that design. **Step 8 holds**, and the reason separates the two
+  planes: an operand outside a digest is a hazard for **decisions taken over it**, never for the
+  identity the digest establishes, which is why every finding on this axis is a carrier or perimeter
+  break and none is a model break. **Step 10 re-confirms MA-12** and constrains its fold — the three
+  answers must land as a **named response vocabulary on KCB §4's `fetch`** (V-10's failure mode), be
+  owed **per request** rather than at registration (BP-7's), and never be synthesized (ADR-0014).
+  **Step 9 does not flip** → new delta **MA-13** (High, structural): §7.1(e) bullet 2 is a MUST over
+  *"an asset's `egress`"*, but §2 makes the pair a **per-asserter** envelope field — unsigned, read
+  off its own `prov` — while the `asset` id binds **bytes**, so two participants holding the same
+  bytes hold the same id and may each assert a conformant envelope with a **different** pair, and (d)
+  sources the travelling pair from *"the envelope the requesting participant already holds"*. A holder
+  with only the permissive envelope satisfies bullet 1, breaches bullet 2, and **cannot discover** the
+  restrictive one (no verb returns another envelope for an id; (d) rightly forbids synthesizing one),
+  so MA-5's laundering hole returns through **divergence** rather than absence — with **no
+  misbehaviour at any hop**, which is why §2's attribution answer, sufficient for the *downgrade* case
+  the first walk declared a residual, does not reach it. The fold is **KMI-only, additive and mints no
+  field**: (d) names the **serving** participant's evaluated pair as the one that travels; (e) states
+  that where a holder has more than one conformant pair the **most restrictive governs** and a holder
+  MUST NOT prefer its own (ADR-0013's monotone-restrictive discipline, reused as ADR-0014 reuses it
+  and as KFT §4.2 already takes the most restrictive `egress` across a job's inputs); and bullet 2's
+  MUST is scoped to the pairs a holder holds or has received, leaving the fail-closed default for
+  **absence** unchanged. No `asset` id moves, no envelope field is added, no KGP clause moves, no
+  schema twin is touched, **DEFER-C is unmoved**. Count (i) changed shape a **third** time — *fold
+  MA-12 **and** MA-13, then re-run Steps 8–10 again* — and one inherited premise is corrected: count
+  (i) is KMI's own as a **count** (it gates §7.1 alone) but only half KMI's as **work**, since MA-12's
+  carrier belongs on KCB's verb. **All three conditions on KMI's promotion are now recorded together
+  and NONE holds**: count (i) above; count (ii), the `e2e-media-transform.md` re-run, **walked the
+  same day and not clean** (MT-1) and KCB's work either way; and the fabric-wide **conformance gate**,
+  which fails on two documents for two reasons — **DR-4** (`kcs:kmi-otio-roundtrip` is
+  `kcs:media-transform` re-titled over the same fixture) and **DR-8**/**DR-7**
+  (`kcs:multi-authority` predates the 0.3.5 fold and asserts none of §2's `license`/`egress` or
+  §7.1(d)(e)(f), so it must be **extended**), both downstream and unowned. This walk too moved **no
+  version and no clause** — a §7.1 gate paragraph, two *Pressure test* sentences and an Editorial
+  changelog entry.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output

@@ -421,6 +421,251 @@ test is the only thing that will notice, and it will notice as a red build in an
 edits). This document stands as the historical record of what the pass found; a re-run against the
 folded text is the fifth of KCB's re-ratification counts.
 
+## Re-run — Steps 1–8 walked by hand against §4.3 (2026-09-03)
+
+**What this is.** KCB's **count (v)**, opened by 0.4.8 and gating **§4.3 alone**, on the conditions
+*Re-ratification* states above — *"Step 1 must distinguish the two capabilities before dispatch, Step 3's
+disagreement must resolve by a stated rule with no arbitration, Step 4's delegated leg must not escape
+the caller's posture, Step 5's refusal must have a shape stated in KCB, and Step 8 must still complete
+with no console anywhere."*
+
+**Method, and why it is not a replay.** By hand, against the prose. `kcs:cross-owner-posture` exists,
+ran `green` / `partial-live`, and is recorded above — **DR-13 is closed**, and the *Downstream results*
+section says in terms that `green` is not a gate verdict here either. The encoding asserts what koine
+folded; AP-1 and AP-7's predicates are declared **console extensions** because KCS §5 cannot state them,
+and a declared extension cannot report a clause with no carrier. Same standing reason as **DR-7** and
+**DR-8**.
+
+### Per-step verdicts
+
+| Step | Delta under test | Verdict |
+|---|---|---|
+| **1** — The caller cannot ask the question | **AP-1** | ✅ **flips** |
+| **2** — So the caller sends a mode flag | **AP-2** | ✅ **flips** |
+| **3** — The disagreement, and which one wins | **AP-3**, AP-4 | ✅ **flips** |
+| **4** — The leg the caller never sees | **AP-5** *(blocking)* | ✅ **flips**, two declared residuals |
+| **5** — A refusal with nowhere to put its reason | **AP-6** | ✅ **flips** |
+| **6** — The live binding, and the fetch | two holds | 🟡 **half-holds** → new delta **AP-9** |
+| **7** — What a caller may actually rely on | **AP-7**, **AP-8** | ✅ **flips** |
+| **8** — No console anywhere | the conformance requirement | ✅ **holds** *(regression)* |
+
+### Step 1 — The caller cannot ask the question ✅ *flips*
+
+There is now a field. §4.3a mints the **effect class** — `reversibility` (`none` / `local` /
+`irreversible`) × `visibility` (`internal` / `external`) — as an optional declaration on a capability
+**and** on a port, so Step 1's exhaustive field table gains the row it did not have.
+`analyze-capture` declares `{none, internal}`; `publish-findings` declares `{irreversible, external}`.
+The two capabilities that were *"the same shape on every field the manifest, the registry and the path
+planner can see"* are now distinguishable **before dispatch**, on a field the caller reads off the
+callee's own card.
+
+Three probes, all held:
+
+- *Declare nothing.* An absent `effect` reads **`unknown`**, never *harmless*, and `unknown` is admitted
+  only where a posture names it explicitly. The fail-safe direction §4.2a took for `volume`, reused
+  deliberately.
+- *Who may assert it.* §4.3a fixes that the class is declared by the participant that **implements** the
+  capability, on its own card (ADR-0007), with no registry holding it and no third party asserting it on
+  another's behalf. That is what stops the field becoming a reputation surface, which *Only the boundary
+  half is forced* rules out by name.
+- *Does cost ranking still prefer the irreversible one?* Yes — §3's path search still prefers
+  zero-`cost` routes, and §4.3 adds no ranking rule, deliberately. But AP-1's complaint was that the
+  caller had **no field against which the rule could even be stated**; it now has one, and it gates
+  before dispatch rather than relying on an ordering. Recorded so the two are not confused: the ranking
+  observation was an amplifier, and it is not repaired because it is not a defect.
+
+### Step 2 — So the caller sends a mode flag, and it buys nothing ✅ *flips*
+
+§4.3b answers all three of the step's independent failures. **The rung has no referent** →
+*"koine adopts no rung names — no `autonomous`, no `plan-first`, no `ask-first`"*; a posture is a **set
+of admitted effect classes**, named by what it guarantees, and a product's ladder is a **projection**
+onto them with its lossy edges named, which is ADR-0010's discipline applied a third time. **A flag the
+callee is trusted to honour is not a guarantee** → §4.3c makes the declaration something the reader acts
+on by withholding, never something the peer is asked to honour. **The direction is backwards** → the
+operand exists in both directions and the caller's half is enforced by the caller.
+
+The step's 🟡 — *the mode flag is inadequate in a way that names the fix* — is what the fold took, and
+taking it is why the flip is clean rather than partial.
+
+### Step 3 — The disagreement, and which one wins ✅ *flips*
+
+§4.3c states the rule the step found and could not cite: posture is **monotone-restrictive**, the
+effective posture is the **intersection**, each side enforces its own half against its own gates, and
+**no posture presented by a peer may widen any gate**. `worldsim` refuses `publish-findings` before
+dispatch; `analyzer` refuses the paid analysis on its own gate. Nothing is arbitrated, nobody is trusted,
+and the three losing rows of the step's table are each excluded by name — the caller-governs and
+callee-governs rows by *"a declaration a peer presents can only ever cause the reader to do **less**"*,
+and the host-arbitrates row by the same structural fact **BP-5** established, that no party has
+jurisdiction over both ends.
+
+**AP-4 flips with it.** §4.3b states that `admits` is a **set** and that the specification defines **no
+total order** over classes, with the reason the step gave: two postures may each be stricter on a
+different axis and neither is *"higher"*.
+
+**And ADR-0011's T3 is checked, not asserted.** §4.3c states that every gate stays unilateral *as a
+design constraint on the section, not an observation about it*. Walked: both refusals in the winning row
+are taken alone, by the party that owns the gate, with no joint decision anywhere. T3 does not fire.
+
+### Step 4 — The leg the caller never sees ✅ *flips, with two declared residuals*
+
+The blocking delta does not reproduce. §4.3e closes both holes the step found, and closes them in the
+order the step ranked them:
+
+- **The class covers the leg, not the code.** *"A declared `effect` … states what the invocation causes,
+  **including every dispatch the callee makes to fulfil it** — not what the callee's own code does in
+  isolation. A callee whose downstream provider publishes the caller's inputs declares `external`,
+  whatever its own code does."* `analyzer`'s truthful-but-narrow `{none, internal}` on `analyze-capture`
+  is now a **misdeclaration**, not a defensible reading.
+- **The posture has a carrier along the chain.** *"A re-dispatch MUST NOT present a posture wider than
+  the effective posture it was invoked under. It MAY narrow further."* Monotone-restrictive along the
+  chain, in the shape §5's spend ceiling already has — which is the analogy the step itself demanded —
+  and a callee that cannot bound its downstream legs to the effective posture MUST refuse rather than
+  dispatch and hope.
+
+**Residual 1, and §4.3i states it.** The chain rule is an obligation on the callee that the caller
+cannot verify: `worldsim` cannot observe the `analyzer` → `vision-model` leg. That is not a hole here
+because §4.3i says plainly what a declaration is worth and what three things nonetheless separate it
+from an advisory hint. Recorded so a re-runner does not read §4.3e as enforcement.
+
+**Residual 2, and it is DEFER-D's.** The leg-covering claim is only as current as `analyzer`'s
+declaration, and Owner C may change what `vision-model` does. §4.3a requires the class change to be a
+**minor** bump and to be signalled on §4.2d's channel — but the party that needs it here holds a cached
+**discovery binding** and invokes, not a `subscribe`, and §7.3g's own closing bullet says that binding
+form has no channel (**DEFER-D**). So a leg's class can go stale for a caller with no signal path. That
+is DEFER-D's stated trigger arriving on a second surface, not a new delta — and the *signalling* half of
+it is **AP-9**, below.
+
+### Step 5 — The second edge, and a refusal with nowhere to put its reason ✅ *flips*
+
+The ✅ half is unchanged and needed nothing: KFT §8.1's `refused-policy` and its no-breach `route_to[]`
+rule read over posture as written, and KFT did not move — Step 5 predicted that and it is confirmed by
+re-reading §8.1 against §4.3, not by assuming it.
+
+AP-6's layering inversion is repaired. §4.3h states KCB's **own** minimum: a refusal MUST name **which
+gate refused** and **which class** was not admitted, MUST NOT disclose the contents behind the class, and
+MAY carry the richer graded form where the caller is on a surface that defines one — *"KFT is a profile
+composed over KCB, so the citation runs this way and not the other: no caller on this bus needs to read
+a fine-tuning spec to learn what a refusal carries."* The non-disclosure half — the 🟡 the step recorded
+and did not file — is folded with it, on the sentence KFT §8.1 already uses for a `local-only` corpus.
+
+### Step 6 — The live binding, and the fetch 🟡 *half-holds*
+
+**The `fetch` half holds, and holds for the reason the step gave.** §4.3a states in terms that `fetch`
+gets **no** effect class, because KMI §7.1 over KGP §7 already gates it fail-closed in the right domain
+— *"a second control over the same act would be two gates disagreeing."* Re-probed against KMI 0.3.5:
+MA-5 made the asset's own `license`/`egress` travel with the bytes and made §7.1(e) evaluate them **in
+addition to** the serving domain's, so the gate the step relied on got **stronger**, not weaker, and the
+carve-out is more clearly right than when it was written. §4.3f restates the exclusion at the evaluation
+point. ✅
+
+**🔴 BROKE (AP-9, medium — carrier). The live-binding half asserts a signal that no frame carries.**
+§4.3a states: *"Where a capability's class changes while a `subscribe` binding is live, the producer
+signals it on the **§4.2d control channel** — the single in-band channel that section specifies in both
+directions. This section mints **no** second signalling path."* Not minting a second path is right and
+is what the step asked for. But **§4.2d specifies a channel and names no frames**; the only section that
+names frames on it is **§7.3g**, and its table has exactly three — `successor_published`, `deprecated`,
+`removal`. **None of them announces an effect-class change.**
+
+§4.2d's own rule turns that from an omission into an equivalence: *"A producer that receives an unknown
+frame MUST ignore it; a subscriber MUST tolerate a producer that never sends one."* A frame no section
+names is a frame every conformant subscriber may ignore, so an **undefined** signal and an **absent**
+one are the same signal on the wire. And it costs the section the property §7.3g explicitly claims for
+its own three — that *"a producer that emits none is now **detectable** rather than merely silent,
+because the frames are named and a scenario can assert their absence (KCS §5)"*. An effect-class change
+is neither detectable nor assertable, which matters more here than for most fields: `unknown` is not
+admitted, so a class **narrowing** a subscriber never learns of is a dispatch it keeps making under a
+posture that no longer admits it.
+
+**A second instance, on the other axis of the same clause.** §4.3a also states that changing `effect` is
+*"a **minor** bump on the capability that carries it (§7.2), so the version moves and a pinned consumer
+can see it."* §7.2's table is normative and has **no row for `effect`**; the nearest row a provider will
+land on is *editorial, no `schema_id` change* → **patch**, since `effect` sits outside the digest. So the
+version-movement half of the visibility claim is asserted in §4.3 and absent from the table that governs
+it. That is [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md)'s **BP-8**, which found the
+identical defect for `volume` at §4.2a on the same date; both are recorded because each count must carry
+its own verdict, and the fold is one edit for both.
+
+**The class this belongs to.** [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)
+generalizes it in advance: *"every operand deliberately kept **outside** the digest — `cost`, `binding`,
+`volume`, `effect`, the marking — is outside the merge key too, and only the two with a declared §7.2
+bump are rescued."* This walk and the firehose walk together establish that **`effect` and `volume` are
+not among the two**: their bumps are declared in §4.3a and §4.2a and nowhere in §7.2. The same shape
+appears once more at §2.4 and §7.2's `binding` row, filed as
+[`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md)'s **V-10**.
+
+*The fold is additive and small:* a named frame on §7.3g's table for a class change on the bound
+`(name, major)` — or one generic *entry changed* frame naming the field that moved, which is also the
+shape ADR-0014's marking carrier and V-10's `binding` signal both want — plus the `effect` row in §7.2's
+table. Neither moves a digest, adds a verb, or touches §4.3's model. → KCB §4.3a/§7.3g/§7.2.
+
+### Step 7 — What a caller may actually rely on ✅ *flips*
+
+**AP-7** is answered by §4.3i, which states the boundary rather than adding machinery: silence costs the
+declarant (absent reads `unknown`, `unknown` is not admitted, *"a participant that declines to classify
+loses the traffic"*), a misdeclaration is a **breach of a stated term** on a card §5's `signing` makes
+attributable and is **KCS-assertable**, and the posture composes with the grant — *"the first is read;
+the second binds."* The clause says what it is not, which is what stops it reading as the security
+control the step warned about. No trust or reputation surface is added, which *Only the boundary half is
+forced* required.
+
+**AP-8** is answered by §4.3d, and the floor is stated where the step said it had to be — in the
+callee's unilateral half. No posture relaxes KGP §7, KCB §5 or KFT §4/§8.1; an unadmitted effect is a
+**refusal**, never a silent proceed and never a silent **substitution** of a lesser effect (KFT §3.3's
+disposition, reused); an undeclared class is not admitted; refusal remains unconditionally available to
+both sides. Probed for the obvious erosion — *"can the most permissive expressible posture skip a
+gate?"* — and §4.3d forecloses it in terms: a participant that omits one is non-conformant regardless of
+what either side declared.
+
+### Step 8 — No console anywhere ✅ *holds (regression)*
+
+Re-walked with every participant headless and it completes. §4.3g is a **NORMATIVE conformance
+requirement** and states each of the step's four bullets: the section names no person, defines no
+interface, timeout, correlation id, approval message or queue; a headless provider declaring classes and
+a headless caller computing the intersection are both fully conformant; and a refused dispatch *"is not
+parked, held, or resumable — a subsequent dispatch under a widened posture is a **new** invocation"*,
+which is why §4.3 needs no verb, no state and no resumption operand. Checked against §4's verb table
+(five entries, unchanged) and §2.1's port table (three planes, unchanged): the fold added an optional
+field and an optional operand and nothing else.
+
+### Findings — from the re-run
+
+| # | Severity | Gap | Fold | Spec |
+|---|---|---|---|---|
+| **AP-9** | Med (carrier) | §4.3a asserts two consequences §4.3 does not carry. **(i)** An effect-class change on a live `subscribe` *"is signalled on the §4.2d control channel"*, but §4.2d names no frames and §7.3g — the only section that does — names three, none of them this; §4.2d's *tolerate a producer that never sends one* then makes an unnamed frame indistinguishable from an absent one, so the signal is undetectable and unassertable (KCS §5), and a class **narrowing** reaches no live binding. **(ii)** Changing `effect` is stated to be a **minor** bump under §7.2, and §7.2's normative table has no row for it — the nearest reads *patch*, so the version-movement the visibility claim rests on is not authorized by the table that governs bumps. The **BP-8** defect, second instance; ADR-0014's class. | Add a named frame to §7.3g's table for a class change on the bound `(name, major)` — or one generic *entry changed* frame, the shape ADR-0014's marking carrier and **V-10** both want — plus an `effect` row in §7.2's table beside `cost` and `binding`. | KCB §4.3a/§7.3g/§7.2 |
+
+### What this re-run does and does not close
+
+**Count (v) does NOT close.** All five conditions *Re-ratification* names are met, and met by walking:
+Step 1 distinguishes the two capabilities before dispatch, Step 3's disagreement resolves by a stated
+rule with no arbitration and no trust, Step 4's delegated leg does not escape the caller's posture,
+Step 5's refusal has a shape stated in KCB, and Step 8 completes with no console anywhere. **AP-5, the
+blocking delta, does not reproduce**, and neither do AP-1, AP-2, AP-3, AP-4, AP-6, AP-7 or AP-8 —
+**eight of eight flip**. §4.3's *model* is not in question and this walk did not find one that was.
+
+It does not close because Step 6's live-binding hold does not hold: **AP-9**, a carrier gap on §4.3a's
+own two visibility claims. That is a perimeter break of the same kind the original leg found, and the
+fold is additive.
+
+So the count **changes shape** rather than closing: from *re-run this leg against the folded §4.3* to
+**fold AP-9 (one frame in §7.3g plus one row in §7.2 — the same edit that closes BP-8 and V-10), then
+re-run Steps 1–8 again**. It is **unowned**.
+
+**And the count's second condition is unmoved.** ADR-0013's retained
+**second-independent-implementation** condition (**W3**) gates §4.3's ratification beside this re-run,
+tested by ADR-0010 §3.4's *complete or reported* criterion. Nothing in this walk touches it, no
+implementation of it is known to this repo, and it is **unowned**. A clean re-run would not have
+promoted §4.3 on its own.
+
+**What this walk does not touch.** KFT, KGP, KMI and KINP are unmoved, exactly as *Only the boundary
+half is forced* said they would be — Steps 5 and 6 are the record of testing for it a second time, and
+KMI 0.3.5's MA-5 made Step 6's `fetch` carve-out **more** clearly right rather than less. GOV-2 is
+unchanged and still this clause's companion rather than part of it. **No version moves and no clause
+moves** — the edit is this section, a gate paragraph in
+[`../specs/capability-bus.md`](../specs/capability-bus.md) and a changelog entry. **KCB is not
+promoted.**
+
+---
+
 ## Downstream results
 
 > **What this section is.** The recorded result of a **downstream run** of this pressure test's
