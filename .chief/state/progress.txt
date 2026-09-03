@@ -68,3 +68,77 @@ Gates: all five guards green; `git diff --name-only main | .chief/verify.sh --ru
   status tables against the spec headers and never this. Update it by hand every time.
 - Insert new sections with a python `str.index('## Downstream results')` splice — every scenario keeps
   *Downstream results* last, so that marker is a stable insertion point ahead of it.
+
+## US-2 — KMI's Steps 8–10, and its wait recorded honestly (2026-09-03)
+
+**The story as written was already half-done by the dependency, and saying so was the first job.**
+`chief/89` walked Steps 1–10 earlier the same day and gave count (i) its verdict (🔴, MA-12). Nothing
+normative moved in between, so re-reading the same clauses against the same bytes would have been
+bookkeeping. What made a second pass real: US-1's four KCB walks landed **seven** new findings, of
+which **four sit on one axis** — *an operand kept outside a content digest, with a declared normative
+consequence and nothing carrying it* (the axis ADR-0014 named). **KMI §2's `license`/`egress` pair is
+outside the `asset` id by exactly that design**, so the byte plane had to be read against the axis
+rather than assumed unaffected by findings in a sibling plane. It was, and **Step 9 reversed.**
+
+Files changed
+- scenarios/e2e-multi-authority.md — new § *Re-run — Steps 8–10 re-attacked after the KCB walks
+  (2026-09-03, second pass)*; a `> Superseded` block + a table caveat on the first pass's Step 9 so
+  its ✅ is never cited alone; the MA-12 paragraph extended to MA-13
+- specs/media-interchange.md — a §7.1 closing paragraph, two *Pressure test* sentences, one Editorial
+  changelog entry. **NO version, NO clause.**
+- scenarios/README.md — delta range → MA-1…MA-13, and the federation paragraph (which still said
+  "that re-run has not happened") rewritten to carry both walks
+- ROADMAP.md — Phase F1 prose (two folds → three), a ✅ row for this re-attack, a ⬜ row for the MA-13
+  fold, and the KMI re-ratification row rewritten as **three conditions, none holding**
+- docs/reference/promotability.md — KMI table row + ranking entry 5 + blocker cell
+- CLAUDE.md — *Current state* KMI bullet (the unchecked fourth mirror)
+
+Verdict — count (i), second pass
+- **Step 8 ✅ holds.** The axis was put to §7.1(a) directly: an operand outside a digest is a hazard
+  for **decisions taken over it**, never for the identity the digest establishes. That is exactly why
+  every finding on this axis (both planes) is a carrier/perimeter break and none is a model break.
+- **Step 9 🔴 REVERSES → MA-13 (High, structural).** §7.1(e) bullet 2 is a MUST over *"an asset's
+  `egress`"*; §2 makes the pair a **per-asserter** envelope field while the `asset` id binds **bytes**.
+  Two participants holding the same bytes hold the same id and may each assert a conformant envelope
+  with a different pair; (d) sources the travelling pair from *the requester's* copy. A holder with
+  only the permissive envelope satisfies bullet 1, breaches bullet 2, and **cannot discover** the pair
+  that would have stopped it. **No misbehaviour at any hop** — which is why §2's attribution answer,
+  sufficient for the *downgrade* case the first pass declared a residual, does not reach it.
+  Fold: KMI-only, additive, mints no field.
+- **Step 10 🔴 MA-12 re-confirmed**, and its fold **constrained** by V-10 (land the vocabulary on
+  §4's verb, not as prose §4 is left to imply) and BP-7 (owed per request, not at registration).
+- Count (i) changed shape a **third** time: *fold MA-12 **and** MA-13, then re-run Steps 8–10 again.*
+- Premise corrected: count (i) is KMI's own as a **count**, only half KMI's as **work** — MA-12's
+  carrier belongs on KCB §4's verb.
+- **Three conditions recorded, none holds**: (i) above · (ii) media-transform re-run, walked the same
+  day, not clean (MT-1), KCB's work · (iii) the conformance gate, failing on two documents for two
+  reasons (DR-4; DR-8/DR-7). KMI stays Candidate and would not have promoted on a clean count (i).
+
+Gates: all five guards green; `git diff --name-only main | .chief/verify.sh --run` → verify-test
+30 passed / 0 failed, "all selected gates green".
+
+## Learnings for future iterations
+
+- **When a dependency tasklist already executed your story's literal instruction, the value is in what
+  changed since — not in re-performing it.** The honest move was to state that `chief/89` did the
+  first pass, then find the one thing that made a second pass non-redundant (US-1's findings landing
+  on a shared axis). Restating a dependency's verdict as your own would have passed the acceptance
+  criterion and taught the record nothing.
+- **The axis generalizes across planes, and koine's own ADR says so without anyone having applied it.**
+  ADR-0014 generalized *every operand kept outside the digest is outside the merge key too* for KCB.
+  The same sentence read over KMI gives MA-13 immediately. When walking any spec, list the fields
+  **excluded from that spec's content hash** and ask, for each: who asserts it, can two asserters
+  disagree, and does any clause rank them? (`license`/`egress` on the `asset` id; `cost`/`volume`/
+  `effect`/`binding`/the deprecated marking on `schema_id`.)
+- **A MUST written over one object whose operand only exists on another object is a delta.** §7.1(e)
+  bullet 2 says *an asset's egress*; every operand a holder can obtain is a property of *an envelope*.
+  Same shape as V-10 (a MUST routed to a frame table with no such frame) and ADR-0014's marking.
+- **Check whether a "declared residual" covers the case you found.** The first pass declared the
+  *downgrade* (falsified pair) a residual answered by attribution. Divergence is not that case:
+  nobody misdeclares, both prov chains are clean, and attribution says who said what when the
+  question is which one governs. Naming the difference explicitly is what makes the finding stick.
+- **Register-of-record files go stale in the direction of optimism.** `scenarios/README.md`'s
+  federation paragraph still read *"that re-run has not happened"* after `chief/89` ran it; only the
+  delta-range cell had been updated. When you touch a scenario, grep its filename across
+  `scenarios/README.md`, `ROADMAP.md`, `docs/reference/promotability.md` and `CLAUDE.md` and read
+  every prose hit, not just the table cells — **no guard checks prose.**
