@@ -1,6 +1,6 @@
 # The KCS-encoding gate — what the downstream suite actually delivers
 
-> **Status:** Current · **Updated:** 2026-08-26 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-09-02 · **Owner:** koine · **Informative**
 
 **This document binds no clause.** It is the record of one verification, not a contract. Where it
 and [`../../specs/README.md`](../../specs/README.md#the-ratification-gate) disagree, the spec wins
@@ -119,6 +119,35 @@ of those has made a larger version of the mistake this repo already made once wi
   those sections are empty. Owner: `84-record-the-downstream-results`.
 - **`scenarios/README.md`'s KCS-encoding column is stale** — nine `planned`, zero `exists`, when
   the true reading is nine `exists`. Same owner.
+
+## 6.0 Correction of record, 2026-09-02 — DR-11, DR-12 and DR-13 are CLOSED
+
+**Everything in §6.1–§6.3 below about missing encodings was overtaken 49 minutes after this
+document was last written, and this file did not learn for a week.**
+
+agora `378fd3c` — *"encode koine's three unencoded pressure tests — the console count gate is
+closed"* — landed **2026-08-26 12:30:18**. This document's previous revision (`93f5020`) was
+**11:41:14** the same morning. Verified against agora on 2026-09-02:
+
+- `console/src/kcs/scenarios/resume-checkpoint.ts` — DR-11, the tenth
+- `console/src/kcs/scenarios/subscription-firehose.ts` — DR-12, the eleventh
+- `console/src/kcs/scenarios/cross-owner-posture.ts` — DR-13, the twelfth
+
+all three registered in `console/src/kcs/scenarios/index.ts` against their koine sources, and
+`coverage.test.ts` asserts `KOINE_SCENARIOS.length === 12` and **passes**. The gate §6.1 describes
+as red is green, and has been since that afternoon.
+
+**So the artefact gate is met for every spec again.** §6.1's "KFT alone loses the artefact gate"
+and §6.2/§6.3's counts against KCB §4.2 and §4.3 no longer hold. What remains is DR-7 — count
+(ii)'s encoding predates the fold and must be extended — which is a different claim and stands.
+
+**Why this sat for a week is the useful part.** The obligation runs downstream-to-upstream: agora
+closed the gate and nothing told koine. That is the same shape as the KGP audit
+([`kgp-projection-gate-verification.md`](kgp-projection-gate-verification.md)) with the sign
+reversed — there, koine believed a downstream deliverable had landed when it had not; here, koine
+believed one had not landed when it had. Both cost a week and both were found by reading the
+downstream tree rather than the record. Sections below are left standing rather than rewritten, so
+the correction is visible as a correction.
 
 ## 6.1 Amendment, 2026-08-26 — a tenth scenario, and the count gate is red
 

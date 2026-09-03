@@ -2,8 +2,15 @@
   "project": "koine",
   "category": "unblock",
   "branchName": "chief/92-kcbs-four-re-runs-and-kmis-wait",
-  "dependsOn": ["89-the-re-run-three-specs-wait-on"],
-  "touches": ["specs", "scenarios", "docs", "decisions"],
+  "dependsOn": [
+    "89-the-re-run-three-specs-wait-on"
+  ],
+  "touches": [
+    "specs",
+    "scenarios",
+    "docs",
+    "decisions"
+  ],
   "iters": 8,
   "warmup": [
     "sed -n '/^6\\. \\*\\*KCB/,/^## Two facts/p' docs/reference/promotability.md",
@@ -12,7 +19,7 @@
     "sed -n '1,30p' decisions/ADR-0014-federated-merge-merges-attributions.md",
     "ls scenarios/kcb-*.md scenarios/e2e-media-transform.md scenarios/e2e-live-schema-mutation.md"
   ],
-  "description": "KCB's remaining counts and KMI's Steps 8–10 — the two specs the ladder ranks last, taken together because KMI's second count IS KCB's re-run.\n\nKCB, per docs/reference/promotability.md: 'the most work, and the most implemented.' FIVE independent counts as of 0.5.0 with NO fold outstanding — V-1…V-7 landed at 0.5.0, MA-6/MA-8/MA-9 at 0.4.9. What remains is four re-runs of folded text plus a re-run outstanding since 2026-07-22: `e2e-media-transform.md` (the 0.3.0 AgentCard-extension shape), `e2e-live-schema-mutation.md` (V-2/V-4/V-5/V-7 blocking, now against the 0.5.0 fold), `kcb-subscription-firehose.md` (§4.2 backpressure, KCB 0.4.7) and `kcb-cross-owner-posture.md` (§4.3 autonomy posture, KCB 0.4.8). `89` clears the fifth (Steps 5–7 of the multi-authority walk), which is why this depends on it.\n\nREADING GREEN IS THE NAMED HAZARD HERE. 'KCB is the spec where reading `green` as a verdict does the most damage: `kcs:live-schema-mutation` and `kcs:multi-authority` both came back green over passes with four and six blocking deltas open (DR-7, DR-8).' Walk the prose.\n\nWHAT WILL STILL BLOCK KCB AFTER FOUR CLEAN RE-RUNS, and must be stated rather than discovered later: §4.2 and §4.3 lack a KCS encoding entirely (DR-12, DR-13); count (ii)'s encoding exists but must be EXTENDED past the fold it predates (DR-7); §4.3 carries ADR-0013's retained second-independent-implementation condition (W3); and ADR-0014 — the single finding of the fold cross-read — lands with counts (ii) and (iii), moving neither and closing neither. The reference implementation read against the folded text shows the standalone manifest 0.5.0 removed is still its only crawl path (AG-1) and its manifest type carries neither `version` nor `schema_id` (AG-2), so §7 is unexercised outside this tree.\n\nKMI: 'the fold landed; now a re-run, then a wait.' MA-5's two optional §2 fields and MA-10's answerable absence went in additively at 0.3.5. What is left on count (i) is a re-run of Steps 8–10; after that KMI is blocked on KCB's re-run, which is not KMI's work.",
+  "description": "KCB's remaining counts and KMI's Steps 8–10 — the two specs the ladder ranks last, taken together because KMI's second count IS KCB's re-run.\n\nKCB, per docs/reference/promotability.md: 'the most work, and the most implemented.' FIVE independent counts as of 0.5.0 with NO fold outstanding — V-1…V-7 landed at 0.5.0, MA-6/MA-8/MA-9 at 0.4.9. What remains is four re-runs of folded text plus a re-run outstanding since 2026-07-22: `e2e-media-transform.md` (the 0.3.0 AgentCard-extension shape), `e2e-live-schema-mutation.md` (V-2/V-4/V-5/V-7 blocking, now against the 0.5.0 fold), `kcb-subscription-firehose.md` (§4.2 backpressure, KCB 0.4.7) and `kcb-cross-owner-posture.md` (§4.3 autonomy posture, KCB 0.4.8). `89` clears the fifth (Steps 5–7 of the multi-authority walk), which is why this depends on it.\n\nREADING GREEN IS THE NAMED HAZARD HERE. 'KCB is the spec where reading `green` as a verdict does the most damage: `kcs:live-schema-mutation` and `kcs:multi-authority` both came back green over passes with four and six blocking deltas open (DR-7, DR-8).' Walk the prose.\n\nWHAT WILL STILL BLOCK KCB AFTER FOUR CLEAN RE-RUNS. CORRECTED 2026-09-02: koine's record says §4.2 and §4.3 'lack a KCS encoding entirely' (DR-12, DR-13). Both are FALSE. agora `378fd3c` encoded all three outstanding pressure tests on 2026-08-26 12:30 — 49 minutes after koine's gate doc was last written — and `subscription-firehose.ts` and `cross-owner-posture.ts` are registered in `console/src/kcs/scenarios/index.ts` with `coverage.test.ts` asserting 12 scenarios and passing. What genuinely remains: count (ii)'s encoding must be EXTENDED past the fold it predates (DR-7); §4.3 carries ADR-0013's retained second-independent-implementation condition (W3); and ADR-0014 — the single finding of the fold cross-read — lands with counts (ii) and (iii), moving neither and closing neither. The reference implementation read against the folded text shows the standalone manifest 0.5.0 removed is still its only crawl path (AG-1) and its manifest type carries neither `version` nor `schema_id` (AG-2), so §7 is unexercised outside this tree.\n\nKMI: 'the fold landed; now a re-run, then a wait.' MA-5's two optional §2 fields and MA-10's answerable absence went in additively at 0.3.5. What is left on count (i) is a re-run of Steps 8–10; after that KMI is blocked on KCB's re-run, which is not KMI's work.",
   "userStories": [
     {
       "id": "US-1",
@@ -43,7 +50,7 @@
       "passes": false,
       "notes": null,
       "acceptanceCriteria": [
-        "DR-12 and DR-13 (no KCS encoding for §4.2 and §4.3), DR-7 (count (ii)'s encoding must be extended past the fold it predates), W3 (ADR-0013's second-independent-implementation condition on §4.3) and ADR-0014's queued clause change are each recorded in `promotability.md` with an owner named or explicitly unowned.",
+        "DR-7 (count (ii)'s encoding must be extended past the fold it predates), W3 (ADR-0013's second-independent-implementation condition on §4.3) and ADR-0014's queued clause change are each recorded with an owner named or explicitly unowned. DR-12 and DR-13 are recorded as CLOSED — agora encoded them on 2026-08-26 and koine's record never caught up; verify that against agora at a named sha rather than taking this description's word for it.",
         "AG-1 and AG-2 are recorded against the reference implementation: the standalone manifest 0.5.0 removed is still its only crawl path, and its manifest type carries neither `version` nor `schema_id`, so §7 is unexercised outside this tree. These are downstream facts, stated here, not fixed here.",
         "KCB is NOT promoted by this tasklist even on four clean re-runs, and the record says which of the remaining conditions blocks it. The ladder's whole purpose is that a reader should not have to run the audit six times.",
         "`promotability.md`'s 'Cheapest first' ranking is re-ordered to match what these walks changed.",
