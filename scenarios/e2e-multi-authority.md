@@ -1140,7 +1140,7 @@ is the fold.
 > fixes. Instance-free, role-scoped, and it **promotes nothing**.
 
 **Run of 2026-08-24** · encoding `kcs:multi-authority` · KCS 0.3.0 · evidence
-`sha256-2d9e6c43…c17bb3`, verified in
+`sha256-2d9e6c43…c17bb3` **(superseded 2026-08-26 by `sha256-eb8fdc9c…36dd5`, twelve scenarios — this scenario's own per-scenario entry is byte-identical in it, checked 2026-09-03)**, verified in
 [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
 This is the encoding that landed last, with the follow-up merge that also re-captured the run.
 

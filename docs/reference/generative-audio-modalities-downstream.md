@@ -1,6 +1,6 @@
 # Downstream notice — the KFT audio modalities, and what each mirror must do
 
-> **Status:** Current · **Updated:** 2026-08-27 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-09-03 (§8 added — a verification pass at named shas) · **Owner:** koine · **Informative**
 
 [KFT 0.7.0](../../specs/fine-tuning.md) added two `modality` tokens — **`text-to-audio`** and
 **`audio-to-audio`** — to a **closed** vocabulary that three named participants mirror. The
@@ -185,3 +185,44 @@ version back for a mirror. Adoption is tracked where it always is — ROADMAP's 
 adoption* row, off each scenario's `## Downstream results` — and a mirror that has not caught up is
 that repo's finding, not koine's. The one thing this page **is** claiming: after today, no consumer
 of this enum can say it was not told.
+
+---
+
+## 8. Verification pass, 2026-09-03 — four of the six are discharged, and the two that are not are named
+
+**This section reverses §0's provenance rule, deliberately and once.** The page above says *"no file
+outside this repository was written, and none was read"*, and every downstream claim in it is marked
+**(reported)** on that basis. That was the right rule for a *report*. It is the wrong rule for a
+*re-check*: `chief/91` had to read `agora` at a named sha anyway — to re-verify the KCS-encoding gate
+after koine's own record turned out to be a week stale
+([`kcs-encoding-gate-verification.md`](kcs-encoding-gate-verification.md) §6.4) — and a page that
+leaves five findings as **(reported)** when the answer was one `grep` away is doing the same thing
+that cost the week. **Still no file outside this repository was written.** §1–§7 are unedited; the
+verdicts below sit here rather than being folded into §6's table, so the reported and the verified
+stay distinguishable.
+
+Read at: `formant` `25c5ab5`, `agora` `c971fc2`, `lugh` `36f6f09` — all `main`, all 2026-09-03.
+
+| # | Repo | Verdict | Evidence, at that sha |
+|---|---|---|---|
+| **AUD-1** | formant | ✅ **discharged** | `src/shared/agentic/kftFinetuneClient.ts` — `KFT_MODALITIES` carries all **seven** tokens in koine's file order, `text-to-audio` then `audio-to-audio` last, and `PROPOSED_KFT_MODALITIES` is now empty |
+| **AUD-2** | formant | ✅ **resolved on formant's side, the way this page said it had to be** | `tasks/chief/completed/38-kft-generative-audio-ratify-and-flip.json` is in `completed/`, and its description restates the criterion as *a published enum at a stated version* rather than a *ratified* one — citing AUD-2 by name. **koine did not promote anything to unblock it** |
+| **AUD-3** | formant | ✅ **discharged** | `KFT_VERSION = '0.7.0'`, moved in the same change as the tokens, so the artifact is no longer self-contradictory on the wire |
+| **AUD-4** | lugh | ⬜ **open — and owned, deferred on a dated record** | Not a silent lag: `docs/decisions/adr-0007-kft-0-7-0-adoption-deferral.md` (2026-08-27) holds the mirrors at **KFT 0.4.0** across 0.5.0/0.6.0/0.7.0, deliberately and with the reasoning that the pin is *one conformance claim with no partial value*; `manifests/vendor-drift-triage.json` carries the adoption task, and it names the obligation this page states — *"recognise the two additive §3.1 tokens … vocabulary a conformant provider must not refuse as unknown"*. **The AUD-4 failure mode is live until that task lands**: a `local-only` audio job routed here by KFT §4.2 still meets an enum that does not know the token |
+| **AUD-5** | agora | ✅ **discharged** | `schemas/src/koine-schemas/finetune-job.schema.json`'s `modality` enum carries both tokens; `schemas/src/versions.ts` pins **KFT 0.7.0** and its register records the point of declaring a token you do not run — a conformant audio job is refused **`out-of-envelope`** (re-routable) rather than **`invalid`**, with `manifest.availability` publishing both rows `unavailable`. That is exactly the wrong-answer case AUD-5 was raised on, closed |
+| **AUD-6** | **koine** | ⬜ **open, and it is the only one of the six that is koine's own** | Confirmed by inspection of [`../../scenarios/`](../../scenarios/): none of the twelve pressure tests walks an audio job, so no KCS encoding can assert one and neither row is citable in a re-ratification. **Unowned.** Note what changed underneath it: AUD-6 said this gap was unowned *"exactly like DR-11…DR-13"* — and those three are now **closed**, so the comparison no longer carries. AUD-6 is unowned on its own |
+
+**What the verified answers change, and what they do not.** They discharge no koine gate: KFT 0.7.0
+stays `candidate` on two counts that were walked on 2026-09-03 and neither of which closed, and the
+audio rows remain **unexercised vocabulary** — surface no pass has walked, recorded the way §3.3 and
+§8.1 already are, and **not a third gate**. What they do change is who is waiting on whom. Of the six
+findings this page raised, **four are closed downstream**, one is **open under a dated downstream
+decision with an ending condition** (lugh ADR-0007), and the last is **koine's own**. That is the
+opposite of the shape the page predicted, and the reason to write it down is §7's closing claim: *no
+consumer of this enum can say it was not told*. Two of the three were told and acted within a day.
+
+**The rule this pass adds to §7.** koine does not track adoption on this page — that stays true, and
+§8 is not a status board. But **re-checking a finding you raised is not tracking adoption**, and
+declining to read a sibling repo cost a week on DR-11. Where a page's findings are all downstream, a
+dated verification pass at named shas belongs *in the page*, once, when something forces the read
+anyway.

@@ -176,7 +176,7 @@ pass against the folded text*.
 |---|---|---|---|
 | **KINP** | Yes — MA-1/2/3/4 (blocking) + MA-7 were the entirety of its **only** re-ratification count. | A re-run of [`e2e-multi-authority.md`](../../scenarios/e2e-multi-authority.md) against the folded text: **Steps 2, 3, 4 and 6 must flip**, Step 1 is the regression set. | **No.** But nothing else stands in the way — no second count, no fold outstanding, no koine-side deliverable. One clean re-run is the whole of the prose leg. |
 | **KMI** | Only for count (i). MA-5 (blocking) + MA-10 were §7.1's whole gate; KMI's **second** count is the [`e2e-media-transform.md`](../../scenarios/e2e-media-transform.md) re-run, which is **KCB's** work and untouched here. | A re-run of **Steps 8–10** against the folded text. | **No**, and it would not be even on a clean re-run — count (ii) is not KMI's to discharge. |
-| **KCB** | Only for count (iii) of five. | A re-run of **Steps 5–7**. | **No.** Four other counts stand, one of them [`86`](../../tasks/chief/completed/86-fold-the-capability-versioning-breaks.json)'s fold, two of them also failing the conformance gate (**DR-12**, **DR-13**). |
+| **KCB** | Only for count (iii) of five. | A re-run of **Steps 5–7**. | **No.** Four other counts stand, one of them [`86`](../../tasks/chief/completed/86-fold-the-capability-versioning-breaks.json)'s fold. *(This cell also read "two of them also failing the conformance gate (**DR-12**, **DR-13**)" — closed 2026-09-03; the verdict is unchanged.)* |
 | **KGP** | It had no federation gate. MA-3/MA-4/MA-5 read *through* KGP and are answered in KINP and KMI by the define-once rule. | Unchanged — one downstream round-trip fixture. | **No**, for a reason that has nothing to do with federation. |
 
 **And the re-run is unowned.** No tasklist in any repo owns it: `53` wrote and ran the pass and is
@@ -228,7 +228,9 @@ section between its writing and the fold, and `86` should plan against the amend
   [`e2e-live-schema-mutation.md`](../../scenarios/e2e-live-schema-mutation.md). Counts (iv) and (v)
   additionally fail the **conformance gate** — their scenarios have no KCS encoding (**DR-12**,
   **DR-13**) — so *KCB is not promotable on any fold, by either tasklist*, and `86`'s US-3 should
-  say so plainly rather than discover it late.
+  say so plainly rather than discover it late. *(Superseded 2026-09-03: DR-12 and DR-13 are **closed**
+  — both encoded downstream on 2026-08-26 — so counts (iv) and (v) rest on their re-runs alone. Left
+  standing as this record's dated reading; the verdict it supports is unchanged.)*
 - **§4.3 landed between the two folds and adds a surface both must respect.** `effect` sits
   **outside** the `schema_id` digest, exactly as `cost` (§5) and `volume` (§4.2a) do. **V-1**'s
   digest-blindness fold must not pull it in: the three envelope operands are outside the digest by

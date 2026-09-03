@@ -1933,20 +1933,37 @@ most important thing an owner citing this run must understand:
   console-extension escape hatch KCS §7 open question 1 leans toward. That extension is downstream
   work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**; it adds
   no count and does not qualify one, it is what makes count (ii) discharge*able*.
-- **The fourth and fifth counts have no encoding at all — DR-12, DR-13.**
-  [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) is
-  koine's eleventh scenario and
-  [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md) its twelfth,
-  both against a downstream set of nine and both written after that set was frozen, so **every clause
-  of §4.2 — a through g — and every clause of §4.3 — a through g — has no machine-replayable document
-  citing it**. Under [the ratification gate](README.md#the-ratification-gate) a clean re-run of either
-  leg would therefore be *necessary but not sufficient* for its count; both encodings are downstream
-  work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and both are **unowned**. The
-  first three counts are unaffected — their scenarios are all encoded — and this adds no count, it
-  qualifies the fourth and the fifth.
+- **The fourth and fifth counts had no encoding — DR-12, DR-13 — and both are CLOSED (2026-08-26).**
+  This bullet read *"have no encoding at all"* until **2026-09-03**.
+  [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) and
+  [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md) were koine's
+  eleventh and twelfth scenarios against a downstream set of nine, and both were encoded downstream at
+  `agora` `378fd3c` on 2026-08-26 — `subscription-firehose.ts` and `cross-owner-posture.ts`, each with
+  the predicates KCS §5 cannot state declared as **console extensions** (BP-6; AP-1/AP-7), each run
+  `green` / `partial-live` in the current evidence artifact. Verified by **running** the downstream
+  count gate at `agora` `main` = `c971fc2`, not by reading a status line
+  ([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+  §6.4). **Both counts are therefore open on their own re-run alone**, and §4.3 additionally on
+  [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md)'s **W3**. The one artefact
+  objection KCB still carries is **DR-7** on count (ii), which is a different claim: there the encoding
+  *exists* and **predates the fold**, so it must be extended rather than re-run. Closing DR-12 and
+  DR-13 adds no count, removes no count, and promotes nothing — all five stand.
 
 ## Changelog
 
+- **Editorial** (2026-09-03, second entry this day) — **DR-12 and DR-13 are closed, and KCB is no
+  closer to `ratified`.** The *Pressure test* bullet above recorded counts (iv) and (v) as
+  additionally failing [the ratification gate](README.md#the-ratification-gate) for want of a KCS
+  encoding. Both encodings landed downstream at `agora` `378fd3c` on **2026-08-26 12:30:18** — in the
+  same commit that regenerated the evidence artifact to twelve scenarios — and koine did not learn
+  for a week. Re-verified on 2026-09-03 by **running** `coverage.test.ts` (3 passed,
+  `KOINE_SCENARIOS.length === 12`, set-equal to `scenarios/*.md`, 0 skipped) and `evidence.test.ts`
+  (13 passed, artifact current) at `agora` `main` = `c971fc2`. **All five counts stand**: (i) the
+  `e2e-media-transform` re-run, (ii) the Steps 3/5/7/8/9/10 re-run whose encoding must first be
+  **extended** past the fold it predates (**DR-7** — the one artefact objection that survives),
+  (iii) ADR-0014's four-part clause then Steps 5–7 again, (iv) the §4.2 re-run and (v) the §4.3
+  re-run plus ADR-0013's **W3**. **No clause changes, no version moves** — the edit is that bullet
+  and this entry.
 - **Editorial** (2026-09-03) — **count (iii) was re-run, and it does not close.** Steps 5–7 of
   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) were walked **by hand**
   against the folded text of §2/§3/§3.1/§5 — not replayed, because `kcs:multi-authority` returns

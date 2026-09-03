@@ -169,19 +169,32 @@ content-addressed run record that koine has verified **exists and covers all nin
 `green` verdict is that artifact's own claim rather than something re-run here
 ([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)).
 
-So the **artefact gate is met for four of the six specs**, and for those four what a promotion
-waits on is no longer this rule. It is each spec's own outstanding pass — an unfolded delta set, an
-un-re-run scenario, a missing downstream fixture. For **KGP** that outstanding pass was the whole of
-what remained, and it closed on 2026-08-28: the §4.1 round-trip fixture landed downstream, was read
-and perturbed at a named sha, and KGP 0.5.2 is now `ratified` — this rule's first promotion. **Two are still blocked by this rule**, both since
-2026-08-26 and both narrowly: KFT, whose 0.6.0 fold is gated by
-[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), and KCB on **two**
-counts — §4.2, gated by [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md),
-and §4.3, gated by [`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md);
-each is a scenario written **after** the nine encodings were built, none has an encoding, and no
-encoding is owned (findings **DR-11**, **DR-12** and **DR-13**). Adding a document to
-[`../scenarios/`](../scenarios/) incurs this gate, and no koine guard notices — the red light is
-downstream. **One of the six is now `ratified`** — KGP 0.5.2, promoted 2026-08-28 once the last thing between
+So the **artefact gate is met for all six specs** — corrected **2026-09-03**, from *"four of the
+six"* — and for all six what a promotion waits on is no longer this rule. It is each spec's own
+outstanding pass — an unfolded delta set, an un-re-run scenario, a missing downstream fixture. For
+**KGP** that outstanding pass was the whole of what remained, and it closed on 2026-08-28: the §4.1
+round-trip fixture landed downstream, was read and perturbed at a named sha, and KGP 0.5.2 is now
+`ratified` — this rule's first promotion. The two that used to be blocked by this rule are **KFT**,
+whose 0.6.0 fold is gated by
+[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md), and **KCB** on §4.2
+and §4.3, gated by
+[`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) and
+[`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md) — three scenarios
+written **after** the nine encodings were built, and all three encoded downstream at `agora`
+`378fd3c` on **2026-08-26**, which closes findings **DR-11**, **DR-12** and **DR-13**. koine did not
+learn for a week and then **ran** the downstream gates rather than reading them
+([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+§6.4). **No spec was promoted by that**, which is this rule working as designed: an encoding is a
+precondition, and every count it preconditioned is still open.
+
+**The sharper form of this rule survives, and it is what a promotion argument now has to answer.** An
+encoding that **predates the fold it would have to assert** satisfies the count and not the clause:
+`kcs:live-schema-mutation` for KCB count (ii) (**DR-7**) and `kcs:multi-authority` for KINP's only
+count (**DR-8**) both came back `green` over open blocking deltas, because an encoding deliberately
+does not assert a delta koine has not folded. Each must be **extended**, not re-run. Adding a document
+to [`../scenarios/`](../scenarios/) incurs this gate, and no koine guard notices — the red light is
+downstream, in both directions: nothing here goes red when a scenario arrives without an encoding, and
+nothing here goes green when the encoding lands. **One of the six is now `ratified`** — KGP 0.5.2, promoted 2026-08-28 once the last thing between
 it and the status, the §4.1 round-trip fixture, was delivered downstream and **read at a named sha**
 rather than taken from a tasklist's `passes` flags
 ([`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md)).

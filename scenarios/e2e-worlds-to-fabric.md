@@ -385,7 +385,7 @@ declined option would have broken the merge this scenario exists to protect.
 > alongside a hand-walked re-validation, and MUST answer a recorded failure.
 
 **Run of 2026-08-24** · encoding `kcs:worlds-to-fabric` · KCS 0.3.0 · evidence
-`sha256-2d9e6c43…c17bb3`, held downstream at `console/evidence/kcs-live-run.json` and verified
+`sha256-2d9e6c43…c17bb3` **(superseded 2026-08-26 by `sha256-eb8fdc9c…36dd5`, twelve scenarios — this scenario's own per-scenario entry is byte-identical in it, checked 2026-09-03)**, held downstream at `console/evidence/kcs-live-run.json` and verified
 against the artifacts in
 [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
 

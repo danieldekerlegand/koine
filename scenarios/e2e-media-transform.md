@@ -225,7 +225,7 @@ rather than re-broken — the same gap, in the adopted model, with the same fix.
 > owner MAY cite a recorded pass and MUST answer a recorded failure.
 
 **Run of 2026-08-24** · encoding `kcs:media-transform` · KCS 0.3.0 · evidence
-`sha256-2d9e6c43…c17bb3`, verified in
+`sha256-2d9e6c43…c17bb3` **(superseded 2026-08-26 by `sha256-eb8fdc9c…36dd5`, twelve scenarios — this scenario's own per-scenario entry is byte-identical in it, checked 2026-09-03)**, verified in
 [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
 
 | | |

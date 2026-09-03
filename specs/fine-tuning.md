@@ -1310,7 +1310,25 @@ same one 0.4.0 opened and it has not moved: a re-run of the third pass's
 *Re-validation — KFT 0.4.0* section in
 [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md) by the
 spec owner, which walks the corrected §3/§4.1 flow clean as written but has not been re-executed
-since. 0.5.0 neither discharges nor widens it: §4's admission inputs, outcomes and reasons are
+since. **That re-run has now been executed — walked by hand on 2026-09-03 — and it did *not* close
+the gate.** Four of the five deltas flip and the regression set holds: FT-M's `records[]` slot, FT-O's
+positional headers, FT-P's `recordCount` and FT-Q's schema citations are all present in the prose, the
+schemas and the registry, and a 0.3.0-shaped manifest still validates and gates identically — the
+0.4.0 fold's additivity claim is now confirmed by execution rather than by reading. **FT-N half-flips.**
+Its normative half is intact and stays intact (§4.2 reads the header, never the `tier`), but the
+sentence carrying it asserts the header is *the only descriptor available at admission*, and **KMI
+0.3.5's MA-5 fold made that false two days after this pass's downstream run**: a `dataset.records[]`
+file is a KMI asset, its §2 envelope may now carry its own `egress`, and no clause in either spec ranks
+the two carriers. They can disagree — a permissive envelope lets KMI §7.1(e) replicate across an
+authority-domain boundary a corpus §4.2 correctly pinned `local-only` — and their **absence** defaults
+are opposite, so a job declaring `egress` nowhere is admitted here on KGP §7.2's `exportable` default
+and then fails closed at the fetch, after placement and around FT-J. That is new delta **FT-W**, and
+the count therefore **changes shape**: from *re-run the fold* to **fold FT-W in §4.1/§4.2 (additive,
+one spec — KMI needs no change), then re-run that section again**. The walk moved **no version and no
+clause** — §3, §4, §5, §7 and the schemas are byte-unchanged — and **KFT stays 0.7.0 Candidate**. The
+record is that scenario's *Re-run — the FT-M…FT-Q intake fold walked against KFT 0.7.0 (2026-09-03)*
+section, which also carries two residuals (the `header`↔`records[]` positional coupling is prose-only;
+two `koine:10` citations survive in a sibling scenario's historical record). 0.5.0 neither discharges nor widens it: §4's admission inputs, outcomes and reasons are
 byte-unchanged (§3.2, §4.1.1 and §8.1 each say so normatively), so that re-run reads the same flow
 against the same clauses. Two surfaces 0.5.0 adds are **not** exercised by any of the three passes and
 the owner should read them as new normative text rather than as re-validated text: the §3.3 conversion
@@ -1323,7 +1341,16 @@ rule, and every in-body cross-plane citation (§2 → KCB §2/§2.1 and §7.1, �
 §5.3 → KMI §2/§3/§7, §7 → KCB §5) has been re-read against those pins and annotated where the
 plane text moved, so the stale-pin loose end is closed rather than unstated. What survives is the
 standing obligation in the header's **re-check trigger**: a minor or major bump in a pinned plane
-obliges re-reading those same sections before KFT's next status transition.
+obliges re-reading those same sections before KFT's next status transition — **and the 2026-09-03 walk
+found that trigger has fired three times unpulled.** Three of the five pins are stale against the
+track-current rule the header states: KINP reads 0.2.x and is **0.4.0**, KCB reads 0.4.x and is
+**0.5.0**, KCS reads 0.2.x and is **0.3.0**, all three minor bumps landed 2026-08-26 (KGP 0.5.x and
+KMI 0.3.x are patch-current and correct). At least one cited clause moved with them: §7's grant
+paragraph is labelled *"(KCB 0.4.x)"* and KCB 0.5.0's **V-5** added an `invoke` `version` operand under
+an exhaustive operand-else-grant-else-**refuse** resolution rule. This is **not** a finding against the
+FT-M…FT-Q fold — it is on §7's grant surface, not §4's admission path — and it opens no third gate; it
+is a **precondition on the status transition**, and it is recorded rather than quietly re-inherited as
+closed, because *closed by `chief/71`* was true on 2026-08-13 and has not been true since.
 
 **0.6.0 adds a second gate, and it is narrow.** A re-run of
 [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) against the folded
@@ -1338,6 +1365,57 @@ it was before, which is why the third pass's re-run is unaffected; but the gate 
 over one field set for every job, and the owner should read §3.4, §4.2, §4.3, §5.4, §6 and §7 as
 **changed** normative surface rather than as re-validated text.
 
+**Gate (ii) was walked on 2026-09-03, and it does not close either.** The six sections were read cold
+against `resume`-carrying jobs — and, because the fold is a composition point, against the plane text
+those clauses cite today, which is not the plane text of the hour they were written. The record is
+[`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) § *Re-run — the
+FT-R…FT-V resumption fold walked against KFT 0.7.0 (2026-09-03)*. **Three of five deltas flip
+outright** — **FT-R** has its slot in §3.4 and in the schema (`resume` optional, its trio REQUIRED,
+`additionalProperties: false`, absent from the top-level `required`), **FT-T** has `continues`
+registered in [`../registry/relations.tsv`](../registry/relations.tsv) with the right signature and
+both disclaimers, **FT-V** has its remainder estimate and its chain-cumulative ceiling — and Steps 1
+and 7 hold, including *no new plane, artifact kind, media type, or KCB verb*. **The fold's model was
+never in question; its perimeter was**, and both breaks come from plane folds that landed **later the
+same day** and that no reading of KFT alone can see:
+
+- **FT-S half-flips → new delta FT-X (High, gate integrity).** The `hyperparams` bypass is closed
+  twice over and the continued-pre-training front door is shut. But §4.2/§4.3 read the checkpoint's
+  class off the KMI §2 envelope and state **no rule for a silent one** — reachable by resuming a run
+  started under 0.5.0 (before §5.4's bind-at-publication existed), or by holding bytes replicated
+  without an envelope (KMI §7.1(d) forbids synthesizing one and §7.1(e) permits serving them inside
+  the domain). The two planes now state **opposite** absence defaults for the same field: §4.2's
+  nearest stated default is KGP §7.2's `exportable`, fail-open, while KMI §2 says *absent is not
+  `exportable`* and §7.1(e) fails closed. So the FT-S breach returns through the **carrier** rather
+  than the slot — an unclassified checkpoint of a `local-only` corpus admitted to cross-boundary
+  compute by a provider **inside** the originating domain, where KMI §7.1(e) never sees it. Same
+  plane fold as **FT-W** and a different failure: FT-W is a two-carrier *ranking* problem, FT-X a
+  one-carrier *absence* problem, and FT-W's fix does not reach it. Fold both in one §4.2/§4.3 edit.
+- **FT-U half-flips → new delta FT-Y (High, operand durability).** The `job+step` collision is gone
+  and the join rule is right. But §3.4's REQUIRED `checkpoint` and `at_step` live **only** on §6's
+  telemetry stream — §5.2's record does not carry them and `generated[]` is written at completion,
+  which an interrupted leg never reaches — and **KCB §4.2b then made that stream sheddable**
+  (`on_overflow: drop`, plus `coalesce`/`defer` a producer may apply unasked on a losslessness
+  argument stated for *KGP payloads*, which a telemetry event is not). KCB §4.2c's recovery operand
+  is typed to a KGP pack id and has no admissible value here, and §2 declares no telemetry port to
+  carry a `volume`. §7's *MUST verify `at_step` against the prior leg's provenance and telemetry* has
+  no durable source. Fold: **§5.2** records the last published checkpoint id and step per leg
+  (including a `failed` leg), **§6** makes a checkpoint-bearing event non-sheddable.
+
+**One clause was rescued rather than broken, and it is recorded because nothing else records it.**
+§5.4 requires a checkpoint to carry its class *on its KMI envelope*; the KMI §2 envelope had **no**
+`license`/`egress` field when §5.4 was published (`49e63e6`), and MA-5 added it hours later
+(`7ee8da0`). The near-miss landed on the right side.
+
+Count (ii) therefore **changes shape**, from *re-run the leg* to **fold FT-X and FT-Y (additive,
+KFT-only — KMI and KCB need no change), then re-run that section again**. Gate (i) is **restated and
+does not move**, and the walk confirmed why by execution rather than by inheritance: §3.4's `resume`
+is absent from the schema's top-level `required`, and §4.2's, §4.3's and §7's resume clauses each open
+*"Where the job carries `resume`"* — so a **cold** job is fed exactly the input set it was fed at
+0.5.0. The one precision 0.6.0's own summary overstates: §3.4's *"every clause below is inert"* is true
+of the four rules below it, and §5.4's bind-at-publication deliberately binds a cold run too. That is
+an **output-side publication obligation**, downstream of admission, so gate (i) is unaffected. **KFT is
+not promotable**, and the reason is two open counts.
+
 **0.7.0 adds no third gate — it adds two rows of unexercised vocabulary.** The `text-to-audio` and
 `audio-to-audio` tokens (§3.1) are additive over the existing `media(audio)` plane: no clause of §4
 moves, FT-F's admission mechanism is byte-unchanged, and a cold pre-0.7.0 manifest is admitted and
@@ -1348,7 +1426,16 @@ multimodal pass's audio stressor is listed above as *"a media producer's audio L
 is therefore not evidence for them. Read the two tokens the way §3.3 and §8.1 are read above — new
 normative surface no scenario has walked — and note that neither may be cited in a re-ratification
 until one does. A scenario leg would be the way to change that; none is opened here, because a token
-in a closed vocabulary cannot break a manifest that does not name it.
+in a closed vocabulary cannot break a manifest that does not name it. **Still true on 2026-09-03, and
+the surrounding facts moved:** the three named consumers were re-checked at named shas
+([`../docs/reference/generative-audio-modalities-downstream.md`](../docs/reference/generative-audio-modalities-downstream.md)
+§8) and four of that page's six findings are **discharged downstream** — both tokens are mirrored
+verbatim in `formant` with its `KFT_VERSION` moved to 0.7.0, and `agora`'s vendored job schema and
+provider refuse an audio job **`out-of-envelope`** rather than **`invalid`**, which was the one place
+a vocabulary lag produced a wrong answer. The fifth is **open and owned** under a dated downstream
+deferral, and the sixth — *no pass walks an audio job* — is **koine's own and unowned**. So the rows
+are exercised by *implementations* and still not by a *pass*, and it is the pass a re-ratification
+would need.
 
 **Downstream evidence (2026-08-24) — the gate fired, and the suite is a version behind.** The KCS
 encodings of the three end-to-end passes were run over real MCP/A2A links and all three came back
@@ -1364,7 +1451,9 @@ re-ratification:
   across the tier boundary; **FT-D** closed the same hole on the eval path; and **FT-F** refused
   `dpo` × `text-to-image` **at admission**, before compute was provisioned. A gate that has never
   refused anything is a number in a manifest; these five are the record that this one is not.
-- **The suite pins KFT 0.5.0 (DR-5).** Nothing in it asserts over **§3.3**'s conversion mapping —
+- **The suite pinned KFT 0.5.0 at the recorded run (DR-5).** *(It pins **0.7.0** today —
+  `agora/schemas/src/versions.ts`, checked 2026-09-03 — so DR-5's version is stale while its substance
+  below is not.)* Nothing in it asserts over **§3.3**'s conversion mapping —
   whose conformance criterion is the round-trip of §3.3.4 — or over **§8.1**'s six refusal grades
   and `route_to[]`: every refusal above is the ungraded KCS `refused` predicate, with no reason
   class attached. This does **not** open a new gate; it confirms from the downstream side exactly
@@ -1377,20 +1466,96 @@ re-ratification:
   a recorded provider. That is still the side the gate lives on, so it is worth having, but it is
   not the claim *a live provider was refused*. This closes by adoption — a cast change, not a
   document change — and blocks nothing here.
-- **The second gate has no encoding at all (DR-11).**
-  [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) is koine's tenth
-  scenario against a downstream set of nine, written after that set was frozen, so **every clause
-  0.6.0 folded — §3.4's `resume`, §4.2's aggregate over it, §4.3's union, §5.4's bind-at-publication,
-  §5.2's `continues`, §6's join rule, §7's remainder — has no machine-replayable document citing
-  it**, and neither do FT-R…FT-V. Under [the ratification gate](README.md#the-ratification-gate) a
-  clean re-run of that leg is therefore *necessary but not sufficient*: the encoding is downstream
-  work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**. It adds
-  no third gate — it qualifies the second — and the first gate is unaffected, since
-  `kcs:producer-exhaust-finetune` exists and ran.
+- **The second gate's encoding exists — DR-11 is CLOSED (2026-08-26).** This bullet read *"the second
+  gate has no encoding at all"* until **2026-09-03**.
+  [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) was koine's tenth
+  scenario against a downstream set of nine, and it was encoded at `agora` `378fd3c` on **2026-08-26
+  12:30:18** as `console/src/kcs/scenarios/resume-checkpoint.ts`, in the same commit that regenerated
+  the evidence artifact. It walks this leg's seven steps **against the folded 0.6.0 text** and ran
+  **`green`** / `partial-live` (2 of 4 slots live). Verified by **running** the downstream gates at
+  `agora` `main` = `c971fc2`, not by reading a status line
+  ([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+  §6.4). **The artefact condition of [the ratification gate](README.md#the-ratification-gate) is met
+  for both of KFT's counts.** Two things it does not do. It does not promote KFT: both counts were
+  walked on 2026-09-03 and neither closed. And its `green` is not a verdict on the leg — the encoding
+  asserts only what koine has **folded**, names three properties it leaves unasserted for want of a
+  KCS §5 predicate (FT-T's `continues` edge, FT-U's join rule, FT-V's chain arithmetic), and reaches
+  neither **FT-X** nor **FT-Y**, both of which are perimeter breaks in KMI §2 and KCB §4.2. That is
+  **DR-7**/**DR-8**'s hazard on a third spec.
 
 ---
 
 ## Changelog
+
+- **Editorial** (2026-09-03, third entry this day) — **the artefact gate is met, and KFT is still not
+  promotable.** **DR-11 is closed**: the second gate's leg was encoded downstream at `agora`
+  `378fd3c` on 2026-08-26 12:30:18 as `resume-checkpoint.ts` — forty-nine minutes after the koine
+  document recording it as missing was last written — and koine did not learn for a week. Re-taken on
+  2026-09-03 by **running** the gates at `agora` `main` = `c971fc2`: `coverage.test.ts` 3 passed
+  (`KOINE_SCENARIOS.length === 12`, set-equal to `scenarios/*.md`, 0 skipped), `evidence.test.ts` 13
+  passed with the artifact current at `sha256-eb8fdc9c…36dd5` (twelve scenarios, 26 of 44 slots live,
+  `partial-live`). `kcs:resume-checkpoint` itself came back **`green`** — over a leg the same day's
+  hand-walk found **not clean**, which is **DR-7**/**DR-8**'s hazard reaching a third spec and is why
+  the *Pressure test* bullet now states what that encoding does **not** assert. Two consequential
+  corrections ride with it: the gate (ii) entry below says *"no replay available"* and that was
+  **false when written** (the walk's verdict is unaffected — the replay corroborates the three flips
+  and could not have produced FT-X or FT-Y); and **DR-5**'s *"the suite pins KFT 0.5.0"* names a
+  version that has since moved to **0.7.0**, its substance unchanged. **What blocks KFT is unchanged
+  and is entirely koine-side**: gate (i) open on **FT-W**, gate (ii) open on **FT-X** and **FT-Y** —
+  three additive KFT-only folds, FT-W and FT-X in one §4.1/§4.2/§4.3 edit and FT-Y in §5.2/§6 —
+  followed by two re-runs, plus the reopened dependency-pin precondition on this spec's header. All
+  unowned. **No version moves and no clause moves**: §2–§7,
+  [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json) and
+  [`../registry/enums/modality.tsv`](../registry/enums/modality.tsv) are byte-unchanged; the edit is
+  two *Pressure test* bullets and this entry.
+- **Editorial** (2026-09-03) — **Gate (ii) was walked, and it does not close.** The
+  [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) re-run 0.6.0 added
+  as this spec's second count was executed the same day as gate (i): the six sections it names —
+  §3.4, §4.2, §4.3, §5.4, §6, §7 — read **cold** against `resume`-carrying jobs, by hand, with **no
+  replay available** *(corrected the same day: one **was** available and green — see the third entry
+  above; the verdict does not move)*, and against the plane text those
+  clauses cite today. **FT-R, FT-T and FT-V flip** — the `resume` slot and its schema twin, the
+  `continues` registry row with its two disclaimers, the remainder estimate against a
+  chain-cumulative ceiling — and **Steps 1 and 7 hold**, including *no new plane, artifact kind,
+  media type, or KCB verb* (`continues` being a registry row, which Step 4 anticipated as *"a
+  registration decision"*). **The fold's model was never in question; its perimeter was.** Both
+  breaks come from folds that landed **later on 2026-08-26**, hours after 0.6.0 at `49e63e6`:
+  **FT-S half-flips** → **FT-X** (High) — §4.2/§4.3 read the checkpoint's class off the KMI §2
+  envelope and state no rule for a **silent** one, while KMI 0.3.5 (`7ee8da0`) says *absent is not
+  `exportable`* and §7.1(e) fails closed where §4.2's nearest stated default is fail-open, so the
+  FT-S breach returns through the carrier, in-domain, where KMI §7.1(e) cannot see it; **FT-U
+  half-flips** → **FT-Y** (High) — §3.4's REQUIRED `checkpoint`/`at_step` live only on §6's stream,
+  §5.2 does not carry them, and KCB §4.2b (`7c82abc`) made that stream sheddable on a losslessness
+  argument stated for KGP payloads, leaving §7's MUST-verify without a durable source. One clause was
+  **rescued** rather than broken and it is recorded here because nowhere else records it: §5.4's
+  *"carries them on its KMI envelope"* named a slot KMI §2 did not have until MA-5 landed hours
+  later. Count (ii) changes shape to **fold FT-X and FT-Y (additive, KFT-only), then re-run**; FT-X
+  belongs in the same §4.2 edit as **FT-W**. Gate (i) is restated and **does not move** — the cold-job
+  path was walked, not inherited: `resume` is absent from the schema's top-level `required` and every
+  resume clause opens *"Where the job carries `resume`"*, with §5.4's bind-at-publication the one
+  cold-run obligation 0.6.0 added and it is output-side, downstream of admission. **No version moves
+  and no clause moves**: §2, §3, §3.3, §3.4, §4, §5, §6, §7,
+  [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json) and
+  [`../registry/relations.tsv`](../registry/relations.tsv) are byte-unchanged; the edit is the
+  scenario section, this entry and the gate paragraph above. **KFT stays 0.7.0 Candidate and is not
+  promotable** — two open counts, both now a fold plus a re-run.
+- **Editorial** (2026-09-03) — **Gate (i) was executed, and it does not close.** The FT-M…FT-Q
+  producer-exhaust intake fold — the count open since 0.4.0, restated by 0.5.0, 0.6.0 and 0.7.0 and
+  never run — was walked by hand against **0.7.0 as published**, and against the plane text those
+  clauses cite *today* rather than the plane text of 2026-08-06. **FT-M, FT-O, FT-P and FT-Q flip** and
+  Steps 1/6/7 hold as the regression set, three of them corroborated by the 2026-08-24 run of
+  `kcs:producer-exhaust-finetune`; the 0.4.0 fold's additivity claim is confirmed by execution. **FT-N
+  half-flips** → new delta **FT-W**: §4.2's *"the **only** descriptor available at admission"* premise
+  was made false by **KMI 0.3.5**'s MA-5 fold, which gave the same `dataset.records[]` asset a second
+  egress carrier on its §2 envelope, with no clause ranking the two and with **opposite absence
+  defaults** (`exportable` here, fail-closed at KMI §7.1(e)). The count changes shape to *fold FT-W in
+  §4.1/§4.2, then re-run*; gate (ii) is restated and does not move. The walk also found the header's
+  **re-check trigger** fired three times unpulled (KINP, KCB and KCS pins stale since 2026-08-26) —
+  a precondition on the status transition, not a third gate. **No version and no clause moves**: §3,
+  §4, §5, §7 and the schemas are byte-unchanged, and the edit is the gate paragraphs above plus this
+  entry. Record:
+  [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md)
+  *Re-run — the FT-M…FT-Q intake fold walked against KFT 0.7.0 (2026-09-03)*.
 
 - **0.7.0 — the generative-audio modalities** (2026-08-26) — **§3.1** gains two `modality` tokens,
   `text-to-audio` and `audio-to-audio`, over the **existing** `media(audio)` plane. Strictly

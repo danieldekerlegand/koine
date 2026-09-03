@@ -427,13 +427,24 @@ folded text is the fifth of KCB's re-ratification counts.
 > KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
 > fixes. Instance-free, role-scoped, and it **promotes nothing**.
 
-**This scenario has never been run downstream, and has no encoding.** Recorded as a statement
-rather than left blank, because a blank section is indistinguishable from an unread one.
+> **CORRECTED 2026-09-03.** What follows replaced a statement that this scenario *"has never been
+> run downstream, and has no encoding."* True when written on 2026-08-26, overtaken the same
+> afternoon, and unnoticed here for a week. The old text is not preserved in this section because it
+> is what a ratification gate reads for evidence; the correction is written up at
+> [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+> §6.0 and §6.4, where the old reading is left standing.
 
 | | |
 |---|---|
-| Encoding | **none.** `agora/console/src/kcs/scenarios/` holds nine `KOINE_SCENARIOS` entries and none has `source: 'scenarios/kcb-cross-owner-posture.md'` |
-| Runs | **none.** The committed evidence artifact (`sha256-2d9e6c43…c17bb3`, generated 2026-08-24) contains nine scenarios and this is not one of them |
+| Encoding | **`console/src/kcs/scenarios/cross-owner-posture.ts`**, registered in `index.ts` with `source: 'scenarios/kcb-cross-owner-posture.md'` and `gates: 'KCB §4.3 (ADR-0013)'`. The predicates KCS §5 cannot state are declared as **console extensions** and reported as such, per AP-1…AP-8 |
+| Run | `kcs:cross-owner-posture` — **`green: true`**, `live_pass: false`, verdict **`partial-live`**, 2 of 4 participants live (`worldsim:agent:author`, `analyzer:agent:pipeline`), the local trainer and the store answering from delta-N `standin` fixtures, no transport failures |
+| Artifact | `sha256-eb8fdc9ce041162db78ef80df42998e25793dc6a20e7ac8974f77d7615236dd5`, generated **2026-08-26T17:26:10.420Z**, twelve scenarios, 26 of 44 slots live (59%), suite verdict `partial-live` |
+| Landed | `agora` **`378fd3c`**, 2026-08-26 12:30:18 — the same commit encoded all three then-unencoded legs **and regenerated the artifact**. Verified by running both gates at `agora` `main` = **`c971fc2`** on 2026-09-03 |
+
+**`green` is not a gate verdict here either.** The encoding asserts what koine has **folded**; its §4.3 count (v)
+remains open on its own re-run against the folded text, and this result discharges the *artefact*
+condition alone.
+
 | Why | This document landed with `chief/71` on **2026-08-26**, a week after the nine encodings were built (`agora chief/75`, merged 2026-08-19) and two days after they were run |
 
 This is the **third** document in this directory in that position, after
@@ -441,17 +452,27 @@ This is the **third** document in this directory in that position, after
 [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md#downstream-results). All three landed
 on the same day, all three after the encoding set was frozen at nine, and none is owned — so the
 same red light now names three files: `coverage.test.ts` asserts set-equality between
-`KOINE_SCENARIOS` and this directory's `*.md`, and its `KOINE_SCENARIOS.length === 9` assertion is
-**three short** of koine's twelve. That gate is downstream and it is the only enforcement there is;
+`KOINE_SCENARIOS` and this directory's `*.md`, and its `KOINE_SCENARIOS.length` assertion — **9** when
+this was written, **12** since `378fd3c` — went red on all three until that commit closed it. That gate is downstream and it is the only enforcement there is;
 koine's own `.chief/verify.sh` checks links, status mirrors, schemas and the registry and has
 nothing that could notice. Adding a file to `scenarios/` is a cross-repo obligation with no local
 red light.
 
 ### Findings — from the absence of a downstream run
 
+**DR-13 is CLOSED, on 2026-08-26, and koine learned on 2026-09-02.** The row below is left standing as
+the finding of record — its reasoning is intact and only the world moved. `console/src/kcs/scenarios/cross-owner-posture.ts`
+landed at `agora` `378fd3c`, forty-nine minutes after the koine document recording this gap was last
+written, and the gate was re-run at `agora` `main` = `c971fc2` on 2026-09-03
+([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+§6.4). **KCB does not lose the artefact gate on this count** — and is no closer to `ratified` for it:
+all five of its counts remain open on their own re-runs, and count (ii) still fails the artefact
+condition on **DR-7**, its encoding predating the fold it would have to assert.
+
+
 | # | Severity | Gap | Consequence |
 |---|---|---|---|
-| DR-13 | **Blocking** (for KCB §4.3 alone) | The KCB 0.4.8 fold this leg forced — §4.3a's `effect` class on a capability or port, §4.3b's posture as a set of admitted classes with no rung names and no total order, §4.3c's monotone-restrictive intersection, §4.3d's floor, §4.3e's chain rule, §4.3f's minimum refusal shape and §4.3g's no-console conformance requirement — has **no machine-replayable document citing any of it**, and neither does AP-1…AP-8. | [The ratification gate](../specs/README.md#the-ratification-gate) forbids promoting a spec whose scenario has no KCS encoding, so **KCB loses the artefact gate on this count**. It is narrow: KCB's three encoded counts re-run [`e2e-media-transform.md`](e2e-media-transform.md), [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md) and [`e2e-multi-authority.md`](e2e-multi-authority.md) and are unaffected, as are the four specs that touch none of the three unencoded documents. This is on top of, not instead of, the fifth count's own re-run gate and [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md)'s retained second-independent-implementation condition. Building the encoding is downstream runtime work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned** as of 2026-08-26. |
+| DR-13 | ~~Blocking~~ → **CLOSED 2026-08-26** (for KCB §4.3 alone) | The KCB 0.4.8 fold this leg forced — §4.3a's `effect` class on a capability or port, §4.3b's posture as a set of admitted classes with no rung names and no total order, §4.3c's monotone-restrictive intersection, §4.3d's floor, §4.3e's chain rule, §4.3f's minimum refusal shape and §4.3g's no-console conformance requirement — has **no machine-replayable document citing any of it**, and neither does AP-1…AP-8. | [The ratification gate](../specs/README.md#the-ratification-gate) forbids promoting a spec whose scenario has no KCS encoding, so **KCB loses the artefact gate on this count**. It is narrow: KCB's three encoded counts re-run [`e2e-media-transform.md`](e2e-media-transform.md), [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md) and [`e2e-multi-authority.md`](e2e-multi-authority.md) and are unaffected, as are the four specs that touch none of the three unencoded documents. This is on top of, not instead of, the fifth count's own re-run gate and [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md)'s retained second-independent-implementation condition. Building the encoding is downstream runtime work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned** as of 2026-08-26. |
 
 Suite-wide limits **DR-1** and **DR-2** are recorded in
 [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands); neither applies to a
