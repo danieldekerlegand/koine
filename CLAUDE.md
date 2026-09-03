@@ -93,7 +93,21 @@ vocabulary.
   remainders deferred with triggers (DEFER-A the control-plane route for world metadata, DEFER-B a
   federation-scoped canonical over §4.4's anchor); see
   `docs/reference/federation-fold-dispositions.md`. **Stays candidate**: a fold does not close its
-  own gate, and the single count is now a re-run of that pass against the folded text.
+  own gate, so the single count became a re-run of that pass against the folded text — and **that
+  re-run has now been walked, by hand, on 2026-09-03, and its prose leg is clean**: Step 1 holds and
+  Steps 2/3/4/6 all flip, no MA delta reproduces against 0.4.0 and no new KINP delta was found, with
+  one declared residual on the fail-closed side (DEFER-A). Deliberately **not** a replay of
+  `kcs:multi-authority`, which returned `green` over the original not-clean pass (DR-8). KINP is
+  **still not promoted, and no version moves** — the walk changed no clause (§0–§10 and §11 decisions
+  2/3 byte-unchanged, no claim id moves; the edit is §11 decision 1's gate paragraph plus a
+  changelog entry). What blocks it now is the fabric-wide **KCS-encoding** condition of
+  `specs/README.md` § *The ratification gate*: `kcs:multi-authority` predates the fold and asserts
+  none of §4.1's weakest-link rule, §4.2's `world_aligns_with`, §4.5's fourth branch, §6's
+  domain-scoping or §3.4's non-federated commons, so it must be **extended**, not re-run — the DR-7
+  shape, bounded by MA-11 / KCS open question 1, downstream under ADR-0001 and **unowned**. The walk
+  also left one blocker on **KCB** (Step 5 — ADR-0014's decided-but-unwritten clause) and one on
+  **KMI** (Step 10 — new delta **MA-12**); it clears at most one of KCB's five counts and one of
+  KMI's two, and **promotes neither**.
   Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.

@@ -2,7 +2,7 @@
 
 **Spec version:** 0.4.0
 **Status:** Candidate
-**Last updated:** 2026-08-26
+**Last updated:** 2026-09-03
 **Applies to:** every participant that mints, publishes, or resolves identifiers — producers,
 consumers, identity authorities, control-plane hosts.
 
@@ -726,15 +726,32 @@ rejected alternatives are recorded for provenance.
    collision rule (MA-7). The extent of each, and the three remainders deliberately **not** folded,
    are reasoned in
    [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
-   KINP nevertheless stays **Candidate** — a fold does not close its own gate. This is still this
-   spec's **only** re-ratification count, and it now reads as a **re-run of that pass against the
-   folded text**: Steps 2, 3, 4 and 6 are the ones that must flip, and Step 1 is the regression set.
-   See that scenario's *Re-ratification — what this pass gates* section for what a clean re-run
-   would license, including the second, fabric-wide condition recorded there — a machine-replayable
-   KCS encoding, itself gated on KCS open question 1. Stated plainly, because it is the whole of
-   KINP's promotion story: **the fold clears no part of this gate, and nothing else stands behind
-   it.** KINP has no second count, no outstanding fold, and no koine-side deliverable of its own —
-   one clean re-run is the entire prose leg. That re-run is currently **unowned**. The ranking of
+   KINP nevertheless stayed **Candidate** at 0.4.0 — a fold does not close its own gate. This is
+   still this spec's **only** re-ratification count, and after the fold it read as a **re-run of
+   that pass against the folded text**: Steps 2, 3, 4 and 6 the ones that had to flip, Step 1 the
+   regression set. **That re-run has now happened, and its prose leg is clean.** It was walked by
+   hand on **2026-09-03** against KINP 0.4.0 as published — deliberately *not* a replay of
+   `kcs:multi-authority`, which returned `green` over the original not-clean pass (**DR-8**) — and
+   is recorded per step in that scenario's *Re-run — Steps 1–10 walked by hand against the folded
+   text* section: **Step 1 holds and Steps 2, 3, 4 and 6 all flip.** No delta of the original pass
+   reproduces against 0.4.0 and no new delta was found against this spec. One residual is declared
+   and is not a break: under §4.5's fourth branch a cross-domain candidate whose world is resolvable
+   only *in principle* now **queues** rather than auto-applying, which is the fail-closed side of
+   the clause to be on and is what **DEFER-A** defers with a trigger.
+
+   **KINP is nevertheless not promoted, and the blocker that remains is not in the prose.** Under
+   [the ratification gate](README.md#the-ratification-gate) `candidate → ratified` also requires a
+   machine-replayable **KCS encoding whose assertions cite the clauses being ratified**; a
+   hand-walked prose pass is *necessary but no longer sufficient*. `kcs:multi-authority` exists and
+   ran on 2026-08-24, but it was written against the **pre-fold** text and by design asserts none of
+   the folded clauses (**DR-8**) — so §4.1's weakest-link rule, §4.2's `world_aligns_with`, §4.5's
+   fourth branch, §6's domain-scoped convergence and §3.4's non-federated commons have **no encoded
+   assertion at all**. Extending that encoding to cite them is now the whole of what stands between
+   KINP and `ratified`: it is downstream work under
+   [ADR-0001](../decisions/ADR-0001-control-plane-topology.md), it is the same shape **DR-7** records
+   for KCB count (ii), it is bounded in turn by **MA-11** and KCS open question 1 — which is where an
+   authority-boundary assertion vocabulary would have to come from — and it is **unowned**. The
+   ranking of
    what stands between each spec and `ratified` is kept once, in
    [`../docs/reference/promotability.md`](../docs/reference/promotability.md); what the fold did to
    each gate is reasoned in
@@ -769,11 +786,44 @@ Two limits on citing it, both recorded as findings in that scenario's `## Downst
 a `green` run means *the encoded assertions held*, never *the spec holds*; and this run predates
 [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md), so it touches **none** of the
 federation surface §11 decision 1 opened. This spec's single count — the cross-authority break test
-below — is **unaffected** by it, and MA-1…MA-4 stay blocking and unfolded.
+below — is **unaffected** by it: MA-1…MA-4 were folded at 0.4.0 and this encoding still asserts
+nothing about them, which is why the count's remaining leg is an **extension** of the encoding
+rather than a re-run of it.
 
 ---
 
 ## Changelog
+
+- **Editorial** (2026-09-03) — **The federation re-run walked, and what it does not license.**
+  0.4.0's fold was gated on a **re-run of
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) against the folded
+  text** — this spec's only re-ratification count. That re-run was walked by hand on 2026-09-03
+  against KINP 0.4.0 as published, per step and adversarially, and is recorded in that scenario's
+  *Re-run — Steps 1–10 walked by hand against the folded text* section. **The prose leg is clean:**
+  Step 1 (both authorities dark) **holds** — §6's minting table is byte-unchanged and none of §3.4's
+  merge-time disjointness rule, §4.5's fourth branch or `world_aligns_with` smuggles in a minting
+  dependency — and Steps **2**, **3**, **4** and **6** all **flip**, with one declared residual
+  (**DEFER-A**, a queue rather than an auto-apply, on the fail-closed side). It is deliberately not
+  a replay of `kcs:multi-authority`: **DR-8** records that encoding returning `green` over the
+  original pass with six blocking deltas open, so its verdict is evidence about its own assertions
+  and not about the folded text.
+
+  **Status does not move, and the reason is stated rather than left as an omission.** Under
+  [the ratification gate](README.md#the-ratification-gate) the prose pass is *necessary but no
+  longer sufficient*; the second condition is a machine-replayable KCS encoding **whose assertions
+  cite the clauses being ratified**, and `kcs:multi-authority` predates the fold and asserts none of
+  them (**DR-8**). Extending it is downstream work under
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md), bounded by **MA-11** / KCS open
+  question 1, and **unowned**. §11 decision 1 is rewritten to say so; the KGP precedent is the bar —
+  that promotion cost an artifact plus an audit of the artifact, not a status edit.
+
+  **Editorial in the strict sense.** No clause changed: §0–§10 are byte-unchanged, §11 decisions 2
+  and 3 are byte-unchanged, no relation, envelope field, identifier form or resolution rule moves,
+  and **no claim id moves**. The two paragraphs that changed are §11 decision 1's gate paragraph and
+  the *Downstream evidence* note's last sentence, which still said MA-1…MA-4 were "blocking and
+  unfolded" after 0.4.0 folded them. The walk found no new KINP delta; the two it did find land on
+  **KCB** (Step 5) and **KMI** (Step 10, new delta **MA-12**) and are recorded there and in
+  [`../docs/reference/promotability.md`](../docs/reference/promotability.md).
 
 - **0.4.0** (2026-08-26) — **The federation fold.** Folds the five deltas
   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the ADR-0012

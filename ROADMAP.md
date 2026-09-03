@@ -158,8 +158,9 @@ is unchanged; what changed is that clearing it no longer finishes the job.
 
 **Two of the six specs have no row here.** Phase 1 was scoped to the four candidates of its day;
 **KINP** and **KCS** were still ratified then and were demoted later (2026-08-23 and 2026-08-20).
-Their gates are real and unowned — KINP's is the MA-1…MA-4 fold (`85`), KCS's is a re-validation of
-its own determinism fold — and both are carried in
+Their gates are real — KINP's MA-1…MA-4 fold landed at 0.4.0 (`85`) and its re-run was walked clean
+on 2026-09-03 (`89`), leaving only the **KCS-encoding extension**, unowned and downstream; KCS's is a
+re-validation of its own determinism fold, unowned — and both are carried in
 [`docs/reference/promotability.md`](docs/reference/promotability.md), which is the six-row view this
 four-row table is the program half of.
 
