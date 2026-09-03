@@ -57,5 +57,13 @@
         "GATES: koine's own checks green."
       ]
     }
-  ]
+  ],
+  "mergedToMain": "b770f0f",
+  "gates": {
+    "local": {
+      "state": "passed",
+      "detail": "the project verify hook (verify.sh) ran and exited 0"
+    },
+    "ci": []
+  }
 }
