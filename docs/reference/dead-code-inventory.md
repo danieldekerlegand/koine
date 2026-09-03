@@ -10,8 +10,16 @@ koine is a contracts repo — "dumb pipes, smart endpoints", no runtime code
 ([ADR-0001](../../decisions/ADR-0001-control-plane-topology.md)). The executable surface is
 therefore small and entirely made of **guards**: five Node scripts under `scripts/`, the
 merge gate `.chief/verify.sh`, and its test `.chief/verify-test.sh`. Everything else in the
-tree is either prose (57 Markdown files), a published machine-readable asset
-(`schemas/`, `registry/`, `policy/`), or Chief's own tasklist records under `tasks/`.
+tree is prose, a published machine-readable asset (`schemas/`, `registry/`, `policy/`), or
+Chief's own tasklist records under `tasks/` — nothing else executes at all.
+
+> **Corrected 2026-09-03.** This paragraph used to count the prose — *"(57 Markdown files)"* —
+> which was correct when it was written that morning and wrong by that evening, when the
+> documentation sweep this one feeds added documents of its own. The count was incidental to the
+> sentence's point, so it is gone rather than refreshed; `git ls-files '*.md' | wc -l` answers it
+> at any moment, and the guard transcripts further down still carry their own file counts because
+> those are the record of a run on a date. Record:
+> [`doc-drift-corrections.md`](doc-drift-corrections.md) (C-7).
 
 That shape decides what a sweep can find here. There are no unreferenced modules, no
 unimported dependencies, and no feature flags — there is no `package.json`, no lockfile, and

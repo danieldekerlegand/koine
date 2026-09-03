@@ -1,292 +1,185 @@
-# Chief Progress — 900-dead-code-paydown
-Started: Thu Sep  3 01:18:28 CDT 2026
+# Chief Progress — 901-docs-tell-the-truth
+Started: Thu Sep  3 01:42:36 CDT 2026
 ---
 
 ## Codebase Patterns
 
-- **koine has almost no code.** 140 tracked files: 65 json, 57 md, 7 tsv, 5 mjs, 2 sh.
-  No `package.json`, no dependencies, no runtime (ADR-0001: "koine specifies, agora
-  implements"). The entire executable surface is `scripts/check-*.mjs` (5 guards) plus
-  `.chief/verify.sh` + `.chief/verify-test.sh`. A "dead code" sweep here is a sweep of
-  seven files.
-- **`.chief/verify.sh` is the one gate, and it is path-selective.** Run it as
-  `.chief/verify.sh --run <changed paths...>` — a bare run diffs `main...HEAD`, so it
-  reports "no changed files" on an uncommitted working tree. `--plan` prints the
-  selected gates without running them. A path matching NO rule selects the **umbrella**
-  (every gate, including the self-test).
-- **`check-doc-integrity.mjs`'s slugify is NOT GitHub's** (line 65-73). Two ways it differs,
-  each of which has cost a red gate: it collapses `\s+` to a SINGLE hyphen, so
-  `## Class A — dead: removal candidates` anchors as `#class-a-dead-removal-candidates`, not
-  GitHub's `#class-a--dead-removal-candidates`; and it **strips `_` along with backticks and
-  `*`**, so `### A-1 — EXCEPT_DIRS, and …` anchors as `#a-1-exceptdirs-…`, not
-  `#a-1-except_dirs-…`. Match the guard, not GitHub.
-- **`MD_LINK` fires inside backticks.** Writing `` `[text](path)` `` in prose is parsed
-  as a link and reported as "no such file — path". Split the form when writing about it.
-- **`tasks/chief/completed/` is history and must not be rewritten** — both doc guards
-  skip it as a citer, and reference counts that include it measure the past.
-- **A deadness search must ask "is it used, OR ABOUT TO BE?"** Grep the ACTIVE tasklists
-  (`tasks/chief/*.json`, excluding `completed/`) as part of every one. koine's tasklists
-  schedule conventions before the tree has them, so an unreferenced-today path can be a
-  requirement one tasklist away — that is how US-2 nearly deleted the `docs/archive/` skip
-  that `901-docs-tell-the-truth` mandates. Re-run every search AT REMOVAL TIME, not only at
-  inventory time.
-- **A citation count is not evidence when the counter is inside the corpus.** A document that
-  enumerates its findings by name becomes a citer of every one of them, so re-running the
-  search that produced it returns 0. Exclude the document explicitly
-  (`':!docs/reference/<the-doc>.md'`) and say so in the document. Measured on US-3's register:
-  23 findings → naive replay 0, correct replay 23.
-- **`git ls-files` only sees TRACKED files, so every count in a new document is off by one
-  until `git add`.** `check-doc-integrity` reads the filesystem and `check-doc-links` reads
-  `git ls-files`, which is why the two disagree by exactly the new files during a session and
-  agree after staging. Verify every count AFTER staging.
-- **An assertion about tooling behaviour is a search that was not run.** US-1 wrote
-  "`.chief/state/` is gitignored so `git ls-files` never returns it"; both files are tracked
-  (an ignore rule does not untrack) and `git check-ignore -v` prints nothing. Run the command.
+- **Run the guards from the repo root, and use the runner's own seam.** `node scripts/check-doc-integrity.mjs`
+  (wall: every relative link + all 3 status tables) and `node scripts/check-doc-links.mjs --ratchet --base main`
+  (ratchet). To gate exactly what you changed *before committing*, use
+  `bash .chief/verify.sh --run <paths...>` — a bare `.chief/verify.sh` reads the branch diff and
+  reports "no changed files" for uncommitted work.
+- **Anchor slugs are the guard's, not GitHub's.** `scripts/check-doc-integrity.mjs` `slugify()`:
+  strip `` ` `` `*` `_`, unwrap `[text](url)` to `text`, lowercase, drop `[^\w\s-]` (so `/`, `—`,
+  `,` vanish), trim, `\s+` → `-`. An em dash therefore collapses into a double space → single
+  hyphen. Write the anchor by applying those five steps, not by guessing.
+- **One home per fact.** Where a table already exists (the ADR table in `decisions/README.md`, the
+  three spec status tables), link it — do not restate it. Restating is how the four version/status
+  mirrors got expensive.
 
 ---
 
-## 2026-09-03 — US-1: An inventory, measured before anything is removed
+## US-1 — Every document is reachable, banner-stamped, and in the right place (2026-09-03)
 
-**Done.** Wrote `docs/reference/dead-code-inventory.md` (the checked-in artifact a human
-approves before deletion) and linked it from `docs/README.md`'s Reference section — that
-file's own rule is *a document not linked here does not exist*.
+**Measured first, edited second.** The tasklist description already said this repo was clean on
+links/banners/structure; that held up:
 
-Files changed: `docs/reference/dead-code-inventory.md` (new), `docs/README.md` (+1 line),
-`.chief/state/prd.json`, `tasks/chief/900-dead-code-paydown.json`.
+- `check-doc-integrity.mjs`: 58 md files, 1449 relative links, **0 dead**, 3/3 status tables match.
+- `check-doc-links.mjs --ratchet`: **0 dead vs 0 on main**.
+- Banners: **19/19** files under `docs/` carry `Status · Updated · Owner` (checked with a loop over
+  `find docs -name '*.md'`).
+- Reachability: **18/18** non-README docs files already linked from `docs/README.md` (`comm -23`
+  of the file list against the link list came back empty).
 
-**Gate:** `.chief/verify.sh --run docs/reference/dead-code-inventory.md docs/README.md`
-→ `guard-doc-integrity` OK (57 markdown files, 1399 relative links, 0 errors, 3 status
-tables match their headers), `guard-doc-links` "0 dead vs 0 on main" → **all selected
-gates green**. `check-tasklist-categories` OK, 4 tasklists categorized.
+So ACs 1–3 were already met and **AC4 was the real gap**: the standard's seven directories live
+under `docs/`, but koine keeps `decisions/` at the repository root alongside `specs/`, `scenarios/`,
+`registry/`, `schemas/` and `policy/` — 38 markdown documents outside `docs/`, none of it declared
+anywhere as an exception.
 
-### What the inventory found, and what US-2 inherits
+### Files changed
+- `docs/README.md` — banner `Updated:` → 2026-09-03; two new sections appended; one preamble claim
+  corrected.
 
-**Class A — 4 removal candidates, ALL inside `scripts/check-doc-links.mjs`.** That guard
-was carried in from a sibling repo (`87c9aa9`) with its host's exceptions attached; its
-own comments name `cuneiform`, `argos`, `studio-os`, `insimul`, `engine/quality.sh`, none
-of which exist here. **The guard itself is LIVE and must stay** — `.chief/verify.sh`
-selects it as `guard-doc-links` and it is the only thing checking the 8 bare `docs/…`
-citations in non-Markdown files. What is dead is *inside* it:
+### What was written
+1. **Corrected the map's own claim.** It said *"a document not linked here does not exist"*, which
+   was false the moment you count `specs/`. Now *"not **reachable** from here"*, with the
+   distinction stated: `docs/` is listed file by file, the contract surface is reached through its
+   own index.
+2. **`## Outside docs/ — the contract surface, and why it is not filed here`** — the declared
+   exception, with the reason stated **once**: these are published artefacts, not writing about
+   them; downstream repos vendor `schemas/` and `registry/` by drift-gated copy, every spec cites
+   its siblings by relative path, and the ratification gate is stated in those paths. Moving them
+   would rewrite ~1,400 relative links here and break every citation held outside. Plus a 6-row
+   table linking each index README, and a closing line covering `scripts/` and `tasks/` (no
+   Markdown at all → outside the map by construction, not by exception).
+3. **`## The standard's seven directories — what koine has, and what it does not`** — 3 populated;
+   `tutorials/` empty (no runtime to walk through; an empty dir would advertise a tutorial),
+   `runbooks/` empty (contracts only; the one procedure is `.chief/verify.sh`), `archive/` created
+   on first use, `decisions/` at root per the exception above.
 
-- **A-1** `EXCEPT_DIRS` (lines 42-53, used at 81) — reads `docs/.structure-exceptions`.
-  `git log --oneline --all --` → **0 commits**. Never existed on any branch.
-- **A-2** `IGNORE` (lines 55-60, used at 80) — reads `docs/.linkignore`. **0 commits.**
-  Also contradicts `check-doc-integrity.mjs:13-14`, which states there is deliberately no
-  allowlist for a private-repo link.
-- **A-3** the `docs/archive/` skip (lines 70-75) — **0 commits**, and `git grep 'docs/archive'
-  -- ':!scripts/'` finds no convention, README or ADR. Flagged with a judgement note: this
-  is the one whose deletion would matter if the convention were later adopted.
-- **A-4** the cross-repo `foreign` walk (lines 98-117, used at 119) —
-  `git grep -lE '"(repo|owner)"\s*:' -- '*.json'` → **0 of 65** tracked JSON files. `foreign`
-  is always empty. Worse than inert: it runs `execFileSync('git', ['rev-parse',
-  '--show-toplevel'])` **once per JSON file** (65 spawns/run) for a value that is *wrong in
-  a worktree* (returns `900-dead-code-paydown`, not `koine`) and then never compared.
+### Learnings for future iterations
+- **`docs/README.md` is now the declared-exception document.** If a story moves a directory or adds
+  one, that table is the thing to update — and `archive/`'s row says *"created on first use"*, so
+  **US-3 must flip that row** when it archives its first document.
+- **Do not restate the ADR table in `docs/README.md`.** It was tempting for reachability, and it is
+  exactly the duplication US-2's third AC forbids. The row links `decisions/README.md` and says in
+  writing that it is the one home. Keep it that way.
+- **Left for US-2 (found while reading, not fixed here):** the root `README.md` "Repository layout"
+  table lists 8 paths and **omits `scripts/`**, which is where the guards CLAUDE.md tells you to run
+  actually live. That is content drift, not structure — it belongs to US-2.
+- The guards are cheap and fast (~1s). Run them after every edit rather than at the end; a broken
+  anchor is much easier to find one edit at a time.
 
-**Class B — 1 duplicated implementation, recorded not deleted.** Relative Markdown link
-resolution exists in both doc guards. Measured: `check-doc-integrity` reaches 56 md files /
-1384 links (before this story) incl. `#anchor` targets and the status mirrors;
-`check-doc-links` reaches 57 / 1371, no anchors. **1371 of 1371** of the latter's md-link
-checks are duplicated, more strictly, by the former. Its unique value is 8 bare `docs/…`
-citations in `.chief/verify-test.sh` + `tasks/chief/91-*.json` + `tasks/chief/92-*.json`.
-Left in place deliberately: `guard-doc-links` is a **ratchet** and `guard-doc-integrity` is
-a **wall**, so merging them changes the merge gate's failure semantics — a behaviour change,
-not a removal. If ever taken, the answer is fold `BARE_DOC` into `check-doc-integrity` and
-retire `check-doc-links` whole. Also B-2: the 4th status mirror (CLAUDE.md prose) that no
-guard checks — recorded so a sweep does not "simplify" it away.
+## US-2 — Content that describes a tree that moved (2026-09-03)
 
-**Class C — 5 survivors, each with the reason.** 8 registry rows with 0 in-repo citations
-(`descended_from`, `caused_by`, `cine:scene_of`, `media:mentions`, `soc:employed_by`,
-`soc:resides_in`, `…model+coreml`, `…model+tflite`) — published vocabulary vendored
-downstream, and a relation's signature is immutable once published, so removal is not an
-available move. The `tasks/chief/completed/` skip — structurally identical to A-3, opposite
-verdict, because the directory exists; hides 0 dead citations today (replayed `BARE_DOC`
-over all 45 records) so it is *deliberately unexercised*, not dead. `--json`/`--strict`/
-`--list` — settable by hand, so not "flags that can no longer be set". `SKIP_DIR`/`SKIP_EXT`.
-The schema fixtures (exercised by `check-schemas.mjs`).
+**The method: read prose against `ls`, `git log` and the spec headers.** Both link guards were
+green before this pass and after it, and were green on every day each defect below was live. The
+whole point of the story is the half a checker cannot reach.
 
-**9 empty searches recorded** so they are not repeated: 0 orphan `.md` of 57, 0 orphan
-schemas, 0 unreferenced `$defs` of 10 (80 `$ref`s all resolve), 0 real duplicated
-subschemas, 0 orphan entity types / enum tokens, 0 commented-out code blocks, no
-`package.json`, 0 dead branches in `verify.sh`, 0 unrun guard scripts.
+### The six corrections (register: `docs/reference/doc-drift-corrections.md`)
+
+| # | Where | Was | Is | Wrong since |
+|---|---|---|---|---|
+| C-1 | `docs/reference/layer-claim.md` §2 | "two of the six are ratified, four are candidate" | one (KGP 0.5.2) — now **no count at all** | 2026-08-20 |
+| C-2 | `docs/guides/walkthrough-capability-bus.md` Step 1 | AgentCard with top-level `"url"` | A2A v1.0 `supported_interfaces[]` | 2026-08-13 (KCB 0.4.2) |
+| C-3 | `docs/reference/implementability-audit.md` §1 | `scenarios/` 7 files · `decisions/` 8 ADRs (0005–0011) | 12 · 11 (0005–**0014**) | 08-20 / 08-23 |
+| C-4 | same file, IMP-16 | "KCS 0.2.0 ratified and seven prose pressure tests" | 0.3.0 candidate, twelve | 2026-08-20 |
+| C-5 | `README.md` layout table | 8 dirs + 2 files, **no `scripts/`** | `scripts/` row added; `docs/` row → points at `docs/README.md` | from first draft |
+| C-6 | `CLAUDE.md` | 4 guards of 5 · 8 schemas of 9 | 5 · 9 (`participant-self-description`) | from each addition |
+
+### Files changed
+`README.md`, `CLAUDE.md`, `docs/README.md`, `docs/guides/walkthrough-capability-bus.md`,
+`docs/reference/layer-claim.md`, `docs/reference/implementability-audit.md`, and new
+`docs/reference/doc-drift-corrections.md`.
 
 ### Learnings for future iterations
 
-- **The whole Class-A set is one file and one commit's worth of work.** US-2's "reviewable
-  steps rather than one sweep" is satisfiable as A-1+A-2 (the two never-existed exception
-  files), then A-3, then A-4 — three commits, each re-running the gate. A-4 is the only one
-  that changes runtime behaviour (removes 65 subprocess spawns per run).
-- **Before deleting anything in `check-doc-links.mjs`, confirm the guard still reports
-  `0 dead vs 0 on main`.** The ratchet's base comparison spawns a temporary worktree of
-  `main` and runs the OLD script there, so a removal is compared against the pre-removal
-  behaviour — that is exactly the right test and it is free.
-- **US-3's undecidability register is already seeded**: the inventory's closing paragraph
-  states the method's limit (static, scoped to this tree; koine exists to be consumed from
-  outside it) and C-1's registry rows are the concrete case. US-3 should extend that, not
-  re-derive it.
-- The research map for this tasklist was accurate as far as it went; nothing in it needed
-  correcting.
+- **The drift is almost always a RESTATED fact, not a wrong one.** Five of the six were a copy of
+  something whose home is elsewhere (a count the status tables hold, the spec's own §2 example, a
+  directory listing). C-3 and C-4 were *correct on the day they were written*. So the fix that
+  lasts is to **delete the copy and point at the home** — four of six fixes did that. Refreshing a
+  restatement just re-arms it.
+- **`Updated:` in a banner is not a shelf life.** C-1 even said *"That is a dated reading"* and
+  still misled, because a date does not stop a number being read as current. Prefer holding no
+  count to holding a dated one.
+- **Where to look for content drift in this repo, in order of yield:** (1) tables that count things
+  in a directory — `implementability-audit.md` §1 is one and it re-counts in 30 seconds; (2) any
+  prose stating how many specs are `ratified` (CLAUDE.md already warns about this class); (3) worked
+  examples in `docs/guides/` and `docs/explanation/` against the spec section they illustrate — a
+  spec that fixes its own example does not propagate; (4) `README.md` / `CLAUDE.md` lists of
+  directory contents.
+- **Left for US-3, found here:** `ROADMAP.md`'s Phase 0 paragraph reads *"That count is **0 of 6**"*
+  and has been wrong since KGP was ratified on 2026-08-28. **Deliberately not fixed** — the tasklist
+  description puts roadmaps out of scope in as many words. Reported in the register instead. If a
+  future story is allowed to touch it, that is the one-line fix.
+- **`docs/reference/doc-drift-corrections.md` is where US-3's AC2 and AC3 belong.** It already has
+  a *Scope, and what this sweep did not touch* section (ROADMAP, upstream-standards, the governance
+  map) and a *What this sweep cannot claim* section. US-3 should EXTEND those rather than start a
+  second document — and must flip `docs/README.md`'s `archive/` row from "created on first use" the
+  moment it archives anything.
+- **Nothing was archivable in this story.** No document was found superseded — every one is either
+  current or an explicitly dated record of a pass. `docs/archive/` therefore still does not exist
+  going into US-3, and that is a finding, not an omission.
 
----
+## US-3 — Archived, not deleted — and the record says why (2026-09-03)
 
-## 2026-09-03 — US-2: Removal, with the tree still green and the reason recorded
+**The story archived nothing, and that is the deliverable.** US-2 had already reported "nothing was
+archivable"; this pass turned that assertion into a *result* by stating a test and applying it to
+every file, which is the only form the claim is worth anything in.
 
-**Done.** Four commits, one candidate each, gate re-run after every one. Three of the four
-Class A candidates removed; **the fourth was deleted and reverted**, and that retraction is
-the most valuable thing this story produced.
+### The test, and why it is per class
 
-| # | Commit | Candidate | Outcome |
-|---|---|---|---|
-| 1 | `68b860a` | A-1 `EXCEPT_DIRS` + A-2 `IGNORE` (22 lines) | removed |
-| 2 | `2ee74d1` | A-3 the `docs/archive/` skip (6 lines) | removed |
-| 3 | `c5b4bdf` | A-3 | **REVERTED — the candidate was live** |
-| 4 | `a261ebb` | A-4 the cross-repo `foreign` walk (21 lines) | removed |
+**Supersession is not staleness.** A document is superseded when *something else is now the answer
+to the question it was written to answer* — a different test from "is it accurate" and different
+again from "is it recent". So the test differs by class, because what would replace a spec is not
+what would replace the record of a run. Counts computed from `git ls-files`, not asserted:
 
-Net **43 lines** off `scripts/check-doc-links.mjs` (168 → 125, `git diff --numstat main` =
-`0  43`) and **65 subprocess spawns per gate run**. `--json` returns `{total:0, distinct:0}`
-before and after; wall clock 0.28/0.24/0.23s → 0.23/0.09/0.08s.
+| Class | Files | Superseded |
+|---|---|---|
+| Normative contract surface (6 specs + 4 index READMEs) | 10 | none — no plane retired; a version bump is not supersession |
+| Decision records (11 ADRs + README) | 12 | none — every ADR `Accepted`; ADR-0012 supersedes three *clauses*, and a clause is not a document |
+| Dated evidence (12 scenarios + README + 13 `docs/reference/` records) | 26 | none **by construction** — a later observation is a second record, not a replacement |
+| Living maps (README, ROADMAP, ECOSYSTEM, CLAUDE, docs/README, promotability, upstream-standards) | 7 | none |
+| Teaching (walkthrough, adopter checklist, positioning, layer-claim) | 4 | none — the one overlapping pair declares its own relationship |
+| Process metadata (`.chief/agent-context.md`) | 1 | out of scope |
 
-Files changed: `scripts/check-doc-links.mjs`, `docs/reference/dead-code-inventory.md`
-(removal-pass section + dispositions + corrections), `.chief/state/prd.json`,
-`tasks/chief/900-dead-code-paydown.json`.
+`docs/archive/` therefore still does not exist, and nothing was deleted:
+`git diff main...HEAD --diff-filter=D --name-only` is empty for the whole branch.
 
-**Gates, after every step and at the end:** `guard-doc-integrity` OK (57 md files, 1410
-relative links, 0 errors, 3 status tables match), `guard-doc-links` `0 dead vs 0 on main`,
-`guard-categories` OK 4 tasklists, `guard-schemas` OK, `guard-registry` OK → **all selected
-gates green**; `bash .chief/verify-test.sh` → **30 passed, 0 failed**. No test deleted,
-weakened or adjusted — `.chief/verify-test.sh` is byte-unchanged across all four commits.
-
-### ⚠️ THE BIG ONE: A-3 was NOT dead, and US-1's inventory said it was
-
-US-1 recorded three searches for the `docs/archive/` skip and reported the third empty:
-
-    $ git grep -rn 'docs/archive' -- ':!scripts/'   # "no convention, no README, no ADR"
-
-**That is false.** Re-run at commit time it returns:
-
-    tasks/chief/901-docs-tell-the-truth.json:48
-      "Superseded documents move to `docs/archive/` with a note naming what replaced
-       them and when. Nothing is deleted outright."
-
-— acceptance criterion 1 of US-3 in **`901-docs-tell-the-truth`**, the paired docs sweep
-that runs NEXT and depends on this tasklist. The convention is scheduled, in a tracked file,
-one tasklist away. So the skip is *deliberately unexercised* (same class as the
-`tasks/chief/completed/` skip right below it), not dead. Reverted in `c5b4bdf`; both commits
-kept unsquashed because the round trip is the evidence.
-
-This is precisely the failure the tasklist description warns about: *"a cleanup that runs
-before the work is finished deletes scaffolding that was about to be used, and then the next
-tasklist re-adds it."* It nearly happened, on this branch, on the story whose whole subject
-is the standard of proof.
+### Files changed
+- `docs/reference/doc-drift-corrections.md` — the retention sweep (method, the class table, the
+  nine-plus-three "looks superseded and is not" table, the ECOSYSTEM.md precedent), C-7, and four
+  new limits under *What this sweep cannot claim*.
+- `docs/reference/dead-code-inventory.md` — C-7 fixed by removing the count, with a dated note.
+- `docs/README.md` — the `archive/` row now **cites** the sweep instead of asserting emptiness; the
+  register's bullet rewritten to describe two passes without brittle counts.
 
 ### Learnings for future iterations
 
-- **Re-run every search AT REMOVAL TIME, not just at inventory time.** They cost seconds. An
-  inventory is a claim about a moment, and the tree moves between the two. Writing the search
-  into the commit message is what forced the re-run here — do that.
-- **"Is it used?" is the wrong question. "Is it used, OR ABOUT TO BE?" is the right one.**
-  Grep the *active tasklists* (`tasks/chief/*.json`, excluding `completed/`) as part of every
-  deadness search. A-4's searches were re-run under the corrected question and came back
-  clean; A-3's did not survive it.
-- **`check-doc-integrity.mjs`'s `slugify` strips `_` as well as backticks and `*`** (line 67,
-  `.replace(/`|\*|_/g, '')`). So `### A-1 — `EXCEPT_DIRS`, and …` anchors as
-  `#a-1-exceptdirs-…`, NOT `#a-1-except_dirs-…`. Cost one red gate. Add this to the slugify
-  note already in Codebase Patterns.
-- **The `guard-doc-links` ratchet is a free before/after test of any change to that script.**
-  It checks out `$CHIEF_BASE_BRANCH` into a temp worktree and runs the **pre-change** script
-  there. `0 dead vs 0 on main` after a removal is a real measurement, not a tautology.
-- **US-3 inherits a strong seed.** The undecidability register should lead with the A-3
-  retraction as the concrete case of what a static search over this tree cannot see, alongside
-  C-1's eight registry rows (cross-repo consumers) and B-1's ratchet-vs-wall duplication that
-  was deliberately not merged.
-
----
-
-## 2026-09-03 — US-3: What the sweep could not decide
-
-**Done, and nothing was removed** — which is the point. Wrote
-`docs/reference/dead-code-undecidable.md`, linked it from `docs/README.md`'s Reference
-section, and cross-linked it both ways with the inventory.
-
-Files changed: `docs/reference/dead-code-undecidable.md` (new, 320 lines),
-`docs/README.md` (+1), `docs/reference/dead-code-inventory.md` (C-4 annotated, closing
-paragraph and *See also* pointed at the register), `.chief/state/prd.json`,
-`tasks/chief/900-dead-code-paydown.json`.
-
-**Gate:** `.chief/verify.sh --run docs/reference/dead-code-undecidable.md docs/README.md
-tasks/chief/900-dead-code-paydown.json .chief/state/prd.json` → `guard-doc-integrity` OK
-(58 markdown files, 1449 relative links, 0 errors, 3 status tables match),
-`guard-doc-links` `0 dead vs 0 on main`, `guard-categories` OK 4 tasklists,
-`verify-selftest` **30 passed, 0 failed** → **all selected gates green**.
-
-### The five entries, and how the four named mechanisms actually distribute here
-
-The story names four ways a thing can be reachable without a static search seeing it. They
-do **not** divide evenly over this tree, and the distribution is the finding:
-
-| Mechanism | Instances |
-|---|---|
-| a consumer **outside this repo** | the dominant class — U-1, U-2, U-3 |
-| **reflection** over data-read keys | U-4 |
-| **dynamic dispatch** by string/glob | decided, and clean — recorded so it is not re-filed |
-| **generated code** | **zero** — U-5 is the search that found nothing to be undecided about |
-
-- **U-1 — 23 of 125 distinct schema property names** are cited by no file outside
-  `schemas/`. Split by *why the reader is elsewhere*: 5 camelCase names in
-  `canonical-world-export` / `canonical-graph-export` (the downstream runtime mirror
-  `CLAUDE.md` says to keep identical — includes `prologKb`, which is the "Prolog corpus
-  reached by a path nobody found" shape again, and `predicateSchemaHash`); 4 that are
-  **OTIO's own field names** and so not koine's to remove (ADR-0005); 4 external identifier
-  vocabularies; 10 on `participant-self-description`, whose reader is a *participant* by
-  ADR-0007. **The camelCase set is the sharpest case in the whole sweep**: the single
-  strongest local signal that something is foreign is also the reason it must not be touched.
-- **U-2 — the 13 scenario files.** `CLAUDE.md` states the downstream KCS encoding set is held
-  to set-equality by a test in the implementing repo, with no local red light;
-  `.chief/verify.sh --list-gates | grep -c scenario` → **0**. Nine of twelve have an encoding,
-  three do not (DR-11/12/13) and look identical from here to dead scaffolding. **The unusual
-  part: here a CREATION is as dangerous as a deletion**, and nothing local catches either.
-- **U-3 — all 6 `.chief/config` engine variables at 0 in-tree readers**, plus
-  `.chief/agent-context.md` (the one `.md` file of 59 outside `DOC_DIRS`, and the file with
-  the fewest inbound links in the repo) and `CHIEF_BASE_BRANCH`'s non-default branch. A
-  commented-out default in `.chief/config` is **published interface documentation for an
-  out-of-repo caller**; the fact that it is spelled as shell comments is incidental.
-- **U-4 — 25 of 56 draft-2020-12 keyword branches in `check-schemas.mjs` never fire** over
-  the 9 schemas (two of them carrying hand-written validation, not just a table row), plus
-  `TIERS`' `full-prolog` at **0 of 29** relation rows. Filed as undecidable rather than
-  Class C because deciding it needs a *judgement about what the guard is for*: trimming
-  `KNOWN` to today's 31 would make the guard **reject** the first schema that legitimately
-  used `maxItems`, since the unreached branch and the misspelling check are the same object.
-- **U-5 — generated code: zero instances**, with the searches that establish it. Stating that
-  is the result, not an omission; the next sweep can skip the search.
-
-### Two things worth carrying forward
-
-- **A citation count is not evidence when the counter is inside the corpus.** Publishing this
-  register makes its own U-1 search return **0**, because the document names all 23. Measured,
-  not predicted: the naive replay returned **1** while staged — and that 1 is how a *dropped*
-  23rd name (`aliases`, omitted from a table) was caught — then **0** once fixed, and **23**
-  with the register excluded via `':!docs/reference/dead-code-undecidable.md'`. The exclusion
-  is written into the document. Any future doc that enumerates findings has this problem.
-- **An assertion about tooling behaviour is a search that was not run.** US-1's C-4 said
-  `/.chief/state/` is gitignored so `git ls-files` never returns it. False: `.gitignore` does
-  carry the directory, but `prd.json` and `progress.txt` were tracked before the rule and an
-  ignore rule does not untrack. `git check-ignore -v` prints nothing; `git ls-files` returns
-  both. So that skip is **live** — it hides 8 bare `docs/…` citations (0 dead today). Verdict
-  unchanged (**keep**), class corrected to *deliberately unexercised*. Annotated in place with
-  a strikethrough rather than rewritten, so the inventory keeps its own error visible.
-
-### Learnings for future iterations
-
-- **Verify counts AFTER staging, not before.** `git ls-files` only sees tracked files, so
-  every `*.md` count in a new document is off by one until `git add`. Two numbers in this
-  document (`59` md files, the `*.md → 59` glob row) were wrong on first write for exactly
-  that reason and were caught by re-measuring post-`git add`.
-- **`check-doc-integrity` reads the filesystem, `check-doc-links` reads `git ls-files`.** So
-  the two disagree by exactly the untracked/new files during a working session, and agree
-  after staging. Useful when a count looks off by one.
-- **Anchor gotcha, again:** `### C-4 — `SKIP_DIR` / `SKIP_EXT` in `check-doc-links.mjs``
-  slugifies to `#c-4-skipdir-skipext-in-check-doc-linksmjs` — **one** hyphen where the ` / `
-  was, because `slugify` drops `/` then collapses the whole whitespace run to a single hyphen.
-  Cost one red gate. This is the third distinct way that function has bitten this branch.
-- **The tasklist is now complete** (US-1, US-2, US-3 all `passes: true`). `901-docs-tell-the-truth`
-  runs next and depends on this one; it should read the undecidable register before touching
-  `scenarios/` or `schemas/`, since U-1 and U-2 name what a docs sweep must not "tidy".
+- **The evidence for "archive, don't delete" was in this repo's own history, not in the tasklist
+  description.** `ECOSYSTEM.md` was deleted 2026-07-31 (`4ed42e1`), needed 11 days later, and was
+  **rewritten** rather than restored (`2e228c6`): 159 lines / 8 sections vs 166 / 7, and `comm -12`
+  over the two sorted files returns **no line in common**. The old §6 survives as one paragraph
+  saying it was superseded. Honest qualification recorded in the doc: it was never *unrecoverable*
+  (`git show 4ed42e1^:ECOSYSTEM.md` still prints it) — it stopped being **reachable**. That
+  distinction is the whole of what the archive rule buys, and overstating it would have been easy.
+- **Correcting a count re-arms every count derived from it.** C-7 forced edits to the register's
+  "six of the seven", "five of the seven" *and* `docs/README.md`'s bullet describing them. If you
+  add a row to that table, grep the register and the index for the old numbers in the same edit —
+  or, better, follow the register's own doctrine and phrase derived claims without a number.
+- **This sweep armed its own drift inside one day.** The inventory's "(57 Markdown files)" was
+  correct the morning the 900 sweep wrote it and wrong by the evening, because 901 added documents.
+  The shortest fuse yet observed here. When you write a count into prose, assume the next commit
+  breaks it.
+- **The dated-evidence class is the one a future sweep will get wrong.** Nine documents in `docs/`
+  look stale on any freshness heuristic — fold dispositions written before their folds, an interop
+  trial against versions that have all moved, two gate verifications for gates now closed. Every one
+  is retained, each with its reason in the table. Read that table *before* proposing to archive
+  anything in `docs/reference/`.
+- **A document a spec cites by relative path is not archivable while the citation stands.**
+  `federation-fold-dispositions.md` is cited by four of the six specs (KINP alone five times) as the
+  carrier of DEFER-A/DEFER-B's forcing triggers — moving it would be an edit to `specs/`, i.e. a
+  spec change, not a documentation change.
+- **`docs/archive/` remains untested.** The rule is now written in two places and nothing has ever
+  exercised it. The first archival will be the first use of the note format, the first edit to the
+  `archive/` row, and the first time the guards see a link into that directory.

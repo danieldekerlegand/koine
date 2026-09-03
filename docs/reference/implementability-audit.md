@@ -1,6 +1,6 @@
 # Implementability audit — what a third party receives, and what they cannot build from it
 
-> **Status:** Current · **Updated:** 2026-08-18 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-09-03 · **Owner:** koine · **Informative**
 
 **This document binds no clause.** It is a record of an audit, not a contract: every finding below
 is a statement about the *receivable artefacts*, and where a finding and a spec disagree the spec
@@ -27,9 +27,20 @@ An implementer receives this repository and nothing else. That set is:
 | [`../../schemas/`](../../schemas/) | the machine-readable twin (JSON Schema draft-2020-12) | 9 schemas, 3 fixtures |
 | [`../../registry/`](../../registry/) | the shared vocabularies — relations (core + 3 domains), entity types, media types, enums | 7 TSV files |
 | [`../../policy/`](../../policy/) | licence-class and trust-tier policy data | 2 JSON files |
-| [`../../scenarios/`](../../scenarios/) | the pressure tests — **prose walkthroughs, not runnable documents** | 7 Markdown files |
-| [`../../decisions/`](../../decisions/) | the agnostic ADRs (0001, 0005–0011) | 8 ADRs |
+| [`../../scenarios/`](../../scenarios/) | the pressure tests — **prose walkthroughs, not runnable documents** | 12 Markdown files |
+| [`../../decisions/`](../../decisions/) | the agnostic ADRs (0001, 0005–0014) | 11 ADRs |
 | [`../../docs/`](../README.md) | guides, reference (including the upstream pin table), explanation | this map |
+
+> **Counts re-read against the tree 2026-09-03, and two rows were wrong.** `scenarios/` said **7
+> Markdown files** and holds **12**; `decisions/` said **8 ADRs (0001, 0005–0011)** and holds
+> **11 (0001, 0005–0014)** — ADR-0012 (federated authority roles), ADR-0013 (autonomy posture) and
+> ADR-0014 (a federated merge merges attributions) all landed after this table was written. The
+> other five rows re-count exactly as stated (6 specs + a README, 9 schemas + 3 fixtures, 7 TSV
+> files, 2 JSON files). Both stale rows **understated** the receivable set, which is the harmless
+> direction for an audit that asks what an implementer cannot build — but a count is the one thing
+> in this document a reader is entitled to trust without checking. The findings below are **not**
+> re-derived against the three new ADRs; that is a fresh audit, and this correction does not claim
+> to be one. Record: [`doc-drift-corrections.md`](doc-drift-corrections.md).
 
 **What is named in the receivable set but is not in it.** Each of these is a pointer a third party
 cannot follow. None is a broken *link* — the repo is careful never to link out — but each is a claim
@@ -275,7 +286,9 @@ delete the registry half of the clause.
 ### 3.7 The conformance suite is not yet an artefact (gap)
 
 **IMP-16 · gap · `scenarios/`, KCS.** What a third party receives as "the conformance suite" is one
-ratified *format* spec (KCS 0.2.0) and seven **prose** pressure tests. There is no runnable KCS
+*format* spec — **KCS 0.3.0, and `candidate` since the 2026-08-20 determinism fold; it was `0.2.0`
+ratified when this finding was written** — and **twelve** (then seven) **prose** pressure tests.
+The finding itself is unchanged by either number. There is no runnable KCS
 document in the tree — `scenarios/` is Markdown only — and no `fixtures/` directory for the
 `standin` sources KCS §2 provides for. [`../../specs/README.md`](../../specs/README.md) states this
 plainly and makes it the ratification gate, so this is a known and owned condition rather than a

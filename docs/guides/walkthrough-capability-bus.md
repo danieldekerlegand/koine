@@ -1,6 +1,6 @@
 # Walkthrough: a capability, end to end
 
-> **Status:** Current · **Updated:** 2026-08-14 · **Owner:** koine
+> **Status:** Current · **Updated:** 2026-09-03 · **Owner:** koine
 
 This is a worked example of the **Capability-Bus** protocol ([`../specs/capability-bus.md`](../../specs/capability-bus.md),
 "KCB") — the part of Koine that lets one system offer a capability and another find and use it.
@@ -25,12 +25,20 @@ Our example provider is a `composer` agent: give it a *mood* (knowledge) and it 
 A provider already serves an [A2A](https://a2a-protocol.org) **AgentCard** at
 `/.well-known/agent-card.json`. The KCB manifest is **not** a second file — it rides inside that
 card as one entry in `capabilities.extensions[]`, identified by a stable URI. This keeps a
-provider to a single served document:
+provider to a single served document.
+
+The card below is an **A2A v1.0** card, which is the version KCB pins
+([KCB §1.1](../../specs/capability-bus.md)). In v1.0 an agent's addresses are the entries of
+`supported_interfaces[]` — each an `AgentInterface{ url, protocol_binding }` — and there is no
+top-level `"url"`. Nothing in the KCB extension changes with the card version: the entry, its
+`uri` and its `params` are the same either way.
 
 ```jsonc
 {
   "name": "mediastore:agent:composer",              // the provider's shared identity (a KINP id)
-  "url":  "https://mediastore.example/a2a",          // where it actually answers
+  "supported_interfaces": [                          // A2A v1.0 — where it actually answers
+    { "url": "https://mediastore.example/a2a", "protocol_binding": "JSONRPC" }
+  ],
   "capabilities": {
     "extensions": [
       { "uri": "https://w3id.org/koine/kcb/manifest/0.3", // marks this entry as a KCB manifest
@@ -68,7 +76,7 @@ discover(capability = "compose",
          produces   = { plane: "media",     media_types: ["audio/midi"] })
   → [ { agent: "mediastore:agent:composer",
         address: "https://mediastore.example/a2a",     // ← an ADDRESS, not a proxy
-        cost: { tier: "paid", est_units: 1200 } } ]
+        cost: { tier: "paid", est_units: 1200 } } ]     //   read off an AgentInterface.url
 ```
 
 Because every port is typed by which *plane* it speaks (knowledge, media…), the registry can do
@@ -106,3 +114,12 @@ size, read the pressure tests these steps are distilled from:
   version, adding narration, clip-cutting, an edit list, and the media→knowledge bridge.
 - [`../scenarios/e2e-worlds-to-fabric.md`](../../scenarios/e2e-worlds-to-fabric.md) — the identity-side
   counterpart: mint a name, then `resolve` and `reconcile` it.
+
+> **Corrected 2026-09-03.** The card above used to carry a top-level `"url"`, which is the **A2A
+> v0.x** shape. KCB replaced it with `supported_interfaces[]` at **0.4.2** (§1.1, §2) when it pinned
+> A2A **v1.0**, and the correction never reached this page — so a reader building from this
+> walkthrough would have published a card the pinned upstream no longer defines. The manifest
+> `params` are byte-unchanged, because the card version does not reach them. Deliberately **not**
+> changed at the same time: `kcb_version` still reads `0.3.0`, matching the spec's own §2 example —
+> this page illustrates that example and is not a second place to state the current version. Record:
+> [`../reference/doc-drift-corrections.md`](../reference/doc-drift-corrections.md).

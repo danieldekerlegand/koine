@@ -30,6 +30,12 @@ vocabulary.
   Both failures are otherwise silent. It checks **three of the four mirrors** — the *Current
   state* prose below is **not** checked, so a stale version there passes CI; update that line by
   hand and read it back. `node scripts/check-tasklist-categories.mjs` guards `tasks/chief/`.
+  The **fifth** guard is `node scripts/check-doc-links.mjs --ratchet --base main`, and it is the one
+  this file used to leave unnamed: it is a **ratchet**, not a wall — it blocks a link regression
+  against the base and tolerates pre-existing rot — and it reaches what doc-integrity does not,
+  namely bare `docs/…` paths written in non-Markdown files. The count is currently 0 either side,
+  so a ratchet and a wall behave identically today; that is a fact about the tree, not about the
+  guard. (Added 2026-09-03 — `scripts/` held five guards and this list named four.)
 - **A status change reaches further than the four mirrors.** The guard passes on a table row that
   merely contains the version and the status *word*; it says nothing about the prose all over the
   repo that **counts** statuses ("six of six remain candidate", "0 of 6 specs ratified", "four sit
@@ -588,7 +594,12 @@ vocabulary.
   canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.5.x
   (grounding-pack = the §4 **JSON** encoding, not a JSON-LD document; no schema models a §4
   projection — a projection's conformance is the round-trip, not a document shape);
-  `media-timeline` (KMI §4) + `finetune-job` (KFT §3), each with one golden-positive fixture.
+  `media-timeline` (KMI §4) + `finetune-job` (KFT §3) + `participant-self-description`
+  (ADR-0007 decision 7 — the odd one out: a **source** document a participant keeps in its own
+  repo, never served and not an interchange payload), each with one golden-positive fixture under
+  `schemas/fixtures/`. Nine schemas, three fixtures. (Corrected 2026-09-03 — this bullet named
+  eight of the nine and omitted `participant-self-description.schema.json`, which is the schema an
+  adopter meets first.)
   Every schema is role-scoped: no title, `$id`, or description names a product, and illustrative
   CURIEs use the KINP §3.4 placeholder namespaces. `canonical-graph-export` is the neutral name the
   downstream runtime mirror uses too — keep the two identical.
