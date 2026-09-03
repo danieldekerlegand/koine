@@ -142,3 +142,78 @@ Gates: all five guards green; `git diff --name-only main | .chief/verify.sh --ru
   delta-range cell had been updated. When you touch a scenario, grep its filename across
   `scenarios/README.md`, `ROADMAP.md`, `docs/reference/promotability.md` and `CLAUDE.md` and read
   every prose hit, not just the table cells — **no guard checks prose.**
+
+## US-3 — What remains after clean re-runs is written down, not left to be rediscovered (2026-09-03)
+
+**The story is a bookkeeping story only if you take its inputs on trust; the value was in refusing to.**
+Its own acceptance criterion says so — *"verify that against agora at a named sha rather than taking this
+description's word for it"* — and doing it turned two of the six downstream findings around.
+
+Files changed
+- docs/reference/promotability.md — KCB table row rewritten with all five verdicts and an owner cell that
+  is now a register; ranking entry 6 rewritten; new § *The ranking, re-derived after the 2026-09-03 walks*
+  (a six-row table + three reading notes); new § *The seven things that stand between KCB and `ratified`,
+  and who owns each*; the conformance-gate bullet given the independently-run numbers; the
+  "neither KCB nor KMI moved a step closer" paragraph restated for the counterfactual now that all
+  eleven verdicts are in
+- docs/reference/fold-coordination-federation-versioning.md — new **§5.1**, the AG-1…AG-6 re-read at
+  `agora c971fc2` (a before/after table), and new **§6.1**, *the hand-walk happened and the answer is
+  still no*
+- ROADMAP.md — the KCB re-ratification row (title 0.4.1 → 0.5.0, ⬜ → 🚧, the stale "no KCS encoding"
+  claim corrected, five verdicts added); six new Phase F2 rows (the count (ii) re-run ✅ + four ⬜ folds
+  + DR-7's extension); a ⬜ W3 row in the autonomy-posture section
+- scenarios/README.md — the *what that does to the ladder* paragraph, which still read as though §4.2's
+  and §4.3's re-runs were pending
+- CLAUDE.md — the KCB *Current state* bullet (the unchecked fourth mirror)
+
+What was verified rather than inherited, at `agora` `c971fc2` (working tree clean)
+- **DR-12 / DR-13 CLOSED** — `coverage.test.ts` **3 pass / 0 fail** (53 assertions), `evidence.test.ts`
+  **13 pass / 0 fail** (98 assertions), artifact current at `sha256-eb8fdc9c…36dd5`, twelve scenarios.
+  The two entries name what they gate *in the artifact*: `kcs:subscription-firehose` → `KCB §4.2`,
+  `kcs:cross-owner-posture` → `KCB §4.3 (ADR-0013)`. That is what makes them evidence for those counts
+  and not generic greens.
+- **AG-1 stands** — `registry/src/crawl.ts` still exports `KCB_MANIFEST_PATH` and `manifestUrl()` builds
+  only it; `/.well-known/agent-card.json` appears only as a provider endpoint value, never as a crawl target.
+- **AG-2 stands** — `Capability` = `{name, effect?, inputs?, outputs?, cost?, endpoint?, provider?, model?,
+  modality?, methods?}`, no `version`; `KnowledgePort`/`MediaPort`/`EntityPort` carry no `schema_id`.
+- **AG-3 two-thirds closed** — `IssuedGrant` now carries `issuer` (inside the signature) and `budget_unit`.
+  The granted major is missing because it is 0.5.0 surface and that build is held at 0.4.9.
+- **AG-5 CLOSED, and the reason is a finding about KCB** — `SPEC_VERSIONS.kcb` moved 0.4.6 → 0.4.9 and
+  0.5.0 is a *declared* lag with a written reason: a pre-1.0 minor is breaking under that build's own
+  `isCompatibleKcbVersion`, so advancing would make every 0.4.x peer unreadable. That is §7.2's new
+  reader obligation met by **declining to move** — a conformant response, not neglect.
+
+The register, and it is the deliverable: seven items, **all unowned in this repo and every other** —
+ADR-0014's clause (a precondition of counts **(ii) and (iii)**, not one), MT-1, V-9+V-11,
+**V-10+BP-8+AP-9 as one §7.2/§7.3g edit**, BP-7, DR-7's encoding extension (downstream), W3 (external).
+
+The re-order: **the ordering 2–6 does not move**, re-derived across all eleven verdicts with the proof
+and the next-move trigger stated per row. One thing genuinely changed: **rows 5 and 6 are now coupled** —
+KMI's remainder strictly contains KCB count (i) (the MT-1 fold + the media-transform re-run are KCB's
+work), so any promotion argument for KMI is partly one for KCB's count (i).
+
+Gates: all five guards green (doc-integrity OK / doc-links 0 dead vs 0 on main / tasklist-categories OK /
+schemas OK / registry OK); `git diff --name-only main | .chief/verify.sh --run` → verify-test
+**30 passed / 0 failed**, "all selected gates green".
+
+## Learnings for future iterations
+
+- **A "write it down" story is where you re-check the claims you are about to write down.** Two of the
+  six AG findings had moved since the 2026-08-25 read and nobody had looked; had this iteration copied
+  the table forward, koine's record would have gone on saying *four versions stale, reason unwritten*
+  about a register that now declares its lag properly. The generic form: **when a doc quotes another
+  repo at a sha, re-take it at the current sha before repeating it.**
+- **A closed finding can be more informative than an open one.** AG-5 looked like bookkeeping; the reason
+  written into its fix says the reference implementation *cannot* advance to KCB 0.5.0 without making the
+  exact change §7.2's fold asks of a reader. Read what a downstream fix says, not just that it happened.
+- **`agora` is read-only from here (ADR-0001).** Reading source and *running* its gates is right;
+  editing anything there is not, and the AG findings are deliberately reported in koine, never filed there.
+  `bun test <path>` needs the path to contain `.test.` — `console/src/live/evidence.test.ts` is the
+  evidence gate, not `console/src/kcs/…`.
+- **The evidence artifact's per-scenario `gates` field is the thing that makes a green citable.** It names
+  the spec section the encoding was written for. A green with the wrong `gates` value is DR-4's defect
+  (`kcs:kmi-otio-roundtrip`); a green with the right one is still only a precondition.
+- **When a re-derivation concludes "unchanged", publish the derivation anyway.** The page's own idiom is
+  *"the ordering below is unchanged, and that is a claim worth checking rather than assuming"* — a table
+  with a per-row *what would move this* column is more useful than a re-ordered list would have been, and
+  it is what surfaced the KMI/KCB coupling.
