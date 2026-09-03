@@ -16,8 +16,8 @@
     {
       "id": "US-1",
       "title": "Every document is reachable, banner-stamped, and in the right place",
-      "passes": false,
-      "notes": null,
+      "passes": true,
+      "notes": "doc-integrity green (58 md files, 1462 relative links checked, 0 dead; all 3 status tables match headers); doc-links ratchet 0 dead vs 0 on main; .chief/verify.sh --run docs/README.md: all selected gates green. Measured before editing: 0 dead links, 19/19 docs files banner-stamped, 18/18 docs files already linked from docs/README.md — so US-1 was already met on ACs 1-3 and the real gap was AC4. Added to docs/README.md a DECLARED EXCEPTION for the six document-bearing directories outside docs/ (specs, scenarios, decisions, registry, schemas, policy) with the reason stated once, plus a table of the standard’s seven directories saying which koine has and why the other four are absent. Corrected the map’s own claim from “not linked here” to “not reachable from here”, since 38 markdown documents live outside docs/. Deliberately did NOT restate the ADR table (decisions/README.md stays its one home).",
       "acceptanceCriteria": [
         "Dead internal links are repaired or the target is archived with a pointer. A link to a document that no longer exists is worse than no link: it asserts the document is current.",
         "Every `docs/` file carries a `Status · Updated · Owner` banner. Where a doc is stale rather than current, the banner is where that gets SAID — `Status: Superseded` with what replaced it beats a silent edit.",
