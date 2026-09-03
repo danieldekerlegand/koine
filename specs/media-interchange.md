@@ -2,7 +2,7 @@
 
 **Spec version:** 0.3.5
 **Status:** Candidate
-**Last updated:** 2026-08-26
+**Last updated:** 2026-09-03
 **Applies to:** media authorities (producer/authority for assets + timelines), media producers of
 any modality, and media consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP) for the `asset` id, `source_world`, and
@@ -832,6 +832,36 @@ reads as a **re-run of Steps 8–10 against the folded text**. The outstanding K
 **Pressure test** is unaffected and does not move. See that scenario's *Re-ratification — what this
 pass gates* section.
 
+**That re-run has now been walked — by hand, on 2026-09-03 — and this count does NOT close.**
+Steps 8–10 were read against the folded text of §2 and §7.1 rather than replayed
+(`kcs:multi-authority` came back `green` over six blocking deltas, **DR-8**). **Steps 8 and 9 flip**:
+Step 8 holds as the regression set — (a)'s byte-stable id, (c)'s verify-and-reject and (d)'s refusal
+to make a copy a §3 lineage edge all survive re-attack — and Step 9, the step **MA-5** broke, now
+walks, because §2's optional `license`/`egress` give (e)'s gate the operand it lacked, (d)'s narrow
+carve-out lets the governing policy travel *carried* rather than synthesized, and (e)'s
+not-served-onward rule closes laundering-by-retention **at the retainer**. **Step 10 does not flip**,
+and the reason is a new delta, **MA-12** (Med, carrier). (f)'s substance holds — a decommissioned
+store still invalidates no id, envelope, lineage edge, timeline or grant — and MA-10's fold is the
+right answer, but **the answer it requires has no wire to arrive on**: KCB §4 types `fetch` as *"a CAS
+GET by `asset` id"* with no response vocabulary, §7 of this spec defines *"the payloads, not the
+pipe"* and mints no field, enum or envelope for any of the three answers, and KCB cites §7.1(f)
+nowhere — so the *inherit-by-citation* half of what the dispositions record classes as a **two-spec**
+delta was never written. Worse, KCB §4.2f independently calls a **rate-limited refusal** a *pending
+fetch*, so a **fourth** state shares the one word (f) uses for its default, on the same verb. Two
+conformant implementations therefore cannot interoperate on the distinction, which is the exact
+consequence MA-10 was folded to remove — MA-8's class of break (*a clause asserted with no carrier*),
+one plane over, where MA-8's fold could not reach. The fold MA-12 asks for is additive and named in
+the scenario: give the three answers a carrier on the verb that must deliver them, with **absent
+reading *pending*** and never *not expected*, and have KCB §4 cite §7.1(f) as the clause that defines
+their meaning. No `asset` id moves, no envelope field is added, and a single-store deployment is
+unaffected. **DEFER-C is unmoved** — MA-12 asks only that the answer (f) already requires be
+*expressible*, not for a durability mandate, a minimum replica count, a retention obligation or a
+designated durable holder. **Nothing else about this spec's status moves.** Count (ii) — the
+[`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) re-run — is **KCB's**
+work, untouched by this walk and unmoved, so **KMI is not promotable on this pass and would not have
+been on a clean one**: clearing one of two counts is not a promotion. The walk is recorded in that
+scenario's *Re-run — Steps 1–10 walked by hand against the folded text (2026-09-03)* section.
+
 ---
 
 ## 8. Mapping (by role)
@@ -929,6 +959,24 @@ Neither closes a count, and one carries a caveat an owner must read before citin
 
 ## Changelog
 
+- **Editorial** (2026-09-03) — **count (i) was re-run, and it does not close.** Steps 8–10 of
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) were walked **by hand**
+  against the folded §2 and §7.1 — not replayed, because `kcs:multi-authority` returns `green` over
+  the deltas it predates (**DR-8**). **Steps 8 and 9 flip**: the regression set holds and **MA-5**, the
+  blocking delta 0.3.5 folded, does not reproduce — (e)'s gate has its operand, the policy travels
+  carried rather than synthesized, and a copy whose policy did not travel is not served onward.
+  **Step 10 does not flip.** MA-10's three-valued answer is the right fold and (f)'s substance is
+  intact, but the answer has **no carrier on the wire**: KCB §4's `fetch` defines no response
+  vocabulary, §7 here defines the payloads and not the pipe, KCB cites §7.1(f) nowhere so the
+  inherit-by-citation half of a two-spec delta was never written, and KCB §4.2f already calls a
+  rate-limited refusal a *pending fetch* — a fourth state sharing (f)'s default word on the same verb.
+  Recorded as new delta **MA-12** (Med, carrier; KCB §4 + KMI §7.1(f)), with the additive fold named
+  and **DEFER-C explicitly unmoved**. **No version moves and no clause moves**: this entry and §7.1's
+  closing paragraph are the whole of the edit — no `asset` id, envelope field, lineage relation, media
+  type, timeline shape or `fetch` grant changes, and no `schemas/*.json` is touched. **No count
+  closes** — count (i) stays open, now waiting on MA-12's fold rather than on the re-run, and count
+  (ii) (the [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) re-run) is
+  KCB's work, untouched and unmoved. **KMI stays Candidate and is not promotable.**
 - **0.3.5** (2026-08-26) — **The federation fold, media half.** Folds the two deltas
   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the ADR-0012
   cross-authority break test §7.1 names as this spec's second re-ratification count — recorded

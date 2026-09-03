@@ -156,6 +156,22 @@ So the finding is recorded here, and the clause lands where it re-enters validat
 Neither count moves for this record and **no count closes**: KCB stays **Candidate** on all five,
 exactly as it did before this was found.
 
+**Amendment (2026-09-03) — count (iii) was re-run, and it reproduced this finding as its blocker.**
+The Steps 5–7 re-run named above was walked by hand
+([`89`](../tasks/chief/89-the-re-run-three-specs-wait-on.json), recorded in that scenario's *Re-run —
+Steps 1–10 walked by hand against the folded text* section). Steps 6 and 7 flip and MA-6, MA-8 and
+MA-9 all hold under re-attack, but **Step 5 does not flip**, on precisely this clause: a stale
+attribution of `compose 1.4.0` and a fresh, deprecation-marked one — same provider KINP id, same
+`(name, version)`, same `schema_id` — are required by §3.1(d)'s converse to come back as **one** entry
+whose marking is undefined, §3's *rank a deprecated entry below a non-deprecated one* has nothing to
+read, and §3.1(e) cannot fire because the converse removed the visible disagreement. Verified against
+the text rather than inferred: no deprecation field exists on a §2 capability entry or in §3's
+response shape. **The decision is unchanged and is not reopened** — this record predicted the count
+the clause would land on, and the walk confirmed it from the other direction. What changes is only
+the shape of count (iii): it now reads *write this ADR's four-part clause, then re-run Steps 5–7*,
+and it remains **unowned**. **Still no spec version moves and no count closes**; KCB stays
+**Candidate** on all five and is not promotable.
+
 ---
 
 ## Consequences

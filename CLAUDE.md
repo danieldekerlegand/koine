@@ -300,8 +300,15 @@ vocabulary.
   and write, the response shape is emitted only by a federating deployment, and §7.1's digest and
   §7.2's compatibility table are undisturbed. Bounded on purpose: no token format/issuance/rotation
   or issuer-discovery protocol (§5's own boundary), and §3.1(b) bounds a **query**, not a topology.
-  **Stays candidate**; the §3.1 count is now a re-run of Steps 5–7 against the folded text and the
-  other four counts are restated, none moved. 0.5.0 (**minor** — the one KCB had left, and the same
+  **Stays candidate**; the §3.1 count became a re-run of Steps 5–7 against the folded text, and that
+  re-run was **walked by hand on 2026-09-03 and did not close it**: Steps 6/7 flip and MA-6/MA-8/MA-9
+  all hold under re-attack, but **Step 5 breaks on ADR-0014's decided-but-unwritten clause** — §7.3's
+  deprecated marking has no carrier in §2/§3 and §3.1(d)'s converse merges a stale and a fresh
+  attribution into one entry whose marking is undefined, exactly the count ADR-0014 said it would land
+  with. Count (iii) now reads *write ADR-0014's four-part clause, then re-run Steps 5–7*; the other
+  four counts are restated, none moved, and **KCB is not promoted** — clearing one of five is not a
+  promotion. The walk moved **no version and no clause**: a gate paragraph and an Editorial changelog
+  entry only. 0.5.0 (**minor** — the one KCB had left, and the same
   one §2.2's removal was declared against) is **the capability-versioning fold**, folding the deltas
   of count (ii), the §7.5 break-test `scenarios/e2e-live-schema-mutation.md` (V-1…V-8, blocking
   V-2/V-4/V-5/V-7). §7's *model* was never in question; its **perimeter** was. Seven fold and one
@@ -403,7 +410,17 @@ vocabulary.
   construction, while these fields govern **bytes** at `fetch` time — and **no schema twin changes**,
   since none models the §2 envelope. Deliberately unwritten: no minimum replica count, no retention
   obligation, no durability guarantee, and no designated durable holder (DEFER-C). **Stays
-  candidate**; the §7.1 count is now a re-run of Steps 8–10 against the folded text.
+  candidate**; the §7.1 count became a re-run of Steps 8–10 against the folded text, and that re-run
+  was **walked by hand on 2026-09-03 and did not close it**: Steps 8/9 flip and **MA-5 does not
+  reproduce** — §2's `license`/`egress` give §7.1(e)'s gate its operand and (d)/(e) close
+  laundering-by-retention at the retainer — but **Step 10 breaks on new delta MA-12**: §7.1(f)'s three
+  answers have no carrier on the wire, since KCB §4's `fetch` defines no response vocabulary, §7 here
+  defines *the payloads, not the pipe*, KCB cites §7.1(f) nowhere, and KCB §4.2f already spends
+  *pending fetch* on a fourth state (held-but-rate-limited). Count (i) now reads *fold MA-12 (a
+  two-spec carrier fold, KCB §4 + KMI §7.1(f), additive; no `asset` id moves and **DEFER-C is
+  unmoved**), then re-run Steps 8–10*; count (ii) is KCB's work, untouched, so **KMI is not promoted**
+  and would not have been on a clean pass. The walk moved **no version and no clause**: a gate
+  paragraph and an Editorial changelog entry only.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output

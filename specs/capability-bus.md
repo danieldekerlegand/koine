@@ -2,7 +2,7 @@
 
 **Spec version:** 0.5.0
 **Status:** Candidate
-**Last updated:** 2026-08-26
+**Last updated:** 2026-09-03
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
 capability consumers (most participants are both provider and consumer).
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for identifiers;
@@ -744,6 +744,37 @@ re-run, §4.2's subscription-firehose re-run, and §4.3's cross-owner-posture re
 **none moves**; in particular
 0.5.0 stays spoken for by §2.2's standalone-manifest removal, which is why this fold is a patch. See
 that scenario's *Re-ratification — what this pass gates* section.
+
+**That re-run has now been walked — by hand, on 2026-09-03 — and this count does NOT close.**
+Steps 5–7 were read against the folded text of §2, §3, §3.1 and §5 rather than replayed
+(`kcs:multi-authority` came back `green` over six blocking deltas, **DR-8**; a green encoding is
+evidence about the encoding). **Steps 6 and 7 flip** — §3.1(c)'s attribution reaches the prefix
+question with KINP §3.4 answering *published where*, and §3.1's addresses compose with §5's
+issuer-named grant so a peered address is authorizable or refused for a stated reason rather than
+silently. Inside **Step 5** all three of the deltas this fold was written for hold: MA-9(i)'s
+query-id-and-hop-count horizon terminates both the mutual and the three-way re-forward, MA-9(ii)'s
+de-duplication converse returns **one** entry with **both** `served_by` attributions (with the
+declared residual that `schema_id` is optional, so the conservative default returns both
+unreconciled), and MA-8's three carriers — per-entry `served_by`, per-entry `observed_at`,
+result-level `incomplete[]` — exist for the three clauses §3.1 had asserted without one.
+**Step 5 nevertheless breaks, on a clause this repo has already decided and not yet written.**
+[ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) (Accepted 2026-08-26)
+records that §7.3's **deprecated marking and its removal version have no carrier** in §2's manifest
+or §3's `find` response, and that §3.1(d)'s converse keys on
+`(provider KINP id, (name, version), schema_id)` — **none of which a marking moves**. Re-walked, it
+reproduces exactly: a stale attribution and a fresh, deprecation-marked one of the same
+`compose 1.4.0` MUST be returned as **one** entry whose marking is undefined, §3's *rank a deprecated
+entry below a non-deprecated one* has nothing to read, and §3.1(e) **cannot fire** because the
+converse has just removed the visible disagreement. Verified against the text, not inferred: no
+deprecation field exists on a §2 capability entry or in §3's response shape. ADR-0014's own
+disposition says the clause *"lands with counts (ii) and (iii)"* — **count (iii) is this walk** — and
+its four parts (a carrier for the marking; a registry MUST NOT synthesize a value for a field outside
+the merge key; where the field is a gate the restriction wins; none of it licenses reconciling two
+authorities) are the fold this count is now waiting on. **Nothing else about this spec's status
+moves.** The other four counts are untouched by this walk and remain open, so **KCB is not
+promotable on it and would not have been on a clean one** — clearing one of five is not a promotion.
+The walk is recorded in that scenario's *Re-run — Steps 1–10 walked by hand against the folded text
+(2026-09-03)* section.
 
 ---
 
@@ -1916,6 +1947,21 @@ most important thing an owner citing this run must understand:
 
 ## Changelog
 
+- **Editorial** (2026-09-03) — **count (iii) was re-run, and it does not close.** Steps 5–7 of
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) were walked **by hand**
+  against the folded text of §2/§3/§3.1/§5 — not replayed, because `kcs:multi-authority` returns
+  `green` over the deltas it predates (**DR-8**). **Steps 6 and 7 flip**; **Step 5 does not**, and it
+  breaks on exactly the clause [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)
+  decided on 2026-08-26 and deliberately left unwritten: §7.3's deprecated marking has **no carrier**
+  in §2 or §3, and §3.1(d)'s de-duplication converse merges a stale and a fresh attribution into one
+  entry whose marking is undefined, with §3.1(e) unable to fire. MA-6, MA-8 and MA-9 — the three
+  deltas 0.4.9 folded — **all hold** under re-attack; the break is the seam finding, arriving on the
+  count ADR-0014 said it would land with. **No version moves and no clause moves**: this entry and
+  §3.1's closing paragraph are the whole of the edit. **No count closes** — count (iii) stays open,
+  now waiting on ADR-0014's fold rather than on the re-run, and counts (i), (ii), (iv) and (v) are
+  untouched and unmoved, so **KCB stays Candidate and is not promotable**. The same walk found one
+  delta against KMI (**MA-12**, KMI §7.1(f)'s three answers have no carrier on KCB §4's `fetch`);
+  it is recorded there and against §4 in the scenario, and it closes nothing here either.
 - **Editorial** (2026-08-26) — **the two 2026-08-26 folds read against each other.** 0.4.9 (the
   federation fold) and 0.5.0 (the capability-versioning fold) landed in this spec on the same day
   from two tasklists, and a capability advertised across an authority boundary is governed by both.
