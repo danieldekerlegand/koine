@@ -26,7 +26,17 @@
         "The 0.3.0 determinism fold (delta Q: `structure_matches` and the stability rules it carries) is re-validated against the existing scenario, with the `structure_matches` clause HAND-walked because DR-10 makes a machine replay of it impossible.",
         "The rest of the pass may lean on the running encoding, and the record says which parts were replayed and which were hand-walked. Mixing the two silently is how a green replay gets read as a full verdict — the same failure DR-7 and DR-8 record against KCB.",
         "GATES: koine's own checks green."
-      ]
+      ],
+      "diffSize": {
+        "files": 7,
+        "lines": 401,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": true
+      }
     },
     {
       "id": "US-2",
@@ -38,7 +48,25 @@
         "DR-10 is recorded in `docs/reference/promotability.md` as DOWNSTREAM work with an owner named or explicitly unowned. It must not be closed here by editing the downstream vocabulary from this repo — koine specifies, and the vocabulary lives with its implementation.",
         "IF the pass is not clean, the status does not move and the blocker is named. A read-and-confirm that confirms nothing is a legitimate outcome.",
         "GATES: koine's own checks green."
-      ]
+      ],
+      "diffSize": {
+        "files": 7,
+        "lines": 208,
+        "renames": 0,
+        "budget": {
+          "lines": 400,
+          "files": 20
+        },
+        "overBudget": false
+      }
     }
-  ]
+  ],
+  "mergedToMain": "c8c8b87",
+  "gates": {
+    "local": {
+      "state": "passed",
+      "detail": "the project verify hook (verify.sh) ran and exited 0"
+    },
+    "ci": []
+  }
 }
