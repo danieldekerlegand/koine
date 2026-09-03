@@ -465,6 +465,44 @@ vocabulary.
   unmoved**), then re-run Steps 8–10*; count (ii) is KCB's work, untouched, so **KMI is not promoted**
   and would not have been on a clean pass. The walk moved **no version and no clause**: a gate
   paragraph and an Editorial changelog entry only.
+  **Steps 8–10 were then re-attacked the same day, after KCB's four walks, and Step 9 REVERSES.** The
+  re-attack was run for one reason: four of the seven findings those walks returned sit on **one
+  axis** — *an operand deliberately kept outside a content digest, with a declared normative
+  consequence and nothing carrying it*, the axis ADR-0014 named — and §2's `license`/`egress` pair is
+  outside the `asset` id by exactly that design. **Step 8 holds**, and the reason separates the two
+  planes: an operand outside a digest is a hazard for **decisions taken over it**, never for the
+  identity the digest establishes, which is why every finding on this axis is a carrier or perimeter
+  break and none is a model break. **Step 10 re-confirms MA-12** and constrains its fold — the three
+  answers must land as a **named response vocabulary on KCB §4's `fetch`** (V-10's failure mode), be
+  owed **per request** rather than at registration (BP-7's), and never be synthesized (ADR-0014).
+  **Step 9 does not flip** → new delta **MA-13** (High, structural): §7.1(e) bullet 2 is a MUST over
+  *"an asset's `egress`"*, but §2 makes the pair a **per-asserter** envelope field — unsigned, read
+  off its own `prov` — while the `asset` id binds **bytes**, so two participants holding the same
+  bytes hold the same id and may each assert a conformant envelope with a **different** pair, and (d)
+  sources the travelling pair from *"the envelope the requesting participant already holds"*. A holder
+  with only the permissive envelope satisfies bullet 1, breaches bullet 2, and **cannot discover** the
+  restrictive one (no verb returns another envelope for an id; (d) rightly forbids synthesizing one),
+  so MA-5's laundering hole returns through **divergence** rather than absence — with **no
+  misbehaviour at any hop**, which is why §2's attribution answer, sufficient for the *downgrade* case
+  the first walk declared a residual, does not reach it. The fold is **KMI-only, additive and mints no
+  field**: (d) names the **serving** participant's evaluated pair as the one that travels; (e) states
+  that where a holder has more than one conformant pair the **most restrictive governs** and a holder
+  MUST NOT prefer its own (ADR-0013's monotone-restrictive discipline, reused as ADR-0014 reuses it
+  and as KFT §4.2 already takes the most restrictive `egress` across a job's inputs); and bullet 2's
+  MUST is scoped to the pairs a holder holds or has received, leaving the fail-closed default for
+  **absence** unchanged. No `asset` id moves, no envelope field is added, no KGP clause moves, no
+  schema twin is touched, **DEFER-C is unmoved**. Count (i) changed shape a **third** time — *fold
+  MA-12 **and** MA-13, then re-run Steps 8–10 again* — and one inherited premise is corrected: count
+  (i) is KMI's own as a **count** (it gates §7.1 alone) but only half KMI's as **work**, since MA-12's
+  carrier belongs on KCB's verb. **All three conditions on KMI's promotion are now recorded together
+  and NONE holds**: count (i) above; count (ii), the `e2e-media-transform.md` re-run, **walked the
+  same day and not clean** (MT-1) and KCB's work either way; and the fabric-wide **conformance gate**,
+  which fails on two documents for two reasons — **DR-4** (`kcs:kmi-otio-roundtrip` is
+  `kcs:media-transform` re-titled over the same fixture) and **DR-8**/**DR-7**
+  (`kcs:multi-authority` predates the 0.3.5 fold and asserts none of §2's `license`/`egress` or
+  §7.1(d)(e)(f), so it must be **extended**), both downstream and unowned. This walk too moved **no
+  version and no clause** — a §7.1 gate paragraph, two *Pressure test* sentences and an Editorial
+  changelog entry.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
