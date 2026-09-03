@@ -518,8 +518,11 @@ encoding and adds no file to [`.`](README.md), so the set-equality the downstrea
 to against `scenarios/*.md` is **unaffected** — no test breaks by this section existing. What *is*
 owed downstream is the extension itself: `kcs:live-schema-mutation` asserts assertions 1–10 above and
 must come to assert **F1–F13** before a re-run can discharge KCB's §7.5 count. It is downstream work
-under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and it is **unowned** — the same
-status **DR-11/DR-12/DR-13** record for the other artefact gaps. Until it lands, a green
+under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and it is **unowned** — and as of
+**2026-09-03** it is the *only* artefact gap left on this side, since **DR-11, DR-12 and DR-13 are
+closed** (all three encoded downstream on 2026-08-26; verified by running the gate at `agora`
+`c971fc2`). Those three were *"no document at all"*; this one is *"a document that predates the
+fold"*, which **DR-7** is the record of, and it is the harder of the two to notice. Until it lands, a green
 `kcs:live-schema-mutation` remains evidence for what it encodes and for nothing else.
 
 ---
@@ -718,7 +721,7 @@ is sound and its *perimeter* is not, and the perimeter is repairable additively.
 > fixes. Instance-free, role-scoped, and it **promotes nothing**.
 
 **Run of 2026-08-24** · encoding `kcs:live-schema-mutation` · KCS 0.3.0 · evidence
-`sha256-2d9e6c43…c17bb3`, verified in
+`sha256-2d9e6c43…c17bb3` **(superseded 2026-08-26 by `sha256-eb8fdc9c…36dd5`, twelve scenarios — this scenario's own per-scenario entry is byte-identical in it, checked 2026-09-03)**, verified in
 [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
 
 | | |

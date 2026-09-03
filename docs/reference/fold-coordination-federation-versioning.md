@@ -186,7 +186,11 @@ short form:
   unfolded delta (**DR-7**). It must be **extended** to the scenario's new **F1–F13** set before a
   re-run asserts anything about the fold.
 - **Counts (iv) and (v) fail the same gate with no encoding at all** (**DR-12**, **DR-13**), so a
-  clean re-run of either would be necessary and not sufficient.
+  clean re-run of either would be necessary and not sufficient. *(Superseded 2026-09-03: both were
+  encoded downstream at `agora` `378fd3c` on 2026-08-26 and ran `green`/`partial-live`; DR-12 and
+  DR-13 are **closed**, and (iv) and (v) are open on their re-runs alone. The bullet above is left
+  standing as what this read found on its date. **The conclusion does not move** — KCB is still not
+  promotable, on five counts and on DR-7, which is untouched.)*
 - **Every one of the five re-runs is unowned**, in this repo and in every other. That is the honest
   state, and it is recorded rather than parked against a tasklist that would make it look scheduled.
 

@@ -1426,7 +1426,16 @@ multimodal pass's audio stressor is listed above as *"a media producer's audio L
 is therefore not evidence for them. Read the two tokens the way §3.3 and §8.1 are read above — new
 normative surface no scenario has walked — and note that neither may be cited in a re-ratification
 until one does. A scenario leg would be the way to change that; none is opened here, because a token
-in a closed vocabulary cannot break a manifest that does not name it.
+in a closed vocabulary cannot break a manifest that does not name it. **Still true on 2026-09-03, and
+the surrounding facts moved:** the three named consumers were re-checked at named shas
+([`../docs/reference/generative-audio-modalities-downstream.md`](../docs/reference/generative-audio-modalities-downstream.md)
+§8) and four of that page's six findings are **discharged downstream** — both tokens are mirrored
+verbatim in `formant` with its `KFT_VERSION` moved to 0.7.0, and `agora`'s vendored job schema and
+provider refuse an audio job **`out-of-envelope`** rather than **`invalid`**, which was the one place
+a vocabulary lag produced a wrong answer. The fifth is **open and owned** under a dated downstream
+deferral, and the sixth — *no pass walks an audio job* — is **koine's own and unowned**. So the rows
+are exercised by *implementations* and still not by a *pass*, and it is the pass a re-ratification
+would need.
 
 **Downstream evidence (2026-08-24) — the gate fired, and the suite is a version behind.** The KCS
 encodings of the three end-to-end passes were run over real MCP/A2A links and all three came back
@@ -1442,7 +1451,9 @@ re-ratification:
   across the tier boundary; **FT-D** closed the same hole on the eval path; and **FT-F** refused
   `dpo` × `text-to-image` **at admission**, before compute was provisioned. A gate that has never
   refused anything is a number in a manifest; these five are the record that this one is not.
-- **The suite pins KFT 0.5.0 (DR-5).** Nothing in it asserts over **§3.3**'s conversion mapping —
+- **The suite pinned KFT 0.5.0 at the recorded run (DR-5).** *(It pins **0.7.0** today —
+  `agora/schemas/src/versions.ts`, checked 2026-09-03 — so DR-5's version is stale while its substance
+  below is not.)* Nothing in it asserts over **§3.3**'s conversion mapping —
   whose conformance criterion is the round-trip of §3.3.4 — or over **§8.1**'s six refusal grades
   and `route_to[]`: every refusal above is the ungraded KCS `refused` predicate, with no reason
   class attached. This does **not** open a new gate; it confirms from the downstream side exactly
@@ -1455,26 +1466,54 @@ re-ratification:
   a recorded provider. That is still the side the gate lives on, so it is worth having, but it is
   not the claim *a live provider was refused*. This closes by adoption — a cast change, not a
   document change — and blocks nothing here.
-- **The second gate has no encoding at all (DR-11).**
-  [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) is koine's tenth
-  scenario against a downstream set of nine, written after that set was frozen, so **every clause
-  0.6.0 folded — §3.4's `resume`, §4.2's aggregate over it, §4.3's union, §5.4's bind-at-publication,
-  §5.2's `continues`, §6's join rule, §7's remainder — has no machine-replayable document citing
-  it**, and neither do FT-R…FT-V. Under [the ratification gate](README.md#the-ratification-gate) a
-  clean re-run of that leg is therefore *necessary but not sufficient*: the encoding is downstream
-  work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**. It adds
-  no third gate — it qualifies the second — and the first gate is unaffected, since
-  `kcs:producer-exhaust-finetune` exists and ran.
+- **The second gate's encoding exists — DR-11 is CLOSED (2026-08-26).** This bullet read *"the second
+  gate has no encoding at all"* until **2026-09-03**.
+  [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) was koine's tenth
+  scenario against a downstream set of nine, and it was encoded at `agora` `378fd3c` on **2026-08-26
+  12:30:18** as `console/src/kcs/scenarios/resume-checkpoint.ts`, in the same commit that regenerated
+  the evidence artifact. It walks this leg's seven steps **against the folded 0.6.0 text** and ran
+  **`green`** / `partial-live` (2 of 4 slots live). Verified by **running** the downstream gates at
+  `agora` `main` = `c971fc2`, not by reading a status line
+  ([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+  §6.4). **The artefact condition of [the ratification gate](README.md#the-ratification-gate) is met
+  for both of KFT's counts.** Two things it does not do. It does not promote KFT: both counts were
+  walked on 2026-09-03 and neither closed. And its `green` is not a verdict on the leg — the encoding
+  asserts only what koine has **folded**, names three properties it leaves unasserted for want of a
+  KCS §5 predicate (FT-T's `continues` edge, FT-U's join rule, FT-V's chain arithmetic), and reaches
+  neither **FT-X** nor **FT-Y**, both of which are perimeter breaks in KMI §2 and KCB §4.2. That is
+  **DR-7**/**DR-8**'s hazard on a third spec.
 
 ---
 
 ## Changelog
 
+- **Editorial** (2026-09-03, third entry this day) — **the artefact gate is met, and KFT is still not
+  promotable.** **DR-11 is closed**: the second gate's leg was encoded downstream at `agora`
+  `378fd3c` on 2026-08-26 12:30:18 as `resume-checkpoint.ts` — forty-nine minutes after the koine
+  document recording it as missing was last written — and koine did not learn for a week. Re-taken on
+  2026-09-03 by **running** the gates at `agora` `main` = `c971fc2`: `coverage.test.ts` 3 passed
+  (`KOINE_SCENARIOS.length === 12`, set-equal to `scenarios/*.md`, 0 skipped), `evidence.test.ts` 13
+  passed with the artifact current at `sha256-eb8fdc9c…36dd5` (twelve scenarios, 26 of 44 slots live,
+  `partial-live`). `kcs:resume-checkpoint` itself came back **`green`** — over a leg the same day's
+  hand-walk found **not clean**, which is **DR-7**/**DR-8**'s hazard reaching a third spec and is why
+  the *Pressure test* bullet now states what that encoding does **not** assert. Two consequential
+  corrections ride with it: the gate (ii) entry below says *"no replay available"* and that was
+  **false when written** (the walk's verdict is unaffected — the replay corroborates the three flips
+  and could not have produced FT-X or FT-Y); and **DR-5**'s *"the suite pins KFT 0.5.0"* names a
+  version that has since moved to **0.7.0**, its substance unchanged. **What blocks KFT is unchanged
+  and is entirely koine-side**: gate (i) open on **FT-W**, gate (ii) open on **FT-X** and **FT-Y** —
+  three additive KFT-only folds, FT-W and FT-X in one §4.1/§4.2/§4.3 edit and FT-Y in §5.2/§6 —
+  followed by two re-runs, plus the reopened dependency-pin precondition on this spec's header. All
+  unowned. **No version moves and no clause moves**: §2–§7,
+  [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json) and
+  [`../registry/enums/modality.tsv`](../registry/enums/modality.tsv) are byte-unchanged; the edit is
+  two *Pressure test* bullets and this entry.
 - **Editorial** (2026-09-03) — **Gate (ii) was walked, and it does not close.** The
   [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) re-run 0.6.0 added
   as this spec's second count was executed the same day as gate (i): the six sections it names —
   §3.4, §4.2, §4.3, §5.4, §6, §7 — read **cold** against `resume`-carrying jobs, by hand, with **no
-  replay available** (this leg has no KCS encoding, **DR-11**), and against the plane text those
+  replay available** *(corrected the same day: one **was** available and green — see the third entry
+  above; the verdict does not move)*, and against the plane text those
   clauses cite today. **FT-R, FT-T and FT-V flip** — the `resume` slot and its schema twin, the
   `continues` registry row with its two disclaimers, the remainder estimate against a
   chain-cumulative ceiling — and **Steps 1 and 7 hold**, including *no new plane, artifact kind,

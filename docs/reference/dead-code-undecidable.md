@@ -106,11 +106,13 @@ docs/reference/kcs-encoding-gate-verification.md  (+ 4 scenarios)
 $ .chief/verify.sh --list-gates | grep -c scenario     # 0 — no gate covers scenarios/ as scenarios
 ```
 
-`scenarios/README.md`'s **KCS encoding** column records that **nine of twelve** have an
-encoding built and run downstream and **three do not** (findings DR-11, DR-12, DR-13, all
-unowned). A static sweep over this tree cannot tell those three apart from dead scaffolding:
-both look identical from here — a Markdown file that no encoding cites. The register of
-record says they are a **pending obligation**, and that register is prose, not a check.
+`scenarios/README.md`'s **KCS encoding** column records that **all twelve** have an encoding built
+and run downstream (*corrected 2026-09-03: it read "nine of twelve … and three do not", findings
+DR-11/DR-12/DR-13; all three were closed downstream on 2026-08-26 and this page, like every other,
+did not learn for a week*). The entry stands unchanged and its point sharpens: a static sweep over
+this tree could not tell an unencoded scenario from dead scaffolding — both look identical from here,
+a Markdown file that no encoding cites — and it equally could not tell an encoded one from either.
+The register of record is prose, not a check, **in both directions**.
 
 **All thirteen stay.** The asymmetry is what makes this entry belong here rather than in
 Class C: the failure is not that a sweep might delete one, it is that a sweep **adding** one

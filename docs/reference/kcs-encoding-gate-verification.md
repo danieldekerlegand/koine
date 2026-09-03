@@ -1,6 +1,6 @@
 # The KCS-encoding gate — what the downstream suite actually delivers
 
-> **Status:** Current · **Updated:** 2026-09-02 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-09-03 · **Owner:** koine · **Informative**
 
 **This document binds no clause.** It is the record of one verification, not a contract. Where it
 and [`../../specs/README.md`](../../specs/README.md#the-ratification-gate) disagree, the spec wins
@@ -134,7 +134,10 @@ closed"* — landed **2026-08-26 12:30:18**. This document's previous revision (
 - `console/src/kcs/scenarios/cross-owner-posture.ts` — DR-13, the twelfth
 
 all three registered in `console/src/kcs/scenarios/index.ts` against their koine sources, and
-`coverage.test.ts` asserts `KOINE_SCENARIOS.length === 12` and **passes**. The gate §6.1 describes
+`coverage.test.ts` asserts `KOINE_SCENARIOS.length === 12` and **passes**. *(That was a read of the
+tree. It was re-taken on 2026-09-03 by **running** both gates at a named sha — see
+[§6.4](#64-executed-verification-2026-09-03-the-encodings-run-and-a-second-staleness), which
+confirms this and finds a second staleness the read did not reach.)* The gate §6.1 describes
 as red is green, and has been since that afternoon.
 
 **So the artefact gate is met for every spec again.** §6.1's "KFT alone loses the artefact gate"
@@ -229,15 +232,95 @@ Consequences, stated as narrowly as §6.1's and §6.2's:
   [`../../ROADMAP.md`](../../ROADMAP.md).
 - **Owner: unowned**, exactly as the tenth and the eleventh. Three encodings now wait on nobody.
 
+## 6.4 Executed verification, 2026-09-03 — the encodings **run**, and a second staleness
+
+§6.0 above was a **read** of the downstream tree: three files exist, they are registered, the
+coverage test is said to pass. This section is the same claim taken again by **running** it, which is
+the discipline [`kgp-projection-gate-verification.md`](kgp-projection-gate-verification.md) had to
+invent when a `passes` flag turned out to be worth nothing — and it found something the read did not.
+
+**Read at a named sha.** `agora` `main` = **`c971fc206a7e3890911911b10c362ac470b41894`**
+(2026-09-03 00:36, working tree clean). The commit that closed the gap is unchanged:
+**`378fd3c1086b9bf2035bd8ad0cdafa76bd1e1c6b`**, *"encode koine's three unencoded pressure tests — the
+console count gate is closed"*, **2026-08-26 12:30:18**.
+
+| Ran | Result |
+|---|---|
+| `npx vitest run console/src/kcs/scenarios/coverage.test.ts` | **3 passed, 0 failed.** `KOINE_SCENARIOS.length === 12`, twelve distinct ids, twelve distinct `source`s, every document parsing at the pinned KCS version, and set-equality against this repo's `scenarios/*.md` with **0 skipped** |
+| `npx vitest run console/src/live/evidence.test.ts` | **13 passed, 0 failed**, printing `console/evidence/kcs-live-run.json is current (sha256-eb8fdc9c…36dd5)` — the committed artifact re-derives to its own address, which is what `--check` exists to say |
+
+So **E1 is met for all twelve scenarios**, and DR-11, DR-12 and DR-13 are closed as §6.0 says.
+
+### The thing the read missed — koine cites a superseded evidence artifact
+
+`378fd3c` did not only add three encodings. It **regenerated the evidence artifact in the same
+commit**, and koine's entire `## Downstream results` corpus — every one of the twelve, written
+2026-08-26 by [`84`](../../tasks/chief/completed/84-record-the-downstream-results.json) — cites the
+one it replaced.
+
+| | Cited across koine | Committed downstream today |
+|---|---|---|
+| `evidence_id` | `sha256-2d9e6c43…c17bb3` | **`sha256-eb8fdc9ce041162db78ef80df42998e25793dc6a20e7ac8974f77d7615236dd5`** |
+| `generated_at` | 2026-08-24T22:00:37.119Z | **2026-08-26T17:26:10.420Z** |
+| scenarios | 9 | **12** |
+| coverage | 19 of 32 slots live (59%) | **26 of 44 live (59%)** |
+| `kcs_version` | 0.3.0 | 0.3.0 — *unchanged, and checked rather than assumed* |
+| `green` / `live_pass` / verdict | true / false / `partial-live` | true / false / **`partial-live`** |
+
+Three consequences, stated narrowly:
+
+- **The three scenarios koine records as *"no encoding, no run"* have both.** `kcs:resume-checkpoint`,
+  `kcs:subscription-firehose` and `kcs:cross-owner-posture` each carry a per-scenario result in the
+  current artifact — `green: true`, `live_pass: false`, verdict `partial-live`, at 2/4, 3/4 and 2/4
+  live slots respectively. Their `## Downstream results` sections in this repo say *none*, and are
+  wrong in the same direction and for the same reason as §6.1–§6.3: the obligation runs
+  downstream-to-upstream and nothing tells koine.
+- **DR-5's qualification is stale in koine's favour and against it at once.** It reads *"the suite
+  pins KFT 0.5.0"*. `agora/schemas/src/versions.ts` pins **KFT 0.7.0** and **KCS 0.3.0** today; the
+  one row deliberately behind is **KCB, a declared lag at 0.4.9** against koine's 0.5.0, recorded in
+  that file's own `DECLARED_LAGS` with the reason (a pre-1.0 minor is breaking by the convention
+  `isCompatibleKcbVersion` enforces) and the condition that ends it. DR-5's *substance* stands —
+  §3.3 and §8.1 still have no encoded assertion — but the version it names does not.
+- **`green` is not a gate verdict, for the fourth time.** `kcs:resume-checkpoint` came back **green**
+  over the very leg this repo hand-walked on 2026-09-03 and found **not clean** (new deltas FT-X and
+  FT-Y, both High). Nothing is wrong with either result: the encoding walks Steps 1–7 against the
+  *folded* text and says in its own module notes which three properties it leaves unasserted for want
+  of a §5 predicate, and neither FT-X nor FT-Y is inside it — both are **perimeter** breaks reached
+  only by reading KMI §2 and KCB §4.2 beside KFT §4. This is **DR-7**/**DR-8**'s hazard on a third
+  spec, and the rule is unchanged: a green encoding is evidence for what it encodes.
+
+### What this corrects in the walk records of 2026-09-03
+
+The gate (ii) walk recorded in [`../../scenarios/kft-resume-checkpoint.md`](../../scenarios/kft-resume-checkpoint.md)
+states *"Replay — nothing"* and cites DR-11 for it. **That was false when written**: a replay existed
+and was green. Corrected in place there, and dated. It does **not** change that walk's verdict or a
+single one of its per-section readings — the hand-walk was the stronger instrument and remains the
+one that found FT-X and FT-Y — but it changes what the walk may *say*, and an evidence table that
+claims no replay was available when one was is exactly the error the DR-7/DR-8 discipline was written
+to prevent.
+
+### What it does not do
+
+It promotes nothing. **KFT is not promotable**: both of its counts were walked on 2026-09-03 and
+**neither closed** — each is now *a fold plus a re-run* (FT-W and FT-X in one §4.1/§4.2/§4.3 edit,
+FT-Y in §5.2/§6), and its dependency-pin precondition has reopened. **KCB is not promotable**: closing
+DR-12 and DR-13 removes the artefact objection from counts (iv) and (v) and leaves all five counts
+open on their own re-runs, with count (ii) still failing on **DR-7** (its encoding predates the fold
+and must be extended, not re-run). The honest statement after this verification is that **no spec in
+the fabric is blocked by a missing encoding any more** — and that this changed nothing about which
+specs are promotable.
+
 ## 7. How to re-run this check
 
 From a checkout of the implementing repo, beside a koine checkout:
 
 ```
 git log --oneline --date=short --format='%h %ad %s' -- console/src/kcs/scenarios console/evidence
-ls console/src/kcs/scenarios/                    # nine encodings + their gates (koine now holds TWELVE scenarios)
+ls console/src/kcs/scenarios/                    # TWELVE encodings + their gates, one per koine scenario (§6.4)
 grep -n "source: 'scenarios/" console/src/kcs/scenarios/index.ts   # must equal koine's scenarios/*.md
-node -e "console.log(require('./console/evidence/kcs-live-run.json').verdict)"
+node -e "const j=require('./console/evidence/kcs-live-run.json');console.log(j.verdict,j.evidence_id,j.scenarios.length)"
+npx vitest run console/src/kcs/scenarios/coverage.test.ts   # the count gate — 12, and set-equal to koine
+npx vitest run console/src/live/evidence.test.ts            # the artifact is current, and says its address
 node console/src/live/evidence.ts --check        # re-runs the suite, compares the content address
 ```
 

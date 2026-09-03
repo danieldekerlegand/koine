@@ -163,3 +163,90 @@ green · `.chief/verify-test.sh`: 30 passed, 0 failed.
 - **`docs/reference/promotability.md` line 3's DR-11 sentence is still the stale one** ("KFT cannot be
   promoted even on a clean re-run until that document is built downstream"). I deliberately left it
   for US-3, whose criterion 3 owns the dated correction. Don't read it as current.
+
+---
+
+## US-3 — the encoding claim re-checked, by running it (2026-09-03)
+
+**What I did.** Took KFT's artefact gate at a **named sha** and by **execution**, not by reading a
+status line — then landed the dated corrections it forced, in koine only.
+
+**1. The artefact gate is met, and DR-11/DR-12/DR-13 are CLOSED.** At `agora` `main` =
+`c971fc206a7e3890911911b10c362ac470b41894` (clean tree): `coverage.test.ts` **3 passed / 0 failed**
+(`KOINE_SCENARIOS.length === 12`, twelve distinct ids and sources, set-equal to koine's
+`scenarios/*.md`, **0 skipped**), `evidence.test.ts` **13 passed / 0 failed**, printing
+`kcs-live-run.json is current (sha256-eb8fdc9c…36dd5)`. All three encodings landed at `agora`
+**`378fd3c`**, 2026-08-26 12:30:18 — forty-nine minutes after koine's gate doc was last written.
+
+**2. The tasklist's own correction was itself incomplete, and this is the finding of the story.**
+`378fd3c` did not only add three encodings: it **regenerated the evidence artifact**. koine's entire
+`## Downstream results` corpus cited `sha256-2d9e6c43…c17bb3` (2026-08-24, **9** scenarios, 19/32
+live) when the artifact of record is `sha256-eb8fdc9c…36dd5` (2026-08-26T17:26:10Z, **12**
+scenarios, 26/44 live, `partial-live`, every scenario `green`). I diffed the nine carried-over
+per-scenario entries old-vs-new: **0 differing, byte-identical** — so every recorded reading stands
+and only the address, date and count moved. Swept across nine scenarios plus the register.
+Third staleness: **DR-5**'s *"the suite pins KFT 0.5.0"* — `agora/schemas/src/versions.ts` pins
+**KFT 0.7.0 / KCS 0.3.0**, with **KCB a DECLARED LAG at 0.4.9** (reason + ending condition recorded
+downstream). DR-5's substance is intact; its version is not.
+
+**3. Criterion 2's IF does not fire — KFT is NOT promoted.** Both re-runs came back not clean
+(US-1 → FT-W, US-2 → FT-X/FT-Y). What blocks KFT is now three additive **KFT-only** folds plus two
+re-runs plus the reopened dependency-pin precondition — all koine-side, all unowned. The
+counterfactual is recorded in `promotability.md`: had either gate been clean, the artefact answer
+would have been the difference, and koine's record would have got it wrong.
+
+**4. US-2's own evidence table was wrong and is corrected, dated.** It said *"Replay — nothing
+(DR-11)"*. A replay existed and came back **`green`**. The verdict does not move: the encoding
+asserts only folded clauses, leaves three of the five deltas explicitly unasserted for want of a KCS
+§5 predicate, and reaches neither FT-X nor FT-Y (perimeter breaks in KMI §2 / KCB §4.2). Recorded as
+**DR-7/DR-8's hazard reaching a third spec** — the third green-over-not-clean.
+
+**5. Audio (criterion 4), verified at named shas instead of left `(reported)`.** New §8 in the
+downstream notice: **AUD-1/2/3 discharged** (`formant` `25c5ab5` — seven tokens in file order,
+`KFT_VERSION = '0.7.0'`, tasklist `38` completed with the *ratified* wording resolved on formant's
+side); **AUD-5 discharged** (`agora` `c971fc2` — both tokens in the vendored enum, audio job refused
+`out-of-envelope` not `invalid`); **AUD-4 open but OWNED** (`lugh` `36f6f09`, dated ADR-0007 deferral
+at KFT 0.4.0 with the adoption task recorded); **AUD-6 open, unowned, koine's own**. No sibling repo
+was written.
+
+**No version and no clause moved.** `specs/fine-tuning.md`'s hunks are all ≥ line 1429 (Pressure test
++ Changelog; §2–§7 end below 1266); `specs/capability-bus.md`'s all ≥ 1936. `schemas/` and
+`registry/` are not in the diff.
+
+**Files changed (24).** `docs/reference/kcs-encoding-gate-verification.md` (new **§6.4**, the executed
+verification); `docs/reference/promotability.md` (the *Two facts* bullet, the KFT and KCB rows, item 3,
+item 6, and a new *three things that would have promoted KFT* paragraph);
+`docs/reference/generative-audio-modalities-downstream.md` (new **§8**); `scenarios/README.md`
+(encoding column ×3, the section heading + legend, the DR index ×3 + a dated note, the Evidence row);
+`scenarios/kft-resume-checkpoint.md`, `scenarios/kcb-subscription-firehose.md`,
+`scenarios/kcb-cross-owner-posture.md` (Downstream results rewritten, DR rows marked CLOSED);
+nine scenarios (artifact supersession); `specs/README.md` (the artefact-gate paragraph);
+`specs/fine-tuning.md` + `specs/capability-bus.md` (Pressure-test bullets + dated Editorial entries);
+`ROADMAP.md`, `CLAUDE.md`, `docs/reference/dead-code-undecidable.md`,
+`docs/reference/federation-fold-dispositions.md`,
+`docs/reference/fold-coordination-federation-versioning.md`.
+
+**Gates.** doc-integrity OK (59 files, 1554 links, 3 status tables match headers) · doc-links 0 dead
+vs 0 on main · tasklist-categories OK (2) · schemas OK (9/278/80/3) · registry OK (29 relations) ·
+`.chief/verify.sh --run <24 changed>`: all selected gates green · `verify-test`: 30 passed, 0 failed.
+
+### Learnings for future iterations
+- **Verify a correction the same way you verify a claim.** The tasklist description carried a
+  correction dated 2026-09-02 that was *right and incomplete*: it checked that three files existed
+  and missed that the same commit replaced the evidence artifact every scenario in this repo cites.
+  A partial correction reads exactly like a complete one.
+- **Run the downstream gate; do not read it.** Both facts that mattered here came from
+  `npx vitest run` and a `node -e` diff of two artifact revisions, not from any prose. The two
+  commands are now in §7 of the gate doc so the next reader does not have to invent them.
+- **koine has no red light for a cross-repo obligation in EITHER direction.** It cannot notice a
+  scenario added without an encoding, and it cannot notice the encoding arriving. The second is the
+  expensive one (a week of six specs recorded as more blocked than they were), and it is now stated
+  in `CLAUDE.md`, `scenarios/README.md` and each affected scenario.
+- **When a register is superseded, prove the readings survived before sweeping the address.** The
+  nine per-scenario entries were byte-identical across the two artifacts — checked with a script, not
+  asserted — which is what made a one-line supersession note honest instead of a rewrite.
+- **For `92` (KCB's four re-runs and KMI's wait):** DR-12 and DR-13 are closed, so counts (iv) and
+  (v) are open on their **re-runs alone** — but **DR-7 is untouched** and is now the only artefact
+  objection in the fabric: `kcs:live-schema-mutation` predates its fold and must be **extended** to
+  the F1–F13 set, ten of which need declared console extensions. Same shape as **DR-8** for KINP.
+  Do not read "the artefact gate is met for all six" as covering that.

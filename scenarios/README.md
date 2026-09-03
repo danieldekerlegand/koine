@@ -26,11 +26,11 @@ what the 2026-08-24 run of it did.
 | [`e2e-finetune.md`](e2e-finetune.md) | KFT ([`../specs/fine-tuning.md`](../specs/fine-tuning.md)) | The seams KFT **adds** on top of the four planes — the KGP egress gate, model-as-entity identity, and weight/export artifact conventions — on two text finetune jobs. | FT-A…H | ✅ **exists** — `kcs:finetune` · agora `console/src/kcs/scenarios/finetune.ts`. Ran 2026-08-24, green; suite pins **KFT 0.5.0** ([DR-5](e2e-finetune.md#findings-from-the-downstream-run)) → [results](e2e-finetune.md#downstream-results) |
 | [`e2e-finetune-multimodal.md`](e2e-finetune-multimodal.md) | KFT, second pass | **Fully-multimodal** finetunes (image-text-to-text, text-to-video) over KMI assets, plus the **multi-provider** topology (a general provider + a specialist provider, routed by the registry). | FT-I…L | ✅ **exists** — `kcs:finetune-multimodal` · agora `console/src/kcs/scenarios/finetune-multimodal.ts`. Ran 2026-08-24, green; both trainer slots stood in ([DR-6](e2e-finetune.md#findings-from-the-downstream-run)) → [results](e2e-finetune-multimodal.md#downstream-results) |
 | [`e2e-producer-exhaust-finetune.md`](e2e-producer-exhaust-finetune.md) | KFT, third pass | A producing **application's own training exhaust** (accepted edits, generations, preference pairs, QA labels) offered as a training set through the thin adapter of [`../decisions/ADR-0008-fabric-producer-adapter.md`](../decisions/ADR-0008-fabric-producer-adapter.md) — a corpus that is neither KGP claims nor image/video/audio bytes, arriving from a producer rather than an authority. | FT-M…Q | ✅ **exists** — `kcs:producer-exhaust-finetune` · agora `console/src/kcs/scenarios/producer-exhaust-finetune.ts`. Ran 2026-08-24, green → [results](e2e-producer-exhaust-finetune.md#downstream-results) |
-| [`kft-resume-checkpoint.md`](kft-resume-checkpoint.md) | KFT §11.3 ([`../specs/fine-tuning.md`](../specs/fine-tuning.md)) | **Resuming an interrupted run** — §6 calls a checkpoint *resumable* and §3 has no slot that can name one, so the FT-C reproducibility anchor stops determining the run and the only slot that accepts the ref is the one no gate reads. Confirms the warm-start half of §11.3 first, then breaks the resume half. | FT-R…V | ⬜ **absent** (*focused pressure leg* — follow-up to `e2e-producer-exhaust-finetune`; **folded into KFT 0.6.0**, and a re-run against the folded text is one of KFT's two gates) — the tenth scenario, landed after the nine were built; **no encoding, no run, no owner** ([DR-11](kft-resume-checkpoint.md#findings-from-the-absence-of-a-downstream-run)), so that gate is unrunnable and KFT fails the conformance gate on that count. It is one of the **two** rows `agora`'s set-equality coverage gate goes red on → [results](kft-resume-checkpoint.md#downstream-results) |
+| [`kft-resume-checkpoint.md`](kft-resume-checkpoint.md) | KFT §11.3 ([`../specs/fine-tuning.md`](../specs/fine-tuning.md)) | **Resuming an interrupted run** — §6 calls a checkpoint *resumable* and §3 has no slot that can name one, so the FT-C reproducibility anchor stops determining the run and the only slot that accepts the ref is the one no gate reads. Confirms the warm-start half of §11.3 first, then breaks the resume half. | FT-R…V | ✅ **exists** (*focused pressure leg* — follow-up to `e2e-producer-exhaust-finetune`; **folded into KFT 0.6.0**, and a re-run against the folded text is one of KFT's two gates) — `kcs:resume-checkpoint` · agora `console/src/kcs/scenarios/resume-checkpoint.ts`, which walks the seven steps against the **folded** text and names three properties it leaves unasserted for want of a §5 predicate. Ran 2026-08-26, **green**, `partial-live` (2/4). **[DR-11](kft-resume-checkpoint.md#findings-from-the-absence-of-a-downstream-run) is CLOSED** — recorded here as absent until 2026-09-02, a week stale. KFT keeps the conformance gate on this count and is still blocked by both of its re-runs → [results](kft-resume-checkpoint.md#downstream-results) |
 | [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md) | KCB §7 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) | **Evolution without a break** — a provider widens, re-prices, mutates-without-bumping, then ships a capability **v2 beside v1** and retires v1, all while a **live subscriber** keeps running. Hunts the one invariant of [ADR-0009](../decisions/ADR-0009-capability-versioning-deprecation.md): *a subscriber never learns of a break by failing.* | V-1…V-8 | ✅ **exists, and must be extended** — `kcs:live-schema-mutation` · agora `console/src/kcs/scenarios/live-schema-mutation.ts`. Ran 2026-08-24 and came back **green over four blocking deltas** ([DR-7](e2e-live-schema-mutation.md#findings-from-the-downstream-run)). Those deltas were **folded at KCB 0.5.0** on 2026-08-26, so the encoding now asserts a subset that predates the fold: the extended set it needs is [**F1–F13**](e2e-live-schema-mutation.md#conformance-case-the-assertions-the-folded-text-requires-kcb-050), ten of thirteen needing declared console extensions (V-8). **Unowned.** → [results](e2e-live-schema-mutation.md#downstream-results) |
 | [`e2e-multi-authority.md`](e2e-multi-authority.md) | KINP §11.1 + KCB §3.1 + KMI §7.1 ([`../specs/identity.md`](../specs/identity.md), [`../specs/capability-bus.md`](../specs/capability-bus.md), [`../specs/media-interchange.md`](../specs/media-interchange.md)) | **Federation without a privileged holder** — two independently built authority domains compose into one fabric: cross-authority `same_as` reconciliation, peering registries, and per-project CAS replication on reference. Hunts the three hazards [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md) names — a firewall bypassed, a peered record that cannot be attributed, a replicated copy that loses identity, provenance or availability. | MA-1…MA-12 | ✅ **exists** — `kcs:multi-authority` · agora `console/src/kcs/scenarios/multi-authority.ts`. Ran 2026-08-24 and came back **green over six blocking deltas**, with every live slot in domain A ([DR-8](e2e-multi-authority.md#findings-from-the-downstream-run), [DR-9](e2e-multi-authority.md#findings-from-the-downstream-run)) → [results](e2e-multi-authority.md#downstream-results) |
-| [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md) | KCB §8.1 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) | **A firehose world drowns its subscriber** — the last open question KCB has. Hunts whether `cost` + spend ceilings (§2.1/§5) reach a *stream* at all, what a saturated subscriber may do other than disconnect, and whether the host §8.1 parks flow control on is even on the path that ADR-0001 routes peer-to-peer. | BP-1…BP-6 | ⬜ **absent** (*focused pressure leg* — follow-up to `e2e-live-schema-mutation`; **folded into KCB 0.4.7**, and a re-run against the folded text is the fourth of KCB's gates) — the **eleventh** scenario, landed 2026-08-26, after the nine were built and two days after they ran; **no encoding, no run, no owner** ([DR-12](kcb-subscription-firehose.md#findings-from-the-absence-of-a-downstream-run)), so §4.2 has no runnable document citing it and KCB is not promotable on that count. It is the **second** row `agora`'s set-equality coverage gate goes red on → [results](kcb-subscription-firehose.md#downstream-results) |
-| [`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md) | KCB §4.3 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) + [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md) | **A caller's autonomy posture crosses an ownership boundary** — the two cross-owner edges of [`../ECOSYSTEM.md`](../ECOSYSTEM.md) §3, walked with a caller whose rule is *nothing a person cannot undo tomorrow runs unattended*. Hunts whether the fabric can state that rule at all, which posture wins when caller and callee disagree, and whether a posture survives a delegated leg to a third owner the caller never sees. | AP-1…AP-8 | ⬜ **absent** (*focused pressure leg* — follow-up to `kcb-subscription-firehose`; **folded into KCB 0.4.8**, and a re-run against the folded text is the fifth of KCB's gates) — the **twelfth** scenario, landed 2026-08-26, after the nine were built and two days after they ran; **no encoding, no run, no owner** ([DR-13](kcb-cross-owner-posture.md#findings-from-the-absence-of-a-downstream-run)), so §4.3 has no runnable document citing it and KCB is not promotable on that count. It is the **third** row `agora`'s set-equality coverage gate goes red on → [results](kcb-cross-owner-posture.md#downstream-results) |
+| [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md) | KCB §8.1 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) | **A firehose world drowns its subscriber** — the last open question KCB has. Hunts whether `cost` + spend ceilings (§2.1/§5) reach a *stream* at all, what a saturated subscriber may do other than disconnect, and whether the host §8.1 parks flow control on is even on the path that ADR-0001 routes peer-to-peer. | BP-1…BP-6 | ✅ **exists** (*focused pressure leg* — follow-up to `e2e-live-schema-mutation`; **folded into KCB 0.4.7**, and a re-run against the folded text is the fourth of KCB's gates) — `kcs:subscription-firehose` · agora `console/src/kcs/scenarios/subscription-firehose.ts`, with the predicates §5 cannot state declared as console extensions (BP-6). Ran 2026-08-26, **green**, `partial-live` (3/4). **[DR-12](kcb-subscription-firehose.md#findings-from-the-absence-of-a-downstream-run) is CLOSED**; §4.2's count is open on its **re-run**, not on a missing artefact → [results](kcb-subscription-firehose.md#downstream-results) |
+| [`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md) | KCB §4.3 ([`../specs/capability-bus.md`](../specs/capability-bus.md)) + [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md) | **A caller's autonomy posture crosses an ownership boundary** — the two cross-owner edges of [`../ECOSYSTEM.md`](../ECOSYSTEM.md) §3, walked with a caller whose rule is *nothing a person cannot undo tomorrow runs unattended*. Hunts whether the fabric can state that rule at all, which posture wins when caller and callee disagree, and whether a posture survives a delegated leg to a third owner the caller never sees. | AP-1…AP-8 | ✅ **exists** (*focused pressure leg* — follow-up to `kcb-subscription-firehose`; **folded into KCB 0.4.8**, and a re-run against the folded text is the fifth of KCB's gates) — `kcs:cross-owner-posture` · agora `console/src/kcs/scenarios/cross-owner-posture.ts`, with AP-1/AP-7's predicates declared as console extensions. Ran 2026-08-26, **green**, `partial-live` (2/4). **[DR-13](kcb-cross-owner-posture.md#findings-from-the-absence-of-a-downstream-run) is CLOSED**; §4.3's count is open on its **re-run** plus ADR-0013's **W3** → [results](kcb-cross-owner-posture.md#downstream-results) |
 | [`kcs-format-stress.md`](kcs-format-stress.md) | KCS ([`../specs/conformance-scenario.md`](../specs/conformance-scenario.md)) | The **scenario format itself** — by trying to encode the other hand-written scenarios above as KCS documents and finding where the format can't express what they need. | M…Q, **R** | ✅ **exists** — `kcs:format-stress` · agora `console/src/kcs/scenarios/format-stress.ts`. Ran 2026-08-24, green — but KCS's artefact is the *attempt* at the nine above, not this run (see below), and that attempt drifted from §5 ([DR-10](kcs-format-stress.md#findings-from-the-downstream-run)). **Re-validated by hand on 2026-09-03 and not clean**: M/N/O/P flip (three corroborated by the run), but the 0.3.0 fold under test only half-flips → new blocking delta **R** ([`structure_matches`'s comparison basis is fixed nowhere](kcs-format-stress.md#findings-from-the-re-validation)), so KCS stays candidate → [results](kcs-format-stress.md#downstream-results) · [re-validation](kcs-format-stress.md#re-validation-kcs-030-walked-2026-09-03) |
 
 ## How a scenario reads
@@ -102,7 +102,7 @@ two. Its *Fold status* section re-reads each finding against the folded specs, a
 *Re-ratification — what this pass gates* carries the per-spec table, what a clean re-run would
 license, and the dated **Resolution**.
 
-## The KCS encodings — nine of twelve exist, and the other three are the ratification tail
+## The KCS encodings — all twelve exist, and none of the six specs is promoted by that
 
 > **Corrected 2026-08-26 by `84-record-the-downstream-results`.** From 2026-08-19 to this date this
 > section and the column above said `planned` nine times while all nine encodings existed. They were
@@ -114,17 +114,30 @@ license, and the dated **Resolution**.
 > Verified against the artifacts rather than a `passes` flag —
 > [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md).
 
-Read the **KCS encoding** column honestly: it says `exists` **nine** times — one of them
+> **Corrected again 2026-09-03.** This section read *"nine of twelve exist, and the other three are
+> the ratification tail"* until today. The three were encoded downstream at `agora` **`378fd3c`** on
+> **2026-08-26 12:30:18** — forty-nine minutes after the koine document that recorded them as missing
+> was last written — and the same commit **regenerated the evidence artifact** to twelve scenarios.
+> koine did not learn for a week. Verified on 2026-09-03 by **running** the two downstream gates at
+> `agora` `main` = `c971fc2`, not by reading a status line
+> ([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+> §6.4). The direction of that error is the mirror of the KGP one: koine believed a deliverable had
+> **not** landed when it had.
+
+Read the **KCS encoding** column honestly: it says `exists` **twelve** times — one of them
 (`kcs:kmi-otio-roundtrip`) marked ⚠️ because a finding records it does not exercise the row it sits
-in, and four more carrying a finding of the kind that qualifies what the run proved — and `absent`
-**three times**. A cell with no finding on it is the only cell that reads clean. Nine of the twelve
-pressure tests in this directory are now documents a participant can be handed as well as prose a
-person walked. The other three — [`kft-resume-checkpoint.md`](kft-resume-checkpoint.md),
-[`kcb-subscription-firehose.md`](kcb-subscription-firehose.md) and
-[`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md) — are the whole of what remains of
-the ratification tail, and since [the ratification gate](../specs/README.md#the-ratification-gate)
-that tail is load-bearing rather than aspirational — no spec reaches `ratified` until its scenario
-is on the other side of it, which today costs **KFT** and **KCB §4.2 / §4.3** and no one else.
+in, and several more carrying a finding of the kind that qualifies what the run proved — and `absent`
+**nowhere**. A cell with no finding on it is the only cell that reads clean. Every pressure test in
+this directory is now a document a participant can be handed as well as prose a person walked.
+
+**What that does to the ladder: nothing, and saying so is the point.** Under
+[the ratification gate](../specs/README.md#the-ratification-gate) an encoding is a **precondition**,
+never a promotion, and every spec that was blocked on one is still blocked on the count the encoding
+was a precondition *of* — KFT on two re-runs that were both walked on 2026-09-03 and neither of which
+closed, KCB §4.2 and §4.3 on their own re-runs (with ADR-0013's **W3** on §4.3). Two qualifications
+survive intact and are the ones a promotion argument now has to answer: **DR-7** (count (ii)'s
+encoding **predates** its fold, so it must be *extended*, not re-run) and **DR-8** (the same for
+`kcs:multi-authority`).
 
 The column's three states mean:
 
@@ -136,18 +149,26 @@ The column's three states mean:
   today**; the state is kept because the next scenario added to this directory starts here.
 - **absent** — no encoding and no owner. A spec whose scenario reads `absent` cannot be ratified and
   has nothing scheduled that would change that; the honest move is to schedule it, not to promote
-  the spec.
+  the spec. **No row reads this today either**, and the state is kept for the same reason `planned`
+  is: the next scenario added here starts at one of the two.
 
-**Why the three `absent` rows are not `planned`.**
+**What the three formerly-`absent` rows cost, and what closed them.**
 [`kft-resume-checkpoint.md`](kft-resume-checkpoint.md) landed with `chief/69`,
 [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md) with `chief/70` and
 [`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md) with `chief/71`, all on 2026-08-26,
-after the nine encodings were built, and nothing owns encoding any of them. The consequence is
-downstream and deliberate: `agora`'s `console/src/kcs/scenarios/coverage.test.ts` asserts
-set-equality between its `KOINE_SCENARIOS` list and this directory's `*.md`, so it goes **red**
-against a koine checkout at this commit and the failure names **all three** prose documents that
-have no encoding (its `KOINE_SCENARIOS.length === 9` assertion is three short of twelve) — which is
-exactly what that gate is for, and is the standing cross-repo obligation of adding a file here.
+after the nine encodings were built. The red light was downstream and deliberate: `agora`'s
+`console/src/kcs/scenarios/coverage.test.ts` asserts set-equality between its `KOINE_SCENARIOS` list
+and this directory's `*.md`, so it went **red** naming **all three**. It went **green** the same
+afternoon at `378fd3c` — twelve entries, twelve distinct sources, `0 skipped` — and stays green
+(3 tests passed, re-run at `agora` `c971fc2`, 2026-09-03).
+
+**The obligation has no red light in koine, in *either* direction, and that is the durable finding.**
+`.chief/verify.sh` checks links, status mirrors, schemas and the registry. It cannot notice a
+scenario added here without an encoding, and it cannot notice the encoding arriving either — the
+second is how this column stayed wrong for a week. Adding a file to `scenarios/` is a cross-repo
+obligation with no local red light; **so is being told one was discharged**, and the only remedy is
+the one this section now models: re-verify against the downstream artifacts on a schedule, by running
+them.
 
 **These two registers must agree, and this one is the register of record.** The **KCS encoding**
 column above is restated in [`../ROADMAP.md`](../ROADMAP.md) **Phase F4**; when the two disagree,
@@ -175,8 +196,10 @@ tracked in [`../ROADMAP.md`](../ROADMAP.md) **Phase F4**, and both are **deliver
 `agora chief/76-run-kcs-over-live-links` (merged `f32508e`) ran the suite over real connections,
 using **delta-N `standin`** fixtures for the thirteen participant slots nobody has adopted yet
 (**DR-1**). Those two tasklists were the only path by which a spec could earn the artefact its
-ratification now requires, which is why Phase F4 sat on the critical path rather than beside it; what
-is left of that path is the three unencoded scenarios.
+ratification now requires, which is why Phase F4 sat on the critical path rather than beside it.
+**That path is now finished**: the remaining three encodings landed at `agora` `378fd3c` on
+2026-08-26 with a regenerated artifact (twelve scenarios, `sha256-eb8fdc9c…36dd5`, 26 of 44 slots
+live). What is left is not artefacts — it is the re-runs the artefacts were a precondition of.
 
 **`kcs-format-stress.md` is the exception, and deliberately so.** Its subject is the format itself,
 so the artefact that exercises KCS's clauses is not a run *of* it — it is the attempt to encode the
@@ -217,7 +240,7 @@ suite-level facts, so no scenario has to restate them:
 
 | | |
 |---|---|
-| Evidence | `sha256-2d9e6c43b36f4aac9c4caafa8baa17cb58dc05be8612dd15b2d24bb6f0c17bb3`, generated **2026-08-24T22:00:37Z**, held downstream at `console/evidence/kcs-live-run.json` and regenerable by one committed command |
+| Evidence | **`sha256-eb8fdc9ce041162db78ef80df42998e25793dc6a20e7ac8974f77d7615236dd5`**, generated **2026-08-26T17:26:10.420Z**, twelve scenarios, 26 of 44 slots live, held downstream at `console/evidence/kcs-live-run.json` and regenerable by one committed command. It **supersedes** `sha256-2d9e6c43…c17bb3` (2026-08-24T22:00:37Z, nine scenarios, 19 of 32 live), which koine cited everywhere until 2026-09-03. All **nine** scenario entries carried over are **byte-identical** between the two — checked, not assumed — so every per-scenario reading recorded in this directory stands; what moved is the address, the date and the count |
 | Verified by | [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md) — read off the artifacts, not off a status line |
 | KCS version | 0.3.0 (as declared by every document — but see **DR-10**) |
 | Scope | **nine** scenarios, **32** participant slots, **19 live** / 13 delta-N stand-in (**59%**) |
@@ -238,6 +261,17 @@ spec holds" is a larger version of the mistake this repo already made once with 
 Each is defined **once**, in the document it bites, in that document's `## Downstream results`
 section. This table is the index, not a second copy.
 
+**Three of the thirteen are closed, and the closure is dated 2026-08-26 — a week before this table
+learned it.** DR-11, DR-12 and DR-13 all said the same thing: a scenario written after the encoding
+set was frozen had no machine-replayable document. `agora` **`378fd3c`** (2026-08-26 12:30:18)
+encoded all three **and regenerated the evidence artifact**, and koine noticed on 2026-09-02, then
+verified it by **running** both downstream gates at `agora` `main` = `c971fc2` on 2026-09-03
+([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+§6.0 and §6.4). **No spec in the fabric is blocked by a missing encoding any more, and no spec was
+promoted by that** — every count that named one of the three is still open on its own re-run. The
+obligation runs downstream-to-upstream and nothing carries it: koine has no red light for a scenario
+arriving without an encoding, and none for the encoding arriving either.
+
 | # | Severity | Where it is defined | In one line |
 |---|---|---|---|
 | DR-1 | Minor | *here* | 13 of 32 participant slots were stand-ins; only one scenario ran fully live |
@@ -250,9 +284,9 @@ section. This table is the index, not a second copy.
 | DR-8 | High | [`e2e-multi-authority.md`](e2e-multi-authority.md#findings-from-the-downstream-run) | `green` over a pass with six blocking deltas open; MA-1…MA-5 and MA-8/MA-9 are replayed but unasserted |
 | DR-9 | Minor | [`e2e-multi-authority.md`](e2e-multi-authority.md#findings-from-the-downstream-run) | Every live slot sits in domain **A** — the federation was tested against a recorded far side |
 | DR-10 | High | [`kcs-format-stress.md`](kcs-format-stress.md#findings-from-the-downstream-run) | The downstream §5 vocabulary drifted from KCS §5 both ways: no `structure_matches`, plus a `media_map_complete` koine does not name |
-| DR-11 | **Blocking** (KFT) | [`kft-resume-checkpoint.md`](kft-resume-checkpoint.md#findings-from-the-absence-of-a-downstream-run) | The tenth scenario has no encoding and no run, so KFT loses the artefact gate |
-| DR-12 | **Blocking** (KCB §4.2) | [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md#findings-from-the-absence-of-a-downstream-run) | The eleventh scenario has no encoding and no run, so KCB loses the artefact gate on its §4.2 count alone |
-| DR-13 | **Blocking** (KCB §4.3) | [`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md#findings-from-the-absence-of-a-downstream-run) | The twelfth scenario has no encoding and no run, so KCB loses the artefact gate on its §4.3 count alone |
+| DR-11 | ~~Blocking~~ **CLOSED 2026-08-26** | [`kft-resume-checkpoint.md`](kft-resume-checkpoint.md#findings-from-the-absence-of-a-downstream-run) | The tenth scenario had no encoding and no run — `resume-checkpoint.ts` landed at `agora` `378fd3c` and ran `green`/`partial-live`; **KFT keeps the artefact gate** and is still blocked by its two open counts |
+| DR-12 | ~~Blocking~~ **CLOSED 2026-08-26** | [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md#findings-from-the-absence-of-a-downstream-run) | Same, for the eleventh — `subscription-firehose.ts` landed in the same commit; KCB's §4.2 count (iv) is open on its **re-run**, not on an artefact |
+| DR-13 | ~~Blocking~~ **CLOSED 2026-08-26** | [`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md#findings-from-the-absence-of-a-downstream-run) | Same, for the twelfth — `cross-owner-posture.ts` likewise; KCB's §4.3 count (v) is open on its **re-run** plus ADR-0013's **W3**, not on an artefact |
 
 #### DR-1 — 59% live, and the stand-ins are not randomly placed
 

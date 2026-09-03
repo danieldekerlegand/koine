@@ -345,31 +345,50 @@ exactly the inputs it was before.
 > KCS encoding, in the shape [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands)
 > fixes. Instance-free, role-scoped, and it **promotes nothing**.
 
-**This scenario has never been run downstream, and has no encoding.** Recorded as a statement
-rather than left blank, because a blank section is indistinguishable from an unread one.
+> **CORRECTED 2026-09-03.** What follows replaced a statement that this scenario *"has never been
+> run downstream, and has no encoding."* That was true when written on 2026-08-26 and was **overtaken
+> the same afternoon**; koine did not learn for a week. The old text is not preserved here because
+> this is the section a ratification gate reads for evidence, and a superseded artifact address is
+> not evidence. The correction itself is written up at
+> [`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+> §6.0 and §6.4, where the old reading is left standing.
 
 | | |
 |---|---|
-| Encoding | **none.** `agora/console/src/kcs/scenarios/` holds nine `KOINE_SCENARIOS` entries and none has `source: 'scenarios/kft-resume-checkpoint.md'` |
-| Runs | **none.** The committed evidence artifact (`sha256-2d9e6c43…c17bb3`, generated 2026-08-24) contains nine scenarios and this is not one of them |
-| Why | This document landed with `chief/69` on **2026-08-26**, a week after the nine encodings were built (`agora chief/75`, merged 2026-08-19) |
+| Encoding | **`console/src/kcs/scenarios/resume-checkpoint.ts`**, registered in `index.ts` with `source: 'scenarios/kft-resume-checkpoint.md'` and `gates: 'KFT §3.4 (fourth pass)'`. It encodes this leg's **seven steps against the folded 0.6.0 text**, and names in its own module notes the three properties it leaves **unasserted** for want of a KCS §5 predicate: FT-T's `continues` edge, FT-U's curve-join rule, and FT-V's chain-cumulative ceiling arithmetic |
+| Run | `kcs:resume-checkpoint` — **`green: true`**, `live_pass: false`, verdict **`partial-live`**, 2 of 4 participants live (`orchestrator:agent:host`, `refkb:agent:resolver`), the specialist trainer and the store answering from delta-N `standin` fixtures, no transport failures |
+| Artifact | `sha256-eb8fdc9ce041162db78ef80df42998e25793dc6a20e7ac8974f77d7615236dd5`, generated **2026-08-26T17:26:10.420Z**, twelve scenarios, 26 of 44 slots live (59%), suite verdict `partial-live`, `kcs_version 0.3.0` |
+| Landed | `agora` **`378fd3c`**, 2026-08-26 12:30:18 — the same commit encoded all three of koine's then-unencoded legs **and regenerated the artifact**. Verified by running both gates at `agora` `main` = **`c971fc2`** on 2026-09-03 |
 
-**The gap has a red light, and it is downstream.** `coverage.test.ts` asserts set-equality between
-`KOINE_SCENARIOS` and this directory's `*.md`, so against a koine checkout at this commit that gate
-goes **red** and the failure names this file. That is the gate working as designed — a partial
-encoding cannot go green quietly — and it is the only place the obligation is enforced: koine's own
-`.chief/verify.sh` checks links, status mirrors, schemas and the registry, and has nothing that
-could notice. Adding a file to `scenarios/` is a cross-repo obligation with no local red light.
+**What this result is worth, and what it is not.** `green` here means *the encoded assertions held*
+over a cast that is half live. It does **not** mean this leg's gate is met: the re-run below was
+hand-walked on the same day and came back **not clean**, on two deltas (**FT-X**, **FT-Y**) that are
+**perimeter** breaks — reachable only by reading KMI §2 and KCB §4.2 beside KFT §4, and so outside
+anything this or any KFT-scoped encoding asserts. That is **DR-7**/**DR-8**'s hazard reaching a third
+spec, and the rule is unchanged: a green encoding is evidence for what it encodes.
 
-The full verification, with the merges and the artifacts it was read off, is
-[`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
-§6.1; it is not restated here.
+**The obligation still has no red light in this repo, and that is the durable lesson.**
+`coverage.test.ts` enforces set-equality between `KOINE_SCENARIOS` and this directory's `*.md`
+downstream; koine's own `.chief/verify.sh` checks links, status mirrors, schemas and the registry and
+has nothing that could notice — in **either** direction. It did not notice this file arriving without
+an encoding, and it did not notice the encoding arriving either. Adding a file to `scenarios/` is a
+cross-repo obligation with no local red light; so is being told one was discharged.
 
 ### Findings — from the absence of a downstream run
 
+**DR-11 is CLOSED, on 2026-08-26, and koine learned on 2026-09-02.** The row below is left standing
+as written because it is the finding of record and its *reasoning* is intact — what changed is the
+world, not the argument. Read it as history, and read the closure beside it:
+`console/src/kcs/scenarios/resume-checkpoint.ts` landed at `agora` `378fd3c` **forty-nine minutes
+after** the koine document that recorded this gap was last written, and was verified by running the
+gate at `agora` `main` = `c971fc2` on 2026-09-03
+([`../docs/reference/kcs-encoding-gate-verification.md`](../docs/reference/kcs-encoding-gate-verification.md)
+§6.4). **KFT does not lose the artefact gate on this count.** It is also not promoted by that: both
+of its counts were walked on 2026-09-03 and neither closed.
+
 | # | Severity | Gap | Consequence |
 |---|---|---|---|
-| DR-11 | **Blocking** (for KFT alone) | The KFT 0.6.0 fold this leg forced — §3.4's `resume {checkpoint, of_job, at_step}`, §4.2's effective egress over `{data ∪ base ∪ resume.checkpoint}`, §4.3's union license/tier, §5.4's bind-at-publication, §5.2's `continues` relation, §6's curve-join rule, §7's remainder net of cumulative `spent_units` — has **no machine-replayable document citing any of it**, and neither does FT-R…FT-V. | [The ratification gate](../specs/README.md#the-ratification-gate) forbids promoting a spec whose scenario has no KCS encoding, so **KFT loses the artefact gate** on this count. This is on top of, not instead of, KFT's two named re-run gates. Four of the other five specs are unaffected — their scenarios are all encoded; the exception is **KCB**, which took the same finding on the same day for [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md#findings-from-the-absence-of-a-downstream-run) (**DR-12**), narrowly and for its §4.2 count alone, and again the same day for
+| DR-11 | ~~Blocking~~ → **CLOSED 2026-08-26** (for KFT alone) | The KFT 0.6.0 fold this leg forced — §3.4's `resume {checkpoint, of_job, at_step}`, §4.2's effective egress over `{data ∪ base ∪ resume.checkpoint}`, §4.3's union license/tier, §5.4's bind-at-publication, §5.2's `continues` relation, §6's curve-join rule, §7's remainder net of cumulative `spent_units` — has **no machine-replayable document citing any of it**, and neither does FT-R…FT-V. | [The ratification gate](../specs/README.md#the-ratification-gate) forbids promoting a spec whose scenario has no KCS encoding, so **KFT loses the artefact gate** on this count. This is on top of, not instead of, KFT's two named re-run gates. Four of the other five specs are unaffected — their scenarios are all encoded; the exception is **KCB**, which took the same finding on the same day for [`kcb-subscription-firehose.md`](kcb-subscription-firehose.md#findings-from-the-absence-of-a-downstream-run) (**DR-12**), narrowly and for its §4.2 count alone, and again the same day for
 [`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md#findings-from-the-absence-of-a-downstream-run)
 (**DR-13**), for its §4.3 count alone. Building the encoding is downstream runtime work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned** as of 2026-08-26. |
 
@@ -396,7 +415,7 @@ discipline, because mixing them silently is **DR-7**/**DR-8**'s failure:
 
 | Evidence | Covers | Why |
 |---|---|---|
-| **Replay** | **nothing** | This leg has **no KCS encoding** (`## Downstream results` above, **DR-11**), so there is no run to cite for any part of it. Every verdict below is hand-read. |
+| **Replay** | **nothing asserted below rests on it** | *Corrected 2026-09-03 (same day, later): this row originally read "**nothing** — this leg has no KCS encoding (**DR-11**)", and that was **false when written**. `kcs:resume-checkpoint` exists, replays Steps 1–7 against the folded text, and came back **`green`** in the 2026-08-26 artifact (`## Downstream results` above). The verdict below does not move: the encoding asserts what koine **folded**, and both breaks this walk found are **perimeter** breaks in KMI §2 and KCB §4.2 that no KFT-scoped encoding reaches — plus it leaves FT-T's `continues` edge, FT-U's join rule and FT-V's chain arithmetic explicitly unasserted, which is three of the five deltas. So the replay corroborates the three flips and could not have produced FT-X or FT-Y. **DR-7/DR-8's rule, a third time: a green encoding is evidence for what it encodes.*** |
 | **Hand-walk** — this section, against §2/§3/§3.3/§3.4/§4.2/§4.3/§5.2/§5.4/§6/§7 of KFT 0.7.0, the schema, `registry/relations.tsv`, and the **plane text those clauses cite today** | **FT-R…FT-V** in full, Steps 1 and 7 as the regression set | The fold is a composition point. Walking it against KFT alone would re-read the fold's own words back at itself, which is the failure the gate was left open to avoid. |
 
 **The second axis, and it is where this pass found everything it found.** KFT 0.6.0 landed at
@@ -769,5 +788,9 @@ edit is this section plus a gate paragraph and a changelog entry in
 — is unaffected and unmoved, and the cold-job walk above is why: 0.6.0 changed no admission input
 for a job carrying no `resume`. That gate is separately open on **FT-W**. **DR-11** is unchanged by
 anything here: this leg's KCS-encoding status is a downstream question, not a prose one, and it is
-re-checked on its own terms rather than inherited. **KFT is not promotable**, and the reason is two
-open counts — not, on this walk's evidence, a missing document.
+re-checked on its own terms rather than inherited. *That re-check has since happened — 2026-09-03,
+by running the downstream gates at `agora` `c971fc2` — and **DR-11 is closed**, having been closed
+downstream on 2026-08-26. The sentence below was written expecting the opposite answer and is
+**right either way**, which is the point of separating the two questions.* **KFT is not promotable**,
+and the reason is two open counts — not, on this walk's evidence or on the artefact gate's, a missing
+document.
