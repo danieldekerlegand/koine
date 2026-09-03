@@ -1,13 +1,18 @@
 # koine documentation
 
-> **Status:** Current · **Updated:** 2026-08-26 · **Owner:** koine
+> **Status:** Current · **Updated:** 2026-09-03 · **Owner:** koine
 
 **koine** is the contracts source-of-truth for the ecosystem — the interchange protocols (KINP identity · KGP knowledge · KCB capability-bus · KMI media · KFT fine-tuning · KCS conformance), the shared relation registry, and the ADRs. It carries **no runtime code**: *koine specifies, agora implements*. It is a genuine interop contract **between two companies**, which is why its clauses are role-scoped and product-agnostic rather than fussy.
 
 The map. Structured per the ecosystem documentation standard — `rosetta`'s
 `docs/reference/documentation-standard.md`, cited as text rather than linked because a
 reference out of this repo resolves for nobody who has only this one —
-**a document not linked here does not exist**.
+**a document not reachable from here does not exist**. *Reachable*, not *listed*: the
+explanatory documentation under `docs/` is listed below one file at a time, and the
+**published contract surface** — which is most of this repository, and is deliberately not
+filed under `docs/` — is reached through its own index, each one named and linked in
+[Outside `docs/`](#outside-docs-the-contract-surface-and-why-it-is-not-filed-here) below. Nothing
+is left to be found by `grep`.
 
 ## Guides
 
@@ -41,3 +46,48 @@ reference out of this repo resolves for nobody who has only this one —
 *understanding-oriented — why it is this way*
 
 - [Guide: publishing a self-describing participant](explanation/self-describing-participant.md)
+
+## Outside `docs/` — the contract surface, and why it is not filed here
+
+*Every one of these is a document. None of them is under `docs/`, and that is a **declared
+exception** to the ecosystem documentation standard rather than an oversight.*
+
+**The reason, stated once.** These directories are the **published artefacts of the contract**, not
+writing about it. Downstream repositories vendor `schemas/` and `registry/` by drift-gated copy;
+every spec cites its siblings, the registry, the policy files and the ADRs **by relative path**; and
+the ratification gate in [`../specs/README.md`](../specs/README.md#the-ratification-gate) is stated
+in terms of those paths. Moving them under `docs/` would rewrite roughly 1,400 relative links inside
+this repo and silently break every citation held outside it, in exchange for filing a normative
+contract in a tree whose four categories (tutorial / how-to / reference / explanation) are about
+teaching. The standard governs the **explanatory** documentation, and that is what `docs/` holds.
+
+| Index | What it holds |
+|---|---|
+| [`../specs/README.md`](../specs/README.md) | The six normative protocol specs, plus the ratification gate they are held to. A spec's own header is the only authority on its version and status. |
+| [`../scenarios/README.md`](../scenarios/README.md) | The adversarial pressure tests that gate ratification, the numbered deltas each one returned, and the register of downstream findings DR-1…DR-13. |
+| [`../decisions/README.md`](../decisions/README.md) | Every ADR, with the full table. **The one home for the ADR list** — this page deliberately does not restate it, because a second copy of a table is a second thing to keep in step. |
+| [`../registry/README.md`](../registry/README.md) | The shared agnostic vocabularies (TSV) — relations, entity types, media types, enums. Data, not prose. |
+| [`../schemas/README.md`](../schemas/README.md) | The machine-readable twin of the prose specs (JSON Schema draft-2020-12), each with a golden fixture. |
+| [`../policy/README.md`](../policy/README.md) | The license-class and trust-tier closed vocabularies. |
+
+That is the whole set. The two remaining top-level directories hold **no Markdown at all** and so
+fall outside this map by construction rather than by exception: [`../scripts/`](../scripts/) (the
+guards — `.mjs`) and `tasks/` (the repo's own work queue — `.json`, process metadata, not contract).
+
+Three more documents sit at the repository root, where a first-time reader looks for them:
+[`../README.md`](../README.md) (what koine is and the repository layout),
+[`../ROADMAP.md`](../ROADMAP.md) (where each spec stands and what its promotion waits on) and
+[`../ECOSYSTEM.md`](../ECOSYSTEM.md) (the informative, shape-level topology).
+
+## The standard's seven directories — what koine has, and what it does not
+
+The standard names seven directories under `docs/`. koine has three of them populated, and the
+absence of the other four is deliberate in each case:
+
+| Directory | State |
+|---|---|
+| `guides/` · `reference/` · `explanation/` | Present and listed above. |
+| `tutorials/` | **Empty — nothing written.** koine ships no runtime, so there is no thing to be walked through from zero; the closest artefact is the [capability-bus walkthrough](guides/walkthrough-capability-bus.md), which is task-oriented and correctly filed under `guides/`. Absent rather than stubbed: an empty tutorial directory would advertise a tutorial. |
+| `runbooks/` | **Empty — nothing to operate.** A runbook is for a running system; koine is contracts only, and the one operational procedure it does define (run the guards under [`../scripts/`](../scripts/) after touching a doc, a schema or the registry) is stated in `CLAUDE.md` and executed by `.chief/verify.sh`, not by a person following steps. |
+| `archive/` | **Created on first use.** Nothing in this repository has been superseded and withdrawn yet; when something is, it moves there with a note naming what replaced it and when — it is never deleted. |
+| `decisions/` | **At the repository root, not under `docs/`** — see the exception above; the ADRs are contract surface cited by relative path from the specs. |
