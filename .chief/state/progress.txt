@@ -77,3 +77,53 @@ guard-doc-links, verify-selftest all green; verify-selftest 30 passed, 0 failed.
   ladder item 2 in `docs/reference/promotability.md` with **DR-10 stated as downstream and
   explicitly unowned**, the ROADMAP Phase 1 note at line ~158-162, and the CLAUDE.md *Current
   state* KCS bullet (not guard-checked — update by hand and read it back).
+
+---
+
+### US-2 — KCS's status moves only on a clean pass, and DR-10 is stated as downstream (2026-09-03)
+
+**The branch taken.** AC1 is conditional and its condition is false — US-1's walk left blocking
+delta **R** — so this took the **not-clean** branch of AC3: **`specs/conformance-scenario.md` stays
+0.3.0 Candidate**, no version moves, no clause moves, and the blocker is named everywhere the old
+"a re-validation, no fold" reading lived.
+
+**Files changed**
+- `specs/conformance-scenario.md` — header date → 2026-09-03; *Pressure test* gains five paragraphs
+  (the walk, the replay/hand-walk split, the half-flip and delta R, what it costs, DR-10's
+  discharge-as-qualification, and **which rule a future promotion is under**); §7.2 gains an
+  evidence note (*the fold is incomplete, not reopened*); a new **Editorial** changelog entry.
+- `specs/README.md` — the grandfather paragraph's tail ("leaving that fold's own re-validation as
+  what remains") was stale the moment the walk landed; it now says the walk happened, did not clear
+  it, and that a promotion is under the ordinary conformance-gated rule.
+- `docs/reference/promotability.md` — the KCS row's blocker cell and ladder item 2 rewritten.
+- `ROADMAP.md` — the "Two of the six specs have no row here" paragraph (KCS has no Phase 1 row).
+- `CLAUDE.md` — the *Current state* KCS bullet (the mirror **no guard checks**).
+- `scenarios/kcs-format-stress.md` — one note under the DR-10 table splitting DR-10 into the
+  qualification (discharged) and the drift (untouched, downstream, unowned).
+
+**How "no clause moved" was proved, rather than eyeballed.** `git show HEAD:specs/…` sliced on `##`
+headers and compared section by section: **§1–§6 and §8 byte-identical**. The whole diff's *removed*
+lines are exactly two — the header date and the old "Candidate pending re-validation" sentence.
+Everything else is additive, and §7 is Open questions, not normative surface.
+
+**Gates.** `node scripts/check-doc-integrity.mjs` → OK (56 files, **1383** links, 3 status tables
+match their headers). `.chief/verify.sh --run` over all six changed paths → all selected gates green
+(`doc-links: 0 dead vs 2 on main`). `.chief/verify-test.sh` → 30 passed, 0 failed.
+
+**Learnings for future iterations**
+- **The not-clean branch is cheap precisely because the status did not move.** Every counting and
+  ranking clause CLAUDE.md warns about ("1 of 6", `specs/README.md` § the ratification gate,
+  `scenarios/README.md`) stays correct untouched — the blast radius of this tasklist was avoided by
+  the outcome, not by care. Confirmed by sweeping `KCS` across `*.md` after the edits.
+- **A conditional AC ("IF clean … / IF not clean …") still needs the unconditional half of the other
+  branch.** AC1's parenthetical — *say what standard this promotion is under* — is worth answering
+  even when no promotion happens, because that is the sentence the next owner will need. It landed
+  in the spec's *Pressure test* + changelog and in `specs/README.md`'s grandfather paragraph.
+- **`specs/README.md`'s grandfather paragraph is a fifth, unguarded mirror of KCS's gate.** It is not
+  one of the three checked status tables and it is not the *Current state* prose either; it carries
+  the sentence "leaving that fold's own re-validation as what remains", which any KCS gate change
+  makes stale. Grep it whenever KCS's count moves.
+- **When a finding splits into two things, say so at its definition site.** DR-10 is now a
+  *qualification* (discharged) and a *drift* (untouched, downstream, unowned). A reader landing on
+  the DR-10 row from `scenarios/README.md`'s index would otherwise read "unowned today" and assume
+  the re-validation is still blocked on it.
