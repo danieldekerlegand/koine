@@ -1,0 +1,40 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/90-the-read-and-confirm-pass",
+  "dependsOn": [],
+  "touches": ["specs", "scenarios", "docs"],
+  "iters": 5,
+  "warmup": [
+    "sed -n '/^2\\. \\*\\*KCS/,/^3\\. \\*\\*KFT/p' docs/reference/promotability.md",
+    "grep -n 'structure_matches' -r specs/ scenarios/ docs/ | head",
+    "grep -n 'DR-10' -r docs/ | head -4",
+    "grep -m2 -n '^\\*\\*Spec version\\|^\\*\\*Status' specs/conformance-scenario.md"
+  ],
+  "description": "KCS 0.3.0's re-validation — the cheapest item on the promotability ladder after KGP, and unowned.\n\nWHY IT IS CHEAP. Per docs/reference/promotability.md: 'a re-validation, no fold... The 0.3.0 change was additive and backward-compatible against a scenario that exists and whose encoding runs. This is a read-and-confirm pass, and nobody owns it.'\n\nTHE SNAG THAT MAKES IT NOT TRIVIAL — DR-10. 'the downstream §5 vocabulary has no `structure_matches`, which is the predicate the 0.3.0 fold IS, so the re-validation cannot be discharged by a machine replay of that clause — a hand-walk still can, and the drift is downstream work either way.' So the fold's own predicate is missing from the downstream vocabulary: the one clause this version added is exactly the one a replay cannot check.\n\nSCOPE. The re-validation and KCS's own status. The downstream vocabulary drift is named, not fixed here — it belongs to whoever owns that vocabulary, and this tasklist's job is to state it rather than absorb it.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "The re-validation is walked, with the 0.3.0 clause hand-checked",
+      "passes": false,
+      "notes": null,
+      "acceptanceCriteria": [
+        "The 0.3.0 determinism fold (delta Q: `structure_matches` and the stability rules it carries) is re-validated against the existing scenario, with the `structure_matches` clause HAND-walked because DR-10 makes a machine replay of it impossible.",
+        "The rest of the pass may lean on the running encoding, and the record says which parts were replayed and which were hand-walked. Mixing the two silently is how a green replay gets read as a full verdict — the same failure DR-7 and DR-8 record against KCB.",
+        "GATES: koine's own checks green."
+      ]
+    },
+    {
+      "id": "US-2",
+      "title": "KCS's status moves only on a clean pass, and DR-10 is stated as downstream",
+      "passes": false,
+      "notes": null,
+      "acceptanceCriteria": [
+        "IF the re-validation is clean: `specs/conformance-scenario.md` moves to **ratified**, with the walk named in a changelog entry. Note KCS was grandfathered under the previous rule at 0.2.0 — say what standard this promotion is under.",
+        "DR-10 is recorded in `docs/reference/promotability.md` as DOWNSTREAM work with an owner named or explicitly unowned. It must not be closed here by editing the downstream vocabulary from this repo — koine specifies, and the vocabulary lives with its implementation.",
+        "IF the pass is not clean, the status does not move and the blocker is named. A read-and-confirm that confirms nothing is a legitimate outcome.",
+        "GATES: koine's own checks green."
+      ]
+    }
+  ]
+}

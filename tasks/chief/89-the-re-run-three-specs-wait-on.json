@@ -1,0 +1,53 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/89-the-re-run-three-specs-wait-on",
+  "dependsOn": [],
+  "touches": ["scenarios", "specs", "docs"],
+  "iters": 6,
+  "warmup": [
+    "sed -n '/^5\\. \\*\\*KINP/,/^6\\. \\*\\*KCB/p' docs/reference/promotability.md",
+    "sed -n '1,60p' scenarios/e2e-multi-authority.md",
+    "grep -n 'Step ' scenarios/e2e-multi-authority.md | head -12",
+    "grep -m2 -n '^\\*\\*Spec version\\|^\\*\\*Status' specs/identity.md"
+  ],
+  "description": "Re-run `scenarios/e2e-multi-authority.md` against the folded text. This is the single cheapest promotion left on the ladder after KGP, and it is the one thing THREE specs' counts sit on.\n\nWHAT IT SERVES, per docs/reference/promotability.md (the ladder of record, updated 2026-08-28): the WHOLE of KINP's gate (Steps 2/3/4/6 must flip; Step 1 is the regression set), one of KCB's five counts (Steps 5–7), and one of KMI's two (Steps 8–10). The ladder's own words: 'This is the single thing three specs' counts now sit on, and it is unowned in every repo.'\n\nWHY KINP IS READY FOR IT. The four blocking deltas plus MA-7 landed at 0.4.0 on 2026-08-26 — §6's convergence target is domain-scoped, §4.5 has its fail-closed fourth branch, §4.2 has `world_aligns_with`, §4.1 carries the weakest issuer, §3.4 names the prefix registry as the one non-federated commons. None required redesign; every one is additive. 'What remains is a single re-run and nothing else — KINP has no second count, no downstream deliverable of its own, and no fold outstanding.'\n\nTHIS IS A HAND-WALK, NOT A REPLAY. The ladder is explicit that KINP ranks below KCS and KFT only because its re-run is 'a full four-step hand-walk of a not-clean pass rather than a read-and-confirm'. Do not discharge it by re-running an encoding and reading the exit code — and note the standing warning attached to this very scenario: `kcs:multi-authority` came back GREEN over a pass with six blocking deltas open (DR-8). A green encoding is not the verdict here.\n\nWHAT THIS TASKLIST DOES NOT DO. It does not promote KCB or KMI. It clears ONE of KCB's five counts and one of KMI's two; both remain candidate afterwards and this record must say so rather than implying a fabric-wide unlock.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "The four steps are walked by hand, and the verdict is per-step",
+      "passes": false,
+      "notes": null,
+      "acceptanceCriteria": [
+        "Steps 2, 3, 4 and 6 are walked against the CURRENT folded spec text and each gets its own recorded verdict. Step 1 is walked as the regression set. A single overall pass/fail hides which delta the fold actually closed.",
+        "The walk is by hand against the prose, not a machine replay of `kcs:multi-authority`. DR-8 records that encoding returning GREEN over a pass with six blocking deltas open — so the encoding's verdict is evidence about the encoding, not about the spec.",
+        "Every step that does NOT flip is recorded with what still blocks it, in the same detail the original pass used. A partial result is a legitimate outcome of this story; a rounded-up one is not.",
+        "GATES: koine's own checks green."
+      ]
+    },
+    {
+      "id": "US-2",
+      "title": "KINP is promoted only if its whole gate flipped",
+      "passes": false,
+      "notes": null,
+      "acceptanceCriteria": [
+        "IF Steps 2/3/4/6 all flip and Step 1 holds: `specs/identity.md` moves to **ratified** — banner, version line, and a changelog entry naming the walk. KINP has no second count and no downstream deliverable, so nothing else gates it.",
+        "IF ANY step fails to flip: the status does NOT move, and the remaining blocker is named in the spec and in `docs/reference/promotability.md`. KGP's promotion is the standing precedent and the ladder states the bar: it 'cost an artifact plus an audit of that artifact — not a status edit'.",
+        "Clause text outside any changed gate paragraph is byte-unchanged and no claim id moves. Confirm it rather than assume it.",
+        "GATES: koine's own checks green."
+      ]
+    },
+    {
+      "id": "US-3",
+      "title": "The other two specs' counts are decremented, and only those",
+      "passes": false,
+      "notes": null,
+      "acceptanceCriteria": [
+        "KCB's count from Steps 5–7 and KMI's from Steps 8–10 are recorded as cleared-or-not in `docs/reference/promotability.md` and in each spec's own gate paragraph. The ladder is one line per spec and must stay accurate after this walk.",
+        "NEITHER KCB NOR KMI IS PROMOTED HERE. KCB has five counts and KMI two; this clears at most one each. Say so explicitly — the failure this whole page exists to prevent is a reader concluding a spec is promotable from a single satisfied gate.",
+        "`promotability.md`'s 'Cheapest first' ranking is re-ordered if this walk changed the ordering. The ranking is the point of that page, and a stale ranking is worse than none.",
+        "GATES: koine's own checks green."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/91-kfts-two-gates-and-the-missing-encoding",
+  "dependsOn": [],
+  "crossRepo": ["agora", "lugh"],
+  "touches": ["specs", "scenarios", "docs"],
+  "iters": 6,
+  "warmup": [
+    "sed -n '/^3\\. \\*\\*KFT/,/^4\\. \\*\\*KMI/p' docs/reference/promotability.md",
+    "sed -n '1,50p' scenarios/kft-resume-checkpoint.md",
+    "grep -n 'DR-11\\|§6.1' docs/reference/kcs-encoding-gate-verification.md | head",
+    "sed -n '1,40p' docs/reference/generative-audio-modalities-downstream.md"
+  ],
+  "description": "KFT 0.7.0's two counts, and the honest statement of what still blocks promotion after both are clean.\n\nTHE TWO GATES, per docs/reference/promotability.md. (i) The standing one: owner re-ratification of the strictly-additive FT-M…FT-Q producer-exhaust intake fold, which 'walks clean as written but has not been executed'; its stale-plane-pin precondition is closed by chief/71 and `kcs:producer-exhaust-finetune` exists, so the conformance gate is met for this gate. (ii) Added by 0.6.0: a re-run of the resume-checkpoint leg against the folded text.\n\nWHY (ii) IS MORE READING THAN IT LOOKS. Unlike 0.5.0, 0.6.0 MOVES §4's admission inputs — where a job carries `resume`, `resume.checkpoint` joins §4.2's aggregate and §4.3's union — so §3.4/§4.2/§4.3/§5.4/§6/§7 are changed normative surface rather than re-validated text. The ladder: 'the owner reads six sections cold rather than re-reading walked ones.' A cold job admits exactly as before, which is why (i) is unaffected by (ii).\n\nTHE PART THAT IS NOT KOINE'S. Even on two clean re-runs, KFT CANNOT be promoted: the tenth scenario has no KCS encoding, so 0.6.0's clauses have no runnable document citing them (kcs-encoding-gate-verification.md §6.1). That encoding is downstream work. KFT 'lost its place in this ranking's premise' for exactly this reason and is 'still unowned, now on two fronts'.\n\nALSO CARRIED HERE: 0.7.0's two audio modality tokens (text-to-audio / audio-to-audio, folded by chief/88 on 2026-08-27) are recorded as UNEXERCISED VOCABULARY that no pass has walked — not as a third gate. AUD-6 notes no scenario walks an audio job. This tasklist states the cross-repo obligation; it does not perform the consumer-side work in agora or lugh.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Gate (i) — the additive intake fold is executed, not just read as clean",
+      "passes": false,
+      "notes": null,
+      "acceptanceCriteria": [
+        "The FT-M…FT-Q producer-exhaust intake fold is walked and its verdict recorded. The ladder says it 'walks clean as written but has not been executed' — executing it is this story, and a record that repeats 'walks clean' without a run does not discharge it.",
+        "GATES: koine's own checks green."
+      ]
+    },
+    {
+      "id": "US-2",
+      "title": "Gate (ii) — six sections read cold against the resume-checkpoint leg",
+      "passes": false,
+      "notes": null,
+      "acceptanceCriteria": [
+        "§3.4, §4.2, §4.3, §5.4, §6 and §7 are each read against the 0.6.0 folded text with `resume`-carrying jobs, and each gets its own verdict. These are CHANGED normative surface, not re-validated text — 0.6.0 moved §4's admission inputs.",
+        "The cold-job path is confirmed unchanged, which is what keeps gate (i) independent of this one. If it moved, say so — that would invalidate US-1's premise.",
+        "GATES: koine's own checks green."
+      ]
+    },
+    {
+      "id": "US-3",
+      "title": "What clean re-runs do NOT buy is stated plainly",
+      "passes": false,
+      "notes": null,
+      "acceptanceCriteria": [
+        "KFT's status does NOT move on two clean re-runs alone, and the spec and `promotability.md` both say why: the tenth scenario has no KCS encoding, so 0.6.0's clauses have no runnable document citing them (kcs-encoding-gate-verification.md §6.1). Promoting on the prose legs would be exactly the KGP mistake — a gate believed satisfied by something nobody read.",
+        "The 0.7.0 audio tokens are recorded as unexercised vocabulary with AUD-1…AUD-6's per-repo actions named and their owners identified. koine reports; agora and lugh act. Do not edit either repo from here.",
+        "The missing encoding is named as downstream and unowned, with what would discharge it, so the next reader does not re-derive it.",
+        "GATES: koine's own checks green."
+      ]
+    }
+  ]
+}
