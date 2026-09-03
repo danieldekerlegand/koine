@@ -1,43 +1,47 @@
 {
   "project": "koine",
-  "category": "unblock",
-  "branchName": "chief/90-the-read-and-confirm-pass",
+  "category": "fix",
+  "branchName": "chief/900-dead-code-paydown",
   "dependsOn": [],
   "touches": [
-    "specs",
-    "scenarios",
-    "docs"
+    "."
   ],
-  "iters": 5,
-  "warmup": [
-    "sed -n '/^2\\. \\*\\*KCS/,/^3\\. \\*\\*KFT/p' docs/reference/promotability.md",
-    "grep -n 'structure_matches' -r specs/ scenarios/ docs/ | head",
-    "grep -n 'DR-10' -r docs/ | head -4",
-    "grep -m2 -n '^\\*\\*Spec version\\|^\\*\\*Status' specs/conformance-scenario.md"
-  ],
-  "description": "KCS 0.3.0's re-validation — the cheapest item on the promotability ladder after KGP, and unowned.\n\nWHY IT IS CHEAP. Per docs/reference/promotability.md: 'a re-validation, no fold... The 0.3.0 change was additive and backward-compatible against a scenario that exists and whose encoding runs. This is a read-and-confirm pass, and nobody owns it.'\n\nTHE SNAG THAT MAKES IT NOT TRIVIAL — DR-10. 'the downstream §5 vocabulary has no `structure_matches`, which is the predicate the 0.3.0 fold IS, so the re-validation cannot be discharged by a machine replay of that clause — a hand-walk still can, and the drift is downstream work either way.' So the fold's own predicate is missing from the downstream vocabulary: the one clause this version added is exactly the one a replay cannot check.\n\nSCOPE. The re-validation and KCS's own status. The downstream vocabulary drift is named, not fixed here — it belongs to whoever owns that vocabulary, and this tasklist's job is to state it rather than absorb it.",
+  "iters": 8,
+  "description": "Find and remove dead, stale and duplicated CODE, so the tree is what it claims to be.\n\nRUN THIS LAST, DELIBERATELY. It carries a high number because a cleanup that runs before the work is finished deletes scaffolding that was about to be used, and then the next tasklist re-adds it. The roadmap should be substantially complete before this executes.\n\nWHAT COUNTS AS DEAD. Unreferenced modules, functions and files; duplicated implementations of one behaviour; code behind flags that can no longer be set; scripts nothing runs; dependencies nothing imports; commented-out blocks kept 'just in case'. What does NOT count: code a test exercises, code an external consumer calls, and code that is deliberately unexercised and says so.\n\nTHE STANDARD OF PROOF, AND IT IS THE WHOLE TASKLIST. This portfolio has repeatedly found things that LOOKED dead and were not — a Prolog corpus reached by a path nobody found, `content_qa` declared callerless when it had a caller, `docs/studioos` cited by 93 files. Deletion is irreversible in effect even when git remembers, because nobody re-reads a deleted file. Every removal names the search that found nothing.\n\nPAIRED WITH THE DOCS SWEEP, WHICH RUNS AFTER. Removing code changes what the docs should say, so the docs tasklist depends on this one. Do not fix docs here beyond what a removal strands.",
   "userStories": [
     {
       "id": "US-1",
-      "title": "The re-validation is walked, with the 0.3.0 clause hand-checked",
+      "title": "An inventory, measured before anything is removed",
       "passes": true,
-      "notes": "Walked by hand 2026-09-03 against KCS 0.3.0 as published; recorded in scenarios/kcs-format-stress.md ('Re-validation — KCS 0.3.0, walked 2026-09-03'). Replay vs hand-walk split stated in an explicit evidence table and per-delta: M/N/O + the assertion half of P lean on the 2026-08-24 run of kcs:format-stress; Q in full, the firing half of P, and the clause re-read behind every replayed delta are hand-walked, because DR-10 leaves the runner without structure_matches. Per-delta verdict: M/N/O flip (replay-corroborated), P flips in prose with one declared residual (green run never exceeded a timeout, so the exceeded->fails-liveness path is unexercised), Q HALF-FLIPS -> new blocking delta R. Also recorded a correction to Attempt 3's own sketch: source_world_is(<render>, world) contradicts KMI §2 delta H (generated => null); the format expresses the correct form, so no delta. GATES: node scripts/check-doc-integrity.mjs OK (56 files, 1370 links, 3 status tables match); .chief/verify.sh --run over the changed paths: all selected gates green, verify-selftest 30 passed 0 failed. Fixed 8 pre-existing dangling links to the retired tasks/chief/89-*.json that had left main red on doc-integrity.",
+      "notes": "Inventory landed at docs/reference/dead-code-inventory.md, linked from docs/README.md. GATE GREEN: `.chief/verify.sh --run docs/reference/dead-code-inventory.md docs/README.md` → guard-doc-integrity OK (57 markdown files, 1399 relative links checked, 0 errors, all 3 status tables match their headers) and guard-doc-links \"0 dead vs 0 on main\" → \"all selected gates green\". Contents: Class A = 4 removal candidates, each with its search — EXCEPT_DIRS (docs/.structure-exceptions: 0 commits on any branch), IGNORE (docs/.linkignore: 0 commits), the docs/archive/ skip (0 commits, 0 grep hits outside scripts/), and the cross-repo `foreign` walk (0 of 65 tracked JSON files carry a repo/owner key, and it spawns `git rev-parse --show-toplevel` once per JSON file to compute a value that is wrong in a worktree and never compared). Class B = 1 duplicated implementation, measured not asserted: relative Markdown link resolution runs in both doc guards, 1371 of check-doc-links's 1371 md-link checks also done (more strictly, with anchors) by check-doc-integrity, its unique value being 8 bare docs/… citations in 3 non-Markdown files; recorded as a finding rather than a deletion because merging a ratchet into a wall changes the merge gate's failure semantics. Plus B-2, the 4th status mirror in CLAUDE.md that no guard checks. Class C = 5 survivors with the reason each survived: 8 registry rows with 0 in-repo citations (published vocabulary, signature immutable once published), the tasks/chief/completed/ skip (deliberately unexercised — hides 0 dead citations today, fires the day a doc moves), --json/--strict/--list (settable by hand, so not \"flags that can no longer be set\"), SKIP_DIR/SKIP_EXT, and the schema fixtures. Plus 9 searches that came back empty (0 orphan .md of 57, 0 orphan schemas, 0 unreferenced $defs of 10 with 80 $refs all resolving, 0 duplicated subschemas that were not already shared by $ref, 0 orphan entity types/enum tokens, 0 commented-out code blocks, no package.json at all, 0 dead branches in verify.sh, 0 unrun guard scripts).",
       "acceptanceCriteria": [
-        "The 0.3.0 determinism fold (delta Q: `structure_matches` and the stability rules it carries) is re-validated against the existing scenario, with the `structure_matches` clause HAND-walked because DR-10 makes a machine replay of it impossible.",
-        "The rest of the pass may lean on the running encoding, and the record says which parts were replayed and which were hand-walked. Mixing the two silently is how a green replay gets read as a full verdict — the same failure DR-7 and DR-8 record against KCB.",
-        "GATES: koine's own checks green."
+        "Produce a checked-in inventory of candidates with, for each, the SEARCH that found it unreferenced — the command and its scope. A candidate list without its method is unreviewable, and this is the artifact a human approves before deletion.",
+        "Separate genuinely-dead from deliberately-unexercised. The second class exists here on purpose (refusal paths, guards, unreached tiers that say so) and deleting it removes a stated contract.",
+        "Include duplicated implementations as first-class findings, not just unused ones — two implementations of one behaviour is the failure mode that costs most later, because they drift.",
+        "GATES: the repo's own verify green."
       ]
     },
     {
       "id": "US-2",
-      "title": "KCS's status moves only on a clean pass, and DR-10 is stated as downstream",
-      "passes": true,
-      "notes": "Not-clean branch taken: the US-1 walk found new blocking delta R, so specs/conformance-scenario.md STAYS 0.3.0 Candidate — no version and no clause moved (verified by section-slicing HEAD vs new: §1-§6 and §8 byte-identical; only the header date, the Pressure-test gate sentence, a §7.2 evidence note and a new Editorial changelog entry differ, and the only removed lines are those two). Blocker named in five places: the spec's Pressure test (new 'The re-validation, walked 2026-09-03' block + §7.2 note + Editorial changelog entry, which also states the standard a future promotion is under — the ordinary conformance-gated rule, since 0.2.0's grandfathering does not survive a demotion and its artefact debt was paid 2026-08-19), specs/README.md's grandfather paragraph, docs/reference/promotability.md (KCS row + ladder item 2), ROADMAP.md's 'two of the six have no row here' paragraph, and CLAUDE.md's Current state bullet. Count changed shape: 'fold R, then re-validate again', unowned. DR-10 recorded as DOWNSTREAM under ADR-0001 and explicitly UNOWNED in promotability.md (row + item 2) and in the scenario's DR-10 section, split into the qualification (discharged by the hand-walk) and the drift (untouched); nothing in the downstream vocabulary was edited from this repo. GATES: node scripts/check-doc-integrity.mjs OK (56 files, 1383 links, 3 status tables match headers); .chief/verify.sh --run over the 6 changed paths: all selected gates green (doc-links 0 dead vs 2 on main); .chief/verify-test.sh 30 passed, 0 failed.",
+      "title": "Removal, with the tree still green and the reason recorded",
+      "passes": false,
+      "notes": null,
       "acceptanceCriteria": [
-        "IF the re-validation is clean: `specs/conformance-scenario.md` moves to **ratified**, with the walk named in a changelog entry. Note KCS was grandfathered under the previous rule at 0.2.0 — say what standard this promotion is under.",
-        "DR-10 is recorded in `docs/reference/promotability.md` as DOWNSTREAM work with an owner named or explicitly unowned. It must not be closed here by editing the downstream vocabulary from this repo — koine specifies, and the vocabulary lives with its implementation.",
-        "IF the pass is not clean, the status does not move and the blocker is named. A read-and-confirm that confirms nothing is a legitimate outcome.",
-        "GATES: koine's own checks green."
+        "Remove what US-1 established, in reviewable steps rather than one sweep. A single commit deleting hundreds of lines across unrelated subsystems cannot be reviewed and cannot be partially reverted.",
+        "The full gate passes after each step. A removal that needs a test deleted to stay green is a removal of something live — say so and stop rather than adjusting the test.",
+        "Anything NOT removed that looked dead is recorded with why it survived. That record is worth more than the deletions: it is what stops the next sweep re-litigating the same files.",
+        "GATES: the repo's own verify green."
+      ]
+    },
+    {
+      "id": "US-3",
+      "title": "What the sweep could not decide",
+      "passes": false,
+      "notes": null,
+      "acceptanceCriteria": [
+        "Report candidates the sweep could not resolve — reachable only through dynamic dispatch, reflection, generated code, or a consumer outside this repo — and leave them in place. An honest 'undecidable' list is a legitimate result.",
+        "State the limits of the method: what a static search over this tree cannot see. Cross-repo consumers are the obvious one, and this portfolio has already been bitten by exactly that.",
+        "GATES: the repo's own verify green."
       ]
     }
   ]

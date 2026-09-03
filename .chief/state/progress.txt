@@ -1,129 +1,107 @@
-# Chief Progress — 90-the-read-and-confirm-pass
-Started: Thu Sep  3 01:05:38 CDT 2026
+# Chief Progress — 900-dead-code-paydown
+Started: Thu Sep  3 01:18:28 CDT 2026
 ---
 
 ## Codebase Patterns
 
-- **A "re-validation" lands as an appended section in the scenario, never as an edit to the
-  original attempts.** Precedent: `scenarios/e2e-multi-authority.md` § *Re-run — Steps 1–10
-  walked by hand against the folded text*. The original pass's Findings table stays as the
-  record of what THAT pass found; a new delta gets a one-paragraph "not in the table above,
-  deliberately" pointer under it (the MA-12 pattern) and is defined once in the new section.
-- **Doc-integrity anchors: em-dashes collapse to a SINGLE hyphen.** `### Findings — from the
-  re-validation` → `#findings-from-the-re-validation`, not `#findings--from-...`. Guessing the
-  GitHub double-hyphen form fails the guard.
-- **Retiring a tasklist deletes `tasks/chief/<n>.json` and breaks every markdown link to it.**
-  That is how `main` was left red on doc-integrity here. Cite a tasklist as a plain code span
-  (`` `chief/89` ``), never as a relative link — that is already the convention for every other
-  retired tasklist in ROADMAP.md.
-- **Run the gates the way the merge gate will:**
-  `git diff --name-only HEAD | .chief/verify.sh --plan` to see the selection, then
-  `.chief/verify.sh --run <files…>`. A bare `--plan` reads stdin and reports nothing under an
-  agent shell.
+- **koine has almost no code.** 140 tracked files: 65 json, 57 md, 7 tsv, 5 mjs, 2 sh.
+  No `package.json`, no dependencies, no runtime (ADR-0001: "koine specifies, agora
+  implements"). The entire executable surface is `scripts/check-*.mjs` (5 guards) plus
+  `.chief/verify.sh` + `.chief/verify-test.sh`. A "dead code" sweep here is a sweep of
+  seven files.
+- **`.chief/verify.sh` is the one gate, and it is path-selective.** Run it as
+  `.chief/verify.sh --run <changed paths...>` — a bare run diffs `main...HEAD`, so it
+  reports "no changed files" on an uncommitted working tree. `--plan` prints the
+  selected gates without running them. A path matching NO rule selects the **umbrella**
+  (every gate, including the self-test).
+- **`check-doc-integrity.mjs`'s slugify is NOT GitHub's.** It collapses `\s+` to a
+  SINGLE hyphen, so `## Class A — dead: removal candidates` anchors as
+  `#class-a-dead-removal-candidates`, not GitHub's `#class-a--dead-removal-candidates`.
+  Writing the GitHub form fails the gate. Match the guard.
+- **`MD_LINK` fires inside backticks.** Writing `` `[text](path)` `` in prose is parsed
+  as a link and reported as "no such file — path". Split the form when writing about it.
+- **`tasks/chief/completed/` is history and must not be rewritten** — both doc guards
+  skip it as a citer, and reference counts that include it measure the past.
 
 ---
 
-### US-1 — The re-validation is walked, with the 0.3.0 clause hand-checked (2026-09-03)
+## 2026-09-03 — US-1: An inventory, measured before anything is removed
 
-**What I did.** Walked KCS 0.3.0's re-validation by hand against `scenarios/kcs-format-stress.md`,
-which is the single count KCS's *Pressure test* section names.
+**Done.** Wrote `docs/reference/dead-code-inventory.md` (the checked-in artifact a human
+approves before deletion) and linked it from `docs/README.md`'s Reference section — that
+file's own rule is *a document not linked here does not exist*.
 
-**Files changed**
-- `scenarios/kcs-format-stress.md` — new § *Re-validation — KCS 0.3.0, walked 2026-09-03*: an
-  explicit replay-vs-hand-walk evidence table, per-delta verdict table, the walk of each attempt,
-  delta **R** defined once, a correction to Attempt 3's own sketch, and the verdict.
-- `scenarios/README.md` — the KCS row's Deltas cell is now `M…Q, **R**` and its encoding cell
-  records the 2026-09-03 walk and its not-clean outcome.
-- `decisions/ADR-0014-*.md`, `docs/reference/promotability.md` — de-linked 8 dangling
-  `tasks/chief/89-*.json` references (pre-existing red on main, unrelated to this story).
+Files changed: `docs/reference/dead-code-inventory.md` (new), `docs/README.md` (+1 line),
+`.chief/state/prd.json`, `tasks/chief/900-dead-code-paydown.json`.
 
-**The verdict, so the next iteration does not have to re-derive it: NOT CLEAN.**
-- Regression set (folded at 0.2.0) **flips**: M, N, O and the assertion half of P, three of them
-  corroborated by the 2026-08-24 run rather than by this reading alone.
-- P carries one **declared residual**: the clause is complete (§4 states exceeded → fails
-  liveness) but a green run never exceeded a timeout, so the firing path is unexercised. Recorded,
-  not opened as a delta — it is a suite coverage gap, and closing it is downstream.
-- **Delta Q half-flips.** Byte equality is forbidden normatively (that half is clean). The other
-  half of Attempt 3's break — catching a renderer that changed the output shape — does **not**
-  close: §5 constrains `structure_matches` only negatively and fixes its comparison basis nowhere.
-  Three legs: no declaration site in §2/§3 (the word "declared" points at a slot the format lacks,
-  and the signature is fixed at two operands); no plane anchor (every other §5 predicate delegates
-  to a named clause one plane over — this group has no plane, and KMI §3's lineage relations,
-  the nearest specified vocabulary, are unreached); and both operands are `asset` ids, i.e. hashes
-  of deliberately-differing bytes, so the predicate must dereference to something §5 never names.
-  Two conformant runners, two truth values, and §4's content-addressed report hides the divergence.
-  → **delta R, High, blocking.**
-- **DR-10's qualification is discharged** by this walk (the spec said a hand-walk still could), and
-  R is what was under it. A replay could not have found R even with the predicate implemented:
-  one runner is internally consistent, so an open basis is invisible from inside it.
+**Gate:** `.chief/verify.sh --run docs/reference/dead-code-inventory.md docs/README.md`
+→ `guard-doc-integrity` OK (57 markdown files, 1399 relative links, 0 errors, 3 status
+tables match their headers), `guard-doc-links` "0 dead vs 0 on main" → **all selected
+gates green**. `check-tasklist-categories` OK, 4 tasklists categorized.
 
-**Gates.** `node scripts/check-doc-integrity.mjs` → OK (56 files, 1370 links, 3 status tables match
-their headers). `.chief/verify.sh --run` over the changed paths → guard-doc-integrity,
-guard-doc-links, verify-selftest all green; verify-selftest 30 passed, 0 failed.
+### What the inventory found, and what US-2 inherits
 
-**Learnings for future iterations**
-- **US-2 must take the not-clean branch.** Its first AC is conditional ("IF the re-validation is
-  clean") and it is not — so `specs/conformance-scenario.md` stays **0.3.0 Candidate**, no version
-  moves, no clause moves, and the blocker to name is delta **R**. Do NOT touch §5's normative text:
-  R is a finding, and folding it is a minor revision gated by a pressure test, out of this
-  tasklist's stated scope ("the re-validation and KCS's own status").
-- Because the status does not move, the **four status mirrors and every counting/ranking clause**
-  CLAUDE.md warns about (`ROADMAP.md`'s "1 of 6" line, `specs/README.md` § the ratification gate,
-  `docs/reference/promotability.md`, `scenarios/README.md`) stay correct as written. That is most
-  of the blast radius of this tasklist, and it is avoided by the outcome, not by care.
-- US-2's remaining work is therefore: an **Editorial** changelog entry + a *Pressure test* update
-  in `specs/conformance-scenario.md` (record the walk, name R, restate the count, keep 0.3.0
-  Candidate), evidence for R under §7.2 (the fold is incomplete, not reopened), the KCS row + the
-  ladder item 2 in `docs/reference/promotability.md` with **DR-10 stated as downstream and
-  explicitly unowned**, the ROADMAP Phase 1 note at line ~158-162, and the CLAUDE.md *Current
-  state* KCS bullet (not guard-checked — update by hand and read it back).
+**Class A — 4 removal candidates, ALL inside `scripts/check-doc-links.mjs`.** That guard
+was carried in from a sibling repo (`87c9aa9`) with its host's exceptions attached; its
+own comments name `cuneiform`, `argos`, `studio-os`, `insimul`, `engine/quality.sh`, none
+of which exist here. **The guard itself is LIVE and must stay** — `.chief/verify.sh`
+selects it as `guard-doc-links` and it is the only thing checking the 8 bare `docs/…`
+citations in non-Markdown files. What is dead is *inside* it:
 
----
+- **A-1** `EXCEPT_DIRS` (lines 42-53, used at 81) — reads `docs/.structure-exceptions`.
+  `git log --oneline --all --` → **0 commits**. Never existed on any branch.
+- **A-2** `IGNORE` (lines 55-60, used at 80) — reads `docs/.linkignore`. **0 commits.**
+  Also contradicts `check-doc-integrity.mjs:13-14`, which states there is deliberately no
+  allowlist for a private-repo link.
+- **A-3** the `docs/archive/` skip (lines 70-75) — **0 commits**, and `git grep 'docs/archive'
+  -- ':!scripts/'` finds no convention, README or ADR. Flagged with a judgement note: this
+  is the one whose deletion would matter if the convention were later adopted.
+- **A-4** the cross-repo `foreign` walk (lines 98-117, used at 119) —
+  `git grep -lE '"(repo|owner)"\s*:' -- '*.json'` → **0 of 65** tracked JSON files. `foreign`
+  is always empty. Worse than inert: it runs `execFileSync('git', ['rev-parse',
+  '--show-toplevel'])` **once per JSON file** (65 spawns/run) for a value that is *wrong in
+  a worktree* (returns `900-dead-code-paydown`, not `koine`) and then never compared.
 
-### US-2 — KCS's status moves only on a clean pass, and DR-10 is stated as downstream (2026-09-03)
+**Class B — 1 duplicated implementation, recorded not deleted.** Relative Markdown link
+resolution exists in both doc guards. Measured: `check-doc-integrity` reaches 56 md files /
+1384 links (before this story) incl. `#anchor` targets and the status mirrors;
+`check-doc-links` reaches 57 / 1371, no anchors. **1371 of 1371** of the latter's md-link
+checks are duplicated, more strictly, by the former. Its unique value is 8 bare `docs/…`
+citations in `.chief/verify-test.sh` + `tasks/chief/91-*.json` + `tasks/chief/92-*.json`.
+Left in place deliberately: `guard-doc-links` is a **ratchet** and `guard-doc-integrity` is
+a **wall**, so merging them changes the merge gate's failure semantics — a behaviour change,
+not a removal. If ever taken, the answer is fold `BARE_DOC` into `check-doc-integrity` and
+retire `check-doc-links` whole. Also B-2: the 4th status mirror (CLAUDE.md prose) that no
+guard checks — recorded so a sweep does not "simplify" it away.
 
-**The branch taken.** AC1 is conditional and its condition is false — US-1's walk left blocking
-delta **R** — so this took the **not-clean** branch of AC3: **`specs/conformance-scenario.md` stays
-0.3.0 Candidate**, no version moves, no clause moves, and the blocker is named everywhere the old
-"a re-validation, no fold" reading lived.
+**Class C — 5 survivors, each with the reason.** 8 registry rows with 0 in-repo citations
+(`descended_from`, `caused_by`, `cine:scene_of`, `media:mentions`, `soc:employed_by`,
+`soc:resides_in`, `…model+coreml`, `…model+tflite`) — published vocabulary vendored
+downstream, and a relation's signature is immutable once published, so removal is not an
+available move. The `tasks/chief/completed/` skip — structurally identical to A-3, opposite
+verdict, because the directory exists; hides 0 dead citations today (replayed `BARE_DOC`
+over all 45 records) so it is *deliberately unexercised*, not dead. `--json`/`--strict`/
+`--list` — settable by hand, so not "flags that can no longer be set". `SKIP_DIR`/`SKIP_EXT`.
+The schema fixtures (exercised by `check-schemas.mjs`).
 
-**Files changed**
-- `specs/conformance-scenario.md` — header date → 2026-09-03; *Pressure test* gains five paragraphs
-  (the walk, the replay/hand-walk split, the half-flip and delta R, what it costs, DR-10's
-  discharge-as-qualification, and **which rule a future promotion is under**); §7.2 gains an
-  evidence note (*the fold is incomplete, not reopened*); a new **Editorial** changelog entry.
-- `specs/README.md` — the grandfather paragraph's tail ("leaving that fold's own re-validation as
-  what remains") was stale the moment the walk landed; it now says the walk happened, did not clear
-  it, and that a promotion is under the ordinary conformance-gated rule.
-- `docs/reference/promotability.md` — the KCS row's blocker cell and ladder item 2 rewritten.
-- `ROADMAP.md` — the "Two of the six specs have no row here" paragraph (KCS has no Phase 1 row).
-- `CLAUDE.md` — the *Current state* KCS bullet (the mirror **no guard checks**).
-- `scenarios/kcs-format-stress.md` — one note under the DR-10 table splitting DR-10 into the
-  qualification (discharged) and the drift (untouched, downstream, unowned).
+**9 empty searches recorded** so they are not repeated: 0 orphan `.md` of 57, 0 orphan
+schemas, 0 unreferenced `$defs` of 10 (80 `$ref`s all resolve), 0 real duplicated
+subschemas, 0 orphan entity types / enum tokens, 0 commented-out code blocks, no
+`package.json`, 0 dead branches in `verify.sh`, 0 unrun guard scripts.
 
-**How "no clause moved" was proved, rather than eyeballed.** `git show HEAD:specs/…` sliced on `##`
-headers and compared section by section: **§1–§6 and §8 byte-identical**. The whole diff's *removed*
-lines are exactly two — the header date and the old "Candidate pending re-validation" sentence.
-Everything else is additive, and §7 is Open questions, not normative surface.
+### Learnings for future iterations
 
-**Gates.** `node scripts/check-doc-integrity.mjs` → OK (56 files, **1383** links, 3 status tables
-match their headers). `.chief/verify.sh --run` over all six changed paths → all selected gates green
-(`doc-links: 0 dead vs 2 on main`). `.chief/verify-test.sh` → 30 passed, 0 failed.
-
-**Learnings for future iterations**
-- **The not-clean branch is cheap precisely because the status did not move.** Every counting and
-  ranking clause CLAUDE.md warns about ("1 of 6", `specs/README.md` § the ratification gate,
-  `scenarios/README.md`) stays correct untouched — the blast radius of this tasklist was avoided by
-  the outcome, not by care. Confirmed by sweeping `KCS` across `*.md` after the edits.
-- **A conditional AC ("IF clean … / IF not clean …") still needs the unconditional half of the other
-  branch.** AC1's parenthetical — *say what standard this promotion is under* — is worth answering
-  even when no promotion happens, because that is the sentence the next owner will need. It landed
-  in the spec's *Pressure test* + changelog and in `specs/README.md`'s grandfather paragraph.
-- **`specs/README.md`'s grandfather paragraph is a fifth, unguarded mirror of KCS's gate.** It is not
-  one of the three checked status tables and it is not the *Current state* prose either; it carries
-  the sentence "leaving that fold's own re-validation as what remains", which any KCS gate change
-  makes stale. Grep it whenever KCS's count moves.
-- **When a finding splits into two things, say so at its definition site.** DR-10 is now a
-  *qualification* (discharged) and a *drift* (untouched, downstream, unowned). A reader landing on
-  the DR-10 row from `scenarios/README.md`'s index would otherwise read "unowned today" and assume
-  the re-validation is still blocked on it.
+- **The whole Class-A set is one file and one commit's worth of work.** US-2's "reviewable
+  steps rather than one sweep" is satisfiable as A-1+A-2 (the two never-existed exception
+  files), then A-3, then A-4 — three commits, each re-running the gate. A-4 is the only one
+  that changes runtime behaviour (removes 65 subprocess spawns per run).
+- **Before deleting anything in `check-doc-links.mjs`, confirm the guard still reports
+  `0 dead vs 0 on main`.** The ratchet's base comparison spawns a temporary worktree of
+  `main` and runs the OLD script there, so a removal is compared against the pre-removal
+  behaviour — that is exactly the right test and it is free.
+- **US-3's undecidability register is already seeded**: the inventory's closing paragraph
+  states the method's limit (static, scoped to this tree; koine exists to be consumed from
+  outside it) and C-1's registry rows are the concrete case. US-3 should extend that, not
+  re-derive it.
+- The research map for this tasklist was accurate as far as it went; nothing in it needed
+  correcting.
