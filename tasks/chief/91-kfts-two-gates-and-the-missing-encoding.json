@@ -24,8 +24,8 @@
     {
       "id": "US-1",
       "title": "Gate (i) — the additive intake fold is executed, not just read as clean",
-      "passes": false,
-      "notes": null,
+      "passes": true,
+      "notes": "Gate (i) EXECUTED by hand 2026-09-03 against KFT 0.7.0 as published (not just re-read): NOT CLEAN. 4 of 5 deltas flip (FT-M/FT-O/FT-P/FT-Q) + Steps 1/6/7 hold as regression; FT-N half-flips -> new delta FT-W (KMI 0.3.5 MA-5 gave dataset.records[] a second egress carrier on the §2 envelope; no clause ranks the two; opposite absence defaults). Count (i) changes shape to \"fold FT-W then re-run\". No version and no clause moved. koine gates green: doc-integrity OK (3 status tables match headers), doc-links 0 dead vs 0 on main, tasklist-categories OK (2 categorized), schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures), registry OK (29 relations); .chief/verify.sh --run over the changed paths: 30 passed, 0 failed, all selected gates green.",
       "acceptanceCriteria": [
         "The FT-M…FT-Q producer-exhaust intake fold is walked and its verdict recorded. The ladder says it 'walks clean as written but has not been executed' — executing it is this story, and a record that repeats 'walks clean' without a run does not discharge it.",
         "GATES: koine's own checks green."
