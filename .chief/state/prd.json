@@ -44,8 +44,8 @@
     {
       "id": "US-3",
       "title": "The other two specs' counts are decremented, and only those",
-      "passes": false,
-      "notes": null,
+      "passes": true,
+      "notes": "KCB count (iii) and KMI count (i) both recorded as NOT cleared, in promotability.md and in each spec's own gate paragraph (KCB SS3.1, KMI SS7.1) plus an Editorial changelog entry each. KCB: Steps 6/7 flip, MA-6/MA-8/MA-9 hold, Step 5 breaks on ADR-0014's unwritten clause. KMI: Steps 8/9 flip, MA-5 does not reproduce, Step 10 breaks on new delta MA-12. NEITHER PROMOTED - stated explicitly in both specs, both promotability rows, the closing section, ROADMAP and CLAUDE.md (one of five and one of two is not a promotion). 'Cheapest first' RE-ORDERED: KINP 5 -> 4, above KMI, because the walk left KINP zero koine-side work while leaving KMI a new fold plus another re-run; KINP deliberately does not overtake KCS/KFT because its encoding extension is bounded by MA-11 / KCS open question 1. No version moves and no clause moves - CONFIRMED by section-slicing both specs against HEAD: KCB 25 of 28 sections identical, KMI 19 of 22, the three changed in each being title block / gate section / Changelog, and the only deleted line in either file is 'Last updated' (96 insertions, 2 deletions). GATES GREEN: check-doc-integrity OK (all 3 status tables match headers), check-doc-links 0 dead references, check-tasklist-categories OK 6 tasklists, check-schemas OK (9 schemas, 80 $refs), check-registry OK (29 relations), .chief/verify.sh 'all selected gates green', verify-test 30 passed 0 failed.",
       "acceptanceCriteria": [
         "KCB's count from Steps 5–7 and KMI's from Steps 8–10 are recorded as cleared-or-not in `docs/reference/promotability.md` and in each spec's own gate paragraph. The ladder is one line per spec and must stay accurate after this walk.",
         "NEITHER KCB NOR KMI IS PROMOTED HERE. KCB has five counts and KMI two; this clears at most one each. Say so explicitly — the failure this whole page exists to prevent is a reader concluding a spec is promotable from a single satisfied gate.",

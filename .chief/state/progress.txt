@@ -99,3 +99,47 @@ tasklists · `check-schemas` OK · `check-registry` OK · `.chief/verify.sh` →
   future story ever does flip one.
 - `docs/reference/promotability.md` states its own rule that it carries **no current-version
   column** deliberately, precisely so it does not become a fifth unchecked mirror. Do not add one.
+
+## US-3 — The other two specs' counts are decremented, and only those (2026-09-03)
+
+**Outcome: neither count closes, and neither spec is promoted.** KCB stays Candidate on all five
+counts; KMI stays Candidate on both.
+
+- **KCB count (iii)** (Steps 5–7) — Steps 6 and 7 flip, and inside Step 5 all three deltas 0.4.9
+  folded (MA-6, MA-8, MA-9) **hold under re-attack**. Step 5 breaks on **ADR-0014**'s
+  decided-but-unwritten clause — the count the ADR itself said it would land with. The count changed
+  shape a second time: from *re-run* to *write ADR-0014's four-part clause, then re-run Steps 5–7*.
+- **KMI count (i)** (Steps 8–10) — Steps 8 and 9 flip and **MA-5 does not reproduce**. Step 10
+  breaks on **MA-12**. Shape change: *fold MA-12 (two-spec, KCB §4 + KMI §7.1(f)), then re-run*.
+
+Files changed: `specs/capability-bus.md` (§3.1 gate paragraph + Editorial changelog + Last updated),
+`specs/media-interchange.md` (same shape), `docs/reference/promotability.md` (both rows, both owner
+cells, ranking re-ordered, closing section rewritten), `decisions/ADR-0014-*.md` (amendment),
+`ROADMAP.md` (re-run row → ✅ with per-step verdict, two follow-on ⬜ rows, KCB/KMI re-ratify rows,
+Phase F1 intro), `CLAUDE.md` (KCB + KMI *Current state* bullets).
+
+**The ranking DID change and was re-ordered: KINP 5 → 4, above KMI.** Reason stated in the page: the
+walk left KINP with **no koine-side work at all** while leaving KMI a *new fold* plus another re-run,
+so KMI got more expensive and KINP got cheaper. KINP deliberately does **not** overtake KCS or KFT —
+its remaining blocker (extending `kcs:multi-authority`) is bounded by MA-11 / KCS open question 1, so
+KCS's own unresolved question sits upstream of it. That is a dependency argument, not a volume one,
+and it is written into the entry so the next reader does not re-derive it.
+
+### Learnings for future iterations
+- **A not-clean re-run does not just fail a count — it can change the count's shape twice.** Both
+  counts went *fold the deltas* → *re-run the folded text* → *fold the NEW delta, then re-run*. When
+  writing a gate paragraph, say what the count reads as **now**, not what it read as at the fold.
+- **ROADMAP rows go stale in pairs.** Flipping the re-run row to ✅ without adding the two follow-on
+  ⬜ rows would have made the phase look finished. If a story closes a roadmap row and leaves work
+  behind, add the successor rows in the same commit.
+- **The section-slice check works just as well for "no clause moved" on a non-status edit.** KCB 25/28
+  and KMI 19/22 sections byte-identical, and `git diff -U0 | grep '^-[^-]'` returning only the
+  `Last updated` line is the one-line proof that an edit was purely additive. Cheap; do it every time.
+- `docs/reference/promotability.md`'s "Cheapest first" list is a plain markdown ordered list — when
+  re-ordering, rewrite the whole span between two entry anchors in one edit and then
+  `grep -n '^[0-9]\. \*\*'` to confirm 1–6 are present exactly once each.
+- **Dispositions records are dated snapshots; do not retro-edit them.**
+  `federation-fold-dispositions.md` and `capability-versioning-fold-dispositions.md` describe what a
+  past fold did and stay correct as history. The live surfaces are the spec gate paragraphs,
+  `promotability.md`, `ROADMAP.md` and `CLAUDE.md`. An **ADR** is the exception — ADR-0014 got an
+  *Amendment* because the walk confirmed its prediction, which is new information about the decision.
