@@ -1,3 +1,79 @@
 # Chief Progress — 90-the-read-and-confirm-pass
 Started: Thu Sep  3 01:05:38 CDT 2026
 ---
+
+## Codebase Patterns
+
+- **A "re-validation" lands as an appended section in the scenario, never as an edit to the
+  original attempts.** Precedent: `scenarios/e2e-multi-authority.md` § *Re-run — Steps 1–10
+  walked by hand against the folded text*. The original pass's Findings table stays as the
+  record of what THAT pass found; a new delta gets a one-paragraph "not in the table above,
+  deliberately" pointer under it (the MA-12 pattern) and is defined once in the new section.
+- **Doc-integrity anchors: em-dashes collapse to a SINGLE hyphen.** `### Findings — from the
+  re-validation` → `#findings-from-the-re-validation`, not `#findings--from-...`. Guessing the
+  GitHub double-hyphen form fails the guard.
+- **Retiring a tasklist deletes `tasks/chief/<n>.json` and breaks every markdown link to it.**
+  That is how `main` was left red on doc-integrity here. Cite a tasklist as a plain code span
+  (`` `chief/89` ``), never as a relative link — that is already the convention for every other
+  retired tasklist in ROADMAP.md.
+- **Run the gates the way the merge gate will:**
+  `git diff --name-only HEAD | .chief/verify.sh --plan` to see the selection, then
+  `.chief/verify.sh --run <files…>`. A bare `--plan` reads stdin and reports nothing under an
+  agent shell.
+
+---
+
+### US-1 — The re-validation is walked, with the 0.3.0 clause hand-checked (2026-09-03)
+
+**What I did.** Walked KCS 0.3.0's re-validation by hand against `scenarios/kcs-format-stress.md`,
+which is the single count KCS's *Pressure test* section names.
+
+**Files changed**
+- `scenarios/kcs-format-stress.md` — new § *Re-validation — KCS 0.3.0, walked 2026-09-03*: an
+  explicit replay-vs-hand-walk evidence table, per-delta verdict table, the walk of each attempt,
+  delta **R** defined once, a correction to Attempt 3's own sketch, and the verdict.
+- `scenarios/README.md` — the KCS row's Deltas cell is now `M…Q, **R**` and its encoding cell
+  records the 2026-09-03 walk and its not-clean outcome.
+- `decisions/ADR-0014-*.md`, `docs/reference/promotability.md` — de-linked 8 dangling
+  `tasks/chief/89-*.json` references (pre-existing red on main, unrelated to this story).
+
+**The verdict, so the next iteration does not have to re-derive it: NOT CLEAN.**
+- Regression set (folded at 0.2.0) **flips**: M, N, O and the assertion half of P, three of them
+  corroborated by the 2026-08-24 run rather than by this reading alone.
+- P carries one **declared residual**: the clause is complete (§4 states exceeded → fails
+  liveness) but a green run never exceeded a timeout, so the firing path is unexercised. Recorded,
+  not opened as a delta — it is a suite coverage gap, and closing it is downstream.
+- **Delta Q half-flips.** Byte equality is forbidden normatively (that half is clean). The other
+  half of Attempt 3's break — catching a renderer that changed the output shape — does **not**
+  close: §5 constrains `structure_matches` only negatively and fixes its comparison basis nowhere.
+  Three legs: no declaration site in §2/§3 (the word "declared" points at a slot the format lacks,
+  and the signature is fixed at two operands); no plane anchor (every other §5 predicate delegates
+  to a named clause one plane over — this group has no plane, and KMI §3's lineage relations,
+  the nearest specified vocabulary, are unreached); and both operands are `asset` ids, i.e. hashes
+  of deliberately-differing bytes, so the predicate must dereference to something §5 never names.
+  Two conformant runners, two truth values, and §4's content-addressed report hides the divergence.
+  → **delta R, High, blocking.**
+- **DR-10's qualification is discharged** by this walk (the spec said a hand-walk still could), and
+  R is what was under it. A replay could not have found R even with the predicate implemented:
+  one runner is internally consistent, so an open basis is invisible from inside it.
+
+**Gates.** `node scripts/check-doc-integrity.mjs` → OK (56 files, 1370 links, 3 status tables match
+their headers). `.chief/verify.sh --run` over the changed paths → guard-doc-integrity,
+guard-doc-links, verify-selftest all green; verify-selftest 30 passed, 0 failed.
+
+**Learnings for future iterations**
+- **US-2 must take the not-clean branch.** Its first AC is conditional ("IF the re-validation is
+  clean") and it is not — so `specs/conformance-scenario.md` stays **0.3.0 Candidate**, no version
+  moves, no clause moves, and the blocker to name is delta **R**. Do NOT touch §5's normative text:
+  R is a finding, and folding it is a minor revision gated by a pressure test, out of this
+  tasklist's stated scope ("the re-validation and KCS's own status").
+- Because the status does not move, the **four status mirrors and every counting/ranking clause**
+  CLAUDE.md warns about (`ROADMAP.md`'s "1 of 6" line, `specs/README.md` § the ratification gate,
+  `docs/reference/promotability.md`, `scenarios/README.md`) stay correct as written. That is most
+  of the blast radius of this tasklist, and it is avoided by the outcome, not by care.
+- US-2's remaining work is therefore: an **Editorial** changelog entry + a *Pressure test* update
+  in `specs/conformance-scenario.md` (record the walk, name R, restate the count, keep 0.3.0
+  Candidate), evidence for R under §7.2 (the fold is incomplete, not reopened), the KCS row + the
+  ladder item 2 in `docs/reference/promotability.md` with **DR-10 stated as downstream and
+  explicitly unowned**, the ROADMAP Phase 1 note at line ~158-162, and the CLAUDE.md *Current
+  state* KCS bullet (not guard-checked — update by hand and read it back).
