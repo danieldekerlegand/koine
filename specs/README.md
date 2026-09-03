@@ -92,7 +92,12 @@ of the prose pass that gated it — and the debt was tracked, not merely noted. 
 
 Paying the debt does not by itself promote KCS: it is at `candidate` on its own 0.3.0 determinism
 fold, so it re-enters at the ordinary gate — which the discharged debt now satisfies, leaving that
-fold's own re-validation as what remains.
+fold's own re-validation as what remains. **That re-validation was walked by hand on 2026-09-03 and
+did not clear it**: the fold half-flips, `structure_matches` having a normative *MUST NOT be byte
+equality* and no statement of what it does compare, so the count changed shape rather than closing
+(new blocking delta **R** — see [`conformance-scenario.md`](conformance-scenario.md) *Pressure test*).
+KCS stays `candidate`, and when it does promote it is under **this** rule and not the grandfathered
+one — the grandfather clause does not survive a demotion.
 
 **What forces the debt to be paid.** The grandfather clause does not survive a demotion. When a
 grandfathered spec's model shape changes and its status returns to `candidate`, it re-enters the

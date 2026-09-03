@@ -3,7 +3,11 @@
   "category": "unblock",
   "branchName": "chief/90-the-read-and-confirm-pass",
   "dependsOn": [],
-  "touches": ["specs", "scenarios", "docs"],
+  "touches": [
+    "specs",
+    "scenarios",
+    "docs"
+  ],
   "iters": 5,
   "warmup": [
     "sed -n '/^2\\. \\*\\*KCS/,/^3\\. \\*\\*KFT/p' docs/reference/promotability.md",
@@ -16,8 +20,8 @@
     {
       "id": "US-1",
       "title": "The re-validation is walked, with the 0.3.0 clause hand-checked",
-      "passes": false,
-      "notes": null,
+      "passes": true,
+      "notes": "Walked by hand 2026-09-03 against KCS 0.3.0 as published; recorded in scenarios/kcs-format-stress.md ('Re-validation — KCS 0.3.0, walked 2026-09-03'). Replay vs hand-walk split stated in an explicit evidence table and per-delta: M/N/O + the assertion half of P lean on the 2026-08-24 run of kcs:format-stress; Q in full, the firing half of P, and the clause re-read behind every replayed delta are hand-walked, because DR-10 leaves the runner without structure_matches. Per-delta verdict: M/N/O flip (replay-corroborated), P flips in prose with one declared residual (green run never exceeded a timeout, so the exceeded->fails-liveness path is unexercised), Q HALF-FLIPS -> new blocking delta R. Also recorded a correction to Attempt 3's own sketch: source_world_is(<render>, world) contradicts KMI §2 delta H (generated => null); the format expresses the correct form, so no delta. GATES: node scripts/check-doc-integrity.mjs OK (56 files, 1370 links, 3 status tables match); .chief/verify.sh --run over the changed paths: all selected gates green, verify-selftest 30 passed 0 failed. Fixed 8 pre-existing dangling links to the retired tasks/chief/89-*.json that had left main red on doc-integrity.",
       "acceptanceCriteria": [
         "The 0.3.0 determinism fold (delta Q: `structure_matches` and the stability rules it carries) is re-validated against the existing scenario, with the `structure_matches` clause HAND-walked because DR-10 makes a machine replay of it impossible.",
         "The rest of the pass may lean on the running encoding, and the record says which parts were replayed and which were hand-walked. Mixing the two silently is how a green replay gets read as a full verdict — the same failure DR-7 and DR-8 record against KCB.",
@@ -27,8 +31,8 @@
     {
       "id": "US-2",
       "title": "KCS's status moves only on a clean pass, and DR-10 is stated as downstream",
-      "passes": false,
-      "notes": null,
+      "passes": true,
+      "notes": "Not-clean branch taken: the US-1 walk found new blocking delta R, so specs/conformance-scenario.md STAYS 0.3.0 Candidate — no version and no clause moved (verified by section-slicing HEAD vs new: §1-§6 and §8 byte-identical; only the header date, the Pressure-test gate sentence, a §7.2 evidence note and a new Editorial changelog entry differ, and the only removed lines are those two). Blocker named in five places: the spec's Pressure test (new 'The re-validation, walked 2026-09-03' block + §7.2 note + Editorial changelog entry, which also states the standard a future promotion is under — the ordinary conformance-gated rule, since 0.2.0's grandfathering does not survive a demotion and its artefact debt was paid 2026-08-19), specs/README.md's grandfather paragraph, docs/reference/promotability.md (KCS row + ladder item 2), ROADMAP.md's 'two of the six have no row here' paragraph, and CLAUDE.md's Current state bullet. Count changed shape: 'fold R, then re-validate again', unowned. DR-10 recorded as DOWNSTREAM under ADR-0001 and explicitly UNOWNED in promotability.md (row + item 2) and in the scenario's DR-10 section, split into the qualification (discharged by the hand-walk) and the drift (untouched); nothing in the downstream vocabulary was edited from this repo. GATES: node scripts/check-doc-integrity.mjs OK (56 files, 1383 links, 3 status tables match headers); .chief/verify.sh --run over the 6 changed paths: all selected gates green (doc-links 0 dead vs 2 on main); .chief/verify-test.sh 30 passed, 0 failed.",
       "acceptanceCriteria": [
         "IF the re-validation is clean: `specs/conformance-scenario.md` moves to **ratified**, with the walk named in a changelog entry. Note KCS was grandfathered under the previous rule at 0.2.0 — say what standard this promotion is under.",
         "DR-10 is recorded in `docs/reference/promotability.md` as DOWNSTREAM work with an owner named or explicitly unowned. It must not be closed here by editing the downstream vocabulary from this repo — koine specifies, and the vocabulary lives with its implementation.",

@@ -1,55 +1,42 @@
 {
   "project": "koine",
   "category": "unblock",
-  "branchName": "chief/89-the-re-run-three-specs-wait-on",
+  "branchName": "chief/90-the-read-and-confirm-pass",
   "dependsOn": [],
   "touches": [
-    "scenarios",
     "specs",
+    "scenarios",
     "docs"
   ],
-  "iters": 6,
+  "iters": 5,
   "warmup": [
-    "sed -n '/^5\\. \\*\\*KINP/,/^6\\. \\*\\*KCB/p' docs/reference/promotability.md",
-    "sed -n '1,60p' scenarios/e2e-multi-authority.md",
-    "grep -n 'Step ' scenarios/e2e-multi-authority.md | head -12",
-    "grep -m2 -n '^\\*\\*Spec version\\|^\\*\\*Status' specs/identity.md"
+    "sed -n '/^2\\. \\*\\*KCS/,/^3\\. \\*\\*KFT/p' docs/reference/promotability.md",
+    "grep -n 'structure_matches' -r specs/ scenarios/ docs/ | head",
+    "grep -n 'DR-10' -r docs/ | head -4",
+    "grep -m2 -n '^\\*\\*Spec version\\|^\\*\\*Status' specs/conformance-scenario.md"
   ],
-  "description": "Re-run `scenarios/e2e-multi-authority.md` against the folded text. This is the single cheapest promotion left on the ladder after KGP, and it is the one thing THREE specs' counts sit on.\n\nWHAT IT SERVES, per docs/reference/promotability.md (the ladder of record, updated 2026-08-28): the WHOLE of KINP's gate (Steps 2/3/4/6 must flip; Step 1 is the regression set), one of KCB's five counts (Steps 5–7), and one of KMI's two (Steps 8–10). The ladder's own words: 'This is the single thing three specs' counts now sit on, and it is unowned in every repo.'\n\nWHY KINP IS READY FOR IT. The four blocking deltas plus MA-7 landed at 0.4.0 on 2026-08-26 — §6's convergence target is domain-scoped, §4.5 has its fail-closed fourth branch, §4.2 has `world_aligns_with`, §4.1 carries the weakest issuer, §3.4 names the prefix registry as the one non-federated commons. None required redesign; every one is additive. 'What remains is a single re-run and nothing else — KINP has no second count, no downstream deliverable of its own, and no fold outstanding.'\n\nTHIS IS A HAND-WALK, NOT A REPLAY. The ladder is explicit that KINP ranks below KCS and KFT only because its re-run is 'a full four-step hand-walk of a not-clean pass rather than a read-and-confirm'. Do not discharge it by re-running an encoding and reading the exit code — and note the standing warning attached to this very scenario: `kcs:multi-authority` came back GREEN over a pass with six blocking deltas open (DR-8). A green encoding is not the verdict here.\n\nWHAT THIS TASKLIST DOES NOT DO. It does not promote KCB or KMI. It clears ONE of KCB's five counts and one of KMI's two; both remain candidate afterwards and this record must say so rather than implying a fabric-wide unlock.",
+  "description": "KCS 0.3.0's re-validation — the cheapest item on the promotability ladder after KGP, and unowned.\n\nWHY IT IS CHEAP. Per docs/reference/promotability.md: 'a re-validation, no fold... The 0.3.0 change was additive and backward-compatible against a scenario that exists and whose encoding runs. This is a read-and-confirm pass, and nobody owns it.'\n\nTHE SNAG THAT MAKES IT NOT TRIVIAL — DR-10. 'the downstream §5 vocabulary has no `structure_matches`, which is the predicate the 0.3.0 fold IS, so the re-validation cannot be discharged by a machine replay of that clause — a hand-walk still can, and the drift is downstream work either way.' So the fold's own predicate is missing from the downstream vocabulary: the one clause this version added is exactly the one a replay cannot check.\n\nSCOPE. The re-validation and KCS's own status. The downstream vocabulary drift is named, not fixed here — it belongs to whoever owns that vocabulary, and this tasklist's job is to state it rather than absorb it.",
   "userStories": [
     {
       "id": "US-1",
-      "title": "The four steps are walked by hand, and the verdict is per-step",
+      "title": "The re-validation is walked, with the 0.3.0 clause hand-checked",
       "passes": true,
-      "notes": "Hand-walked Steps 1-10 against KINP 0.4.0 / KCB 0.5.0 / KMI 0.3.5 section by section; per-step verdicts recorded, not an aggregate. Steps 1,2,3,4,6,7,8,9 flip-or-hold; Steps 5 and 10 do NOT flip and each names its blocker in full (Step 5: ADR-0014's decided-but-unwritten clause, verified by grep that no deprecation field exists in KCB SS2/SS3; Step 10: new delta MA-12, verified that KCB SS4 fetch defines no response vocabulary and cites KMI SS7.1(f) nowhere). Not a replay of kcs:multi-authority - DR-8 stated as the reason. GATES: check-doc-integrity.mjs OK (56 files, 1348 links, 3 status tables match), check-doc-links.mjs 0 dead refs - green. Also fixed 2 pre-existing red links to tasks/chief/87-*.json (moved to completed/ by the retire commit).",
+      "notes": "Walked by hand 2026-09-03 against KCS 0.3.0 as published; recorded in scenarios/kcs-format-stress.md ('Re-validation — KCS 0.3.0, walked 2026-09-03'). Replay vs hand-walk split stated in an explicit evidence table and per-delta: M/N/O + the assertion half of P lean on the 2026-08-24 run of kcs:format-stress; Q in full, the firing half of P, and the clause re-read behind every replayed delta are hand-walked, because DR-10 leaves the runner without structure_matches. Per-delta verdict: M/N/O flip (replay-corroborated), P flips in prose with one declared residual (green run never exceeded a timeout, so the exceeded->fails-liveness path is unexercised), Q HALF-FLIPS -> new blocking delta R. Also recorded a correction to Attempt 3's own sketch: source_world_is(<render>, world) contradicts KMI §2 delta H (generated => null); the format expresses the correct form, so no delta. GATES: node scripts/check-doc-integrity.mjs OK (56 files, 1370 links, 3 status tables match); .chief/verify.sh --run over the changed paths: all selected gates green, verify-selftest 30 passed 0 failed. Fixed 8 pre-existing dangling links to the retired tasks/chief/89-*.json that had left main red on doc-integrity.",
       "acceptanceCriteria": [
-        "Steps 2, 3, 4 and 6 are walked against the CURRENT folded spec text and each gets its own recorded verdict. Step 1 is walked as the regression set. A single overall pass/fail hides which delta the fold actually closed.",
-        "The walk is by hand against the prose, not a machine replay of `kcs:multi-authority`. DR-8 records that encoding returning GREEN over a pass with six blocking deltas open — so the encoding's verdict is evidence about the encoding, not about the spec.",
-        "Every step that does NOT flip is recorded with what still blocks it, in the same detail the original pass used. A partial result is a legitimate outcome of this story; a rounded-up one is not.",
+        "The 0.3.0 determinism fold (delta Q: `structure_matches` and the stability rules it carries) is re-validated against the existing scenario, with the `structure_matches` clause HAND-walked because DR-10 makes a machine replay of it impossible.",
+        "The rest of the pass may lean on the running encoding, and the record says which parts were replayed and which were hand-walked. Mixing the two silently is how a green replay gets read as a full verdict — the same failure DR-7 and DR-8 record against KCB.",
         "GATES: koine's own checks green."
       ]
     },
     {
       "id": "US-2",
-      "title": "KINP is promoted only if its whole gate flipped",
+      "title": "KCS's status moves only on a clean pass, and DR-10 is stated as downstream",
       "passes": true,
-      "notes": "KINP NOT promoted - status stays Candidate, version stays 0.4.0. All four gating steps (2/3/4/6) flip and Step 1 holds, so the prose leg is discharged; but criterion 1's premise 'nothing else gates it' is contradicted by specs/README.md's normative ratification gate, which also requires a KCS encoding whose assertions cite the clauses being ratified. kcs:multi-authority predates the fold and asserts none of them (DR-8), so criterion 2 is the one that applies: blocker named in specs/identity.md SS11 decision 1 + a new Editorial changelog entry, and in docs/reference/promotability.md (KINP row, owner column, ranking entry 5). Byte-unchanged CONFIRMED by slicing HEAD:specs/identity.md and the new file on section headers: SS0-SS10 and SS11 decisions 2/3 all 'same' - no claim id moves; only 4 diff hunks (Last updated, gate paragraph, 1 stale sentence, changelog). GATES GREEN: check-doc-integrity OK (all 3 status tables match headers), check-doc-links 0 dead references, check-tasklist-categories OK 6 tasklists, check-schemas OK, check-registry OK, .chief/verify.sh -> verify-test 30 passed 0 failed, 'all selected gates green'.",
+      "notes": "Not-clean branch taken: the US-1 walk found new blocking delta R, so specs/conformance-scenario.md STAYS 0.3.0 Candidate — no version and no clause moved (verified by section-slicing HEAD vs new: §1-§6 and §8 byte-identical; only the header date, the Pressure-test gate sentence, a §7.2 evidence note and a new Editorial changelog entry differ, and the only removed lines are those two). Blocker named in five places: the spec's Pressure test (new 'The re-validation, walked 2026-09-03' block + §7.2 note + Editorial changelog entry, which also states the standard a future promotion is under — the ordinary conformance-gated rule, since 0.2.0's grandfathering does not survive a demotion and its artefact debt was paid 2026-08-19), specs/README.md's grandfather paragraph, docs/reference/promotability.md (KCS row + ladder item 2), ROADMAP.md's 'two of the six have no row here' paragraph, and CLAUDE.md's Current state bullet. Count changed shape: 'fold R, then re-validate again', unowned. DR-10 recorded as DOWNSTREAM under ADR-0001 and explicitly UNOWNED in promotability.md (row + item 2) and in the scenario's DR-10 section, split into the qualification (discharged by the hand-walk) and the drift (untouched); nothing in the downstream vocabulary was edited from this repo. GATES: node scripts/check-doc-integrity.mjs OK (56 files, 1383 links, 3 status tables match headers); .chief/verify.sh --run over the 6 changed paths: all selected gates green (doc-links 0 dead vs 2 on main); .chief/verify-test.sh 30 passed, 0 failed.",
       "acceptanceCriteria": [
-        "IF Steps 2/3/4/6 all flip and Step 1 holds: `specs/identity.md` moves to **ratified** — banner, version line, and a changelog entry naming the walk. KINP has no second count and no downstream deliverable, so nothing else gates it.",
-        "IF ANY step fails to flip: the status does NOT move, and the remaining blocker is named in the spec and in `docs/reference/promotability.md`. KGP's promotion is the standing precedent and the ladder states the bar: it 'cost an artifact plus an audit of that artifact — not a status edit'.",
-        "Clause text outside any changed gate paragraph is byte-unchanged and no claim id moves. Confirm it rather than assume it.",
-        "GATES: koine's own checks green."
-      ]
-    },
-    {
-      "id": "US-3",
-      "title": "The other two specs' counts are decremented, and only those",
-      "passes": true,
-      "notes": "KCB count (iii) and KMI count (i) both recorded as NOT cleared, in promotability.md and in each spec's own gate paragraph (KCB SS3.1, KMI SS7.1) plus an Editorial changelog entry each. KCB: Steps 6/7 flip, MA-6/MA-8/MA-9 hold, Step 5 breaks on ADR-0014's unwritten clause. KMI: Steps 8/9 flip, MA-5 does not reproduce, Step 10 breaks on new delta MA-12. NEITHER PROMOTED - stated explicitly in both specs, both promotability rows, the closing section, ROADMAP and CLAUDE.md (one of five and one of two is not a promotion). 'Cheapest first' RE-ORDERED: KINP 5 -> 4, above KMI, because the walk left KINP zero koine-side work while leaving KMI a new fold plus another re-run; KINP deliberately does not overtake KCS/KFT because its encoding extension is bounded by MA-11 / KCS open question 1. No version moves and no clause moves - CONFIRMED by section-slicing both specs against HEAD: KCB 25 of 28 sections identical, KMI 19 of 22, the three changed in each being title block / gate section / Changelog, and the only deleted line in either file is 'Last updated' (96 insertions, 2 deletions). GATES GREEN: check-doc-integrity OK (all 3 status tables match headers), check-doc-links 0 dead references, check-tasklist-categories OK 6 tasklists, check-schemas OK (9 schemas, 80 $refs), check-registry OK (29 relations), .chief/verify.sh 'all selected gates green', verify-test 30 passed 0 failed.",
-      "acceptanceCriteria": [
-        "KCB's count from Steps 5–7 and KMI's from Steps 8–10 are recorded as cleared-or-not in `docs/reference/promotability.md` and in each spec's own gate paragraph. The ladder is one line per spec and must stay accurate after this walk.",
-        "NEITHER KCB NOR KMI IS PROMOTED HERE. KCB has five counts and KMI two; this clears at most one each. Say so explicitly — the failure this whole page exists to prevent is a reader concluding a spec is promotable from a single satisfied gate.",
-        "`promotability.md`'s 'Cheapest first' ranking is re-ordered if this walk changed the ordering. The ranking is the point of that page, and a stale ranking is worse than none.",
+        "IF the re-validation is clean: `specs/conformance-scenario.md` moves to **ratified**, with the walk named in a changelog entry. Note KCS was grandfathered under the previous rule at 0.2.0 — say what standard this promotion is under.",
+        "DR-10 is recorded in `docs/reference/promotability.md` as DOWNSTREAM work with an owner named or explicitly unowned. It must not be closed here by editing the downstream vocabulary from this repo — koine specifies, and the vocabulary lives with its implementation.",
+        "IF the pass is not clean, the status does not move and the blocker is named. A read-and-confirm that confirms nothing is a legitimate outcome.",
         "GATES: koine's own checks green."
       ]
     }

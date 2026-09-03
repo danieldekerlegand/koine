@@ -2,7 +2,7 @@
 
 **Spec version:** 0.3.0
 **Status:** Candidate
-**Last updated:** 2026-08-26
+**Last updated:** 2026-09-03
 **Applies to:** the conformance console (executor) and every participant it drives
 **Depends on:** [`identity.md`](identity.md) (KINP), [`grounding-pack.md`](grounding-pack.md)
 (KGP), [`capability-bus.md`](capability-bus.md) (KCB), [`media-interchange.md`](media-interchange.md)
@@ -179,6 +179,17 @@ Encoding them is a downstream conformance-console tasklist (see `../tasks/chief/
    machine-replayable evidence and Attempt 3 is unclosed downstream. That is a drift finding, not a
    reopening: the clause is unchanged and this spec's *Pressure test* records what it costs the
    pending re-validation.
+   *Re-validated by hand 2026-09-03 — the fold is **incomplete**, not reopened.* The walk found that
+   `structure_matches` is admitted to the fixed core with only a **negative** constraint: its
+   comparison basis is fixed nowhere, there is no slot in which a scenario declares which invariants
+   must match, this group is the one §5 group with no plane clause behind it, and both operands are
+   content hashes of deliberately-differing bytes. Two conformant runners may return different
+   verdicts for one document — new blocking delta **R**
+   ([`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md#findings-from-the-re-validation)).
+   The clause added at 0.3.0 stands as written and is **not** withdrawn; what is missing is its
+   positive content, and supplying it — by delegating the basis to named clauses one plane over, or
+   by giving §2/§3 a declaration slot — is a normal minor revision gated by a pressure test. It is
+   **unowned**, and it is what the single re-validation count now reads as.
 3. **Recording fidelity** — how much stream payload the observation log retains vs. references by
    id (ties to KMI byte transport).
    *Evidence from downstream use, 2026-08-24.* Finding **DR-2** records that the committed run
@@ -268,8 +279,9 @@ Exercised by [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stres
 both hand-written scenarios as KCS). Deltas folded in 0.3.0: **Q** (`structure_matches` and the
 stable-invariant rule, §5/§7.2) in response to Attempt 3's generated-output break. Earlier deltas
 remain in force: **M** (step `id` + `${id.path}` bindings, §2.1/§3), **O** (`expect: ok|reject` +
-`refused`, §3/§5), **N** (`standin` participants, §2), **P** (`timeout_ms`, §2/§3/§4). Candidate
-pending re-validation; §7.1 assertion extensibility and §7.3 recording fidelity remain open.
+`refused`, §3/§5), **N** (`standin` participants, §2), **P** (`timeout_ms`, §2/§3/§4). **Candidate**:
+that re-validation has now been walked, and it did **not** clear it — see *The re-validation, walked
+2026-09-03* below. §7.1 assertion extensibility and §7.3 recording fidelity remain open.
 
 **Downstream evidence (2026-08-24), and the one thing it costs the pending re-validation.** KCS is
 the one spec whose conformance artefact is earned by **use** rather than by a run
@@ -295,7 +307,92 @@ to catch it is a hardcoded count rather than a comparison against §5 — record
 of §7.1. Fixing the runner is downstream work under
 [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**.
 
+**The re-validation, walked 2026-09-03 — not clean, and the count does not close.** The single count
+above was taken by hand against
+[`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md) (§ *Re-validation — KCS
+0.3.0, walked 2026-09-03*), and the record there states **per delta** which evidence carried it,
+because mixing a replay and a reading silently is the error **DR-7** and **DR-8** record against
+[`capability-bus.md`](capability-bus.md) one plane over. *Replay-corroborated:* deltas **M**, **N**,
+**O** and the assertion half of **P** lean on the 2026-08-24 run of `kcs:format-stress` recorded
+above. *Hand-walked:* delta **Q** in full, the firing half of **P**, and the clause re-read behind
+every replayed delta — Q by necessity, since DR-10 leaves the runner without the predicate.
+
+**The regression set flips; the fold under test half-flips.** M, N and O close. P closes in prose
+with one **declared residual**: §4 states that an exceeded `timeout_ms` fails liveness, but no run
+has exceeded one, so the firing path is unexercised — a suite-coverage gap, recorded in the walk and
+deliberately not opened as a delta. **Q half-flips.** Byte equality is forbidden normatively and
+that half is clean; the other half is not. §5 constrains `structure_matches` only **negatively** and
+fixes its comparison basis nowhere: the format has no slot in which a scenario declares *which*
+invariants must match (§2 and §3 have none, and §5 fixes the signature at two operands); the
+*Determinism/invariants* group is the one §5 group with **no plane clause behind it**, where every
+other predicate delegates its meaning to a named clause of KINP, KGP, KMI or KCB; and both operands
+are `asset` ids, i.e. hashes of deliberately-differing bytes, so the predicate must dereference them
+to something §5 does not name. Two conformant runners may therefore return different verdicts for
+one document, and §4's content-addressed report makes that divergence invisible rather than flagging
+it. That is new blocking delta **R**.
+
+**What it costs, and what it does not.** **KCS stays 0.3.0 Candidate.** No version moves and **no
+normative clause moves** — §2, §2.1, §3, §4 and §5 are byte-unchanged by this walk, which is a
+read-and-confirm pass and not a fold. The single count **changes shape** rather than closing: from
+*re-validate the 0.3.0 fold* to **fix `structure_matches`'s basis, then re-validate again** — either
+by delegating the basis to named clauses one plane over (KINP §7.2's attachment, KMI §2's
+`source_world`, KMI §3's lineage relations) or by giving §2/§3 a slot in which a scenario declares
+the invariants it requires to match. That is a normal minor revision gated by a pressure test, and
+it is **unowned**. It is deliberately **not** §7.1 — the escape hatch is for predicates §5 *cannot
+express*, and R is about one §5 *does* express with an open basis — and §7.2 is **not reopened**: the
+clause 0.3.0 added stands as written, and what is missing is its positive content.
+
+**DR-10 is discharged as a qualification without being fixed.** This spec recorded DR-10 as a
+qualification on the re-validation rather than a second gate, on the grounds that a hand-walk could
+still do what a machine replay could not. That is what happened, and **R is what was under it**.
+Worth recording plainly: a replay could not have found R even with the predicate implemented
+downstream, because a single runner is internally consistent and an open comparison basis is
+invisible from inside one implementation of it. The drift itself is untouched by this pass and stays
+**downstream work under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md), unowned** —
+koine specifies the vocabulary and the console implements it, so closing DR-10 from this repo is not
+available.
+
+**Which rule a promotion would be under, when one comes.** KCS 0.2.0 was ratified under the
+**previous** rule and grandfathered past the conformance artefact; the debt was named and was paid on
+2026-08-19 ([`README.md`](README.md#the-ratification-gate)). The grandfather clause does not survive
+a demotion, so 0.3.0 re-enters at the **ordinary, conformance-gated** rule: a future promotion needs
+a clean re-validation **and** the machine-replayable artefact, which for this spec is the attempt at
+the nine documents and is the part already paid.
+
 ## Changelog
+
+- **Editorial** (2026-09-03) — Recorded the **re-validation of the 0.3.0 determinism fold**, walked
+  by hand on 2026-09-03 against
+  [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md) (§ *Re-validation — KCS
+  0.3.0, walked 2026-09-03*), in *Pressure test* and against §7.2. **It is not clean, and the single
+  count does not close.** The regression set flips — **M**, **N**, **O** and the assertion half of
+  **P**, three of them corroborated by the 2026-08-24 run rather than by the reading alone — and **P**
+  carries one declared residual (no run has exceeded a `timeout_ms`, so §4's fails-liveness path is
+  unexercised; a suite-coverage gap, not a delta). **Delta Q half-flips.** Byte equality is forbidden
+  normatively and that half is clean; the other half — catching a renderer that changed the output
+  shape — does not close, because §5 constrains `structure_matches` only **negatively** and fixes its
+  comparison basis nowhere: no declaration slot in §2/§3 (and the signature is fixed at two operands),
+  no plane clause behind the *Determinism/invariants* group where every other §5 predicate has one,
+  and two operands that are hashes of deliberately-differing bytes and so must be dereferenced to
+  something §5 never names. Two conformant runners, two verdicts, one document, and a
+  content-addressed report that hides the divergence: new blocking delta **R**. Which evidence carried
+  which delta is stated per delta in the walk, deliberately — reading a replay as a full verdict is
+  the error **DR-7**/**DR-8** record against [`capability-bus.md`](capability-bus.md) — and **Q was
+  hand-walked by necessity**, since **DR-10** leaves the runner without the predicate. DR-10 is
+  thereby **discharged as a qualification** exactly as the 2026-08-26 entry framed it (a hand-walk
+  could do what a replay could not), and R is what was under it; a replay could not have found R even
+  with the predicate implemented, because one runner is internally consistent. The drift stays
+  **downstream and unowned** under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) — koine
+  specifies the vocabulary, the console implements it — and is not closed from this repo. §7.2 is
+  **not reopened**: the fold is *incomplete*, and its clause stands. **Editorial, and deliberately
+  so:** every normative surface is byte-unchanged — §2's document shape, §2.1's bindings, §3's step
+  vocabulary, §4's execution and observation model, §5's assertion vocabulary — no MUST/SHOULD is
+  added or altered, and what moved is a *Pressure test* record, a §7.2 evidence note and this entry.
+  **KCS stays 0.3.0 Candidate**, on the same single count, which changed shape from *re-validate the
+  fold* to **fold R, then re-validate again** — a normal minor revision gated by a pressure test, and
+  unowned. When a promotion does come it is under the **ordinary, conformance-gated** rule, not the
+  grandfathering KCS 0.2.0 had: that clause does not survive a demotion, and the artefact debt it
+  covered was paid on 2026-08-19.
 
 - **Editorial** (2026-08-26) — Recorded what **downstream use** of this format produced, in
   *Pressure test* and against §7's open questions. KCS is the one spec whose conformance artefact is
