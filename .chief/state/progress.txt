@@ -105,3 +105,76 @@ subschemas, 0 orphan entity types / enum tokens, 0 commented-out code blocks, no
   re-derive it.
 - The research map for this tasklist was accurate as far as it went; nothing in it needed
   correcting.
+
+---
+
+## 2026-09-03 — US-2: Removal, with the tree still green and the reason recorded
+
+**Done.** Four commits, one candidate each, gate re-run after every one. Three of the four
+Class A candidates removed; **the fourth was deleted and reverted**, and that retraction is
+the most valuable thing this story produced.
+
+| # | Commit | Candidate | Outcome |
+|---|---|---|---|
+| 1 | `68b860a` | A-1 `EXCEPT_DIRS` + A-2 `IGNORE` (22 lines) | removed |
+| 2 | `2ee74d1` | A-3 the `docs/archive/` skip (6 lines) | removed |
+| 3 | `c5b4bdf` | A-3 | **REVERTED — the candidate was live** |
+| 4 | `a261ebb` | A-4 the cross-repo `foreign` walk (21 lines) | removed |
+
+Net **43 lines** off `scripts/check-doc-links.mjs` (168 → 125, `git diff --numstat main` =
+`0  43`) and **65 subprocess spawns per gate run**. `--json` returns `{total:0, distinct:0}`
+before and after; wall clock 0.28/0.24/0.23s → 0.23/0.09/0.08s.
+
+Files changed: `scripts/check-doc-links.mjs`, `docs/reference/dead-code-inventory.md`
+(removal-pass section + dispositions + corrections), `.chief/state/prd.json`,
+`tasks/chief/900-dead-code-paydown.json`.
+
+**Gates, after every step and at the end:** `guard-doc-integrity` OK (57 md files, 1410
+relative links, 0 errors, 3 status tables match), `guard-doc-links` `0 dead vs 0 on main`,
+`guard-categories` OK 4 tasklists, `guard-schemas` OK, `guard-registry` OK → **all selected
+gates green**; `bash .chief/verify-test.sh` → **30 passed, 0 failed**. No test deleted,
+weakened or adjusted — `.chief/verify-test.sh` is byte-unchanged across all four commits.
+
+### ⚠️ THE BIG ONE: A-3 was NOT dead, and US-1's inventory said it was
+
+US-1 recorded three searches for the `docs/archive/` skip and reported the third empty:
+
+    $ git grep -rn 'docs/archive' -- ':!scripts/'   # "no convention, no README, no ADR"
+
+**That is false.** Re-run at commit time it returns:
+
+    tasks/chief/901-docs-tell-the-truth.json:48
+      "Superseded documents move to `docs/archive/` with a note naming what replaced
+       them and when. Nothing is deleted outright."
+
+— acceptance criterion 1 of US-3 in **`901-docs-tell-the-truth`**, the paired docs sweep
+that runs NEXT and depends on this tasklist. The convention is scheduled, in a tracked file,
+one tasklist away. So the skip is *deliberately unexercised* (same class as the
+`tasks/chief/completed/` skip right below it), not dead. Reverted in `c5b4bdf`; both commits
+kept unsquashed because the round trip is the evidence.
+
+This is precisely the failure the tasklist description warns about: *"a cleanup that runs
+before the work is finished deletes scaffolding that was about to be used, and then the next
+tasklist re-adds it."* It nearly happened, on this branch, on the story whose whole subject
+is the standard of proof.
+
+### Learnings for future iterations
+
+- **Re-run every search AT REMOVAL TIME, not just at inventory time.** They cost seconds. An
+  inventory is a claim about a moment, and the tree moves between the two. Writing the search
+  into the commit message is what forced the re-run here — do that.
+- **"Is it used?" is the wrong question. "Is it used, OR ABOUT TO BE?" is the right one.**
+  Grep the *active tasklists* (`tasks/chief/*.json`, excluding `completed/`) as part of every
+  deadness search. A-4's searches were re-run under the corrected question and came back
+  clean; A-3's did not survive it.
+- **`check-doc-integrity.mjs`'s `slugify` strips `_` as well as backticks and `*`** (line 67,
+  `.replace(/`|\*|_/g, '')`). So `### A-1 — `EXCEPT_DIRS`, and …` anchors as
+  `#a-1-exceptdirs-…`, NOT `#a-1-except_dirs-…`. Cost one red gate. Add this to the slugify
+  note already in Codebase Patterns.
+- **The `guard-doc-links` ratchet is a free before/after test of any change to that script.**
+  It checks out `$CHIEF_BASE_BRANCH` into a temp worktree and runs the **pre-change** script
+  there. `0 dead vs 0 on main` after a removal is a real measurement, not a tautology.
+- **US-3 inherits a strong seed.** The undecidability register should lead with the A-3
+  retraction as the concrete case of what a static search over this tree cannot see, alongside
+  C-1's eight registry rows (cross-repo consumers) and B-1's ratchet-vs-wall duplication that
+  was deliberately not merged.
