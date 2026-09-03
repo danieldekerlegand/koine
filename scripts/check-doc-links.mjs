@@ -39,26 +39,6 @@ const MD_LINK = /\[[^\]]*\]\(([^)\s]+)\)/g;
 const BARE_DOC = /(?<![\w/.\-`])(docs\/[A-Za-z0-9_.\/-]+\.md)/g;
 const NUL = String.fromCharCode(0);
 
-// Paths listed in docs/.linkignore (prefix match, # comments) are not checked. The case that
-// forced it: cuneiform GENERATES argos and studio-os, so its render templates and golden
-// fixtures contain paths that are correct IN THE EXPORT — `docs/decisions/0002-clean-room-posture.md`
-// resolves in argos, not here. Those are not rot, and "fixing" them would corrupt what the
-// generator emits.
-const EXCEPT_DIRS = (() => {
-  try {
-    return readFileSync('docs/.structure-exceptions', 'utf8').split('\n')
-      .map((l) => l.split('#')[0].trim().replace(/\/$/, '')).filter(Boolean)
-      .map((d) => `docs/${d}/`);
-  } catch { return []; }
-})();
-
-const IGNORE = (() => {
-  try {
-    return readFileSync('docs/.linkignore', 'utf8').split('\n')
-      .map((l) => l.split('#')[0].trim()).filter(Boolean);
-  } catch { return []; }
-})();
-
 const tracked = () =>
   execFileSync('git', ['ls-files'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
     .split('\n').filter(Boolean);
@@ -77,8 +57,6 @@ function scan() {
     // and its references were valid then; rewriting them would falsify the work record. This is
     // the same reason the restructure deliberately left completed/ untouched.
     if (rel.includes('tasks/chief/completed/')) continue;
-    if (IGNORE.some((g) => rel.startsWith(g))) continue;
-    if (EXCEPT_DIRS.some((d) => rel.startsWith(d))) continue;
     if (SKIP_EXT.some((e) => rel.toLowerCase().endsWith(e))) continue;
     let body;
     try { body = readFileSync(rel, 'utf8'); } catch { continue; }
