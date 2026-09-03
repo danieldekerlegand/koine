@@ -69,3 +69,54 @@ anywhere as an exception.
   actually live. That is content drift, not structure — it belongs to US-2.
 - The guards are cheap and fast (~1s). Run them after every edit rather than at the end; a broken
   anchor is much easier to find one edit at a time.
+
+## US-2 — Content that describes a tree that moved (2026-09-03)
+
+**The method: read prose against `ls`, `git log` and the spec headers.** Both link guards were
+green before this pass and after it, and were green on every day each defect below was live. The
+whole point of the story is the half a checker cannot reach.
+
+### The six corrections (register: `docs/reference/doc-drift-corrections.md`)
+
+| # | Where | Was | Is | Wrong since |
+|---|---|---|---|---|
+| C-1 | `docs/reference/layer-claim.md` §2 | "two of the six are ratified, four are candidate" | one (KGP 0.5.2) — now **no count at all** | 2026-08-20 |
+| C-2 | `docs/guides/walkthrough-capability-bus.md` Step 1 | AgentCard with top-level `"url"` | A2A v1.0 `supported_interfaces[]` | 2026-08-13 (KCB 0.4.2) |
+| C-3 | `docs/reference/implementability-audit.md` §1 | `scenarios/` 7 files · `decisions/` 8 ADRs (0005–0011) | 12 · 11 (0005–**0014**) | 08-20 / 08-23 |
+| C-4 | same file, IMP-16 | "KCS 0.2.0 ratified and seven prose pressure tests" | 0.3.0 candidate, twelve | 2026-08-20 |
+| C-5 | `README.md` layout table | 8 dirs + 2 files, **no `scripts/`** | `scripts/` row added; `docs/` row → points at `docs/README.md` | from first draft |
+| C-6 | `CLAUDE.md` | 4 guards of 5 · 8 schemas of 9 | 5 · 9 (`participant-self-description`) | from each addition |
+
+### Files changed
+`README.md`, `CLAUDE.md`, `docs/README.md`, `docs/guides/walkthrough-capability-bus.md`,
+`docs/reference/layer-claim.md`, `docs/reference/implementability-audit.md`, and new
+`docs/reference/doc-drift-corrections.md`.
+
+### Learnings for future iterations
+
+- **The drift is almost always a RESTATED fact, not a wrong one.** Five of the six were a copy of
+  something whose home is elsewhere (a count the status tables hold, the spec's own §2 example, a
+  directory listing). C-3 and C-4 were *correct on the day they were written*. So the fix that
+  lasts is to **delete the copy and point at the home** — four of six fixes did that. Refreshing a
+  restatement just re-arms it.
+- **`Updated:` in a banner is not a shelf life.** C-1 even said *"That is a dated reading"* and
+  still misled, because a date does not stop a number being read as current. Prefer holding no
+  count to holding a dated one.
+- **Where to look for content drift in this repo, in order of yield:** (1) tables that count things
+  in a directory — `implementability-audit.md` §1 is one and it re-counts in 30 seconds; (2) any
+  prose stating how many specs are `ratified` (CLAUDE.md already warns about this class); (3) worked
+  examples in `docs/guides/` and `docs/explanation/` against the spec section they illustrate — a
+  spec that fixes its own example does not propagate; (4) `README.md` / `CLAUDE.md` lists of
+  directory contents.
+- **Left for US-3, found here:** `ROADMAP.md`'s Phase 0 paragraph reads *"That count is **0 of 6**"*
+  and has been wrong since KGP was ratified on 2026-08-28. **Deliberately not fixed** — the tasklist
+  description puts roadmaps out of scope in as many words. Reported in the register instead. If a
+  future story is allowed to touch it, that is the one-line fix.
+- **`docs/reference/doc-drift-corrections.md` is where US-3's AC2 and AC3 belong.** It already has
+  a *Scope, and what this sweep did not touch* section (ROADMAP, upstream-standards, the governance
+  map) and a *What this sweep cannot claim* section. US-3 should EXTEND those rather than start a
+  second document — and must flip `docs/README.md`'s `archive/` row from "created on first use" the
+  moment it archives anything.
+- **Nothing was archivable in this story.** No document was found superseded — every one is either
+  current or an explicitly dated record of a pass. `docs/archive/` therefore still does not exist
+  going into US-3, and that is a finding, not an omission.
