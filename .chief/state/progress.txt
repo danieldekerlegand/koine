@@ -40,3 +40,62 @@ Files changed: `scenarios/e2e-multi-authority.md` (+~330 lines), `scenarios/READ
   repo's normative gate, and say so plainly.
 - KCB count (iii) and KMI count (i) both stay open. Neither spec is promoted; KCB has four other
   counts and KMI's second count is KCB's work.
+
+## US-2 — KINP is promoted only if its whole gate flipped (2026-09-03)
+
+**Outcome: KINP is NOT promoted.** Status stays **Candidate**, version stays **0.4.0**.
+
+US-2's criterion 1 is conditional and its antecedent *is* satisfied — Steps 2/3/4/6 all flip and
+Step 1 holds — but its consequent rests on the premise "KINP has no second count and no downstream
+deliverable, so nothing else gates it", and that premise is **false against this repo's own
+normative gate**. `specs/README.md` § *The ratification gate* makes a hand-walked prose pass
+*necessary but no longer sufficient* for `candidate → ratified`; the second condition is a
+machine-replayable KCS encoding **whose assertions cite the clauses being ratified**.
+`kcs:multi-authority` predates the 0.4.0 fold and by design asserts none of the folded clauses
+(**DR-8**), so §4.1's weakest-link rule, §4.2's `world_aligns_with`, §4.5's fourth branch, §6's
+domain-scoping and §3.4's non-federated commons have **no encoded assertion at all**. Criterion 2 is
+therefore the one that applies, and it was followed: the status does not move and the blocker is
+named in the spec and in `promotability.md`.
+
+Worth noting for whoever reads the tasklist next: `promotability.md`'s **KINP row always said this**
+("the **KCS-encoding** condition binds on top of it"). The inaccurate line was the *ranking*
+paragraph 5's "What remains is a single re-run and nothing else", which the tasklist description
+quoted. Both are now corrected and agree.
+
+Files changed:
+- `specs/identity.md` — §11 decision 1's gate paragraph rewritten (records the walk, its per-step
+  result, the DEFER-A residual, then the KCS-encoding blocker: downstream under ADR-0001, bounded
+  by MA-11 / KCS open question 1, unowned). New **Editorial (2026-09-03)** changelog entry. Fixed a
+  stale sentence in the *Downstream evidence* note that still read "MA-1…MA-4 stay blocking and
+  unfolded" after 0.4.0 folded them. `Last updated` → 2026-09-03.
+- `docs/reference/promotability.md` — KINP blocker cell + owner cell + ranking entry 5; page
+  `Updated:` → 2026-09-03.
+- `ROADMAP.md` — the stale "KINP's gate is the MA-1…MA-4 fold (`85`)" sentence at Phase 1.
+- `CLAUDE.md` — *Current state* KINP bullet (the fourth mirror **no guard checks**).
+
+**Criterion 3 confirmed, not assumed.** Sliced `git show HEAD:specs/identity.md` and the new file on
+section headers and compared per section: §0–§10 all `same`, §11 decisions 2 and 3 `same`. Only the
+title block (Last updated), §11 decision 1's gate paragraph, one sentence, and the Changelog moved —
+**4 diff hunks total**. No relation, envelope field, identifier form or resolution rule changed, so
+**no claim id moves**.
+
+**GATES — all green.** `check-doc-integrity` OK (every relative link resolves, all 3 status tables
+match their headers) · `check-doc-links` 0 dead references · `check-tasklist-categories` OK, 6
+tasklists · `check-schemas` OK · `check-registry` OK · `.chief/verify.sh` → `verify-test: 30 passed,
+0 failed`, "✓ verify: all selected gates green".
+
+### Learnings for future iterations
+- **A tasklist criterion can carry a false premise, and the repo's normative text outranks it.**
+  US-2 criterion 1 asserted "nothing else gates it"; `specs/README.md`'s ratification gate says
+  otherwise, and so did `promotability.md`'s own KINP row. The right move was to follow the repo,
+  do criterion 2's work, and say plainly in the commit and the notes *why* criterion 1 did not fire.
+  US-3's criteria look sound — but read the target file before trusting a criterion's premise.
+- **The section-slice check is cheap and worth doing every time** a spec is edited without a version
+  bump. `git show HEAD:<file>` → split on `^#{1,3} ` → compare per section. It turns "no clause
+  moved" from a claim into an observation, which is exactly what CLAUDE.md asks for.
+- **`CLAUDE.md`'s *Current state* prose is the fourth mirror and no guard checks it.** Every
+  iteration that touches a spec's gate must edit it by hand. Status did not flip here, so the
+  grep-for-counts obligation ("six of six remain candidate") was a no-op — but it will not be if a
+  future story ever does flip one.
+- `docs/reference/promotability.md` states its own rule that it carries **no current-version
+  column** deliberately, precisely so it does not become a fifth unchecked mirror. Do not add one.
