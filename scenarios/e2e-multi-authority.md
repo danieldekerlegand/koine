@@ -457,6 +457,10 @@ demand on a ratified spec. → KCS §5/§7.1.
 | **MA-10** | Med | §7.1(f)'s *pending fetch, never a broken identifier* is right and becomes unfalsifiable under federation: retention is *MAY* (b), no clause requires a minimum replica count or a durable holder, and a consumer polling every reachable store cannot distinguish *not yet propagated* from *no holder remains*. A detectable outage becomes a permanent maybe. | Not a durability mandate — koine specifies contracts, not operations. A **stateable** one: an asset reference MAY name a designated durable holder, and a store MUST be able to answer *not held, and not expected* distinctly from *not reachable*, so a consumer can conclude. | KMI §7.1(b)(f), KCB delta L |
 | **MA-11** | Cleanup | KCS §5 has no vocabulary for an authority boundary — five of this pass's ten assertions have no predicate and three borrow a neighbour's meaning. Every §5 predicate was written for a fabric with one holder of each authority role. | Evidence for KCS open question 1 (*fixed core + escape hatch*); no demand on the ratified spec. | KCS §5/§7.1 |
 
+**MA-12 is not in the table above, deliberately.** It was returned by the **2026-09-03 re-run** of
+the folded text, not by this pass, and the table is the record of what the 2026-08-24 pass found. It
+is defined once, in *Re-run — Steps 1–10 walked by hand against the folded text*, under Step 10.
+
 **Not deltas — what this pass tried to break and could not.** **Offline-first minting** survived
 both authorities being gone, including the world-stamp back door, and there is no clause that could
 have made it fail (Step 1). **Asset identity** is byte-stable across stores under every attack tried:
@@ -574,6 +578,449 @@ registry) are recorded in
 under *What the pressure test taught about the pattern, not the clauses*. **DR-9** bounds all of it:
 domain B was a stand-in in the 2026-08-24 run, so the properties that need the far authority to be
 independently operated await a second adopter, not another document.
+
+---
+
+## Re-run — Steps 1–10 walked by hand against the folded text (2026-09-03)
+
+**What this section is.** The *Fold status* table above is a **re-read**: it says, per delta,
+whether the break the 2026-08-24 pass recorded still reproduces. It is not the re-run. Each of the
+three counts named under *Re-ratification* reads as **a re-run of this pass against the folded
+text**, and this section is that re-run: Steps 1–10 walked again, adversarially, against
+**KINP 0.4.0 / KCB 0.5.0 / KMI 0.3.5** as published, with a verdict recorded **per step** rather
+than in aggregate.
+
+**Method, and why it is a hand-walk.** Every step below was walked against the **prose of the
+current specs**, section by section, with the same bias the original pass declares: *prefer finding
+breaks over asserting correctness*, and where a step holds, it holds because something was tried
+against it. It is deliberately **not** a replay of `kcs:multi-authority`. **DR-8** is the standing
+reason: that encoding returned **`green`** over this very pass with six blocking deltas open,
+because an encoding does not assert a delta its spec has not folded. A green run is evidence about
+the encoding's assertions; it is not a verdict on the folded text, and it cannot be one for clauses
+written after it was frozen. The 2026-08-24 run is cited below only where it corroborates a step it
+actually asserted.
+
+**Verdict in one line, per count.** KINP's four steps **flip** and Step 1 holds. KCB's Steps 5–7 and
+KMI's Steps 8–10 **do not** — one blocker each, both of the same kind, both already visible from
+inside this repo. Neither is a reopening of ADR-0012, and neither is a defect in the fold's
+reasoning; both are the **carrier** class MA-8 named, arriving one clause further out than MA-8's
+fold reached.
+
+### Per-step verdicts
+
+| Step | Deltas at issue | Gates | Verdict |
+|---|---|---|---|
+| **1** | — (regression set) | KINP | ✅ **Holds.** Unchanged, and nothing folded touches it. |
+| **2** | MA-2, MA-4 (2nd horn) | KINP | ✅ **Flips.** §4.5's fourth branch is fail-closed; §4.2's `world_aligns_with` gives the second horn an instrument. |
+| **3** | MA-1 | KINP | ✅ **Flips.** The false closure does not form, from **either** domain's side. |
+| **4** | MA-3, MA-4 | KINP | ✅ **Flips.** The symptom is retained **by specification**; the defect was silence, and silence is gone. |
+| **5** | MA-8, MA-9 | KCB | 🔴 **Does not flip.** MA-8's and MA-9's own folds hold — and [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s clause, which lands on this count, is **not written into the spec**. |
+| **6** | MA-7 | KINP | ✅ **Flips.** §3.4 states the exception, the disjointness precondition, and the collision rule. |
+| **7** | MA-6 | KCB | ✅ **Flips.** A grant names its issuer, a provider names the issuers it accepts, and an unrecognized one fails closed. |
+| **8** | — (regression set) | KMI | ✅ **Holds**, including through §2's two new fields. |
+| **9** | MA-5 | KMI | ✅ **Flips.** The gate has an operand and the retainer is where it now bites. |
+| **10** | MA-10 | KMI | 🔴 **Does not flip.** The three-valued answer is required of a store and **no wire carries it** → new delta **MA-12**. |
+
+### Step 1 — Both authorities go dark ✅ *holds (regression)*
+
+§6's minting table is byte-unchanged: all three rows still read **Never**, and the two paragraphs the
+fold added to §6 (domain-scoped convergence) and §5 (each authority's own consensus reality) add no
+operand that has to be fetched. The world-stamp back door was pushed again and is still shut —
+`worldsim:world:alderforest` is minted by the world producer under its own prefix (§3.4), which the
+fold did not move.
+
+Three *new* clauses were checked for a minting dependency they might have smuggled in, because that
+is the way this invariant would realistically fall:
+
+- **§3.4's prefix-disjointness MUST** binds *"before merging any result set that attributes entries
+  by namespace"* — a **merge-time** obligation on a federating deployment, not a registration-time
+  or mint-time one. Registration is still by PR and still offline.
+- **§4.5's fourth branch** makes an unresolvable operand fail closed. Under total darkness *every*
+  operand is unresolvable, so the resolver emits `based_on` or nothing and queues — which is
+  §6's own *eventually-consistent, never blocking* model doing exactly what it says. Reconciliation
+  degrades; minting does not.
+- **`world_aligns_with`** is an assertion like any other (§4.2, §7.1), so it is minted under §6's
+  assertion row — hash of the normalized claim, no round-trip. It is registered in
+  [`../registry/relations.tsv`](../registry/relations.tsv) as a core binary relation, checked.
+
+✅ **Held.** Two authorities are still exactly as absent as one, and the fold added no clause that
+could have made it otherwise. *Corroborated by the 2026-08-24 run:* row 1 of the assertions table
+(`always_completes` with both authorities dark) is one of the eight the encoding does assert.
+
+### Step 2 — Both authorities reconcile the same descriptor ✅ *flips*
+
+**First horn (MA-2) — closed in terms.** §4.5 now has a **fourth branch** — *an operand is
+unresolvable → emit `based_on`, or nothing, and queue; **never `same_as`***  — with a paragraph that
+says why it is not the third: the third is about **confidence**, the fourth about a missing
+**operand**. Re-running the attack: `archivekb` gets a 0.93 match against a candidate whose world it
+cannot resolve. 0.93 clears any threshold, so the third branch is still not engaged — and the fourth
+now is: *"where the candidate's world, or that world's inheritance mode, cannot be resolved, the
+resolver MUST NOT emit `same_as`, irrespective of the match score."* The conformant-looking reading
+the original pass found — *I see no other world, so it is mine* — has no branch left to arrive
+through.
+
+Pushed further, two ways, and it did not yield either time:
+
+- **The both-operands dodge.** A resolver might resolve the world **id** syntactically and stop,
+  claiming the operand arrived. The clause names *both* the world and *that world's inheritance
+  mode*, so a resolved id with unresolved metadata is still the fourth branch.
+- **The never-tried dodge.** A resolver that never attempts resolution has, as a matter of fact, not
+  resolved the operand, and the clause binds on the state of the operand rather than on effort. Both
+  readings land on the same fail-closed side, which is the property that matters.
+
+**Second horn (MA-4) — has an instrument.** B can now *be told* that A's consensus reality is its
+own: `world_aligns_with` over two world ids, §11 decision 2 governing it like any other link. And
+§4.2's firewall bullet was attacked directly — *can an alignment be read as inheritance-as-identity,
+so that aligning two worlds promotes a `based_on` into a `same_as`?* No: the bullet forbids exactly
+that reading and §4.5 *"continues to read a world's **own** inheritance metadata (§5) — never this
+link."* **Aligning two fictional worlds does not make either of them real** is stated in the spec,
+not inferred here.
+
+✅ **Flips.** 🟡 **Residual, declared, not a break:** the operand still does not cross the boundary,
+so a cross-domain candidate whose world is resolvable *in principle* now **queues** rather than
+auto-applying. §4.5 names that as the whole of the fold and defers the route (**DEFER-A**) with a
+trigger. A degradation in the fail-closed direction is the right side of this clause to be on, and
+the pass asked for a fail-closed default rather than a route.
+
+### Step 3 — The consumer computes the merged view ✅ *flips*
+
+The three links were re-issued verbatim and the closure recomputed under §4.1's new rule, **from both
+domains' sides**, because a rule that only works for the domain that happens to be reading it is not
+a fix.
+
+**From domain A (threshold 0.90), option 1 — cut at the authority boundary.** A traverses only
+`refkb`-issued links. Link 1 (0.94, `refkb`) enters; links 2 and 3 (both `archivekb`) do not. The
+closure stops at `archivekb:bonaparte-napoleon` and the fiction-derived `analyzer:local:e-8842`
+never joins it.
+
+**From domain A, option 2 — re-evaluate each imported link.** This is the branch worth walking
+slowly, because the threshold **alone** does not do the job and the clause knows it:
+
+- Link 2 (0.72) is below A's 0.90 → review queue, not the closure. Threshold suffices.
+- Link 3 is **0.93 — above A's threshold**. Re-evaluated on confidence alone it would enter, and
+  MA-1's contamination would reproduce through it. What stops it is the clause's own wording:
+  *"exactly as if the link had been proposed to it under §4.5."* A, re-evaluating in domain A, **can**
+  resolve `worldsim:world:alderforest` (its own world producer), finds a different,
+  non-identity-inheriting world, and lands on §4.5's **first** branch — `based_on`, which is not a
+  `same_as` link and does not enter a `same_as` closure.
+
+So the false identity does not form under either option. 🟡 **Worth recording precisely, because a
+reader can miss it:** the phrase *"exactly as if the link had been proposed to it under §4.5"* is
+**load-bearing** in option 2, and an implementer who reads only the summary clause beside it
+(*"routing anything below that threshold to its own review queue"*) implements a threshold check,
+lets the 0.93 link through, and reproduces MA-1 while believing itself conformant. The clause is
+correct; its own restatement is narrower than it is.
+
+**From domain B (threshold 0.70).** Links 1 and 2 clear B's threshold. Link 3 is re-evaluated under
+§4.5 by a resolver that **cannot** resolve `alderforest` — the fourth branch — so it is not a
+`same_as` and does not enter. B's closure is `napoleon-i ≡ bonaparte-napoleon ≡ e-2210`: a merge of
+a real person with a mislabelled archival person, at B's own threshold, in B's own scope, which was
+always B's call and is conformant. The fold deliberately does **not** second-guess an authority
+inside its own domain, and Q2's anti-contamination property — the fiction edge — is what it
+protects. Correct scope.
+
+**The third obligation** was checked separately: a view reached over a multi-authority path MUST
+carry the **weakest issuer and lowest confidence**. Under option 1 the surviving path is one
+`refkb`-issued link at 0.94 crossing into `archivekb`'s namespace — still a multi-authority path,
+still annotated. The operand is §4.2's existing `src` and **no envelope field was added**, which
+Step 3's original 🟡 asked for by name.
+
+✅ **Flips.** 🟡 **One reading note, not a delta:** §4.1 offers the two options to *"a consumer"*, and
+option 2 presumes the consumer **has** a threshold and a §4.5 resolver — an authority-shaped
+participant. A plain knowledge consumer has neither, so only option 1 is operable for it. The
+disjunction still leaves it a conformant, and the more conservative, route; §4.1 simply does not say
+which readers option 2 is available to.
+
+### Step 4 — The same fact, twice, with two different hashes ✅ *flips*
+
+The two hashes still differ. **That is the flip, not a failure to flip**, and the distinction is the
+whole of MA-3: the original finding was that §6 said *"the canonical entity"* — singular, written for
+one holder — and then said nothing about what that means with two, while calling the dedup it
+governs *load-bearing, not optional*. Findings named silence as the one option not available.
+
+Re-walked against §6 as it now stands, the answer is present and exhaustive: the re-expression target
+is **the re-expressing participant's own authority domain**'s canonical entity; convergence holds
+**within** a domain and stops at its boundary; two domains minting the same fact mint two `claim` ids
+and that is *"conformant, not a defect"*; and the cross-domain instrument is named — the §4 equivalence
+view, `same_as` over entities plus `world_aligns_with` over worlds, read under §4.1's weakest-link
+rule. §6 also states, on the record, the two things it declines to do and why (a federation-wide
+target reinstates ADR-0012's rejected option (a); a federation-scoped canonical form would have to be
+mandatory and would move ids already minted → **DEFER-B**).
+
+**MA-4's independent half** was re-walked too, on the case that needs no reconciliation ambiguity at
+all — both domains anchoring to `wikidata:Q517` under §4.4. The two claims still hash differently on
+the **world** axis, and §5 now says so deliberately: each authority's `…:world:consensus-reality` is
+its own, sameness is *asserted, never assumed*, a consumer **MUST NOT** infer world identity from the
+local part of a world id, and **MUST NOT** rewrite either into the other — which is the clause that
+protects the ids the fold refused to move.
+
+**The blast radius was checked at its far end**, since MA-4's consequence was never confined to KINP:
+KGP §7's `accept records where … world = consensus-reality` filter. §4.2 gives it a federated reading
+through the `world_aligns_with` closure *"without KGP restating anything"* — and the filter fails in
+the safe direction under §4.1's weakest-link rule: an alignment link below the reading domain's own
+threshold is queued rather than traversed, so the filter narrows to that domain's own records instead
+of silently widening to another's. **No KGP clause moved, and KGP's own reading is on its record** as
+a dated Editorial entry.
+
+✅ **Flips.** The mechanism that *"did its job perfectly and has nothing to converge to"* is now told,
+normatively, what it converges to and where it stops.
+
+### Step 5 — The peered `find` 🔴 *does not flip*
+
+**MA-9(i) — the horizon holds.** §3.1(b) requires a query id and a remaining hop count on a forwarded
+`find`, a decrement per forward, no forward at zero, and a **drop** on a query id already seen. The
+mutual A↔B and the three-way A→B→C→A re-forwards both terminate. The clause also states its own
+boundary — it bounds *a query, not a topology* — which is the right scope: no membership protocol is
+implied.
+
+**MA-9(ii) — the converse holds, with the residual it declares.** `mediastore` reached twice, once
+locally indexed and once via B, resolves to the same provider KINP id, the same `(name, version)` and
+the same `schema_id` → **one** entry carrying **both** `served_by` attributions. The honest residual
+is on the record: `schema_id` is optional (§2), so where a provider publishes none the three-part key
+cannot be met and §3.1(d)'s conservative default returns both, unreconciled. Safe direction.
+
+**MA-8 — the carriers exist.** §3's `find` response now defines per-entry **`served_by`** (the
+serving registry's KINP id, the peer's for a peered entry) with a resolvable address, per-entry
+**`observed_at`**, and result-level **`incomplete[]`**. All three clauses §3.1 asserted without a
+carrier — (c), (e), (f) — have one, and a single-registry deployment emits none of it.
+
+🔴 **BROKE — and it is a break the repo had already found and had not yet written.**
+[ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) (Accepted 2026-08-26)
+records that §7.3's **deprecated marking and its removal version have no carrier** in §2's manifest
+or §3's `find` response, and that §3.1(d)'s de-duplication converse — MA-9's own fold, exercised
+above — keys on `(provider KINP id, (name, version), schema_id)`, **none of which a marking moves**.
+Re-walked here and it reproduces exactly:
+
+- Registry A holds a **stale** attribution of `compose 1.4.0` crawled before the provider deprecated
+  it. Registry B holds a **fresh** one, marked deprecated with its removal version. Same provider
+  id, same `(name, version)`, same `schema_id`.
+- §3.1(d)'s converse **requires** them to be returned as **one** entry. Neither §2 nor §3 defines a
+  field for the marking, so the merged entry's marking is undefined — and §3's own ranking rule
+  (*"MUST rank a **deprecated** entry below any non-deprecated entry … while still returning it,
+  marked and carrying its removal version"*) has nothing to read.
+- §3.1(e) — *resolve any disagreement against the provider's own card* — **cannot fire**: the
+  converse has just removed the visible disagreement. The consumer sees one entry and no reason to
+  look.
+
+Verified against the text rather than assumed: `grep`ping `specs/capability-bus.md` for a deprecation
+field on a capability entry returns none — §2's entry carries `name`, `version`, `binding`,
+`inputs`/`outputs`, `schema_id`, `payload_schema_id`, `cost` and the manifest-level `auth`/`signing`,
+and §3's response shape carries `served_by`, `observed_at` and `incomplete[]`. ADR-0014's own
+disposition is explicit about where this lands: *"**Not yet written**: the clause lands with counts
+(ii) and (iii)"*, and **count (iii) is this walk**. Its four parts — a carrier for the marking, *a
+registry MUST NOT synthesize a value for a field outside the merge key*, *where the field is a gate
+the restriction wins*, and *this does not license reconciling two authorities* — are the fold this
+step is waiting on.
+
+**Why this is Step 5's verdict and not a footnote.** The step is *the peered `find`*, and the thing
+being re-run is §3.1(d)'s merge. A merge rule that produces an entry whose gate-bearing field is
+undefined has not walked clean, whatever the two deltas it was written to close did. It is also
+precisely the class MA-8 folded — *a clause asserted with no carrier* — reappearing one clause
+outside the boundary MA-8's fold drew, which is the pattern this pass's own *Fold status* warns about.
+
+### Step 6 — Who is `mediastore`? ✅ *flips*
+
+§3.4 answers *published **where**?* in terms. The prefix registry is stated as **the one deliberately
+non-federated commons** *with the reason* — registration confers a name, not a privilege, so
+federating it buys nothing, while a federated namespace registry would make minting depend on
+reaching an online authority, which is the dependency ADR-0012 exists to remove. That is the fourth
+authority the original finding said ADR-0012 had left singular and unmentioned, now named and
+exempted on the record rather than by omission.
+
+The collision rule was walked on the case that produced the finding — two domains that federated
+after the fact, both holding `mediastore` in good faith:
+
+- Disjointness MUST be established **before** merging any namespace-attributed result set, so the
+  collision is caught at federation time rather than discovered in a merged `find`.
+- A collision is a **reportable defect** that blocks attribution for every identifier under the
+  prefix, and MUST NOT be resolved by silently merging, by preferring either side, or by rewriting —
+  a rewrite would move every identifier under the prefix, which is the reason the immutability rule
+  exists.
+- It is **representable**, which is what makes it reportable: MA-8's `served_by` makes the two
+  entries arrive visibly served by two different authorities.
+
+The alternative is **rejected on the record** — an authority-scoped prefix form would change the
+shape of every identifier in the fabric to represent a condition this rule makes reportable at no
+cost. And the documentation observation the original pass filed *deliberately not as a delta* — that
+§3.4's placeholder table was single-authority-shaped, so this pass had to mint three namespaces before
+it could state its setup — is **closed too**: `archivekb`, `coordinator` and `assetstore` are now
+illustrative rows in §3.4, with the single-authority set labelled as such.
+
+✅ **Flips.** 🟡 **One navigability note, not a delta:** §3.4 points *forward* at KCB §3.1(c)(d), and
+KCB §3.1 does not point back — a registry implementer reading KCB alone attributes and merges by
+namespace without meeting the disjointness precondition that governs it. The obligation binds the
+federating deployment either way and the define-once rule puts the clause in the right spec; what is
+missing is the citation in the citing direction.
+
+### Step 7 — The address resolves; the call does not ✅ *flips*
+
+Re-dialled. §5 now requires a grant to name its **issuing host** by KINP id, and a provider to state
+which issuers it honours via §2's optional `auth.accepted_issuers[]`. Walked through the four cases:
+
+- `analyzer` presents an `orchestrator`-issued token to a domain-B provider that accepts only
+  `coordinator` → **refused, fail closed**, *"exactly as it would for a missing grant"*. The
+  original finding — an address a consumer can reach and cannot be authorized to call — is now a
+  **specified refusal** rather than an unanswered question.
+- The domain-B provider lists `orchestrator` in `accepted_issuers[]` → the call is authorized. **A
+  federation is a stated set of accepted issuers, never an implicit one**, and *"publishing a card
+  that a peer registry indexes is not consent to another domain's governance"* answers the
+  discovery-implies-authorization slip directly.
+- A provider stating no issuers honours only its own domain's — so a single-host deployment behaves
+  exactly as before, and a federating one has to say so deliberately.
+- `budget_units` crossing the boundary MUST state its unit or the `invoke` is **refused for want of
+  one**; never converted silently. The quantity question the original finding raised — *whether a
+  ceiling means the same thing in two domains* — is answered by refusing to assume.
+
+**KMI's leg inherits it by citation**, as §5 states and KMI §7.1(b)(e) relies on, so cross-domain CAS
+replication is authorizable and Steps 8–10 no longer have to be run *"as if the authorization
+question were already answered"* — they were re-walked below with it answered.
+
+✅ **Flips.** 🟡 **Declared boundary, not a residual break:** §5 specifies no token format, issuance,
+rotation, or issuer-discovery protocol, so *how* a domain-A caller comes to hold a token a domain-B
+provider accepts is deployment infra. That is §5's own long-standing boundary, unmoved by the fold,
+and the fold's job was the **shape** — that a grant carries its issuer and a provider publishes whom
+it accepts.
+
+### Step 8 — The bytes cross the boundary ✅ *holds (regression)*
+
+§7.1(a)/(c)/(d) are unchanged and were re-attacked with the fold's two new fields in play, because
+the realistic way this regresses is a new envelope field leaking into the identifier:
+
+- **`license` and `egress` are excluded from the id** — stated twice, in §2 (*"attaching a policy
+  does not mint a new asset, and changing one never moves an `asset` id"*) and in §7.1's preamble.
+  The id is still the hash of the bytes, still byte-identical in both stores.
+- Corrupted bytes were served again; (c)'s mandatory verify **rejected** them, and no id was re-minted.
+- (d) was attacked from the projection side once more: a replicated copy still produces no
+  `derived_from` edge, no C2PA ingredient and no OMC derivation, because both projections bind to
+  **content**. The new carve-out is explicitly *not* authorship or provenance — §2 and §7.1(d) both
+  say the pair is read off the envelope's `prov`, never off the store that served the bytes — so the
+  ADR-0010 bridge still needs no federation clause.
+
+✅ **Holds.** The pass's central contrast survives the fold intact: content-addressed identity is
+stable across authorities exactly where the content *is* the identity.
+
+### Step 9 — The copy escapes the policy that governed it ✅ *flips*
+
+Both horns of the original table are gone. §2 carries an optional `license` / `egress` pair; §7.1(d)
+permits it — and it alone — to accompany a replication, *"precisely because it is **not**
+synthesized: it is the asset's own governing policy, carried from the envelope the requesting
+participant already holds"*; §7.1(e) requires a serving participant to evaluate the asset's **own**
+pair **in addition to**, never instead of, its own domain's policy, with either alone able to refuse.
+Re-walked:
+
+- **`local-only` never crosses.** Store A refuses the outbound leg irrespective of the requester —
+  the half that already held, now with the operand stated rather than implied.
+- **Laundering-by-retention is closed at the retainer.** A holder with bytes and **no** policy MUST
+  NOT serve them onward across an authority-domain boundary, MAY still serve them inside its own
+  domain, and MUST NOT synthesize the missing pair to pass the gate — *"passing a gate is not a
+  reason to invent an assertion."* Step 9's *"the retainer is where the control is lost"* now has a
+  clause at exactly that point.
+
+**The attack this re-run added, because the fold created the surface for it.** The pair is
+**excluded from the id** — necessarily, or every asset id would move — so unlike the bytes, which
+(c) makes self-verifying, the pair is **not** verifiable against the asset. A requester that supplies
+a downgraded pair (`local-only` → `exportable`) would hand the receiving store an operand that makes
+its onward gate pass. Walked, and it **does not yield to an unstated assumption**, because the spec
+states its position rather than leaving it: the pair is an **envelope field**, asserted by whoever
+asserted the envelope and attributable through that envelope's `prov`; §2 then says in terms that
+*"KMI requires no signing or hard binding on the pair; a deployment that wants one uses the signing
+shape KCB §5 already defines."* So the exposure is **declared and located** — attribution yes,
+cryptographic binding no, by choice, with the mechanism named for a deployment that needs it.
+
+✅ **Flips.** 🟡 **Two residuals, both stated by the spec rather than found here:** the pair is
+attributable but not hard-bound to the bytes (above); and a holder without the policy may still serve
+freely **inside** its own domain, the originating domain's consent point having been its own outbound
+decision under (e).
+
+### Step 10 — The asset that will never arrive 🔴 *does not flip*
+
+**§7.1(f)'s substance still holds** and was re-attacked: store A decommissioned, a domain-B timeline
+referencing an asset it held. The `asset` id, the envelope, the lineage edge, the timeline, the
+derived analysis claim and the already-issued grant all survive; KCB delta L's dangling-ref tolerance
+absorbs the reference. Invalidating an id because a holder went away would make identity depend on
+availability, and it still does not.
+
+**MA-10's fold is the right answer** — a store MUST be able to answer **not held, and not expected**
+*"distinctly from *not reachable* and from *not held, pending*"*, and a consumer that reaches every
+store it can see and gets that answer from all of them MAY conclude for **that set**. Walked as a
+consumer, the rule terminates where the original pass could not.
+
+🔴 **BROKE (MA-12, Med — carrier). The answer the clause requires has no wire to arrive on.** The
+consumer-side half of (f) obliges a consumer to *receive and recognize* three distinguishable
+answers. Nothing in either spec defines them:
+
+- **KCB §4** types the verb as *"**fetch** | CAS GET by `asset` id | retrieve asset bytes by their
+  KINP id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant."*
+  No response vocabulary, no status set, no operand — and §4 is where the wire is defined, since
+  KMI §7 says of itself that it *"defines the payloads, not the pipe."*
+- **KMI §7 / §7.1** name the three answers in prose and define no field, enum, or envelope for any
+  of them. `not held, and not expected` appears in this fabric exactly three times, all three in
+  §7.1(f) and its fold note.
+- **KCB cites none of it**, and its one use of the phrase pulls the other way. Searched: KCB
+  references §7.1(f) nowhere and *not held* nowhere; its single occurrence of *pending fetch* is
+  **§4.2f**, where a CAS holder applying its own `fetch` limit *"MUST signal a refusal"* and *"a
+  refused `fetch` is a **pending fetch**."* So a **fourth** state — *held, but rate-limited* —
+  already shares the one word (f) uses for its default, on the same verb. The
+  [dispositions record](../docs/reference/federation-fold-dispositions.md) classes MA-10 as a
+  two-spec delta (**KMI + KCB**) folded at one spec *"with the others inheriting by citation"*; here
+  the citation was never written, and the half that would have carried it is the half KCB owns.
+
+**Consequence, and it is the exact one MA-10 was folded to remove.** Two conformant implementations
+cannot interoperate on the distinction: a store answering a miss has no specified way to say *and
+not expected* rather than *pending*, and a consumer receiving a non-delivery has no specified way to
+tell which of **four** states it is in — *held but rate-limited* (§4.2f), *not held, pending*, *not
+held and not expected* (§7.1(f)), or *not reachable*. *Pending* therefore remains unfalsifiable in practice while reading as answered in
+prose — which is worse than the original finding, because the original was visible. This is MA-8's
+class precisely (*a clause asserted with no carrier*), on the one clause of this fold that lives on
+the byte plane, where MA-8's fold — scoped to §3's `find` response — could not reach it.
+
+**Not in scope of this delta:** any durability mandate, minimum replica count, retention obligation
+or designated durable holder. **DEFER-C** is unmoved and its trigger unchanged; MA-12 asks only that
+the answer §7.1(f) already requires be **expressible**.
+
+| # | Severity | Gap | Delta | Spec |
+|---|---|---|---|---|
+| **MA-12** | Med (carrier) | KMI §7.1(f) requires a store to answer **not held, and not expected** distinctly from *not reachable* and *not held, pending*, and requires a consumer to conclude from that answer. KCB §4's `fetch` is *"a CAS GET by `asset` id"* with no response vocabulary; KMI §7 defines *"the payloads, not the pipe"* and no field for any of the three; KCB cites §7.1(f) nowhere, so the *inherit-by-citation* half of this two-spec delta was never written; and KCB §4.2f independently calls a **rate-limited refusal** a *pending fetch*, so a fourth state shares the word. The clause is asserted and unmechanized — MA-8's class, one plane over. | Give the three answers a carrier on the verb that must deliver them: a `fetch` response distinguishes *held* / *not held, pending* / *not held, and not expected*, with **absent reading *pending*** (never *not expected*), and KCB §4 cites KMI §7.1(f) as the clause that defines their meaning. Additive; no `asset` id moves, no envelope field is added, and a single-store deployment is unaffected. | KCB §4, KMI §7.1(f) |
+
+### What this re-run does and does not close
+
+| Count | Steps | Outcome |
+|---|---|---|
+| **KINP** — its **only** count, the whole of its gate | 2, 3, 4, 6 flip; 1 is the regression set | ✅ **The prose gate is discharged.** No delta of this pass reproduces against KINP 0.4.0 and no new one was found against it. |
+| **KCB** — count (iii) of **five**, gating §3.1 alone | 5, 6, 7 | 🔴 **Does not close.** Step 5 breaks on ADR-0014's decided-but-unwritten clause. Steps 6 and 7 flip. The other **four** counts are untouched and none moves. |
+| **KMI** — count (i) of **two**, gating §7.1 alone | 8, 9, 10 | 🔴 **Does not close.** Step 10 breaks on **MA-12**. Steps 8 and 9 flip. Count (ii) — the [`e2e-media-transform.md`](e2e-media-transform.md) re-run — is **KCB's** work, untouched, and does not move. |
+
+**Neither KCB nor KMI is promotable on this walk, and neither would have been on a clean one.** KCB
+has four other counts; KMI's second count is not KMI's to discharge. That is stated here because the
+failure this document's own *Re-ratification* section exists to prevent is a reader concluding a spec
+is promotable from a single satisfied gate.
+
+**KINP is not promoted either, and the reason is not in the prose.** Under
+[the ratification gate](../specs/README.md#the-ratification-gate) `candidate → ratified` requires a
+machine-replayable KCS encoding **whose assertions cite the clauses being ratified**, and a prose
+pass is *necessary but no longer sufficient*. `kcs:multi-authority` **exists** and ran on 2026-08-24
+— but it was written against the **pre-fold** text and, by design, asserts none of the folded
+clauses (**DR-8**: it replays MA-1…MA-5 and MA-8/MA-9 and asserts nothing about them, *"because a
+document that asserted the broken properties would be asserting a fold koine has not made"*). The
+clauses this walk discharges — §4.1's weakest-link rule, §4.2's `world_aligns_with`, §4.5's fourth
+branch, §6's domain-scoping, §3.4's non-federated commons — therefore have **no encoded assertion at
+all**. The encoding must be **extended** to cite them, which is the same shape **DR-7** records for
+KCB count (ii), and it is downstream work under
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md). **MA-11** still bounds how far §5's own
+vocabulary reaches, and the 2026-08-24 run shows the §7.1 escape hatch being used for exactly this
+(four declared console extensions), so the route exists and is unowned.
+
+**DR-9 still bounds every federation property below.** Domain B's authority and both CAS stores were
+stand-ins in the 2026-08-24 run, so the properties that need the far authority to be *independently
+operated* are corroborated by this hand-walk only as far as a reading of the contracts goes.
+
+> **Re-run note (2026-09-03).** Steps 1–10 walked by hand against **KINP 0.4.0 / KCB 0.5.0 /
+> KMI 0.3.5**. **KINP's four gating steps flip and its regression step holds — its prose gate is
+> discharged, and it stays Candidate on the KCS-encoding condition alone.** **KCB count (iii) does
+> not close** (Step 5, [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)
+> unwritten) and **KMI count (i) does not close** (Step 10, new delta **MA-12**). No spec version
+> moves for this walk: nothing normative changed in it. The findings above are the fold each of the
+> two counts is now waiting on.
 
 ---
 
