@@ -120,3 +120,66 @@ whole point of the story is the half a checker cannot reach.
 - **Nothing was archivable in this story.** No document was found superseded — every one is either
   current or an explicitly dated record of a pass. `docs/archive/` therefore still does not exist
   going into US-3, and that is a finding, not an omission.
+
+## US-3 — Archived, not deleted — and the record says why (2026-09-03)
+
+**The story archived nothing, and that is the deliverable.** US-2 had already reported "nothing was
+archivable"; this pass turned that assertion into a *result* by stating a test and applying it to
+every file, which is the only form the claim is worth anything in.
+
+### The test, and why it is per class
+
+**Supersession is not staleness.** A document is superseded when *something else is now the answer
+to the question it was written to answer* — a different test from "is it accurate" and different
+again from "is it recent". So the test differs by class, because what would replace a spec is not
+what would replace the record of a run. Counts computed from `git ls-files`, not asserted:
+
+| Class | Files | Superseded |
+|---|---|---|
+| Normative contract surface (6 specs + 4 index READMEs) | 10 | none — no plane retired; a version bump is not supersession |
+| Decision records (11 ADRs + README) | 12 | none — every ADR `Accepted`; ADR-0012 supersedes three *clauses*, and a clause is not a document |
+| Dated evidence (12 scenarios + README + 13 `docs/reference/` records) | 26 | none **by construction** — a later observation is a second record, not a replacement |
+| Living maps (README, ROADMAP, ECOSYSTEM, CLAUDE, docs/README, promotability, upstream-standards) | 7 | none |
+| Teaching (walkthrough, adopter checklist, positioning, layer-claim) | 4 | none — the one overlapping pair declares its own relationship |
+| Process metadata (`.chief/agent-context.md`) | 1 | out of scope |
+
+`docs/archive/` therefore still does not exist, and nothing was deleted:
+`git diff main...HEAD --diff-filter=D --name-only` is empty for the whole branch.
+
+### Files changed
+- `docs/reference/doc-drift-corrections.md` — the retention sweep (method, the class table, the
+  nine-plus-three "looks superseded and is not" table, the ECOSYSTEM.md precedent), C-7, and four
+  new limits under *What this sweep cannot claim*.
+- `docs/reference/dead-code-inventory.md` — C-7 fixed by removing the count, with a dated note.
+- `docs/README.md` — the `archive/` row now **cites** the sweep instead of asserting emptiness; the
+  register's bullet rewritten to describe two passes without brittle counts.
+
+### Learnings for future iterations
+
+- **The evidence for "archive, don't delete" was in this repo's own history, not in the tasklist
+  description.** `ECOSYSTEM.md` was deleted 2026-07-31 (`4ed42e1`), needed 11 days later, and was
+  **rewritten** rather than restored (`2e228c6`): 159 lines / 8 sections vs 166 / 7, and `comm -12`
+  over the two sorted files returns **no line in common**. The old §6 survives as one paragraph
+  saying it was superseded. Honest qualification recorded in the doc: it was never *unrecoverable*
+  (`git show 4ed42e1^:ECOSYSTEM.md` still prints it) — it stopped being **reachable**. That
+  distinction is the whole of what the archive rule buys, and overstating it would have been easy.
+- **Correcting a count re-arms every count derived from it.** C-7 forced edits to the register's
+  "six of the seven", "five of the seven" *and* `docs/README.md`'s bullet describing them. If you
+  add a row to that table, grep the register and the index for the old numbers in the same edit —
+  or, better, follow the register's own doctrine and phrase derived claims without a number.
+- **This sweep armed its own drift inside one day.** The inventory's "(57 Markdown files)" was
+  correct the morning the 900 sweep wrote it and wrong by the evening, because 901 added documents.
+  The shortest fuse yet observed here. When you write a count into prose, assume the next commit
+  breaks it.
+- **The dated-evidence class is the one a future sweep will get wrong.** Nine documents in `docs/`
+  look stale on any freshness heuristic — fold dispositions written before their folds, an interop
+  trial against versions that have all moved, two gate verifications for gates now closed. Every one
+  is retained, each with its reason in the table. Read that table *before* proposing to archive
+  anything in `docs/reference/`.
+- **A document a spec cites by relative path is not archivable while the citation stands.**
+  `federation-fold-dispositions.md` is cited by four of the six specs (KINP alone five times) as the
+  carrier of DEFER-A/DEFER-B's forcing triggers — moving it would be an edit to `specs/`, i.e. a
+  spec change, not a documentation change.
+- **`docs/archive/` remains untested.** The rule is now written in two places and nothing has ever
+  exercised it. The first archival will be the first use of the note format, the first edit to the
+  `archive/` row, and the first time the guards see a link into that directory.
