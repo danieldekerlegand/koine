@@ -14,14 +14,22 @@ Started: Thu Sep  3 01:18:28 CDT 2026
   reports "no changed files" on an uncommitted working tree. `--plan` prints the
   selected gates without running them. A path matching NO rule selects the **umbrella**
   (every gate, including the self-test).
-- **`check-doc-integrity.mjs`'s slugify is NOT GitHub's.** It collapses `\s+` to a
-  SINGLE hyphen, so `## Class A — dead: removal candidates` anchors as
-  `#class-a-dead-removal-candidates`, not GitHub's `#class-a--dead-removal-candidates`.
-  Writing the GitHub form fails the gate. Match the guard.
+- **`check-doc-integrity.mjs`'s slugify is NOT GitHub's** (line 65-73). Two ways it differs,
+  each of which has cost a red gate: it collapses `\s+` to a SINGLE hyphen, so
+  `## Class A — dead: removal candidates` anchors as `#class-a-dead-removal-candidates`, not
+  GitHub's `#class-a--dead-removal-candidates`; and it **strips `_` along with backticks and
+  `*`**, so `### A-1 — EXCEPT_DIRS, and …` anchors as `#a-1-exceptdirs-…`, not
+  `#a-1-except_dirs-…`. Match the guard, not GitHub.
 - **`MD_LINK` fires inside backticks.** Writing `` `[text](path)` `` in prose is parsed
   as a link and reported as "no such file — path". Split the form when writing about it.
 - **`tasks/chief/completed/` is history and must not be rewritten** — both doc guards
   skip it as a citer, and reference counts that include it measure the past.
+- **A deadness search must ask "is it used, OR ABOUT TO BE?"** Grep the ACTIVE tasklists
+  (`tasks/chief/*.json`, excluding `completed/`) as part of every one. koine's tasklists
+  schedule conventions before the tree has them, so an unreferenced-today path can be a
+  requirement one tasklist away — that is how US-2 nearly deleted the `docs/archive/` skip
+  that `901-docs-tell-the-truth` mandates. Re-run every search AT REMOVAL TIME, not only at
+  inventory time.
 
 ---
 
