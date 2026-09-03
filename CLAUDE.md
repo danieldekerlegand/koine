@@ -561,6 +561,25 @@ vocabulary.
   vocabulary — `registry/enums/modality.tsv`, §3.1's table, `schemas/finetune-job.schema.json`'s
   `properties.modality.enum`, and `registry/README.md`'s prose bullet, the fourth being the one **no
   guard checks**. Record: `docs/reference/generative-audio-modalities.md`.
+  **Gate (i) was executed on 2026-09-03 and did NOT close.** The FT-M…FT-Q producer-exhaust intake
+  fold — open since 0.4.0, restated three times, never run — was walked by hand against 0.7.0 as
+  published *and against the plane text those clauses cite today*. **FT-M/FT-O/FT-P/FT-Q flip** and
+  Steps 1/6/7 hold, confirming the fold's additivity by execution rather than by reading; **FT-N
+  half-flips** → new delta **FT-W**. §4.2's normative half is intact (the gate reads the header, never
+  the `tier`), but the sentence carrying it calls the header *the only descriptor available at
+  admission*, and **KMI 0.3.5's MA-5 made that false** — a `dataset.records[]` file is a KMI asset whose
+  §2 envelope may now carry its own `egress`, no clause ranks the two carriers, a permissive envelope
+  lets KMI §7.1(e) replicate out of the domain a corpus §4.2 pinned `local-only`, and the two absence
+  defaults are **opposite** (`exportable` here, fail-closed there), so a job declaring `egress` nowhere
+  is admitted and then fails at the fetch, after placement and around FT-J. Count (i) changes shape to
+  **fold FT-W in §4.1/§4.2 (additive, one spec — KMI needs no change), then re-run**; gate (ii) is
+  restated and does not move. The walk moved **no version and no clause** (§3/§4/§5/§7 and the schemas
+  byte-unchanged; the edit is a scenario section, two gate paragraphs and a changelog entry). It also
+  found the header's **re-check trigger fired three times unpulled** — KINP 0.2.x→0.4.0, KCB
+  0.4.x→0.5.0, KCS 0.2.x→0.3.0, all 2026-08-26 — a precondition on the status transition that
+  `chief/71` closed on 2026-08-13 and that has reopened, **not** a third gate. Record:
+  `scenarios/e2e-producer-exhaust-finetune.md` § *Re-run — the FT-M…FT-Q intake fold walked against
+  KFT 0.7.0 (2026-09-03)*.
 - `registry/` — shared **agnostic** vocabularies only: `relations.tsv` (core, **binary** relations
   only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
   `relations/social.tsv` (soc:), plus `entity-types.tsv`, `media-types.tsv`, and `enums/`.

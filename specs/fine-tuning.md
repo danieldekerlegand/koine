@@ -1310,7 +1310,25 @@ same one 0.4.0 opened and it has not moved: a re-run of the third pass's
 *Re-validation — KFT 0.4.0* section in
 [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md) by the
 spec owner, which walks the corrected §3/§4.1 flow clean as written but has not been re-executed
-since. 0.5.0 neither discharges nor widens it: §4's admission inputs, outcomes and reasons are
+since. **That re-run has now been executed — walked by hand on 2026-09-03 — and it did *not* close
+the gate.** Four of the five deltas flip and the regression set holds: FT-M's `records[]` slot, FT-O's
+positional headers, FT-P's `recordCount` and FT-Q's schema citations are all present in the prose, the
+schemas and the registry, and a 0.3.0-shaped manifest still validates and gates identically — the
+0.4.0 fold's additivity claim is now confirmed by execution rather than by reading. **FT-N half-flips.**
+Its normative half is intact and stays intact (§4.2 reads the header, never the `tier`), but the
+sentence carrying it asserts the header is *the only descriptor available at admission*, and **KMI
+0.3.5's MA-5 fold made that false two days after this pass's downstream run**: a `dataset.records[]`
+file is a KMI asset, its §2 envelope may now carry its own `egress`, and no clause in either spec ranks
+the two carriers. They can disagree — a permissive envelope lets KMI §7.1(e) replicate across an
+authority-domain boundary a corpus §4.2 correctly pinned `local-only` — and their **absence** defaults
+are opposite, so a job declaring `egress` nowhere is admitted here on KGP §7.2's `exportable` default
+and then fails closed at the fetch, after placement and around FT-J. That is new delta **FT-W**, and
+the count therefore **changes shape**: from *re-run the fold* to **fold FT-W in §4.1/§4.2 (additive,
+one spec — KMI needs no change), then re-run that section again**. The walk moved **no version and no
+clause** — §3, §4, §5, §7 and the schemas are byte-unchanged — and **KFT stays 0.7.0 Candidate**. The
+record is that scenario's *Re-run — the FT-M…FT-Q intake fold walked against KFT 0.7.0 (2026-09-03)*
+section, which also carries two residuals (the `header`↔`records[]` positional coupling is prose-only;
+two `koine:10` citations survive in a sibling scenario's historical record). 0.5.0 neither discharges nor widens it: §4's admission inputs, outcomes and reasons are
 byte-unchanged (§3.2, §4.1.1 and §8.1 each say so normatively), so that re-run reads the same flow
 against the same clauses. Two surfaces 0.5.0 adds are **not** exercised by any of the three passes and
 the owner should read them as new normative text rather than as re-validated text: the §3.3 conversion
@@ -1323,7 +1341,16 @@ rule, and every in-body cross-plane citation (§2 → KCB §2/§2.1 and §7.1, �
 §5.3 → KMI §2/§3/§7, §7 → KCB §5) has been re-read against those pins and annotated where the
 plane text moved, so the stale-pin loose end is closed rather than unstated. What survives is the
 standing obligation in the header's **re-check trigger**: a minor or major bump in a pinned plane
-obliges re-reading those same sections before KFT's next status transition.
+obliges re-reading those same sections before KFT's next status transition — **and the 2026-09-03 walk
+found that trigger has fired three times unpulled.** Three of the five pins are stale against the
+track-current rule the header states: KINP reads 0.2.x and is **0.4.0**, KCB reads 0.4.x and is
+**0.5.0**, KCS reads 0.2.x and is **0.3.0**, all three minor bumps landed 2026-08-26 (KGP 0.5.x and
+KMI 0.3.x are patch-current and correct). At least one cited clause moved with them: §7's grant
+paragraph is labelled *"(KCB 0.4.x)"* and KCB 0.5.0's **V-5** added an `invoke` `version` operand under
+an exhaustive operand-else-grant-else-**refuse** resolution rule. This is **not** a finding against the
+FT-M…FT-Q fold — it is on §7's grant surface, not §4's admission path — and it opens no third gate; it
+is a **precondition on the status transition**, and it is recorded rather than quietly re-inherited as
+closed, because *closed by `chief/71`* was true on 2026-08-13 and has not been true since.
 
 **0.6.0 adds a second gate, and it is narrow.** A re-run of
 [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) against the folded
@@ -1391,6 +1418,24 @@ re-ratification:
 ---
 
 ## Changelog
+
+- **Editorial** (2026-09-03) — **Gate (i) was executed, and it does not close.** The FT-M…FT-Q
+  producer-exhaust intake fold — the count open since 0.4.0, restated by 0.5.0, 0.6.0 and 0.7.0 and
+  never run — was walked by hand against **0.7.0 as published**, and against the plane text those
+  clauses cite *today* rather than the plane text of 2026-08-06. **FT-M, FT-O, FT-P and FT-Q flip** and
+  Steps 1/6/7 hold as the regression set, three of them corroborated by the 2026-08-24 run of
+  `kcs:producer-exhaust-finetune`; the 0.4.0 fold's additivity claim is confirmed by execution. **FT-N
+  half-flips** → new delta **FT-W**: §4.2's *"the **only** descriptor available at admission"* premise
+  was made false by **KMI 0.3.5**'s MA-5 fold, which gave the same `dataset.records[]` asset a second
+  egress carrier on its §2 envelope, with no clause ranking the two and with **opposite absence
+  defaults** (`exportable` here, fail-closed at KMI §7.1(e)). The count changes shape to *fold FT-W in
+  §4.1/§4.2, then re-run*; gate (ii) is restated and does not move. The walk also found the header's
+  **re-check trigger** fired three times unpulled (KINP, KCB and KCS pins stale since 2026-08-26) —
+  a precondition on the status transition, not a third gate. **No version and no clause moves**: §3,
+  §4, §5, §7 and the schemas are byte-unchanged, and the edit is the gate paragraphs above plus this
+  entry. Record:
+  [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md)
+  *Re-run — the FT-M…FT-Q intake fold walked against KFT 0.7.0 (2026-09-03)*.
 
 - **0.7.0 — the generative-audio modalities** (2026-08-26) — **§3.1** gains two `modality` tokens,
   `text-to-audio` and `audio-to-audio`, over the **existing** `media(audio)` plane. Strictly
