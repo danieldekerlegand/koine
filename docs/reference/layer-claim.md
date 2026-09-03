@@ -1,6 +1,6 @@
 # The layer claim — what koine specifies, what it does not, and where it stands
 
-> **Status:** Current · **Updated:** 2026-08-18 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-09-03 · **Owner:** koine · **Informative**
 
 **Who this is for.** Someone meeting koine from outside — most likely from the governance-gaps
 paper cited in §4 — who has not read this repository and should not have to in order to decide
@@ -35,8 +35,19 @@ Six specifications, each versioned and pressure-tested independently:
 | **KCS** | conformance | A declarative scenario — data, not code — driving several **real** participants over their actual connections, asserting properties that span planes, each tied to the clause it tests. |
 | **KFT** | fine-tuning | A profile composing the four planes for training jobs: dataset and model *by reference*, egress-gated placement, graded refusal. |
 
-*Read on the date above: two of the six are ratified, four are candidate. That is a dated reading,
-not a mirror — each spec's own header is the only authority on its version and status.*
+*How many of the six are `ratified` today is deliberately **not** stated here.* Each spec's own
+header is the only authority on its version and status; three tables in this repo mirror those
+headers and are machine-checked against them, and
+[`promotability.md`](promotability.md) says one line per spec on what stands between it and
+`ratified`. A count written into this page is a fourth, unchecked mirror, and it rots on the next
+promotion. (**Corrected 2026-09-03.** This paragraph used to read *"two of the six are ratified,
+four are candidate"* — true when it was written on 2026-08-18, and wrong **two days later**: the
+two it counted were KCS and KINP, and KCS 0.3.0's determinism fold demoted one on 2026-08-20 and
+KINP 0.3.0's federation fold the other on 2026-08-23, leaving **zero** until KGP returned on
+2026-08-28. It read as a *dated* reading, which
+is why nothing caught it: a date does not stop a number being read as current. The fix is to hold
+no count at all rather than to restate a fresh one. Record:
+[`doc-drift-corrections.md`](doc-drift-corrections.md).)
 
 ## 3. What koine does not specify
 

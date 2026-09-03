@@ -138,10 +138,20 @@ outside this tree yet.
 | [`policy/`](policy/) | License-class and trust-tier policy — the two closed JSON vocabularies behind every record's `license` and `tier` fields, which consumers load to decide what a record is allowed to do. |
 | [`scenarios/`](scenarios/) | End-to-end pressure tests that gate ratification. |
 | [`decisions/`](decisions/) | Architecture Decision Records — the "why" behind the design. |
-| [`docs/`](docs/) | Guides and positioning — the walkthrough, the adopter checklist, how Koine relates to existing standards. |
+| [`docs/`](docs/) | Everything written *about* the contracts rather than published as one: the walkthrough, the adopter checklist, the positioning and layer-claim pages, the upstream pin table, and the records of each audit, gate verification and fold. [`docs/README.md`](docs/README.md) is the map — it lists every one and says why the directories above are not filed under it. |
+| [`scripts/`](scripts/) | The guards, and the only place a check is defined: doc-integrity and the doc-link ratchet, the schema and registry checks, the tasklist-category check. Each is a script a person runs by hand with the same command CI runs. |
 | `tasks/` | The repo's own work queue — machine-readable tasklists that drive spec/scenario work; process metadata, not part of the contracts. |
 | [`ROADMAP.md`](ROADMAP.md) | Where each spec stands and the path from candidate to ratified. |
 | [`ECOSYSTEM.md`](ECOSYSTEM.md) | The living, shape-level topology of the fabric (informative). |
+
+> **Corrected 2026-09-03.** This table omitted [`scripts/`](scripts/) entirely — the one top-level
+> directory holding executable content, and the one a contributor is told to run before every
+> commit. A layout table that skips a directory is worse than a short one: it reads as complete.
+> The `docs/` row was corrected in the same pass: it named three documents against a directory that
+> has long since grown past them, and it now points at [`docs/README.md`](docs/README.md), which is
+> the one place that enumerates them — deliberately, so this table does not become a second list to
+> keep in step. Record:
+> [`docs/reference/doc-drift-corrections.md`](docs/reference/doc-drift-corrections.md).
 
 ## Scope: shape, not instance
 
