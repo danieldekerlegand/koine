@@ -1,90 +1,145 @@
-# Chief Progress — 87-kgp-projection-reader-and-roundtrip
-Started: Fri Aug 28 03:01:07 CDT 2026
+# Chief Progress — 89-the-re-run-three-specs-wait-on
+Started: Thu Sep  3 00:43:57 CDT 2026
 ---
 
-## US-1 — The verdict is re-taken against the delivered artifact (2026-08-28)
+## US-1 — The four steps are walked by hand, and the verdict is per-step (2026-09-03)
 
-**Outcome: the gate is MET.** G1, G2, G3, G4 all satisfied at agora
-`af5b7dd3a1201eff70067f45e7824614a81769ac`. This is the opposite of the 2026-08-26 reading,
-and it is the opposite because the artifact changed, not because the bar did.
+Walked Steps 1–10 of `scenarios/e2e-multi-authority.md` by hand against the CURRENT folded spec
+text (KINP 0.4.0 / KCB 0.5.0 / KMI 0.3.5), reading each cited section rather than replaying the
+encoding. New section in the scenario: **"Re-run — Steps 1–10 walked by hand against the folded
+text (2026-09-03)"**, inserted before *Re-ratification — what this pass gates*.
 
-Files changed (koine): `docs/reference/kgp-projection-gate-verification.md` — rewritten. §2 and §3
-re-taken at the named sha; §4 states what it means for the spec; §5 is the re-run recipe, now
-including a hand-mutation snippet because a green suite over conformant input does not pass G3;
-**§6 keeps the superseded 2026-08-26 reading** (the verdict is only worth what the method is).
-Banner + binds-no-clause disclaimer retained. Commit `a11afec`.
+Per-step verdict: 1 ✅ holds · 2 ✅ flips · 3 ✅ flips · 4 ✅ flips · 5 🔴 **does not flip** ·
+6 ✅ flips · 7 ✅ flips · 8 ✅ holds · 9 ✅ flips · 10 🔴 **does not flip**.
 
-Evidence, all first-hand:
-- `make check-knowledge` in agora → green, 152 passed / 0 failed across 8 files.
-- `node knowledge/src/evidence.ts --check` → exit 0, artifact current at `sha256-27fd7839…b4edb`.
-- **8 mutations of my own** inside §3.1's hashed set (RDF-star ×6, PROV ×1, JSON-LD ×1) → all
-  `ProjectionError` / `claim-id-mismatch`; untouched controls read clean.
-- OWL-Time counted off the emitted graph; `local-only` absent as a substring from all three
-  encodings; arity-3 omitted with a report and 1 of 2 claims recovered.
+**The two blockers, both verified against the text, not inferred:**
+- **Step 5** — ADR-0014 (Accepted 2026-08-26) is *decided but unwritten*: §7.3's deprecated marking
+  has no field in KCB §2's manifest or §3's `find` response, and §3.1(d)'s de-dup converse keys on
+  `(provider id, (name,version), schema_id)` so a stale + fresh attribution merge into one entry
+  with an undefined marking, and §3.1(e) cannot fire. ADR-0014 itself says the clause "lands with
+  counts (ii) and (iii)" — count (iii) IS this walk.
+- **Step 10** — new delta **MA-12**: KMI §7.1(f) requires three distinguishable answers and neither
+  KCB §4's `fetch` ("CAS GET by asset id", no response vocabulary) nor KMI §7 defines a carrier;
+  KCB cites §7.1(f) nowhere, and §4.2f independently calls a rate-limited refusal a *pending fetch*,
+  so a fourth state shares the word. MA-8's class, one plane over.
 
-Gates: `.chief/verify.sh --run docs/reference/kgp-projection-gate-verification.md` → green
-(guard-doc-integrity 1333 links + 3 status tables; guard-doc-links 0 dead vs 0 on main).
-
-### Learnings for future iterations
-
-- **`--check` is the safe half of a regenerate command.** agora's evidence artifact regenerates with
-  `node knowledge/src/evidence.ts` (writes) and verifies with the same command `--check` (re-runs the
-  whole corpus, compares the content address, writes nothing). US-2's "no agora file is edited"
-  constraint and US-1's "run the regenerate command" criterion are both satisfiable at once because
-  of that seam. Reach for `--check` first in any cross-repo read.
-- **agora TS modules run directly under node 22 with no build step.** `cd ~/Development/agora && node
-  --input-type=module -e "import {...} from './knowledge/src/roundtrip.ts'"` works. That is what made
-  the independent mutation probe cheap — do this rather than trusting an implementer's test names.
-- **Perturb inside §3.1's hashed set, not outside it.** My first probe perturbed `confidence`, which
-  is deliberately NOT in the hashed set, so a clean read would have been correct behaviour and the
-  probe would have proved nothing. World / relation / argument / literal datatype are the fields that
-  make rule 2 fire.
-- **Read the merge stat before believing it.** agora `af5b7dd` touches 26 files, but 15 are an
-  unrelated KFT 0.7.0 adoption carried on the same branch. Say which files are the gate.
-- The research map in the tasklist description was accurate; nothing in it needed correcting.
-
-
-## US-2 — The status moves only if the gate is met (2026-08-28)
-
-**KGP 0.5.2 is `ratified`.** The IF-AND-ONLY-IF branch fired: US-1's verdict was gate MET on all
-four obligations, taken by running and perturbing agora `af5b7dd`, so the promotion is the story's
-first branch and not its second. Commit `5055f0f`.
-
-Files changed (10, all koine, none in agora):
-- `specs/grounding-pack.md` — header `Candidate → ratified` + date; §4.1's gate paragraph rewritten
-  to record the close, list the four obligations as met, name the sha and the re-run recipe, and
-  state that **it owns no open remainder and names no owner for one**; one dated changelog entry.
-- The three guard-checked mirrors: `README.md`, `specs/README.md`, `ECOSYSTEM.md` → `0.5.2 · ✅ ratified`.
-- The fourth, unchecked mirror: `CLAUDE.md` *Current state*, by hand.
-- Prose that would otherwise have flatly contradicted the header: `specs/README.md` (*six of six
-  remain candidate*, *four sit there now*), `ROADMAP.md` (status line 0-of-6 → 1-of-6, Phase 1 KGP
-  row, Phase F5 fixture row, two stale drift notes), `docs/reference/promotability.md` (banner,
-  intro, KGP row, Cheapest-first #1), `scenarios/README.md`, `federation-fold-dispositions.md`,
-  and a done-marker in `docs/reference/kgp-projection-gate-verification.md` §4.
-
-Byte-stability **checked, not asserted**: `git show HEAD:specs/grounding-pack.md` vs the working
-copy, section by section — §3 block 9394 bytes identical, §4/§4.1 up to the gate paragraph 12003
-identical, §5–§9 10093 identical, changelog tail identical. `git diff -U0` = three hunks (line 4,
-371–433, 602+). No claim id moves.
-
-Gates: `check-doc-integrity` (56 files, 1339 links, all 3 tables match headers, grounding-pack 0.5.2
-ratified) · `check-schemas` OK · `check-registry` OK · `check-tasklist-categories` OK ·
-`.chief/verify.sh --run` green (guard-doc-links 0 dead vs 0 on main; verify-selftest 30/0).
+Files changed: `scenarios/e2e-multi-authority.md` (+~330 lines), `scenarios/README.md`
+(MA-1…MA-11 → MA-1…MA-12), `docs/reference/promotability.md` (two stale links repaired).
 
 ### Learnings for future iterations
+- **`node scripts/check-doc-integrity.mjs` was RED on this branch before I touched anything** —
+  two links to `tasks/chief/87-*.json`, which the retire commit `d73b453` moved to
+  `tasks/chief/completed/`. **A retire commit moves a tasklist file and breaks every link to it.**
+  Run the guards FIRST each iteration so you know what you inherited.
+- The verdict for US-2/US-3 is already determined by this walk and is written into the scenario:
+  KINP's prose gate is discharged but KINP does **not** get promoted — the ratification gate
+  (`specs/README.md#the-ratification-gate`) also requires a KCS encoding **whose assertions cite the
+  clauses being ratified**, and `kcs:multi-authority` predates the fold and asserts none of them
+  (DR-8, same shape as DR-7). US-2's first acceptance criterion asserts "nothing else gates it" —
+  that premise is contradicted by `promotability.md`'s own KINP row and by the scenario. Follow the
+  repo's normative gate, and say so plainly.
+- KCB count (iii) and KMI count (i) both stay open. Neither spec is promoted; KCB has four other
+  counts and KMI's second count is KCB's work.
 
-- **A status change has a blast radius the guard does not cover.** `check-doc-integrity.mjs` checks
-  three tables and passes on a row containing the version string and the status *word* — it says
-  nothing about the dozens of prose sentences that count candidates ("six of six remain candidate",
-  "0 of 6 specs ratified", "four sit there now"). Before flipping a status, run
-  `grep -rn 'candidate\|ratified' --include='*.md' .` and read the hits: the ones that carry a
-  **count** or a **ranking** are the ones that go false. `promotability.md` and `ROADMAP.md`'s status
-  line are the two densest.
-- **Splice long prose blocks with python, not `sed`.** These documents wrap at ~100 columns and a
-  replaced paragraph must re-wrap; assert on the boundary lines (`assert lines[370].startswith(...)`)
-  before writing, so a shifted line number fails loudly instead of corrupting a section.
-- **Prove "byte-unchanged" with `git show HEAD:<file>` + section slicing.** A criterion that says
-  *confirm it* wants an observation, and `git diff --stat` does not supply one. Slice both versions
-  on section headers and compare lengths and equality; it takes six lines and it is the only thing
-  that distinguishes a status edit from a silent clause edit.
-- The research map in the tasklist description was accurate; nothing needed correcting.
+## US-2 — KINP is promoted only if its whole gate flipped (2026-09-03)
+
+**Outcome: KINP is NOT promoted.** Status stays **Candidate**, version stays **0.4.0**.
+
+US-2's criterion 1 is conditional and its antecedent *is* satisfied — Steps 2/3/4/6 all flip and
+Step 1 holds — but its consequent rests on the premise "KINP has no second count and no downstream
+deliverable, so nothing else gates it", and that premise is **false against this repo's own
+normative gate**. `specs/README.md` § *The ratification gate* makes a hand-walked prose pass
+*necessary but no longer sufficient* for `candidate → ratified`; the second condition is a
+machine-replayable KCS encoding **whose assertions cite the clauses being ratified**.
+`kcs:multi-authority` predates the 0.4.0 fold and by design asserts none of the folded clauses
+(**DR-8**), so §4.1's weakest-link rule, §4.2's `world_aligns_with`, §4.5's fourth branch, §6's
+domain-scoping and §3.4's non-federated commons have **no encoded assertion at all**. Criterion 2 is
+therefore the one that applies, and it was followed: the status does not move and the blocker is
+named in the spec and in `promotability.md`.
+
+Worth noting for whoever reads the tasklist next: `promotability.md`'s **KINP row always said this**
+("the **KCS-encoding** condition binds on top of it"). The inaccurate line was the *ranking*
+paragraph 5's "What remains is a single re-run and nothing else", which the tasklist description
+quoted. Both are now corrected and agree.
+
+Files changed:
+- `specs/identity.md` — §11 decision 1's gate paragraph rewritten (records the walk, its per-step
+  result, the DEFER-A residual, then the KCS-encoding blocker: downstream under ADR-0001, bounded
+  by MA-11 / KCS open question 1, unowned). New **Editorial (2026-09-03)** changelog entry. Fixed a
+  stale sentence in the *Downstream evidence* note that still read "MA-1…MA-4 stay blocking and
+  unfolded" after 0.4.0 folded them. `Last updated` → 2026-09-03.
+- `docs/reference/promotability.md` — KINP blocker cell + owner cell + ranking entry 5; page
+  `Updated:` → 2026-09-03.
+- `ROADMAP.md` — the stale "KINP's gate is the MA-1…MA-4 fold (`85`)" sentence at Phase 1.
+- `CLAUDE.md` — *Current state* KINP bullet (the fourth mirror **no guard checks**).
+
+**Criterion 3 confirmed, not assumed.** Sliced `git show HEAD:specs/identity.md` and the new file on
+section headers and compared per section: §0–§10 all `same`, §11 decisions 2 and 3 `same`. Only the
+title block (Last updated), §11 decision 1's gate paragraph, one sentence, and the Changelog moved —
+**4 diff hunks total**. No relation, envelope field, identifier form or resolution rule changed, so
+**no claim id moves**.
+
+**GATES — all green.** `check-doc-integrity` OK (every relative link resolves, all 3 status tables
+match their headers) · `check-doc-links` 0 dead references · `check-tasklist-categories` OK, 6
+tasklists · `check-schemas` OK · `check-registry` OK · `.chief/verify.sh` → `verify-test: 30 passed,
+0 failed`, "✓ verify: all selected gates green".
+
+### Learnings for future iterations
+- **A tasklist criterion can carry a false premise, and the repo's normative text outranks it.**
+  US-2 criterion 1 asserted "nothing else gates it"; `specs/README.md`'s ratification gate says
+  otherwise, and so did `promotability.md`'s own KINP row. The right move was to follow the repo,
+  do criterion 2's work, and say plainly in the commit and the notes *why* criterion 1 did not fire.
+  US-3's criteria look sound — but read the target file before trusting a criterion's premise.
+- **The section-slice check is cheap and worth doing every time** a spec is edited without a version
+  bump. `git show HEAD:<file>` → split on `^#{1,3} ` → compare per section. It turns "no clause
+  moved" from a claim into an observation, which is exactly what CLAUDE.md asks for.
+- **`CLAUDE.md`'s *Current state* prose is the fourth mirror and no guard checks it.** Every
+  iteration that touches a spec's gate must edit it by hand. Status did not flip here, so the
+  grep-for-counts obligation ("six of six remain candidate") was a no-op — but it will not be if a
+  future story ever does flip one.
+- `docs/reference/promotability.md` states its own rule that it carries **no current-version
+  column** deliberately, precisely so it does not become a fifth unchecked mirror. Do not add one.
+
+## US-3 — The other two specs' counts are decremented, and only those (2026-09-03)
+
+**Outcome: neither count closes, and neither spec is promoted.** KCB stays Candidate on all five
+counts; KMI stays Candidate on both.
+
+- **KCB count (iii)** (Steps 5–7) — Steps 6 and 7 flip, and inside Step 5 all three deltas 0.4.9
+  folded (MA-6, MA-8, MA-9) **hold under re-attack**. Step 5 breaks on **ADR-0014**'s
+  decided-but-unwritten clause — the count the ADR itself said it would land with. The count changed
+  shape a second time: from *re-run* to *write ADR-0014's four-part clause, then re-run Steps 5–7*.
+- **KMI count (i)** (Steps 8–10) — Steps 8 and 9 flip and **MA-5 does not reproduce**. Step 10
+  breaks on **MA-12**. Shape change: *fold MA-12 (two-spec, KCB §4 + KMI §7.1(f)), then re-run*.
+
+Files changed: `specs/capability-bus.md` (§3.1 gate paragraph + Editorial changelog + Last updated),
+`specs/media-interchange.md` (same shape), `docs/reference/promotability.md` (both rows, both owner
+cells, ranking re-ordered, closing section rewritten), `decisions/ADR-0014-*.md` (amendment),
+`ROADMAP.md` (re-run row → ✅ with per-step verdict, two follow-on ⬜ rows, KCB/KMI re-ratify rows,
+Phase F1 intro), `CLAUDE.md` (KCB + KMI *Current state* bullets).
+
+**The ranking DID change and was re-ordered: KINP 5 → 4, above KMI.** Reason stated in the page: the
+walk left KINP with **no koine-side work at all** while leaving KMI a *new fold* plus another re-run,
+so KMI got more expensive and KINP got cheaper. KINP deliberately does **not** overtake KCS or KFT —
+its remaining blocker (extending `kcs:multi-authority`) is bounded by MA-11 / KCS open question 1, so
+KCS's own unresolved question sits upstream of it. That is a dependency argument, not a volume one,
+and it is written into the entry so the next reader does not re-derive it.
+
+### Learnings for future iterations
+- **A not-clean re-run does not just fail a count — it can change the count's shape twice.** Both
+  counts went *fold the deltas* → *re-run the folded text* → *fold the NEW delta, then re-run*. When
+  writing a gate paragraph, say what the count reads as **now**, not what it read as at the fold.
+- **ROADMAP rows go stale in pairs.** Flipping the re-run row to ✅ without adding the two follow-on
+  ⬜ rows would have made the phase look finished. If a story closes a roadmap row and leaves work
+  behind, add the successor rows in the same commit.
+- **The section-slice check works just as well for "no clause moved" on a non-status edit.** KCB 25/28
+  and KMI 19/22 sections byte-identical, and `git diff -U0 | grep '^-[^-]'` returning only the
+  `Last updated` line is the one-line proof that an edit was purely additive. Cheap; do it every time.
+- `docs/reference/promotability.md`'s "Cheapest first" list is a plain markdown ordered list — when
+  re-ordering, rewrite the whole span between two entry anchors in one edit and then
+  `grep -n '^[0-9]\. \*\*'` to confirm 1–6 are present exactly once each.
+- **Dispositions records are dated snapshots; do not retro-edit them.**
+  `federation-fold-dispositions.md` and `capability-versioning-fold-dispositions.md` describe what a
+  past fold did and stay correct as history. The live surfaces are the spec gate paragraphs,
+  `promotability.md`, `ROADMAP.md` and `CLAUDE.md`. An **ADR** is the exception — ADR-0014 got an
+  *Amendment* because the walk confirmed its prediction, which is new information about the decision.
