@@ -158,7 +158,7 @@ exactly as it did before this was found.
 
 **Amendment (2026-09-03) — count (iii) was re-run, and it reproduced this finding as its blocker.**
 The Steps 5–7 re-run named above was walked by hand
-([`89`](../tasks/chief/89-the-re-run-three-specs-wait-on.json), recorded in that scenario's *Re-run —
+(`chief/89`, recorded in that scenario's *Re-run —
 Steps 1–10 walked by hand against the folded text* section). Steps 6 and 7 flip and MA-6, MA-8 and
 MA-9 all hold under re-attack, but **Step 5 does not flip**, on precisely this clause: a stale
 attribution of `compose 1.4.0` and a fresh, deprecation-marked one — same provider KINP id, same

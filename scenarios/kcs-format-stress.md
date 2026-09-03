@@ -80,6 +80,11 @@ rather than fail the liveness assertion. **Delta P: optional `timeout_ms` per st
 | N | Med | No stand-in for a not-yet-adopted participant. | Participants may declare `standin` + a fixture source, so scenarios run before full adoption. | §2 |
 | P | Minor | No timeout backs the liveness assertions. | Optional `timeout_ms` per step/scenario. | §2, §4 |
 
+**Delta R is not in the table above, deliberately.** It was returned by the **2026-09-03
+re-validation** of the folded text, not by this pass, and this table is the record of what the
+original pass found. R is defined once, in *Re-validation — KCS 0.3.0, walked 2026-09-03*, under
+*Findings — from the re-validation*.
+
 ## Verdict
 
 The **assertion vocabulary and execution model hold** — the format can *express the invariants*
@@ -191,3 +196,174 @@ re-open input for KCS's owner against a **ratified** spec, alongside `INT-11`.
 
 Suite-wide limits **DR-1** and **DR-2** are recorded in
 [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).
+
+---
+
+## Re-validation — KCS 0.3.0, walked 2026-09-03
+
+**What this section is.** KCS returned to `candidate` when **0.3.0** folded the determinism break
+Attempt 3 produced (delta **Q**: the fixed-core `structure_matches(a, b)` predicate and the
+normative stable-invariant rule). The single count named in
+[`../specs/conformance-scenario.md`](../specs/conformance-scenario.md) *Pressure test* is a
+**re-validation of that fold against this document**, and this section is that re-validation:
+every attempt above re-walked against **KCS 0.3.0 as published**, with a verdict recorded **per
+delta** rather than in aggregate.
+
+**Which half is a replay and which is a hand-walk — stated, because mixing them silently is the
+failure DR-7 and DR-8 record one directory over.** A green encoding is evidence for the
+assertions it encodes and for nothing else, so the two kinds of evidence are kept apart here and
+labelled per delta:
+
+| Evidence | Covers | Why |
+|---|---|---|
+| **Replay** — the 2026-08-24 run of `kcs:format-stress`, plus the nine documents that parse and replay (`## Downstream results` above) | **M**, **N**, **O**, and the *assertion* half of **P** | These deltas were folded at **0.2.0** and the runner implements them; the run asserts each one by name. They are the **regression set** of this pass, not its subject. |
+| **Hand-walk** — this section, against the prose of §2/§2.1/§3/§4/§5 | **Q** in full, the *firing* half of **P**, and a re-read of the clause behind every replayed delta | **DR-10**: the downstream §5 vocabulary omits `structure_matches`, so no encoded document can assert the predicate the fold *is*. The spec says a hand-walk of Attempt 3 still discharges the count, and this is that hand-walk. |
+
+**Method.** Same bias the pressure tests declare — *prefer finding breaks over asserting
+correctness*. Attempts 1 and 2 are the regression set; **Attempt 3 is the fold under test.**
+
+### Per-delta verdicts
+
+| Delta | Attempt | Evidence | Verdict |
+|---|---|---|---|
+| **M** — step `id` + `${id.path}` bindings | 1 | replay + clause re-read | ✅ **Flips.** §2.1 names the exact case (a provisional-local id an `invoke` mints) and the run bound three assertions, one with *both* operands bound. |
+| **N** — `standin` participants | 2 | replay + clause re-read | ✅ **Flips.** §2 carries `standin`; the run recorded it on all thirteen stubbed slots. |
+| **O** — `expect: ok\|reject` + `refused(step)` | 2 | replay + clause re-read | ✅ **Flips.** §3 and §5 both carry it; the run ran both negative paths as negative paths. |
+| **P** — `timeout_ms` | 2 | replay (assertion half) + hand-walk (firing half) | ✅ **Flips in prose**, with a declared residual: the bound exists and §4 says what exceeding it does, but a green run never exceeded one. |
+| **Q** — `structure_matches` + the stable-invariant rule | 3 | hand-walk only (DR-10) | 🔴 **Half-flips.** The byte-equality half closes normatively; the catch-a-changed-shape half does not → new delta **R**. |
+
+### Attempt 1, delta M ✅ *flips*
+
+Attempt 1's break was the `???` operand: the `extract` step mints a provisional-local entity id at
+run time (KINP §6) and nothing could name it. §2.1 now gives every step an `id` and makes its
+output addressable as `${<step-id>.<path>}`, and it enumerates this case first — *"the
+provisional-local entity id an `invoke` mints (KINP §6)"*. The broken line is writable as
+`based_on_exists(${extract.output.entity}, refkb:ent:napoleon-i)`, and the `resolve` step's
+descriptor threads the same way. *Corroborated by replay:* the run asserted `claim_in_world` over a
+minted claim id and `based_on_exists` over what the extraction produced — Attempt 1's exact broken
+line, run.
+
+### Attempt 2, deltas N and O ✅ *flip*
+
+**N.** §2 admits `"standin": { "fixtures": … }` on a participant and requires the console to record
+that the participant was stubbed, which is what makes a scenario runnable before the media provider
+adopts the bus. *Corroborated by replay:* thirteen stubbed slots, each recorded in the report.
+
+**O.** §3 gives a step `expect: "ok" | "reject"` (default `ok`) and states the inversion — with
+`reject` the step *passes* when the call is refused and fails if it unexpectedly succeeds — and §5
+carries `refused(step)`. *Corroborated by replay:* a refused `fetch` on the media plane and an
+over-ceiling `invoke` on the control plane both ran as negative paths instead of aborting the run.
+Neither KCB security property was testable at all before this delta, which is why O was blocking.
+
+### Attempt 2, delta P ✅ *flips in prose* — 🟡 *one declared residual*
+
+The break was that `completes` / `always_completes` presuppose a bound KCS did not declare, so a
+hung provider hangs the scenario instead of failing the liveness assertion. Both halves are now
+present: §2 carries a scenario-level `timeout_ms` and §3 a per-step one, and §4 step 2 states the
+consequence — *"a step exceeding its `timeout_ms` fails liveness rather than hanging the run."*
+
+🟡 **Residual, declared.** The replay corroborates that the liveness assertions exist and pass; it
+does **not** corroborate the firing path, because a green run never exceeded a timeout. What is
+unexercised is the transition from *exceeded* to *fails liveness*, and no encoded document forces
+it. That is a coverage gap in the suite, not a gap in the clause — §4 states the behaviour
+completely — so it is recorded rather than opened as a delta. A scenario that deliberately hangs a
+stand-in would close it, and writing one is downstream work.
+
+### Attempt 3, delta Q 🔴 *half-flips* → new delta **R**
+
+Attempt 3's sketch was re-encoded line by line against 0.3.0 and **every line is writable**: the
+`${setup.*}` operands bind under §2.1 (*"Setup-seeded ids bind the same way"*), the two `invoke`
+steps run in declared order under §3, the four KMI assertions name runtime-bound assets under delta
+M, and `structure_matches(${first.output.asset}, ${second.output.asset})` is now in §5's fixed
+core. So the *expressibility* break is gone.
+
+The break Attempt 3 recorded had two halves, and only one of them closes.
+
+**Closed — the byte-equality half.** Attempt 3: *"Asserting byte equality would incorrectly reject
+a valid replay."* §5 answers that normatively and by name: *"This predicate MUST NOT be interpreted
+as byte equality,"* backed by the rule that a scenario over generated output MUST assert stable
+structure/invariants rather than exact generated content, with the carve-out for where exact
+content **is** the contract. That is a clean fold and it is not in question below.
+
+**Not closed — the catch-a-changed-shape half.** Attempt 3's other clause: *"omitting the
+relationship leaves the scenario unable to catch a renderer that changes the output shape."* The
+relationship is no longer omitted, but §5 fixes only what the predicate is **not**. Its positive
+content is *"their declared structural or cross-plane invariants match — for example, the same
+attachment target, source world, or constituent topology"*, and three things were tried against
+that and held up as gaps:
+
+- **There is no declaration site.** *Declared* names a slot the format does not have. §2's document
+  shape has none, §3's step vocabulary has none, an `assert` step carries only `that`, and §5 fixes
+  the signature at **two** operands. A scenario therefore cannot say *which* invariants it requires
+  to match. A three-operand form naming them would not be §5's predicate — it would be a declared
+  console extension under §7.1, which puts the **fixed core's own** determinism predicate on the
+  escape hatch, an odd place for this fold to land.
+- **There is no plane anchor.** Every other §5 predicate delegates its meaning to a named clause
+  one plane over — `asset_attaches_to` and `source_world_is` to KINP §7.2 / KMI §2,
+  `cost_within_ceiling` to KCB §5, `claim_in_world` to KGP, `refused(step)` to §3's own `expect`.
+  The *Determinism/invariants* group has no plane behind it, and no clause of KINP, KGP, KMI or KCB
+  defines the structural invariants of a **generated** output. The nearest specified vocabulary is
+  one reach away and unreached: KMI §3's `media:derived_from` / `media:variant_of` /
+  `media:perceptual_match`, the last of which carries confidence and provenance and is *explicitly
+  never identity* — the same discipline `structure_matches` needs, stated from the other side.
+- **The operands cannot be compared to each other.** Both are KINP `asset` ids, and an `asset` id is
+  the **hash of the bytes** (KMI §2, §7.1). Attempt 3's premise is that the bytes differ by design,
+  so the two operands are *guaranteed* unequal and the predicate must dereference them to something
+  before it can be true of anything. §5 does not say to what.
+
+**Consequence, in both directions.** A runner picking a permissive basis (both operands resolve to
+media assets) returns true for a renderer that changed the output shape — the exact harm Attempt 3
+named. A runner picking a maximal basis (every envelope field, or the ids themselves) returns false
+for a valid replay — the harm §5 forbids by name, arriving through the front door instead of
+through "byte equality," which the clause does not reach because comparing two content-addressed
+ids is id equality and only *amounts* to byte equality. Both runners are conformant to §5 as
+written, so **one document has two truth values**, and §4's report is content-addressable, which
+means the divergence is invisible in the artefact rather than flagged by it.
+
+**What R is not.** Not §7.1: the escape hatch is for predicates §5 **cannot express**, and it was
+used exactly so, twice (V-8, MA-11); R is about a predicate §5 **does** express with an open basis,
+and §7.1's recorded second half is about a runner declaring which vocabulary *version* it
+implements. Not **DR-10** either: DR-10 is a **name** missing downstream, R is a **meaning**
+missing here, and a runner that added the name tomorrow would still have to invent the basis.
+
+#### A correction to Attempt 3's own sketch — recorded, not applied
+
+The sketch asserts `source_world_is(${first.output.asset}, ${setup.world})` on the output of
+`transform:cap:render`. KMI §2 delta H says generated/synthesized assets — *"a TTS narration, a
+composed score, a **render**"* — depict no world and take `source_world: null`. So both `*_world`
+lines as sketched assert a value KMI forbids on that asset, and the Attempt's prose premise
+(*"remains in the requested world"*) is not a property a generated asset has. §5's signature is
+`source_world_is(asset, world|null)`, so the format expresses the correct assertion —
+`source_world_is(${first.output.asset}, null)` — with no delta: **this is a defect in the sketch,
+not in KCS.** It is recorded here rather than edited into Attempt 3, which is the record of the
+2026-08-20 pass and stays as written.
+
+It does not touch delta Q, which was produced by the byte-differ problem and is untouched by it. It
+**sharpens R**: with the world assertions corrected, one of the three invariants §5 offers by
+example — source world — is `null` on both sides for *every* generated output and so distinguishes
+nothing, and attachment target is already asserted individually by the two lines above it. What is
+left as `structure_matches`'s marginal content is *"constituent topology"* and whatever else the
+runner decides to look at.
+
+### Findings — from the re-validation
+
+| # | Severity | Gap | Delta | Spec |
+|---|---|---|---|---|
+| **R** | **High — blocking** | `structure_matches(a, b)` is admitted to the fixed core with only a **negative** constraint (MUST NOT be byte equality). Its comparison basis is fixed nowhere: the format has no slot in which a scenario declares which invariants must match, no plane spec defines the structural invariants of a generated output, and both operands are content hashes of deliberately-differing bytes, so the predicate must dereference them to something §5 does not name. Two conformant runners may return different verdicts for one document, and the content-addressed report makes the divergence invisible. | Fix the basis in §5 by delegating it to named clauses (KINP §7.2 `attaches_to`, KMI §2 `source_world`, KMI §3's lineage relations), **or** give §2/§3 a declaration slot so a scenario names the invariants it requires to match. Either is a normal minor revision gated by a pressure test — **not** folded here, which is a read-and-confirm pass. | §5, §7.2; and §2/§3 under the second option |
+
+### Verdict — not clean; KCS stays **0.3.0 Candidate**
+
+The **regression set flips**: M, N, O and P are all closed by 0.3.0's inherited text, and three of
+the four are corroborated by a run rather than by this reading alone. The **fold under test
+half-flips**: byte equality is forbidden normatively, and the harm on the other side — a renderer
+that changes the output shape — is still uncatchable, because the predicate that was supposed to
+catch it does not say what it compares. **Delta R is blocking, and it is the only thing blocking**;
+KCS's status does not move.
+
+**DR-10's qualification is discharged by this walk, and R is what was under it.** The spec recorded
+DR-10 as *a qualification on the existing re-validation, not a second gate*, on the grounds that a
+hand-walk of Attempt 3 could still discharge what a machine replay could not. That is what
+happened. Worth recording plainly: a replay could not have found **R** even with the predicate
+implemented downstream, because a single runner is internally consistent — an open comparison basis
+is invisible from inside one implementation of it and shows up only in a read of the clause. That
+is an argument *for* the hand-walk requirement, not a complaint about it.
