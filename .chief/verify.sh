@@ -50,8 +50,13 @@ set -uo pipefail
 # guard-schemas and guard-registry are walls too, and for the same reason: both
 # cover machine-readable assets that downstream repos vendor by drift-gated
 # copy, so their failures do not stay in this repo.
+#
+# guard-roadmap-truth is the one UNCONDITIONAL row (see UNCONDITIONAL_GATES below):
+# the property it checks is a property of the TREE, not of a changed path, so no
+# dispatch rule selects it and none may exempt it.
 gate_table() {
   cat <<'EOF'
+guard-roadmap-truth|.|bash scripts/check-roadmap-truth.sh
 guard-doc-integrity|.|node scripts/check-doc-integrity.mjs
 guard-doc-links|.|node scripts/check-doc-links.mjs --ratchet --base "${CHIEF_BASE_BRANCH:-main}"
 guard-categories|.|node scripts/check-tasklist-categories.mjs
@@ -60,6 +65,17 @@ guard-registry|.|node scripts/check-registry.mjs
 verify-selftest|.|if [ "${CHIEF_VERIFY_INNER:-0}" = 1 ]; then echo "verify-selftest: already inside the self-test — skipping"; else bash .chief/verify-test.sh; fi
 EOF
 }
+
+# ── Unconditional gates ───────────────────────────────────────────────────────
+# Gates that run on every RUN, whatever the branch touched — and, unlike everything
+# below, on an empty diff too. The roadmap truth check is one because ROADMAP.md
+# drifts from tasks/chief/completed/ on branches that touch NEITHER file: a tasklist
+# merging elsewhere is what makes a row stale here. A path-scoped roadmap gate would
+# therefore be green on exactly the branches that break it.
+#
+# They are excluded from gate_ids (and so from plans and from the umbrella), because
+# a gate that always runs does not also need selecting.
+UNCONDITIONAL_GATES="guard-roadmap-truth"
 
 # ── Dispatch rules ────────────────────────────────────────────────────────────
 # First matching GLOB wins, so put the more specific pattern first. Columns:
@@ -97,10 +113,13 @@ EOF
 }
 
 # ── Dispatch ──────────────────────────────────────────────────────────────────
-# gate_ids — every gate id in table order, one per line.
+# gate_ids — every SELECTABLE gate id in table order, one per line. An
+# unconditional gate is deliberately not one: it has already run, so selecting it
+# would only run it twice — including inside the umbrella, which is the same thing.
 gate_ids() {
   while IFS='|' read -r id _dir _cmd; do
     [ -n "$id" ] || continue
+    case " $UNCONDITIONAL_GATES " in *" $id "*) continue ;; esac
     printf '%s\n' "$id"
   done <<EOF
 $(gate_table)
@@ -176,6 +195,19 @@ EOF
   return 1
 }
 
+# run_unconditional — run every gate in UNCONDITIONAL_GATES; 0 = all passed. A gate
+# absent from the current table is skipped rather than reported unknown: the
+# self-test swaps in a fake table through the CHIEF_VERIFY_LIB=1 seam, and it is
+# testing the runner's contract, not this repo's roadmap.
+run_unconditional() {
+  local id rc=0
+  for id in $UNCONDITIONAL_GATES; do
+    grep -q "^$id|" <<<"$(gate_table)" || continue
+    run_gate "$id" "(unconditional — every run)" || rc=1
+  done
+  return $rc
+}
+
 # run_plan < plan-lines — run each planned gate, stopping at the first failure.
 run_plan() {
   local id path rc=0
@@ -199,6 +231,16 @@ main() {
       --run) shift ;;
       -*) printf 'verify: unknown argument "%s"\n' "$1" >&2; return 2 ;;
     esac
+  fi
+
+  # The unconditional gates run FIRST, before the changed-file set is even computed
+  # — and so before the empty-diff early return below, which would otherwise let a
+  # branch with nothing in it pass a roadmap that no longer describes this repo.
+  # `--plan` and `--list-gates` promise to print the selection and execute nothing,
+  # so they are exempt from running it, not from being gated by it.
+  if [ "$mode" = "run" ] && ! run_unconditional; then
+    printf '\n✗ verify: unconditional gate FAILED — blocking merge\n' >&2
+    return 1
   fi
 
   # The changed-file list: an explicit argument list wins (both modes), then a
