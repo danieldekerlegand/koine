@@ -12,9 +12,16 @@ carries.
 > **Status note (0.5.1):** stays **Candidate** on all **five** counts. 0.5.1 writes
 > [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s four-part clause — the
 > `deprecated` / `removal_version` carrier (§2, §3, §7.3a/§7.3d) and the merge rule on §3.1(d)'s
-> converse — which is what count **(iii)** was waiting on; that count now reads *re-run
+> converse — which is what count **(iii)** was waiting on; that count became *re-run
 > [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) Steps 5–7 against the
-> folded text*, because a fold does not close its own gate. Patch, not minor: every field optional on
+> folded text*, because a fold does not close its own gate. **That re-run was walked by hand on
+> 2026-09-12 and count (iii) still does not close**: the 2026-09-03 blocker does not reproduce and
+> Steps 6/7 flip or half-flip, but Step 5 breaks on two defects inside the new clause — **MA-14**
+> (the per-attribution form of §3.1(d)(i) is not a shape) and **MA-15** ((i) and (ii) collide on
+> `deprecated`, and §7.3d makes the collision unavoidable) — with **MA-16** from Step 7 (the merge
+> rule reaches a capability entry; `params.mcp` and `params.auth` ride on the manifest). All three
+> are one additive KCB-only §3/§3.1(d) edit, and the count now reads *fold MA-14/MA-15/MA-16, then
+> re-run Steps 5–7 again*. **No version and no clause moved for that walk.** Patch, not minor: every field optional on
 > read and write, §7.2's table undisturbed, no published `schema_id` moves, and **0.6.0 stays spoken
 > for** by §2.3's legacy-extension-URI-root removal. The other four counts are restated and none
 > moves, so **KCB is no more promotable than it was.**
@@ -893,9 +900,48 @@ The walk is recorded in that scenario's *Re-run — Steps 1–10 walked by hand 
 **That clause is now written (0.5.1, 2026-09-12), and the count changes shape rather than closing.**
 ADR-0014's four parts land as the `deprecated` / `removal_version` fields of §2, carried through §3's
 `find` response as entry data, and the three rules of *Merging attributions merges attributions, never
-contents* above. **A fold does not close its own gate**, so count (iii) now reads *re-run Steps 5–7
+contents* above. **A fold does not close its own gate**, so count (iii) became *re-run Steps 5–7
 against the folded text* — the verdict is the scenario's, not this section's. The other **four** counts
 are untouched by the fold and remain open, so clearing this one would still not promote KCB.
+
+**That re-run has now been walked — by hand, on 2026-09-12 — and this count still does NOT close.**
+Steps 5–7 were read against 0.5.1's text rather than replayed, for the standing reason
+(`kcs:multi-authority` returns `green` and now predates **two** folds — **DR-8**). **The 2026-09-03
+blocker does not reproduce**: the carrier exists on both surfaces §7.3d names (`describe` needed
+nothing minted — §4's `describe` returns the card the extension rides on), the merged entry's marking
+is no longer undefined because (ii) answers it, and (e) is no longer structurally unable to fire.
+MA-6, MA-8 and MA-9 all hold under re-attack, **Step 6 flips** and **Step 7 half-flips**. **Step 5
+does not flip**, on two breaks inside the new clause itself — neither of which reopens ADR-0014's
+decision:
+
+- **MA-14** (High): (i)'s **per-attribution form is not a shape**. (i) is a cardinality switch a
+  consumer is normatively required to detect — a field carried *once* when attributions agree and
+  *per attribution* when they do not — and §3 names no field, structure, or example for the second
+  form, saying only what it is *not*. Two conformant registries emit two incompatible entries, and
+  §7.2's ignore-unknown-fields rule then turns a disagreement into silence. ADR-0014's part 2
+  required an explicit *mark* and its *Consequences* accepted a *per-attribution shape*; the clause
+  renders both as an implicit mark carried by an unnamed one.
+- **MA-15** (High): **(i) and (ii) collide on `deprecated`**. (ii) makes the merged entry deprecated
+  *for §7.3d's ranking and marking*, §7.3d defines *marked* as *the entry carries §2's `deprecated`*,
+  and (i) forbids picking one of two disagreeing attributions' values. The charitable reading — that
+  (ii) states a **derived** property — is circular, because §7.3d's *marking* is defined as the
+  field. The collision is in the ADR's Decision verbatim; what is missing is the distinction between
+  **the field as published** and **the merged entry's effective marking**.
+- **MA-16** (Med-High, Step 7): the merge rule reaches a **capability entry**, and the address and
+  issuer list a consumer dials with ride on the **manifest** (`params.mcp`, `params.auth`). (i)'s
+  MUST is broad enough to cover them and its framing paragraph enumerates only entry fields grounded
+  in being outside §7.1's digest, which those are not; and for the address (e)'s *resolve against the
+  provider's own card* is **circular**, the card being reached at the field in dispute. Both failure
+  modes are detectable at the dial and `accepted_issuers[]` fails closed, which is why it is
+  Med-High.
+
+All three are **carrier or scope** breaks in a clause whose **model held** — (ii)'s restriction-wins
+rule and (iii)'s no-reconciliation rule were both attacked directly and did not yield — and all three
+are **one additive, KCB-only §3/§3.1(d) edit**. Count (iii) now reads *fold MA-14, MA-15 and MA-16,
+then re-run Steps 5–7 again*, and is **unowned**. **No version moves and no clause moves for the
+walk.** The other four counts are restated and none moves, so **KCB is not promotable** and would not
+have been on a clean walk. Recorded in that scenario's *Re-run — Steps 5–7 walked by hand against
+KCB 0.5.1 (2026-09-12)* section.
 
 ---
 
@@ -2170,6 +2216,35 @@ most important thing an owner citing this run must understand:
 
 ## Changelog
 
+- **Editorial** (2026-09-12, second entry this day) — **count (iii) was re-run against the folded
+  text, and it does not close.** 0.5.1 wrote
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s clause, so the count
+  became *re-run [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md)
+  Steps 5–7*; that re-run was walked **by hand** — never replayed, since `kcs:multi-authority`
+  returns `green` and now predates **two** folds (**DR-8**) — and is recorded in that scenario's
+  *Re-run — Steps 5–7 walked by hand against KCB 0.5.1 (2026-09-12)* section. **The 2026-09-03
+  blocker does not reproduce**: §7.3d's *marked* and *carrying its removal version* read a field on
+  both surfaces they name (`describe` needed nothing minted), (ii) answers the merged entry's marking
+  where 0.5.0 left it undefined, and §3.1(e) is no longer structurally unable to fire. **MA-6, MA-8
+  and MA-9 hold under re-attack**, **Step 6 flips**, **Step 7 half-flips** — and **Step 5 does not
+  flip**, on two defects inside the new clause: **MA-14** (High — §3.1(d)(i) is a cardinality switch
+  a consumer MUST detect and §3 names no form for it, so §7.2's ignore-unknown-fields rule turns a
+  disagreement into silence; ADR-0014 part 2 asked for an explicit *mark* and *Consequences* for a
+  *per-attribution shape*, and the clause gives an implicit mark on an unnamed one) and **MA-15**
+  (High — (ii)'s *deprecated for §7.3d's ranking **and marking*** and (i)'s *MUST NOT pick one* land
+  on one field name, and the derived reading is circular because §7.3d defines *marking* as the
+  field; the collision is in the ADR's Decision verbatim). Step 7 adds **MA-16** (Med-High — the
+  merge rule keys on three per-**capability** facts while `params.mcp` and `params.auth` ride on the
+  **manifest**; (i)'s framing paragraph enumerates only entry fields *"deliberately outside §7.1's
+  digest"*, which those are not, and (e)'s *resolve against the provider's own card* is **circular**
+  for a disputed address). **No model is in question** — (ii)'s restriction-wins and (iii)'s
+  no-reconciliation rules were attacked directly and did not yield — and all three are **one
+  additive, KCB-only §3/§3.1(d) edit**, **unowned**. Count (iii) now reads *fold MA-14/MA-15/MA-16,
+  then re-run Steps 5–7 again*; the other **four** counts are restated and none moves. **No version
+  moves and no clause moves for this walk** — every normative clause of §1–§8 is byte-unchanged,
+  including all of §3.1(a)–(f) and the merge rule the walk attacked, no canonicalization changes and
+  no published digest moves; the only edit inside a section is §3.1's *Re-ratification* **gate
+  paragraph**, which binds nothing, beside the 0.5.1 status note and this entry. **KCB is not promotable**, and would not have been on a clean walk.
 - **0.5.1** (2026-09-12) — **ADR-0014's clause is written.** The four-part decision of
   [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) — Accepted 2026-08-26,
   *decided-but-unwritten* ever since, and the blocker count **(iii)**'s 2026-09-03 re-run returned

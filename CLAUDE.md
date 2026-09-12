@@ -460,8 +460,10 @@ vocabulary.
   **What remains is written down flat, with an owner or an explicit *unowned*, in
   `docs/reference/promotability.md` § *The seven things that stand between KCB and `ratified`*** — seven
   items, **six of the seven still unowned in this repo and in every other** — item (6) found an
-  owner on 2026-09-11 and the rest did not: (1) ADR-0014's four-part clause, a
-  precondition of counts **(ii) and (iii)**, not one; (2) the **MT-1** fold (§3/§4.4c); (3) **V-9 +
+  owner on 2026-09-11 and the rest did not: (1) was ADR-0014's four-part clause, a
+  precondition of counts **(ii) and (iii)**, not one — **written at 0.5.1 on 2026-09-12**, and item
+  (1) is now the **MA-14 + MA-15 + MA-16** fold (§3/§3.1(d), one edit for three findings) that count
+  (iii)'s re-run returned against it, gating count (iii) alone; (2) the **MT-1** fold (§3/§4.4c); (3) **V-9 +
   V-11** (§7.1); (4) **V-10 + BP-8 + AP-9**, *one* §7.2/§7.3g edit for three findings; (5) **BP-7**
   (§4.2b/d); (6) **DR-7**, the encoding extension to the F1–F13 set — downstream under ADR-0001, and
   the **only** artefact objection KCB still carries, since **DR-12 and DR-13 are CLOSED** (encoded at
@@ -518,10 +520,40 @@ vocabulary.
   no wall-clock timestamp (**DEFER-E** unmoved), no cadence or TTL on a discovery binding (**DEFER-D**
   unmoved), no §7.2 bump row for `volume`/`effect` (BP-8/AP-9 **stay open**), no peering topology or
   trust weighting. **Stays candidate and closes nothing**: a fold does not close its own gate, so
-  count (iii) now reads *re-run Steps 5–7 against the folded text* and count (ii) loses one of its
+  count (iii) became *re-run Steps 5–7 against the folded text* and count (ii) loses one of its
   preconditions without closing; the other four counts are restated, none moves, and **KCB is no more
   promotable than it was** — items (2)–(5) of the seven are still unowned KCB-only folds, (6) is
   downstream and (7) is external.
+  **That re-run was walked by hand the same day (2026-09-12) and count (iii) still does NOT close.**
+  Steps 5–7 read against 0.5.1's prose, never replayed (`kcs:multi-authority` now predates **two**
+  folds — DR-8). **The 2026-09-03 blocker does not reproduce**: the carrier exists on both surfaces
+  §7.3d names — **`describe` needed nothing minted**, §4's `describe` returning the card the extension
+  rides on — the merged entry's marking is no longer undefined because (ii) answers it, and §3.1(e) is
+  no longer structurally unable to fire. **MA-6/MA-8/MA-9 hold under re-attack, Step 6 flips, Step 7
+  half-flips**, and **Step 5 does not flip**, on two defects inside the new clause plus one of scope:
+  **MA-14** (High) — (i) is a **cardinality switch** a consumer MUST detect (a field carried *once*
+  when attributions agree, *per attribution* when they do not) and §3 names **no form** for the second
+  case, saying only what it is not, so two conformant registries emit incompatible entries and §7.2's
+  ignore-unknown-fields rule turns a disagreement into **silence**; ADR-0014's part 2 required an
+  explicit *mark* and its *Consequences* accepted a *per-attribution shape*, and the clause delivers an
+  implicit mark on an unnamed one. **MA-15** (High) — **(i) and (ii) collide on `deprecated`**: (ii)
+  makes the merged entry deprecated *for §7.3d's ranking **and marking***, §7.3d defines *marked* as
+  *the entry carries §2's `deprecated`*, and (i) forbids picking one of two disagreeing values, so the
+  charitable **derived** reading is circular; the collision is in the ADR's Decision **verbatim**, and
+  what is missing is the distinction between *the field as published* and *the merged entry's effective
+  marking*. **MA-16** (Med-High, Step 7) — the merge rule keys on three per-**capability** facts while
+  the address and issuer list a consumer dials with (`params.mcp`, `params.auth.accepted_issuers[]`)
+  ride on the **manifest**; (i)'s MUST is broad enough to reach them and its framing paragraph
+  enumerates only entry fields *"deliberately outside §7.1's digest"*, which those are not, and for the
+  address (e)'s *resolve against the provider's own card* is **circular** — the card is reached at the
+  field in dispute. Med-High because both modes are detectable at the dial and `accepted_issuers[]`
+  fails **closed**. **No model is in question**: (ii)'s restriction-wins and (iii)'s no-reconciliation
+  rules were attacked directly and did not yield, and all three findings are **carrier or scope**
+  breaks — the class MA-8 folded and V-10 records, one clause further out. All three are **one
+  additive, KCB-only §3/§3.1(d) edit** and **unowned**; count (iii) now reads *fold MA-14/MA-15/MA-16,
+  then re-run Steps 5–7 again*. **No version and no clause moved for the walk** — every normative clause of
+  §1–§8 byte-unchanged, §3.1(a)–(f) included, and no published digest moves; the edit is §3.1's
+  *Re-ratification* gate paragraph, the 0.5.1 status note, a changelog entry and a scenario section. **KCB is not promotable**, and would not have been on a clean walk.
 - `specs/media-interchange.md` — KMI 0.3.6, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
