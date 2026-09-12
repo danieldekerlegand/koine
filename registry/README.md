@@ -32,6 +32,7 @@ so a change means a **new** relation name, never an edit in place.
 | `relation` | canonical name (`snake_case`; domain-qualified in extension files) |
 | `arity` | number of arguments |
 | `arg_roles` | ordered, `\|`-separated role names — **fixes canonical argument order** (KGP §3.2 rule 1) |
+| `arg_types` | **positional and parallel to `arg_roles`** — one token per argument position, in the same order. **Fixes canonical argument *type***: `id` selects KGP §3.2 rule 3 (canonical CURIE), every other token selects one branch of rule 5 (typed literal). Vocabulary: `id` \| `string` \| `integer` \| `decimal` \| `boolean` \| `datetime` |
 | `symmetric` | `true` ⇒ operands sorted before hashing (KGP §3.2 rule 2) |
 | `tier` | the **dialect** tier: `grounding-only` \| `horn-safe` \| `full-prolog` (KGP §5) |
 | `domain` | `core` or the extension domain |
@@ -40,6 +41,32 @@ so a change means a **new** relation name, never an edit in place.
 
 The tiers **nest** (`grounding-only` ⊂ `horn-safe` ⊂ `full-prolog`): a relation's `tier` is the
 *lowest* tier that can carry it, so a `grounding-only` relation is safe in a `horn-safe` pack.
+
+#### Why `arg_types` names the literal type, and not just `literal`
+
+A *role* is not a *type*. `arg_roles` fixes the order of the arguments and says nothing about how
+each one is written down, while KGP §3.2 canonicalizes an identifier (rule 3) and a literal (rule 5)
+into **different bytes** — so before this column, one observation could mint more than one `claim`
+id depending on which rule a producer picked. That is [INT-3](../docs/reference/interop-trial.md#c3-is-an-argument-a-curie-or-a-literal-int-3-new-blocking),
+found here and reproduced independently by a producer role whose adapter typed `cine:reads`'s second
+argument as an identifier where a peer typed it as a string.
+
+INT-3's own remedy proposed a two-token `id|literal` vocabulary. This column is **wider on purpose**,
+and the reason is in the same finding: rule 5's trigger for the typed-literal form — used "when a bare
+literal is ambiguous" — is a judgement, not a rule, so two producers that *both* read a position as
+`literal` can still split (`"EXIT"` vs `"EXIT"^^xsd:string`). Naming the branch outright closes that
+second split at the same time as the first. It also costs nothing later only if it is done now:
+`arg_types` is part of a relation's signature, so refining `literal` to `string` in a published row
+would re-mint every dependent claim id — exactly the edit-in-place the immutability rule above
+forbids.
+
+**Every position of every relation is typed, with no position left blank** — the guard enforces the
+count against `arity` and the tokens against the vocabulary, and it rejects a symmetric relation that
+mixes types, since KGP §3.2 rule 2 sorts its operands against each other.
+
+**A new relation is typed when it is minted, never after.** The signature is immutable once
+published, so a row that lands untyped — or typed wrongly — cannot be corrected in place: it needs a
+new relation name and it strands every claim already minted against it.
 
 There is no `egress` column: a core or domain relation is `exportable` (the KGP §7.2 default) —
 egress is a property of *what a participant's own predicate carries*, so it is declared per entry
@@ -135,5 +162,5 @@ What a mapping may and may not do is fixed by the specs, not by the mapping file
 
 **Ontology vs. relations — two layers.** A node/edge ontology names *what entities are*; the
 relation registry here names *how claims about those entities normalize* (arity, `arg_roles`,
-`symmetric`, dialect `tier` — KGP §3.2). A claim-bearing edge type therefore has a counterpart
+`arg_types`, `symmetric`, dialect `tier` — KGP §3.2). A claim-bearing edge type therefore has a counterpart
 relation in these TSVs; a node type does not, because it is an entity, not a claim.

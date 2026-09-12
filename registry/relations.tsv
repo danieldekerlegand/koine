@@ -1,16 +1,16 @@
-relation	arity	arg_roles	symmetric	tier	domain	inverse	description
-same_as	2	a|b	true	grounding-only	core		Identical referents; licenses fact transfer across the two ids (KINP §4.3)
-based_on	2	derived|source	false	grounding-only	core		Lineage only; does NOT license fact transfer (the fiction→real firewall, KINP §4.3)
-exact_match	2	a|b	true	grounding-only	core		Identity anchor to an external authority id (e.g. →wikidata:Q517)
-part_of	2	part|whole	false	horn-safe	core	has_part	Mereological containment
-instance_of	2	instance|class	false	horn-safe	core	has_instance	Type membership
-co_occurs	2	a|b	true	grounding-only	core		Untyped co-occurrence of two entities
-derived_from	2	derived|source	false	grounding-only	core		General derivation lineage
-retracts	2	retraction|target	false	grounding-only	core		Lifecycle: withdraws a prior claim (KINP §4.2; additive, never deletes)
-supersedes	2	newer|older	false	grounding-only	core		Lifecycle: replaces a prior claim with a newer one (KINP §4.2)
-retrains	2	newer|older	false	grounding-only	core		Lifecycle: a re-train over the same pinned inputs mints a NEW model entity that retrains an earlier one (KFT §5.2); never a content-address id collision
-continues	2	newer|older	false	grounding-only	core		Lifecycle: a resumed training leg continues the interrupted leg it picks up from (KFT §3.4/§5.2); never a re-train from scratch (retrains) and never a replacement (supersedes)
-located_in	2	entity|place	false	horn-safe	core	contains	Spatial containment: an entity is located in a place (positional, NOT mereological — cf. part_of)
-descended_from	2	descendant|ancestor	false	horn-safe	core	ancestor_of	Genealogical/lineal descent (person, culture, language); the ancestor closure is one Horn rule
-caused_by	2	effect|cause	false	horn-safe	core	causes	Event causality: the effect event happened because of the cause event
-world_aligns_with	2	a|b	true	grounding-only	core		Two WORLD ids denote the same context (KINP §4.2/§5); NOT inheritance-as-identity and never fact transfer — the §4.3 firewall is unaffected. Minted for federation (MA-4) rather than widening same_as, whose signature is immutable
+relation	arity	arg_roles	arg_types	symmetric	tier	domain	inverse	description
+same_as	2	a|b	id|id	true	grounding-only	core		Identical referents; licenses fact transfer across the two ids (KINP §4.3)
+based_on	2	derived|source	id|id	false	grounding-only	core		Lineage only; does NOT license fact transfer (the fiction→real firewall, KINP §4.3)
+exact_match	2	a|b	id|id	true	grounding-only	core		Identity anchor to an external authority id (e.g. →wikidata:Q517)
+part_of	2	part|whole	id|id	false	horn-safe	core	has_part	Mereological containment
+instance_of	2	instance|class	id|id	false	horn-safe	core	has_instance	Type membership
+co_occurs	2	a|b	id|id	true	grounding-only	core		Untyped co-occurrence of two entities
+derived_from	2	derived|source	id|id	false	grounding-only	core		General derivation lineage
+retracts	2	retraction|target	id|id	false	grounding-only	core		Lifecycle: withdraws a prior claim (KINP §4.2; additive, never deletes)
+supersedes	2	newer|older	id|id	false	grounding-only	core		Lifecycle: replaces a prior claim with a newer one (KINP §4.2)
+retrains	2	newer|older	id|id	false	grounding-only	core		Lifecycle: a re-train over the same pinned inputs mints a NEW model entity that retrains an earlier one (KFT §5.2); never a content-address id collision
+continues	2	newer|older	id|id	false	grounding-only	core		Lifecycle: a resumed training leg continues the interrupted leg it picks up from (KFT §3.4/§5.2); never a re-train from scratch (retrains) and never a replacement (supersedes)
+located_in	2	entity|place	id|id	false	horn-safe	core	contains	Spatial containment: an entity is located in a place (positional, NOT mereological — cf. part_of)
+descended_from	2	descendant|ancestor	id|id	false	horn-safe	core	ancestor_of	Genealogical/lineal descent (person, culture, language); the ancestor closure is one Horn rule
+caused_by	2	effect|cause	id|id	false	horn-safe	core	causes	Event causality: the effect event happened because of the cause event
+world_aligns_with	2	a|b	id|id	true	grounding-only	core		Two WORLD ids denote the same context (KINP §4.2/§5); NOT inheritance-as-identity and never fact transfer — the §4.3 firewall is unaffected. Minted for federation (MA-4) rather than widening same_as, whose signature is immutable
