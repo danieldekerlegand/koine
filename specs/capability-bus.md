@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.5.5
+**Spec version:** 0.5.6
 **Status:** Candidate
 **Last updated:** 2026-09-12
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -9,6 +9,39 @@ capability consumers (most participants are both provider and consumer).
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
+> **Status note (0.5.6):** stays **Candidate** on the same **six** counts, and **none of them
+> moves.** 0.5.6 is the first half of the **MT-1** fold — the finding count **(i)**'s 2026-09-03
+> walk of
+> [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) returned against §3's
+> path planning, which is delta F's surface and the leg that count exists for. §7.1 makes
+> `(name, version)` the unit of discovery and §3's *Ranking across versions* rule makes the registry
+> match the **highest satisfying version** first, so a composed path is **already built over a
+> specific version of each leg** — and the result said which nowhere. §3's *Composition* bullet named
+> ports, planes, providers and a projected cost, and no version. The consequence is not a missing
+> convenience: §4.4c resolves a version-free `invoke` to the **grant's** major, so a caller that
+> planned over a top-ranked successor and holds a predecessor grant is served the **predecessor**,
+> silently, with §5's gate satisfied and the leg that runs not the leg that was matched. §4.4c
+> forbids resolving to the *highest published* major **by name** as the fail-open inversion **V-5**
+> found; this is the same silent selection with the sign reversed, disagreeing not with the grant —
+> which is correct and binding — but with §3's own plan. §3 therefore gains a NORMATIVE bullet:
+> each leg of a returned path names the **`(name, version)` it was matched over** (an exact version,
+> never a range, never the name alone, and §7.1's `0.0.0`-unknown where the entry carries none), the
+> **projected cost** is the cost of exactly those legs so a caller gates spend against the same leg
+> it planned over, and a plan leg is stated to be the registry's account of **what it matched** —
+> reserving nothing, binding no provider, and leaving which major an `invoke` reaches to §4.4. That
+> is the half that makes the disagreement **sayable**; the half that **refuses** it is §4.4c's and
+> lands beside this one. **Patch, and the axis is named rather than assumed** — §7.2's table governs
+> **a published capability's** bumps and decides nothing about KCB's own spec version, which moves on
+> §7.3b's axis; the table is consulted for the two questions it *does* answer and both are **No** (no
+> published digest moves, no live subscriber breaks). Additive at every surface: **no field, verb,
+> plane, port kind, grant or authority role is added**, no ranking rule changes, a deployment that
+> computes no paths gains no obligation, a **single-registry** deployment is conformant unchanged,
+> **§7.1 step 1's kept and dropped sets are byte-unchanged so no published `schema_id` or digest
+> moves**, §7.2's table is undisturbed, and **0.6.0 stays spoken for** by §2.3's
+> legacy-extension-URI-root removal. **No count closes and none is added**: MT-1 was found inside
+> count (i)'s own walk, so that count changes shape rather than gaining a sibling, and a fold does
+> not close its own gate.
+>
 > **Status note (0.5.5):** stays **Candidate** on the same **six** counts, and **none of them
 > moves.** 0.5.5 is the second half of the **V-10 / BP-8 / AP-9** fold: 0.5.4 gave §7.2's table the
 > two rows it was missing, and this version gives the **MUST those rows state** a mechanism that
@@ -845,7 +878,45 @@ deployment needs more than one, they **peer** (§3.1).
   contract-matched form of any-to-any (delta F), resolved by matching the ports crawled off peers'
   card extensions rather than a central transform-gateway. Path search **prefers zero-`cost`
   routes** using each capability's `params.capabilities[].cost` and returns the path's projected
-  cost so the caller can gate spend before invoking (delta K).
+  cost so the caller can gate spend before invoking (delta K). Each leg of the returned path names
+  the **`(name, version)` it was matched over**, and the projected cost is the cost of exactly those
+  legs — the next bullet.
+- **A path leg names the version it was matched over (MT-1).** NORMATIVE, and it mints no field.
+  §7.1 makes `(name, version)` — *"not the name alone"* — the unit of discovery, and the *Ranking
+  across versions* bullet above makes the registry match the **highest satisfying version** first.
+  So a path is **already built over a specific version of each leg**; what was missing is that the
+  result said which. Where a `find` returns a path:
+
+  - Each leg MUST name the capability **`name`** and the **`version`** the registry matched it
+    over — the exact version of the entry whose ports satisfied that leg, never a range, never the
+    name alone, and never a version the registry did not match. A leg matched over an entry
+    carrying no `version` is named at §7.1's **`0.0.0`-unknown** reading, which is a value and not
+    an omission.
+  - The path's **projected cost** is the sum of the `cost` of exactly the legs as named, read from
+    the same entries. A caller that gates spend on the plan is therefore gating against the same
+    `(name, version)` it planned over, and not against some other major of the same name.
+  - A plan leg is the registry's account of **what it matched**, not a reservation and not an
+    instruction. It reserves nothing, expires by nothing, and binds no provider — the registry
+    returns *addresses* and peers dial directly
+    ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)). Which major an `invoke` actually
+    runs against is **§4.4**'s, resolved there and nowhere here.
+
+  **Why this is a clause and not a nicety (MT-1).** Without it a plan cannot **disagree** with
+  anything: §4.4c resolves a version-free `invoke` to the grant's major, so a caller that planned
+  over a top-ranked successor and holds a predecessor grant is served the **predecessor** — a major
+  the grant authorizes, so §5's gate is satisfied and nothing is refused, while the leg that runs is
+  not the leg that was matched or the one the projected cost was quoted from. §4.4c forbids
+  resolving to the *highest published* major **by name** as the fail-open inversion **V-5** found;
+  this is the same silent selection with the sign reversed, and the party it disagrees with is not
+  the grant but §3's own plan. The plan had to **say what it planned over** before any clause could
+  catch the disagreement.
+
+  **Additive at every surface.** The registry already indexes each capability's `version`
+  (*Population*) and already returns it as entry data (*What a `find` returns*), so this fixes what
+  the **path result** carries and mints no field, no verb and no ranking rule; ranking is unchanged;
+  a deployment that computes no paths gains no obligation; a **single-registry** deployment is
+  conformant unchanged; and a consumer MUST ignore fields it does not understand (§7.2), so a
+  consumer that reads no leg version is unaffected.
 - **Route-by-lookup, not proxy ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)).**
   The registry returns *addresses*; peers then connect **directly** over MCP/A2A — no
   inter-service traffic flows through it. An optional **aggregator facade** MAY present a unified
@@ -2858,6 +2929,44 @@ most important thing an owner citing this run must understand:
   §7.2's table, §2.4, §4.2, §4.3 and §7.1 included — no canonicalization changes and **no published
   `schema_id` or digest moves**; the edit is three scenario sections, three gate paragraphs, a
   *Pressure test* paragraph and this entry. **All six counts stay open and KCB is not promotable.**
+
+- **0.5.6** (2026-09-12) — **the first half of the MT-1 fold: a path plan says what it planned
+  over.** Count **(i)**'s 2026-09-03 walk of
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) answered the question
+  that count exists to ask — *does the port/cost/world model survive being served as an AgentCard
+  extension?* — **yes**, F/G/J/K/L all holding against the card, and broke on a new seam in Step 1:
+  **MT-1** (High, structural). §7.1 makes `(name, version)` the unit of discovery and §3's *Ranking
+  across versions* bullet makes the registry match the **highest satisfying version** first, so a
+  composed path is already built over a specific version of every leg — and §3's *Composition* bullet
+  named ports, planes, providers and a projected cost and **no version anywhere**. §4.4c then resolves
+  a version-free `invoke` to the **grant's** major, so a caller that planned over a top-ranked
+  successor and holds a predecessor grant is served the **predecessor**: a major the grant authorizes,
+  so §5's gate does not fire, nothing is refused, and the leg that runs is not the leg that was
+  matched or the one whose cost was quoted. §4.4c forbids *highest published* **by name** as the
+  fail-open inversion **V-5** found; this is the symmetric silent selection, and the party it
+  disagrees with is not the grant — which is correct and binding — but **§3's own plan**, which
+  nothing on the wire carried. §3 gains a NORMATIVE bullet: each leg of a returned path MUST name the
+  **`(name, version)` it was matched over** — the exact version of the entry whose ports satisfied
+  that leg, never a range, never the name alone, and §7.1's **`0.0.0`-unknown** as a *value* where the
+  entry carries no `version`; the **projected cost** is the cost of exactly those legs read from the
+  same entries, so a caller gating spend on the plan gates against the same `(name, version)` it
+  planned over; and a plan leg is the registry's account of **what it matched**, reserving nothing,
+  expiring by nothing and binding no provider, with which major an `invoke` runs against left to
+  **§4.4** ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)'s route-by-lookup rule
+  untouched — the registry still returns addresses and never proxies). This is the half that makes the
+  disagreement **sayable**; the half that **refuses** it is §4.4c's. **Patch, and the axis is named
+  rather than assumed**: §7.2's table governs *a published capability's* bumps and decides nothing
+  about KCB's own spec version, which moves on §7.3b's axis — the table is consulted for the two
+  questions it does answer, and both are **No**. Additive at every surface: the registry already
+  indexes `version` (*Population*) and already returns it as entry data (MA-8), so **no field, verb,
+  plane, port kind, grant or authority role is added**, no ranking rule changes, a deployment that
+  computes no paths gains no obligation, a single-registry deployment is conformant unchanged, a
+  consumer that reads no leg version is unaffected (§7.2's ignore-unknown-fields rule), **§7.1 step
+  1's kept and dropped sets are byte-unchanged so no published `schema_id` or digest moves**, §7.2's
+  table is undisturbed and **0.6.0 stays spoken for** by §2.3's removal. **No count closes and none is
+  added** — MT-1 was found inside count (i)'s own walk, so that count changes shape rather than
+  gaining a sibling — the other five are restated unmoved, and **KCB is no more promotable than it
+  was**.
 
 - **0.5.5** (2026-09-12) — **the other half of V-10 / BP-8 / AP-9: the MUST three sections state now
   points at a frame that exists.** 0.5.4 gave §7.2's table its `volume` and `effect` rows; this
