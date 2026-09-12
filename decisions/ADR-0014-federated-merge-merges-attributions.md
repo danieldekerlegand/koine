@@ -210,6 +210,22 @@ again*, and it is **unowned**. The walk is recorded in that scenario's *Re-run �
 hand against KCB 0.5.1 (2026-09-12)* section. **No count closes and KCB stays Candidate on all
 five**, so nothing here promotes anything.
 
+**Amendment (2026-09-12) — the deferred `volume`/`effect` exposure is closed, at KCB 0.5.4.** The
+*What is deliberately not decided here* paragraph above parked one item on a named trigger: *"no bump
+row for `volume` or `effect` — the exposure is recorded above, and closing it is a §7.2 change that
+belongs to whichever pressure test breaks it."* **Three** pressure tests broke it — **BP-8**
+(`kcb-subscription-firehose.md`), **AP-9** (`kcb-cross-owner-posture.md`) and, for the frame half,
+**V-10** (`e2e-live-schema-mutation.md`) — and §7.2's table gained a **minor** row for each operand at
+KCB 0.5.4 (`chief/950`), agreeing with what §4.2a and §4.3a had declared in their own text since 0.4.7
+and 0.4.8. The **generalization table** above therefore now reads **minor (§7.2)** in the *Declared
+bump* column for `volume` and `effect`, and *"no — but the bump moves `version`, which **is**"* in the
+merge-key column, exactly as `cost` and `binding` do; **four** of the five carriers are rescued by the
+version their bump moves and **one is not** — the deprecation marking, which is applied to a published
+capability **in place** and for which no bump can move a version, so it remains the case §3.1(d)(i)
+and (ii) were written for. The §3.1(d) prose records that split. **This record's decision is not
+reopened, no part is withdrawn, and no count closes**: closing the exposure was always a §7.2 change,
+never a change to the merge rule.
+
 ---
 
 ## Consequences

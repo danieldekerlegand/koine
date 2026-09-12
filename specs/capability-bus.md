@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.5.3
+**Spec version:** 0.5.4
 **Status:** Candidate
 **Last updated:** 2026-09-12
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -9,6 +9,33 @@ capability consumers (most participants are both provider and consumer).
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
+> **Status note (0.5.4):** stays **Candidate** on the same **six** counts, and **none of them
+> moves.** 0.5.4 folds **BP-8**, **AP-9** and **V-10** — three findings from three different pressure
+> legs, and **one hole**. §7.2's normative table governs what a provider MAY change under a given
+> bump, and it was written before `volume` (0.4.7, §4.2a) and `effect` (0.4.8, §4.3a) existed. Both
+> operands nevertheless declare a **minor** bump *"(§7.2)"* in their own sections, on which the whole
+> of their visibility rests — *the version moves, so a pinned subscriber can see it* — and the table
+> they cite had **no row for either**, the nearest reaching them reading **patch**. So two sections
+> asserted a bump the authority on bumps did not authorize.
+> [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) named that exposure in
+> advance and deferred it *"to whichever pressure test breaks it"*; **BP-8**
+> ([`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md)) and
+> **AP-9** ([`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md))
+> broke it, and **V-10**
+> ([`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md)) is the same
+> defect read from the frame side. §7.2's table gains a **`volume`** row and an **`effect`** row, each
+> **minor**, each stating whether a live subscriber breaks, and each **agreeing with** what §4.2a and
+> §4.3a already declared — so **no provider obligation changes** and what changes is that the
+> declaration now has an authority behind it. The merge-key consequence is followed through to
+> **§3.1(d)**, where it matters: a field outside §3.1(d)'s key is rescued **not by the key but by the
+> `version` its declared bump moves**, so **four** of ADR-0014's five carriers — `cost`, `binding`,
+> `volume`, `effect` — now fail the converse rather than disagree inside a merged entry, and **one**
+> is not rescued and cannot be — the deprecation marking, applied to a published capability **in
+> place**, which is the case §3.1(d)(i)/(ii) were written for. **No published digest moves**: §7.1
+> step 1 drops both operands by name before hashing and that drop list is **byte-unchanged** —
+> checked against the step, not assumed — so the version moves and the `schema_id` does not, exactly
+> as `cost` has since 0.2.0.
+>
 > **Status note (0.5.3):** stays **Candidate** on the same **six** counts, and **none of them
 > moves.** 0.5.3 folds **V-9 and V-11** of
 > [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) — the
@@ -863,9 +890,27 @@ moves for **none** of: `cost` (§5), the transport `binding` (§2.4), `volume` (
 outside §7.1's digest, so two attributions of **one** capability can satisfy the converse *exactly*
 and still disagree about them — a stale read of a provider's card beside a fresh one is the ordinary
 way that happens, and for the marking it is the **expected** way, because §7.2's table has no bump
-row for marking a capability deprecated and the predecessor is marked **in place**. Three rules
-follow. All three apply **only within the converse** — one provider KINP id, one `(name, version)`,
-one `schema_id`, reached more than once.
+row for marking a capability deprecated and the predecessor is marked **in place**.
+
+**Which of the five the key rescues, and which it does not (BP-8, AP-9).** A field outside the merge
+key is rescued **not by the key but by the `version` its declared bump moves**, because `version` *is*
+in the key: where §7.2 requires a bump for a change to such a field, a stale attribution and a fresh
+one carry **different versions**, fail the converse, and are returned as the two entries they are —
+the disagreement never reaches the inside of a merged entry, and (i) and (ii) never fire on it. As of
+**0.5.4** four of the five are rescued that way: `cost` (§5, *never silent*), the transport `binding`
+(§2.4), `volume` (§4.2a) and `effect` (§4.3a) each have a **minor** row in §7.2's table. The fifth is
+not, and cannot be: the `deprecated` marking and its `removal_version` are applied to a published
+capability **in place** — that is what §7.3's dual-serving window *is* — so no bump moves the version
+under them, and two attributions at one identical key disagreeing about the marking stays the case
+this clause was written for. Rules (i) and (ii) below are therefore unchanged in substance and
+narrower in reach than they read at 0.5.1: they are the whole of the contract for the marking, and a
+**backstop** for the other four, which a conformant provider's bump should have kept out of the
+converse in the first place. That is a strength, not a redundancy — a provider that changes `volume`
+without bumping has committed §7.2's *digest-change-without-a-bump* defect one field over, and (i)
+carries both attributions rather than hiding it.
+
+Three rules follow. All three apply **only within the converse** — one provider KINP id, one
+`(name, version)`, one `schema_id`, reached more than once.
 
 - **(i) A registry MUST NOT synthesize a value for a field outside the merge key.** Where two
   attributions of one entry disagree on such a field, the merged entry MUST carry **each
@@ -910,9 +955,7 @@ one `schema_id`, reached more than once.
 parked `deprecated_at` of `DEFER-E` is **unmoved** and its trigger unchanged, and `removal_version`
 is a version on §7.3b's axis, never a date. No cadence, TTL, or refresh obligation on a discovery
 binding (`DEFER-D`, likewise unmoved): `observed_at` records **when** an attribution was read and
-obliges no one to read again. No new row in §7.2's normative table for `volume` or `effect` — that
-exposure is **BP-8**/**AP-9**, recorded and still open, and closing it belongs to whichever pressure
-test breaks it, not here. And no peering topology, federation membership protocol, or trust
+obliges no one to read again. And no peering topology, federation membership protocol, or trust
 weighting: (b) bounds a query and (d) refuses ranking by attribution, and neither is reopened.
 
 **e. Staleness is visible, never silent.** A registry is already a cache (§3); a peered entry is a
@@ -2090,11 +2133,32 @@ given bump.
 | Add an OPTIONAL `payload_schema_id` to a knowledge port (§2.1) | minor | No — the digest moves *with* the version, and what the port routes is unchanged |
 | Change a capability's transport `binding` (§2.4) | minor | No — but a live `subscribe` MUST be told on §4.2d's channel (§7.3g), never left to a failed dial |
 | Change `cost` | minor, and never silent (§5) | No |
+| Change a port's **`volume`** (§4.2a) | minor | No — the delivery envelope moves, not the shape; the version moves with it, so a pinned subscriber can see it, and a live `subscribe` is told on §4.2d's channel |
+| Change a capability's or a port's **`effect`** class (§4.3a) | minor | No — the class is not shape; the version moves with it, so a pinned consumer can see it, and a live `subscribe` is told on §4.2d's channel (§4.3a). A class the caller's posture does not admit is a **refusal** at the next dispatch (§4.3c–d), never a silent proceed |
 | Add a **required** input, or make an optional input required | **major** | Yes |
 | **Remove or rename** a capability, a port, or a field | **major** | Yes |
 | **Narrow** an input, or **remove/narrow** an output type | **major** | Yes |
 | **Tighten** a produced port's `world_pattern` | **major** | Yes — it silently shrinks what the subscriber discovers (delta J) |
 | Change the **meaning** of an existing field at unchanged type | **major** | Yes — and only the declared bump can say so |
+
+**The last two rows close a disagreement, and it is recorded rather than quietly fixed
+(BP-8, AP-9, V-10).** `volume` and `effect` were minted after this table was written, each in its own
+section and each declaring a **minor** bump *"(§7.2)"* — §4.2a: *"the version moves, so a pinned
+subscriber can see it"*; §4.3a: *"so the version moves and a pinned consumer can see it"* — and until
+this version the table they cited had **no row for either**. The nearest row that reached them was
+*Editorial only — `description`, examples; no `schema_id` change*, which reads **patch**, so the one
+mechanism by which a subscriber learns of a re-declared envelope or a widened effect class was
+asserted in two sections and unauthorized by the table that governs bumps.
+[ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) named the exposure in advance
+and deliberately declined to close it — *"no bump row for `volume` or `effect` … closing it is a §7.2
+change that belongs to whichever pressure test breaks it"*. Three broke it: **BP-8**
+([`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md)), **AP-9**
+([`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md)) and **V-10**
+([`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md)). The rows
+**agree with** what those two sections already declared and change no provider's obligation; what they
+change is that the declaration now has an authority behind it. **No digest moves for them**: §7.1 step
+1 drops `volume` and `effect` by name before hashing, and that drop list is untouched here — the
+version moves and the `schema_id` does not, which is exactly the pairing `cost` has had since 0.2.0.
 
 Two obligations fall out of that table, and both are normative.
 
@@ -2591,6 +2655,44 @@ most important thing an owner citing this run must understand:
   DR-13 adds no count, removes no count, and promotes nothing — all five stand.
 
 ## Changelog
+
+- **0.5.4** (2026-09-12) — **BP-8, AP-9 and V-10 folded: §7.2's table governs the two operands minted
+  after it was written.** Three findings, three different pressure legs, **one hole**. §7.2's
+  normative table fixes what a provider MAY change under a given bump; `volume` (§4.2a, 0.4.7) and
+  `effect` (§4.3a, 0.4.8) arrived afterwards, and each declares a **minor** bump *"(§7.2)"* in its own
+  section — *the version moves, so a pinned subscriber can see it* — against a table with **no row for
+  either**. The nearest row that reached them, *Editorial only — `description`, examples; no
+  `schema_id` change*, reads **patch**, so the single mechanism by which a subscriber learns of a
+  re-declared delivery envelope or a widened effect class was asserted in two sections and
+  unauthorized by the table that governs bumps.
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) named this exposure in
+  advance and declined to close it — *"closing it is a §7.2 change that belongs to whichever pressure
+  test breaks it"* — and three legs broke it: **BP-8**
+  ([`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md), count
+  (iv)), **AP-9** ([`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md),
+  count (v)) and **V-10**
+  ([`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md), count (ii)),
+  the last being the same defect read from the frame side. **The table gains two rows**, a `volume` row
+  and an `effect` row, each **minor**, each stating whether a live subscriber breaks, and each
+  **agreeing with** the section that declared it — so **no provider's obligation changes**; what
+  changes is that the declaration now has an authority behind it, and the disagreement is recorded in
+  §7.2 rather than silently repaired. **The merge-key consequence is followed through to §3.1(d)**,
+  which is where the absent rows actually bit: a field outside §3.1(d)'s merge key is rescued **not by
+  the key but by the `version` its declared bump moves**, because `version` *is* in the key — so of
+  ADR-0014's five carriers, **four** (`cost`, `binding`, `volume`, `effect`) now fail the converse and
+  are returned as the two entries they are, and **one** is not rescued and cannot be: the deprecation
+  marking is applied to a published capability **in place**, so no bump moves a version under it, and
+  it stays the case §3.1(d)(i)/(ii) were written for. Rules (i) and (ii) are unchanged in substance and
+  narrower in reach — the whole of the contract for the marking, a **backstop** for the other four.
+  §3.1(d)'s *deliberately leaves undecided* list loses the `volume`/`effect` item, which is now
+  decided; **DEFER-D and DEFER-E are unmoved**, and so is (d)'s refusal of a peering topology or trust
+  weighting. **No published `schema_id` or digest moves** — §7.1 step 1's drop list names `volume`
+  (§4.2a) and `effect` (§4.3a) explicitly and is **byte-unchanged**, checked against the step rather
+  than assumed, so both `kcb1` and `kcb2` are untouched and no next rule id is minted. ADR-0014 carries
+  a dated amendment recording the closed exposure and the corrected reading of its own generalization
+  table. **No count closes and none is added**: BP-8, AP-9 and V-10 were each found *inside* an
+  existing count's re-run, so counts (ii), (iv) and (v) change shape rather than gaining siblings, the
+  other three are restated unmoved, and **KCB is no more promotable than it was**.
 
 - **Editorial** (2026-09-12, second entry this day) — **count (ii) was re-run against the folded
   text, and it does not close.** Steps **5**, **6**, **9** and **11** of
