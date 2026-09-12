@@ -44,8 +44,10 @@ carries.
 > surface: **no verb, plane, port kind, grant or authority role is added** and §4's verb table still has
 > five entries; the answer rides §4.2d's **existing** channel and mints no second mechanism, which is
 > §4.2d's own MUST; §4.1's audit is unchanged and `subscribe` remains the one session-shaped clause;
-> §4.2d's ignore-what-you-do-not-understand rule holds **unchanged**, scoped to the frames a producer
-> sends unasked; the lossless/lossy rule and *a retraction is never shed* are byte-unchanged; a
+> §4.2d's ignore-what-you-do-not-understand rule holds in **substance** and is stated in **both
+> directions** for the first time (see the paragraph below — its letter bound only a producer, and
+> every frame minted since, §7.3g's four and these three, travels the other way); the lossless/lossy
+> rule and *a retraction is never shed* are byte-unchanged; a
 > subscription that declares none of §4.2's operands and never adjusts is a 0.4.6 subscription served as
 > one and is never owed an answer; **§7.1 step 1's kept and dropped sets are byte-unchanged so no
 > published `schema_id` or digest moves**; §7.2's table is undisturbed; and **0.6.0 stays spoken for**
@@ -56,6 +58,34 @@ carries.
 > rather than gaining a sibling, and a fold does not close its own gate. What remains of count (iv) is
 > the **re-run** of Steps 1–8 against text carrying both its findings' folds, BP-8's (0.5.4/0.5.5) and
 > this one.
+>
+> **The additivity claims above are checked against the text, not asserted — and the check returned
+> one correction.** Every *byte-unchanged* claim in the paragraph above was taken by slicing §4.2's
+> lettered sub-clauses out of 0.5.7 and out of this text and comparing them: §4.2a, §4.2c, §4.2e,
+> §4.2f and **§4.2g** are byte-identical, as are §4's verb table (still **five** entries), §4.1's
+> audit (`subscribe` still the one session-shaped clause), §2.3, §7.1 and §7.2 **in their entirety**;
+> inside §4.2b the *lossless-or-lossy* bullet and *a retraction is never shed* are byte-identical, so
+> a producer MAY still apply a lossless adaptation unasked, MUST NOT apply a lossy one that was not
+> asked for, and a retraction is still never shed — the fold adds an **answer**, and moves nothing
+> about **what may be done**; and §4.2b's registration-time MUST is byte-identical, which is what
+> makes the new bullet the same rule extended rather than a replacement of it. The **version move**
+> is decided the same way: §7.2's table governs *a published capability's* bumps and settles nothing
+> about KCB's own spec version, which moves on §7.3b's axis, so the table is consulted only for the
+> two questions it does answer — **no published digest moves** (§7.1 step 1's kept and dropped sets
+> are byte-unchanged, so no `schema_id` is recomputed) and **no live subscriber breaks** (the frames
+> are additive and ignorable) — and, the bump being a patch, **§2.3's legacy-extension-URI-root
+> removal keeps 0.6.0** and is checked rather than tripped. The **correction**: §4.2d's
+> *ignore-what-you-do-not-understand* rule read *"a **producer** that receives an unknown frame MUST
+> ignore it; a **subscriber** MUST tolerate a producer that never sends one"* — an *unknown-frame*
+> rule in one direction and an *absence* rule in the other. That was the whole truth when the channel
+> was minted and stopped being it at §7.3g, whose four frames travel producer → subscriber and which
+> **cites this rule as though it covered a subscriber**; these three answers travel the same way. So
+> the letter is widened to *either direction* rather than the claim being left resting on nothing —
+> the class of break this repo has filed six times, one clause further out each time — and widening
+> it is safe on its own terms, because (b) already fixes what an answer a subscriber could not read
+> is worth: an unread answer is an answer not received, which reads *not in force*, which is
+> fail-closed. The rest of §4.2d is byte-unchanged, **one channel and not two** included, so no
+> second signalling path is minted here or anywhere in this fold.
 >
 > **Status note (0.5.7):** stays **Candidate** on the same **six** counts, and **none of them
 > moves.** 0.5.7 is the second half of the **MT-1** fold, and it is the half that **refuses**. 0.5.6
@@ -1525,15 +1555,25 @@ Normative:
 - Frames ride the **same stream as the deliveries** — A2A streaming under the pinned revision, or
   MCP notifications on the pre-2026-07-28 wire (§4.1). No new transport, no new verb, no second
   connection, and §4.1's audit is unchanged: `subscribe` remains the one session-shaped clause.
-- **Ignore what you do not understand.** A producer that receives an unknown frame MUST ignore it; a
-  subscriber MUST tolerate a producer that never sends one. This is §7.2's ignore-unknown-fields rule
-  applied at frame level, and it is what makes the channel additive: a participant that implements
-  none of this section still interoperates. The rule holds **unchanged** and governs the frames a
-  producer sends **unasked**: it is not a licence for silence where (b) owes an answer to a frame the
-  subscriber sent, and it does not need to be, because (b) fixes what the subscriber concludes from
-  silence — *not in force* — rather than leaving it to tell a producer in breach from a participant that
-  never implemented the channel. The two are the same signal on the wire, so a 0.4.6 participant stays
-  interoperable and a subscriber is never left hanging on either.
+- **Ignore what you do not understand — in either direction.** A participant that receives a frame it
+  does not understand MUST ignore it: a **producer** sent one, and equally a **subscriber** sent one.
+  A subscriber MUST tolerate a producer that never sends one. This is §7.2's ignore-unknown-fields
+  rule applied at frame level, and it is what makes the channel additive: a participant that
+  implements none of this section still interoperates. **The direction is stated at 0.5.8. Through
+  0.5.7 the letter bound only a producer** — the party being sent frames when this channel was minted
+  — while every frame added since travels the other way: §7.3g's four, and (b)'s three answers. What
+  moved is the **letter, not the rule anything was written against**: §7.3g already reads it as
+  covering a subscriber (*"a subscriber that understands none of the four ignores them … an unnamed
+  frame is one §4.2d's own ignore-what-you-do-not-understand rule lets every conformant subscriber
+  discard"*), and §7.2's own rule is stated in both directions. It costs a subscriber nothing,
+  because (b) fixes what an answer it could not read is worth: an unread answer is an answer not
+  received, which reads ***not in force*** and is fail-closed. **It is not a licence for silence.**
+  The rule governs an **unknown** frame, and the frames a producer sends **unasked**; it does not
+  reach the case where (b) owes an answer to a frame the subscriber sent, and it does not need to,
+  because (b) fixes what the subscriber concludes from silence rather than leaving it to tell a
+  producer in breach from a participant that never implemented the channel. The two are the same
+  signal on the wire, so a 0.4.6 participant stays interoperable and a subscriber is never left
+  hanging on either.
 - **The host is not on this path, and does not need to be.** Flow control is negotiated between the
   two peers because the topology admits nobody else (ADR-0001, §3). This composes across §3.1
   federation unchanged, precisely because it never required a party with jurisdiction over both ends:
@@ -3180,8 +3220,14 @@ most important thing an owner citing this run must understand:
   **shape, never a latency** — **§4.2g is untouched and re-affirmed**, `applied` committing to no drain
   time, ramp, schedule or liability, and scheduling, queue discipline, buffer sizing and admission
   policy staying in each participant's own infra. §4.2d is amended in three places to point at the rule
-  rather than past it, and its **ignore-what-you-do-not-understand rule holds unchanged**, scoped to
-  the frames a producer sends unasked. **Patch**: additive at every surface, the answer riding §4.2d's
+  rather than past it, and its **ignore-what-you-do-not-understand rule holds in substance and is
+  stated in both directions for the first time** — its letter bound only a **producer** receiving an
+  unknown frame, which was the whole truth when the channel was minted and stopped being it at
+  §7.3g, whose four frames travel producer → subscriber and which cites this rule as though it
+  already covered a subscriber; these three answers travel the same way, so the letter is widened to
+  *either direction* rather than the additivity claim being left resting on nothing, and widening it
+  is safe on its own terms because (b) fixes an unread answer as an answer not received, which reads
+  *not in force* and is fail-closed. **Patch**: additive at every surface, the answer riding §4.2d's
   existing channel (§4.2d's own MUST against a second mechanism), no verb/plane/port kind/grant/
   authority role added and §4's verb table still five entries, §4.1's audit unchanged, the
   lossless/lossy rule and *a retraction is never shed* byte-unchanged, a 0.4.6 subscription served as
@@ -3191,7 +3237,12 @@ most important thing an owner citing this run must understand:
   consulted only for the two questions it answers, both **No**. **No count closes and none is added**:
   BP-7 was found inside count **(iv)**'s own walk, so that count changes shape to *re-run Steps 1–8
   against text carrying both folds* — BP-8's (0.5.4/0.5.5) and this one — and the other five counts are
-  restated and none moves. **KCB is no more promotable than it was.**
+  restated and none moves. **KCB is no more promotable than it was.** Every *byte-unchanged* claim
+  above is a slice-and-compare against 0.5.7 rather than a reading of `git diff --stat`: §4.2a,
+  §4.2c, §4.2e, §4.2f, **§4.2g**, §4's verb table, §4.1, §2.3, §7.1 and §7.2 are byte-identical
+  entire, and inside §4.2b so are the registration-time MUST, the *lossless-or-lossy* bullet and *a
+  retraction is never shed* — the fold adds an **answer** and moves nothing about **what may be
+  done**.
 - **Editorial** (2026-09-12, fourth entry this day) — **count (i) was re-run against 0.5.7, and it
   does not close.** Steps 1, 3, 4 and 8 of
   [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) walked by hand against

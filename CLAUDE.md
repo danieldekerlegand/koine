@@ -926,8 +926,14 @@ vocabulary.
   fixes a **shape, never a latency** — **§4.2g is untouched and re-affirmed**, `applied` committing to no
   drain time, ramp, schedule or liability, with scheduling, queue discipline, buffer sizing and admission
   policy staying in each participant's own infra. §4.2d is amended in three places to point at the rule
-  rather than past it, and its **ignore-what-you-do-not-understand rule holds unchanged**, scoped to the
-  frames a producer sends **unasked** — which is what keeps the channel additive. **Patch on §7.3b's
+  rather than past it, and its **ignore-what-you-do-not-understand rule holds in substance and is stated
+  in both directions for the first time** — its letter bound only a **producer** receiving an unknown
+  frame, true when the channel was minted and untrue since §7.3g, whose four frames travel
+  producer → subscriber and which cites this rule as though it already covered a subscriber; these three
+  answers travel the same way, so the letter is widened rather than the additivity claim left resting on
+  nothing, and it is safe on its own terms because (b) fixes an unread answer as an answer **not
+  received**, which reads *not in force* and is fail-closed. It still governs the frames a producer sends
+  **unasked** and is no licence for silence where (b) owes an answer. **Patch on §7.3b's
   axis**, named rather than assumed (§7.2's table governs *a published capability's* bumps and is
   consulted only for the two questions it answers, both **No**): additive at every surface, the answer
   riding §4.2d's **existing** channel and minting no second mechanism (§4.2d's own MUST), **no verb,
