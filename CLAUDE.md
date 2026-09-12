@@ -816,7 +816,54 @@ vocabulary.
   added**: count (i) becomes *re-run Steps 8–10 against text carrying **both** this fold and MA-12's*,
   **MA-17 + MA-18 stay KCB's** work on KCB's verb, count (ii) is KCB's and unmoved (MT-1), the
   conformance gate still fails on DR-4 and DR-8/DR-7 — so **KMI stays candidate** and is not
-  promotable, though with MA-13 folded it now has **no koine-side item of its own** outstanding.
+  promotable — and the *no koine-side item of its own* reading that fold licensed lasted hours.
+  **Steps 8–10 were re-run by hand the same day (2026-09-12) against KMI 0.3.8 / KCB 0.5.2 — the first
+  text carrying BOTH folds — and count (i) does NOT close, for a sixth shape.** Prose, never a replay
+  (`kcs:multi-authority` now predates **four** folds — DR-8). **MA-13 does not reproduce**, and the
+  fold reads well under direct attack: (d) sources the travelling pair from the one party that must
+  have evaluated it before serving at all; the restriction is **monotone along a chain**, since what
+  travels is the pair *as evaluated under (e)* and it joins the next holder's set to be ranked again,
+  so laundering-by-divergence closes **by construction** rather than by a rule about retainers; a
+  holder may prefer neither its own pair nor the permissive one; bullet 2 is **meetable** where it had
+  been a MUST a conformant holder could be in permanent undetectable breach of; and bullet 3's
+  fail-closed absence default is byte-unchanged. **Step 8 holds a fourth time** — the digest axis
+  separates the same way, two holders disagreeing about what *governs* an asset still agreeing about
+  **which** asset it is — and **Step 10 is unchanged**, MA-17 and MA-18 unfolded and **KCB's**, with
+  one cross-check recorded (a serve refused under a foreign or composed pair answers `refused` like
+  any other gate refusal, so the divergence rule opens no new KCB delta). **Step 9 half-flips**, on
+  the perimeter of the fold's own sentence, and both findings are **KMI's own**: **MA-20** (High,
+  carrier) — (d) permits the pair to accompany a replicated copy and fixes **no shape, field, envelope
+  or attribution** for it in transit, while §2 defines the pair's *meaning* by its carrier (*asserted
+  by whoever asserted the envelope, read off its `prov`*), so what arrives is a §2 field **outside a
+  §2 envelope**: two conformant stores put it in different places and neither reads the other (MA-17's
+  failure on this plane, and worse — §4.5 at least names the *values*), the receiver cannot attribute
+  what it gets, and the one thing that would carry attribution, the envelope with its `prov`, is what
+  (d)'s narrowness excludes; because bullet 3 fails **closed**, an unread pair is heard as **no pair**
+  and the failure is **silent**. It reproduces with **two stores, one authority and one pair**. And
+  **MA-19** (Med-High, collision) — (e)'s **per-axis** most-restrictive reading composes, on
+  cross-cutting divergence, a pair **no participant asserted**, which (d) then carries: against (d)'s
+  MUST NOT synthesize and against the justification that makes the carve-out safe (*not synthesized …
+  read off an envelope a participant asserted*; *passing on an assertion, not making one*). Fail-safe,
+  so nothing leaks — what it costs is (e)'s own asymmetry argument, since a composed pair has no
+  holding domain to ask and no asserters to reconcile, and composed at each hop it **ratchets**:
+  tightening only, attributable to nobody, relaxable by nobody. Both are **one additive, KMI-only
+  §7.1(d) edit**, and the answer is one this repo already decided — **ADR-0014** merges
+  **attributions, never contents**: carry the **set** of attributed pairs, let (e) compose over it to
+  decide *this serve*, and keep the composition a **derived governing value** rather than the thing
+  that travels; 0.3.8 reused that ADR's second half (monotone-restrictive, from ADR-0013) and not its
+  first. So count (i) takes its **sixth** shape — *fold **MA-19 + MA-20** here and **MA-17 + MA-18** in
+  KCB §4.5(a), then re-run Steps 8–10 again* — all four **unowned**, the half-KMI reading holding a
+  **third** time and now symmetric (one KMI-only edit, one KCB-only edit, neither closing the count
+  alone). **KCB count (vi) is deliberately not re-answered and does not move** (§4.5 is byte-unchanged
+  since its own walk; re-attacking it would be a replay). Count (ii) is restated and unmoved (MT-1,
+  KCB's), the conformance gate still fails on DR-4 and DR-8/DR-7, **DEFER-C is unmoved**, and **KMI
+  stays candidate** — as it would have on a clean walk. MA-20 is the **sixth** finding in this repo on
+  the *rule with a declared normative consequence and nothing that carries it* axis (after MA-8, V-10,
+  BP-7, ADR-0014's marking and MA-17) and the **second consecutive one** to land on a fold written to
+  close an earlier finding; MA-19 is MA-15's rarer shape, a **collision between two clauses of one
+  fold**. **No version and no clause moved for the walk**: §1–§6, §8, §9 and every normative clause of
+  §7 byte-unchanged, no `asset` id moves, no schema twin touched; the edit is §7.1's gate paragraph, a
+  changelog entry and a scenario section.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
