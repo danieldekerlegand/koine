@@ -62,5 +62,13 @@
       "passes": true,
       "notes": "Count (iv) re-run BY HAND against KCB 0.5.8 — the first text carrying BOTH its folds (BP-8's 0.5.4/0.5.5 and BP-7's 0.5.8), one walk not two. Steps 3/6/7/8 walked; Steps 1/2/4/5 restated unmoved on a VERIFIED byte-compare (sliced §4.2a/c/e/f/g out of 0.5.7 and HEAD: a=e398bf996d1d both, c=85a34198af76 both, e=9f1792973611 both, f=4671dcab39ed both, g=b2e933e6138a both; §7.2 bbd242a986b1 both, §7.3g 7ab3d199aa9c both, §4.1 c1bffe9c1742 both; verb table still 5 entries). Prose, never a replay (DR-7 — that encoding is green and now predates 3 publications of §4.2). VERDICT: does NOT close. BP-7 does not reproduce, BP-8 does not reproduce, blocking BP-5 does not reproduce for a 3rd consecutive walk, Step 8 four-of-four. Two new perimeter deltas: BP-9 (High, carrier — three outcome tokens, the request they answer and the echoed subscriber-minted id have no frame name/field/key/envelope, on a channel whose §7.3g unnamed-frame rule THIS fold widened to both directions; 3 MUSTs on §4.2's half, 0 named frames, vs §7.3g's 4) and BP-10 (Med-High, collision — answer per-frame, (ii)/(iii) written per-operand, and `applied` does not fix which set it enumerates). One additive KCB-only §4.2b/d edit, unowned. BP-7 disposition added to docs/reference/capability-versioning-fold-dispositions.md reasoning the extent, incl. the three properties that keep it off §4.2g's QoS side and the declined counter-proposal (state WHEN it takes effect = a latency commitment). promotability.md item (5) is now BP-9+BP-10 and states that closing count (iv) promotes nothing while the other five stand. No version and no clause moved. Gates observed green: doc-integrity OK (61 files, 1845 relative links, all 3 status tables match headers, capability-bus 0.5.8 candidate); doc-links 0 dead vs 0 on main; schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures); registry OK (31 relation names); tasklist-categories OK (3 tasklists); roadmap-truth OK (coverage 59/59, stale 49 none open, park OK)."
     }
-  ]
+  ],
+  "mergedToMain": "213aaea",
+  "gates": {
+    "local": {
+      "state": "passed",
+      "detail": "the project verify hook (verify.sh) ran and exited 0"
+    },
+    "ci": []
+  }
 }
