@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.5.4
+**Spec version:** 0.5.5
 **Status:** Candidate
 **Last updated:** 2026-09-12
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -9,6 +9,39 @@ capability consumers (most participants are both provider and consumer).
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
+> **Status note (0.5.5):** stays **Candidate** on the same **six** counts, and **none of them
+> moves.** 0.5.5 is the second half of the **V-10 / BP-8 / AP-9** fold: 0.5.4 gave §7.2's table the
+> two rows it was missing, and this version gives the **MUST those rows state** a mechanism that
+> exists. Three sections told a live subscriber it would be signalled on **§4.2d's** control channel
+> — §2.4 and §7.2's `binding` row (0.5.0), §4.3a for an `effect` class (0.4.8), §7.2's `volume` row
+> (0.5.4) — and **§7.3g named three frames, none of which is any of them**: `successor_published`
+> carries a *successor's* `binding`, never the bound one's. §4.2d's own
+> *ignore-what-you-do-not-understand* rule is what makes that a gap rather than a licence — a frame
+> nobody names is one every conformant subscriber may discard, so an undefined signal and an absent
+> one are the same signal, and §7.3g's contrasting property, that a producer emitting none is
+> **detectable** because the frames are *named* and KCS §5 can assert their absence, was true of
+> three facts and false of three others. §7.3g's table gains a **fourth** frame,
+> **`entry_changed`** — one generic frame rather than three, which is the shape the break-test's own
+> fix column proposed — announcing that a **declared non-shape operand** on the bound entry has
+> moved, carrying the capability's **new `version`** (the fact all three rows rest on) and naming
+> which operand moved. It obeys §7.3g's existing rules unchanged: it rides §4.2d's **existing**
+> channel and mints no second mechanism, it **precedes** the fact it announces, a subscriber that
+> does not understand it ignores it, and it is bounded — never a **shape** change (that is a new
+> major, announced by `successor_published`) and never a substitute for `deprecated`, which has its
+> own frame and its own §2 carrier. **No provider obligation is added**: all three MUSTs were
+> already published, and what is added is a name to read them by; a `cost` change MAY ride it and is
+> deliberately left a MAY, since §5 states no telling obligation and a re-price fails closed at the
+> gate. §2.4's *"never left to a failed dial"* is **qualified rather than deleted** — met for the
+> binding form this channel exists on (a subscriber re-establishing a dropped stream, or `invoke`ing
+> the same capability, dials the new address), and **not** met for a cached discovery binding with
+> no stream, which §7.3g's closing bullet already states the channel does not reach (**DEFER-D**,
+> unmoved with its trigger intact). §2.4's *bounded on purpose* paragraph is untouched: no provider
+> is required to serve two majors at two endpoints, no transport-id naming convention is defined,
+> `binding` is not a discovery key, and §7.1's ban on version-in-the-name stands. **No published
+> `schema_id` or digest moves** — a frame is not a field on a card and §7.1 step 1's key set is
+> byte-unchanged — **§7.2's table rows are undisturbed**, and **0.6.0 stays spoken for** by §2.3's
+> legacy-extension-URI-root removal.
+>
 > **Status note (0.5.4):** stays **Candidate** on the same **six** counts, and **none of them
 > moves.** 0.5.4 folds **BP-8**, **AP-9** and **V-10** — three findings from three different pressure
 > legs, and **one hole**. §7.2's normative table governs what a provider MAY change under a given
@@ -735,7 +768,12 @@ Normative:
 - **A binding may change without the payload changing**, so changing it is a **minor** bump on the
   capability that carries it (§7.2) — the version moves, and a consumer holding a cached address
   re-reads it at discovery or `describe` (§4). A live `subscribe` learns of it on §4.2d's control
-  channel, alongside the §7.3g signals, and never by a failed dial.
+  channel, in §7.3g's **`entry_changed`** frame, emitted before the move takes effect — so a
+  subscriber that re-establishes a dropped stream, or `invoke`s the same capability, dials the new
+  address rather than the old one. That is the whole reach of the promise and it is stated rather
+  than implied (**V-10**): a consumer holding only a **cached discovery binding** has no channel
+  (§7.3g's closing bullet, DEFER-D) and does meet a moved `binding` at a failed dial, recovering by
+  re-`describe`.
 - **The registry needs no field of its own.** §3 indexes what the card carries, so a `binding` is
   returned with the entry that carries it and ranked by nothing.
 
@@ -1177,8 +1215,11 @@ Normative:
   silence, and MAY decline to bind a port that declares none.
 - `volume` sits **outside** the port's `schema_id` digest (§7.1), for the same reason `cost` does:
   volume is not shape, and a re-declared envelope must not signal a payload break that is not one.
-  Changing it is a **minor** bump on the capability that carries it (§7.2) — the version moves, so a
-  pinned subscriber can see it — exactly as a re-price is (§5).
+  Changing it is a **minor** bump on the capability that carries it (§7.2, which since 0.5.4 carries
+  the row that authorizes it) — the version moves, so a pinned subscriber can see it — exactly as a
+  re-price is (§5). A subscriber whose binding never pulls sees it because the producer emits
+  §7.3g's **`entry_changed`** frame on (d)'s channel, carrying the new version and naming `volume`
+  as what moved.
 - §3's **ranking rules do not change**. A registry MAY return `volume` with an entry and a consumer
   MAY rank on it locally; ranking by highest satisfying version, deprecated below non-deprecated
   (§7.3d), is untouched, and no registry may reorder on volume.
@@ -1399,9 +1440,10 @@ Normative:
   is a **minor** bump on the capability that carries it (§7.2), so the version moves and a pinned
   consumer can see it.
 - Where a capability's class changes while a `subscribe` binding is live, the producer signals it on the
-  **§4.2d control channel** — the single in-band channel that section specifies in both directions.
-  This section mints **no** second signalling path, and a fold of **V-7** carries deprecation and
-  removal on that same channel.
+  **§4.2d control channel** — the single in-band channel that section specifies in both directions —
+  in §7.3g's **`entry_changed`** frame, which since 0.5.5 is the name that signal is read by
+  (**AP-9**). This section mints **no** second signalling path, and V-7's fold carries deprecation
+  and removal on that same channel.
 - A class is a property of what an `invoke` or a `subscribe` does. **`fetch` gets none:** serving bytes
   across an authority boundary is already gated by the participant that holds them, in its own domain
   and fail-closed (KMI §7.1 over KGP §7's classes), which is both adequate and correctly placed. A
@@ -2131,10 +2173,10 @@ given bump.
 | **Add** an output field, or an additional produced `media_type` | minor | No — consumers MUST ignore unknown output fields |
 | Editorial only — `description`, examples; no `schema_id` change | patch | No |
 | Add an OPTIONAL `payload_schema_id` to a knowledge port (§2.1) | minor | No — the digest moves *with* the version, and what the port routes is unchanged |
-| Change a capability's transport `binding` (§2.4) | minor | No — but a live `subscribe` MUST be told on §4.2d's channel (§7.3g), never left to a failed dial |
+| Change a capability's transport `binding` (§2.4) | minor | No — but a live `subscribe` MUST be told on §4.2d's channel, in §7.3g's `entry_changed` frame, before the move takes effect. A cached discovery binding with no stream is **not** reached (§7.3g, DEFER-D) and meets the move at a failed dial |
 | Change `cost` | minor, and never silent (§5) | No |
-| Change a port's **`volume`** (§4.2a) | minor | No — the delivery envelope moves, not the shape; the version moves with it, so a pinned subscriber can see it, and a live `subscribe` is told on §4.2d's channel |
-| Change a capability's or a port's **`effect`** class (§4.3a) | minor | No — the class is not shape; the version moves with it, so a pinned consumer can see it, and a live `subscribe` is told on §4.2d's channel (§4.3a). A class the caller's posture does not admit is a **refusal** at the next dispatch (§4.3c–d), never a silent proceed |
+| Change a port's **`volume`** (§4.2a) | minor | No — the delivery envelope moves, not the shape; the version moves with it, so a pinned subscriber can see it, and a live `subscribe` is told on §4.2d's channel in §7.3g's `entry_changed` frame |
+| Change a capability's or a port's **`effect`** class (§4.3a) | minor | No — the class is not shape; the version moves with it, so a pinned consumer can see it, and a live `subscribe` is told on §4.2d's channel in §7.3g's `entry_changed` frame (§4.3a). A class the caller's posture does not admit is a **refusal** at the next dispatch (§4.3c–d), never a silent proceed |
 | Add a **required** input, or make an optional input required | **major** | Yes |
 | **Remove or rename** a capability, a port, or a field | **major** | Yes |
 | **Narrow** an input, or **remove/narrow** an output type | **major** | Yes |
@@ -2199,9 +2241,11 @@ That invariant is **pull-side**, and the bus's most durable binding never pulls:
 open `subscribe` (§4) is under no obligation to re-`describe`, and before 0.5.0 it learned of a
 successor, a deprecation and a removal alike by a **dead stream** (**V-7**). **§7.3g** is the
 streaming half of this rule — the same three facts, pushed on §4.2d's existing in-band control
-channel, each before it takes effect. A discovery binding held with no stream open, and a grant (§5),
-which does not expire, are reached by neither half; §7.3g states that boundary rather than implying
-it is closed.
+channel, each before it takes effect — and since 0.5.5 it carries a **fourth** frame,
+`entry_changed`, which is where the three rows of the table above that promise a live subscriber a
+signal (`binding`, `volume`, `effect`) get the carrier they were asserting without (**V-10**,
+**BP-8**, **AP-9**). A discovery binding held with no stream open, and a grant (§5), which does not
+expire, are reached by neither half; §7.3g states that boundary rather than implying it is closed.
 
 This is the rule two other parts of the fabric are already instances of: a **relation signature** is
 immutable once published ([`../registry/README.md`](../registry/README.md)) because changing it
@@ -2285,20 +2329,52 @@ media type, a manifest location (§2.2), an extension URI.
   | `successor_published` | a successor at a new major now stands beside the bound one (§7.2), carrying that successor's version and — where the provider serves it elsewhere — its `binding` (§2.4) | when the successor is published |
   | `deprecated` | the bound `(name, major)` is now marked deprecated, carrying its declared **removal version** (a) | when the marking is published |
   | `removal` | the removal version has been reached and this subscription ends under (f) | **before** the stream stops |
+  | `entry_changed` | a **declared non-shape operand** on the bound entry has moved — its transport `binding` (§2.4), a port's `volume` (§4.2a), an `effect` class (§4.3a) — carrying the capability's **new `version`** and naming which of them moved (**V-10**, **BP-8**, **AP-9**) | when the new version is published, and **before** the change takes effect |
 
   - **Each frame precedes the fact it announces**, never follows it. A subscriber MUST NOT be left to
-    learn any of the three from a failed `invoke` or a stream that simply stops; a producer that
-    stops a stream at removal without a preceding `removal` frame is **non-conformant**.
+    learn any of the four from a failed `invoke`, a failed dial, or a stream that simply stops; a
+    producer that stops a stream at removal without a preceding `removal` frame is
+    **non-conformant**, and so is one that moves a bound entry's `binding` without a preceding
+    `entry_changed`.
   - **One channel, not two.** These are frames on §4.2d's existing in-band channel, which mints that
     channel in both directions and requires exactly this: *"a fold of V-7 MUST carry its deprecation
     and removal signals on this channel rather than mint a second, parallel signalling mechanism."*
     No verb, no transport, no second connection, and §4.1's audit is unchanged.
-  - **Additive under §4.2d's own rule.** A subscriber that understands none of the three ignores them
+  - **Additive under §4.2d's own rule.** A subscriber that understands none of the four ignores them
     and is exactly as exposed as it was at 0.4.9 — no worse; a producer that emits none is now
-    **detectable** rather than merely silent, because the frames are named and a scenario can assert
-    their absence (KCS §5). It composes across §3.1 federation unchanged, for §4.2d's stated reason:
+    **detectable** rather than merely silent, because the frames are **named** and a scenario can
+    assert their absence (KCS §5). That property is the whole of why a fourth frame was minted
+    rather than the three MUSTs narrowed: an *unnamed* frame is one §4.2d's own
+    ignore-what-you-do-not-understand rule lets every conformant subscriber discard, so an undefined
+    signal and an absent one are the same signal and neither is assertable (**V-10**). It composes
+    across §3.1 federation unchanged, for §4.2d's stated reason:
     the binding — and therefore its channel — runs directly between the two peers, and no party with
     jurisdiction over both ends was ever required.
+  - **`entry_changed` carries a version, not a shape, and one fact never gets two frames
+    (V-10, BP-8, AP-9).** This is the one frame in the table that announces no deprecation fact, and
+    it lands here rather than in a table of its own for §4.2d's reason: there is **one** channel, so
+    there is one place its vocabulary is named, and a second frame table would be a second place to
+    look for it. Three sections already stated that a live subscriber is told on this
+    channel and none of them named a frame: §2.4 and §7.2's `binding` row (0.5.0), §4.3a for an
+    `effect` class (0.4.8), and §7.2's `volume` row (0.5.4). This frame is their carrier and adds
+    **no obligation that was not already published** — what it adds is a name to read it by.
+    Normative: it MUST carry the capability's **new `version`**, which is the fact a pinned
+    subscriber acts on and the fact every one of those three rows rests on (*the version moves, so a
+    pinned subscriber can see it*); it MUST name which operand moved, so a subscriber may act on one
+    and ignore another; it MUST NOT be used to announce a change of **shape**, which is a new major
+    and is announced by `successor_published`; and it MUST NOT be used in place of `deprecated`,
+    which has its own frame and its own carrier in §2 (a). A change to `cost` (§2.1, §5) MAY be
+    carried by it — §5 states no telling obligation, a re-price failing closed at the gate instead —
+    and carrying it is a courtesy, never a substitute for that gate.
+  - **What *"never left to a failed dial"* is actually worth, stated rather than promised
+    (V-10).** §2.4 and §7.2's `binding` row both make that promise, and it is met for exactly one of
+    §7.2's three binding forms — the one this channel exists on. A subscriber holding an open
+    `subscribe` does not dial the stream it already has, but it dials the entry's address again
+    whenever it re-establishes a dropped stream or `invoke`s the same capability, and `entry_changed`
+    is what puts the new address in its hands before either. A consumer holding a **cached discovery
+    binding** and no stream dials on every call and has no channel at all: for it the promise is
+    **not** met, and this fold states that here instead of leaving it unqualified — it is the next
+    bullet's boundary and **DEFER-D**, not a gap this frame closes.
   - **What this does not reach, stated rather than implied.** §7.2 defines three binding forms and
     this channel exists on one of them. A **discovery binding** — cached port shapes with no stream
     open — and a **grant** (§5), which does not expire, have no channel, so for those (a)–(f)'s
@@ -2655,6 +2731,60 @@ most important thing an owner citing this run must understand:
   DR-13 adds no count, removes no count, and promotes nothing — all five stand.
 
 ## Changelog
+
+- **0.5.5** (2026-09-12) — **the other half of V-10 / BP-8 / AP-9: the MUST three sections state now
+  points at a frame that exists.** 0.5.4 gave §7.2's table its `volume` and `effect` rows; this
+  version gives the signal those rows promise a carrier. Three sections routed a live subscriber's
+  notification to **§4.2d's** in-band control channel — §2.4 and §7.2's `binding` row (0.5.0), §4.3a
+  for an `effect` class (0.4.8), and §7.2's `volume` row (0.5.4) — and **§7.3g named three frames and
+  none of them was any of the three**: `successor_published` carries a *successor's* `binding` and
+  never the bound one's. §4.2d's *"a subscriber MUST tolerate a producer that never sends one"* is why
+  that is a gap and not a licence — an **unnamed** frame is one every conformant subscriber may
+  discard, so an undefined signal and an absent one are indistinguishable, and §7.3g's own contrasting
+  property (*a producer that emits none is detectable rather than merely silent, because the frames
+  are named and a scenario can assert their absence*, KCS §5) held for three facts and failed for
+  three others. **§7.3g's table gains a fourth frame, `entry_changed`** — one generic frame rather
+  than three, the shape
+  [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md)'s own fix
+  column proposed — announcing that a **declared non-shape operand** on the bound entry has moved
+  (`binding` §2.4, `volume` §4.2a, `effect` §4.3a), carrying the capability's **new `version`** and
+  **naming which operand moved**. It obeys §7.3g's rules unchanged: it rides §4.2d's **existing**
+  channel and mints no second signalling mechanism, it **precedes** the fact it announces (a producer
+  that moves a bound entry's `binding` without a preceding `entry_changed` is now non-conformant, as
+  one that stops a stream without a preceding `removal` already was), a subscriber that does not
+  understand it ignores it, and it is **bounded** — MUST NOT announce a change of **shape**, which is
+  a new major carried by `successor_published`, and MUST NOT stand in for `deprecated`, which has its
+  own frame and its own §2 carrier (ADR-0014). **No provider obligation is added**: every one of the
+  three MUSTs was already published and only the name was missing; a `cost` change (§2.1, §5) **MAY**
+  ride the frame and is deliberately left a MAY, because §5 states no telling obligation — a re-price
+  fails closed at the gate — and a courtesy signal must not read as a substitute for that gate.
+  **§2.4's promise is qualified, not deleted.** *"Never left to a failed dial"* is met for the one
+  binding form this channel exists on: a subscriber holding an open `subscribe` does not dial the
+  stream it has, but it dials the entry's address whenever it re-establishes a dropped stream or
+  `invoke`s the same capability, and the frame puts the new address in its hands first. It is **not**
+  met for a consumer holding only a **cached discovery binding**, which dials on every call and has no
+  channel at all; that is §7.3g's closing bullet and **DEFER-D**, stated on §2.4's own sentence rather
+  than left as an unqualified promise. **DEFER-D is unmoved** and keeps its trigger, and §7.3g's
+  boundary — a discovery binding with no stream, and a grant (§5), reached by neither half — is
+  byte-unchanged. §2.4's **bounded on purpose** paragraph is untouched: no provider is required to
+  serve two majors at two endpoints, no naming convention for transport ids is defined, `binding` does
+  not become a discovery key, and §7.1's ban on version-in-the-name is not touched.
+  **Patch, and the axis is named rather than assumed.** §7.2's table — including the two rows 0.5.4
+  added — governs **a published capability's** bumps and decides nothing about KCB's own spec version;
+  the axis for a koine spec is §7.3b's *minor version of the spec that defines it*. Consulted for the
+  two questions it **does** answer: no published digest moves (a frame is not a field on a card and
+  §7.1 step 1's key set is byte-unchanged, so `kcb1` and `kcb2` are untouched and no next rule id is
+  minted) and no live subscriber breaks (an unrecognized frame is ignored under §4.2d). Patch because
+  the fold is additive at every surface — no verb, field, plane, port kind, grant or authority role is
+  added, §7.2's rows are undisturbed, and a participant that implements none of it behaves exactly as
+  at 0.5.4 — and because it names a carrier for MUSTs already published rather than minting one, which
+  is the shape 0.5.2's §4.5 took for MA-12. **0.6.0 stays spoken for** by §2.3's
+  legacy-extension-URI-root removal, and the bump is deliberately **not** declared under §7.2's table
+  (BP-8/AP-9's own defect, not repeated). **No count closes and none is added**: V-10, BP-8 and AP-9
+  were each found inside an existing count's re-run, so counts (ii), (iv) and (v) change shape rather
+  than gaining siblings, the other three are restated unmoved, and **KCB is no more promotable than it
+  was** — MT-1, V-12 + V-13, V-14, V-15, MA-14/MA-15/MA-16, BP-7, MA-17 + MA-18, DR-7 and ADR-0013's
+  W3 all stand.
 
 - **0.5.4** (2026-09-12) — **BP-8, AP-9 and V-10 folded: §7.2's table governs the two operands minted
   after it was written.** Three findings, three different pressure legs, **one hole**. §7.2's
