@@ -1489,6 +1489,256 @@ nothing more.
 
 ---
 
+## Re-run — Steps 8–10 walked by hand against KCB 0.5.2 / KMI 0.3.7 (2026-09-12)
+
+**What this section is.** The re-run that **KMI count (i)** and **KCB count (vi)** both name. **MA-12
+is folded**: the carrier half at **KCB 0.5.2**'s new **§4.5** — four named outcomes on the `fetch`
+response, `held` / `not-held-pending` / `not-held-not-expected` / `refused` — and the meaning half at
+**KMI 0.3.7**'s §7.1(f), which names §4.5 as the carrier and mints nothing, because §7 defines *the
+payloads, not the pipe*. A fold does not close its own gate, so both counts read *re-run Steps 8–10
+against the folded text*, and this is that walk. It is **one walk and not two**: §4.5 says so in
+terms, and the counts differ only in what a clean result would license — count (vi) gates §4.5 alone,
+count (i) gates §7.1 in full and therefore also carries **MA-13**, which no part of this fold touches.
+
+**Method, unchanged and for the same reason.** Prose, by hand, clause by clause, with the bias the
+original pass declares — *prefer finding breaks over asserting correctness* — against **KMI 0.3.7 /
+KCB 0.5.2 / KINP 0.5.0** as published, and with the previous passes' verdicts treated as claims to
+attack rather than results to carry. Deliberately **not** a replay. **DR-8** has only got stronger:
+`kcs:multi-authority` returned **`green`** over this pass's six blocking deltas, and it now predates
+**three** folds rather than one. Steps 1–7 are not re-walked — 0.5.2 and 0.3.7 move no KINP clause and
+no KCB §2/§3/§3.1 clause, and the two counts this section answers are Steps 8–10.
+
+### Per-step verdicts (fourth pass)
+
+| Step | At issue | Verdict |
+|---|---|---|
+| **8** | §7.1(a)(c)(d) | ✅ **Holds (third confirmation).** §4.5 adds an *answer*, never an operand of the id, and the axis question separates the same way it did on the second pass. |
+| **9** | §2, §7.1(d)(e) | 🔴 **Does not flip. MA-13 stands, unfolded** — both clauses it is written against are byte-unchanged at 0.3.7. §4.5 neither widens it nor narrows it, and that is the right call. |
+| **10** | §7.1(f), KCB §4 / §4.5 | 🔴 **Does not flip — but not on MA-12, which does not reproduce.** The three answers are sayable, named, owed per request and unsynthesizable. They are **not locatable** → new deltas **MA-17** (High, carrier) and **MA-18** (Med, mis-route). |
+
+### Step 8 — The bytes cross the boundary ✅ *holds (third confirmation)*
+
+The identity attacks are not repeated; they held twice and nothing since touches them. What this pass
+asks is the axis question again, because §4.5's outcome is — by its own statement — outside every
+digest in the fabric: *"a response outcome is not a port declaration"*, so no `schema_id`
+canonicalization and no published digest moves for it.
+
+It separates exactly as the second pass said it does. §7.1(a) is a claim about what the id is a hash
+of, and an outcome is a statement *about* a request, not a property of the bytes; an operand outside a
+digest is a hazard for **decisions taken over it**, never for the identity the digest establishes.
+That the hazard is real here is the whole of Step 10 below — **MA-17 is the "decisions taken over it"
+half arriving on this plane**, and Step 8 is where the distinction stays visible.
+
+Checked rather than assumed: (a), (c) and (d) are byte-unchanged at 0.3.7 (the 0.3.7 edit is two
+paragraphs inside (f)), and §4.5 does not relax any of them — `held` is defined as *"the bytes **are**
+the response … self-verifying against the id (delta G, KMI §7.1(c))"*, which **cites** the mandatory
+verify-and-reject rule rather than standing beside it, and no outcome is a licence to serve unverified
+bytes under a requested id.
+
+One property worth recording as a strength, because it is the kind of thing a fold gets wrong by
+accident: the fail-closed licence / egress / trust-tier refusal of §7.1(b)(e) lands on **`refused`**,
+which asserts **nothing** about whether the store holds the copy. So the gate Step 9 is about cannot
+be used as an oracle for *holding*, an egress refusal is indistinguishable from a rate limit at the
+outcome level, and a consumer polling for absence counts neither as evidence.
+
+✅ **Holds.**
+
+### Step 9 — The copy escapes the policy that governed it 🔴 *does not flip (MA-13, unfolded)*
+
+There is nothing to re-derive: **MA-13 was not folded**, and the two clauses it is written against are
+byte-unchanged at 0.3.7. §7.1(d)'s narrow exception still sources the travelling pair from *"the
+envelope the requesting participant already holds"*, and §7.1(e) bullet 2 is still a MUST over *"an
+asset's `egress`"* with no rule for a holder that has more than one conformant pair for one id. The
+second pass's walk — A ingests under `egress: local-only` and asserts **E_A**; B obtains the same
+bytes by a route this contract does not forbid and asserts its own conformant **E_B** with `egress:
+exportable`; C is served, holds only E_B, and serves onward — reproduces unchanged, with every clause
+each participant can evaluate satisfied and **no misbehaviour at any hop**.
+
+**What this pass adds is the question 0.5.2 makes askable: does the new response vocabulary give
+MA-13 a route to the operand it is missing?** It does not, and it should not have. §4.5 mints no
+envelope field on either plane and carries no policy; `refused` asserts nothing about holding; and the
+optional *why* detail names a **gate**, not a pair. A `fetch` response that disclosed the restrictive
+pair would be one holder learning another holder's envelope — which §7.1(d) forbids it to synthesize
+and no verb returns. MA-13's answer is the most-restrictive-governs rule **inside KMI**, and keeping
+it out of the wire fold is the correct division, not an omission.
+
+🔴 **MA-13 unchanged and open.**
+
+### Step 10 — The asset that will never arrive 🔴 *does not flip (new deltas, not the old one)*
+
+**First, MA-12 itself, walked again against the folded text: it does not reproduce.** Every leg of the
+delta as recorded has moved, and each was checked in the clause that moved it:
+
+- **The three answers are sayable, and named.** §4.5(a) fixes a closed set in the table that types the
+  verb — `held` / `not-held-pending` / `not-held-not-expected` / `refused` — and §4's verb row carries
+  them too, so a reader meeting `fetch` at the table meets the vocabulary there. *Not reachable* is
+  deliberately **not** a value: it is the absence of a response, asserted by no one.
+- **Owed per request.** §4.5(b) states it over the id asked for, at the moment it was asked, and
+  forbids the three readings that would make it a standing fact — a registration-time property of a
+  store, a §2 capability-level declaration, and a third party's cache. That is **BP-7**'s failure mode
+  answered on this verb before it could be made.
+- **Never synthesized.** §4.5(c) bars a registry, a host, a cache and a store answering about another
+  store from asserting `not-held-not-expected` — ADR-0014's second decision read on this plane, and it
+  composes with §3 returning an **address** and never an answer about bytes.
+- **Absence reads *pending*.** No outcome, an unknown outcome, and no response at all all read
+  `not-held-pending`; silence is never *no holder remains*.
+- **§4.2f is reconciled, not contradicted.** (d) keeps its *pending fetch* as the consumer's
+  **handling** — `refused`, `not-held-pending` and silence all compose onto delta L — while requiring
+  a rate-limited refusal to answer **`refused`**, so a busy holder is no longer evidence toward
+  absence. The fourth state §4.2f spent is no longer a fourth answer.
+- **The citation runs both ways and the conclusion rule survives it.** §4.5 states the meanings are
+  §7.1(f)'s and that §7.1(f) governs a disagreement; §7.1(f) states the wire is §4.5's. The conclusion
+  rule — a consumer that reaches every store in the set it can see and gets *not held, and not
+  expected* from all of them MAY conclude **for that set**, and MUST NOT conclude anything about a
+  store it could not reach — is restated word for word and widened nowhere.
+
+And the premise that rule rests on is better carried than the first pass could assume: §7.1(b) already
+routes store discovery through the control plane — a store *"advertises `fetch:asset` like any other
+capability (KCB §2/§4) and is found through the registry, including across peers (KCB §3.1)"* — and
+§3.1's result-level **`incomplete[]`** tells a consumer when its own discovery was incomplete. So
+*"the set it can see"* is not a hole; it is a set the consumer can bound and knows when it cannot.
+
+**Then the fold's own perimeter, and it breaks on it — twice, in the class §4.5 names in its own
+opening paragraph.**
+
+#### MA-17 (High, carrier) — the outcomes are named; the place they are read from is not
+
+§4.5(a) requires the outcome to be **explicit**: *"what this clause forbids is a consumer having to
+**infer** an outcome from a status code, an empty body, or a timeout."* It then fixes **no field, key,
+header or response envelope** for it — *"an implementation binds them to its transport in the ordinary
+way"*. For this verb there is no ordinary way, and that is a fact about this spec rather than
+something a reader can repair:
+
+- §4's **Transport** column types `fetch` as *"CAS GET by `asset` id"* — a shape, not a protocol, and
+  the only entry in that column that names no wire.
+- §4.1 audits it as *"Wire-independent — **not an MCP call at all**"*, so no MCP result shape and no
+  per-request `_meta` governs it.
+- It is not typed by a port, and §4.5 says so itself — *"a response outcome is not a port
+  declaration"* — so §7.1's `schema_id` types nothing here, and §2.4's `binding` names a **tool** for
+  an `invoke`, not a response shape.
+
+Every other structured response on this bus is typed somewhere: §3's `find` response by the **named
+fields** MA-8's own fold gave it (`served_by`, `observed_at`, `incomplete[]`), an `invoke` result by a
+port's `schema_id` (§7.1), a `describe` by the A2A card (§2). **`fetch` alone is typed by nothing**,
+and §4.5 places a normative token into it.
+
+The consequence is precisely the one the fold exists to remove. KMI §7.1(f) requires a store to
+express the distinction *"in §4.5's vocabulary rather than in an implementation-private status string
+— the whole point of the distinction is that the **caller** reads it the same way."* Three conformant
+stores — one answering `404` with `{"outcome": "not-held-not-expected"}`, one `200` with
+`{"fetch": {"status": "not-held-not-expected"}}`, one with an `X-Koine-Fetch-Outcome` header — each
+satisfy (a) as written, and no consumer reads any of the other two without an out-of-band agreement.
+**The private string did not go away; it moved up one level, from the value to the slot.**
+
+And §4.5(c)'s fail-safe, which is right in itself, makes the failure **silent** rather than loud: a
+consumer that does not find an outcome where it looks has found *absence*, and absence reads
+`not-held-pending`. So a store that says *not expected* in a slot its caller does not read **is heard
+to say *pending*** — which is exactly the unfalsifiable answer MA-10 opened and MA-12 was folded to
+close. Three passes of this scenario, and the closing move lands one word short of closing.
+
+It reproduces with **one authority and one store**, no federation and no peering — the same way
+ADR-0014's carrier gap reproduced at KCB count (ii)'s Step 9 with a single registry. It is a
+**carrier** break in a clause whose model is not in question: every rule in (a)–(e) is the right rule,
+and the whole of the finding is that one of them names no place.
+
+**The fold — one §4.5(a) edit, additive and KCB-only.** Name the carrier the way MA-8 named `find`'s:
+a single field on the `fetch` response whose value is one of the four, stated as **the** field
+§7.1(f)'s answers are read from, and left transport-independent — so any wire a `fetch` is spoken over
+must carry that field, rather than KCB having to fix a wire it deliberately declines to fix for this
+verb. Two things fall out and belong in the same edit. **`held` must be carried the same way**: today
+it is carried by the *presence of the bytes*, which is the empty-body inference (a) forbids for the
+other three, so a closed set of four is read two ways and therefore read neither. And (c)'s fail-safe
+should be restated as what it then is — the answer for a response that carried **no** field, not the
+answer for one whose field the consumer could not find. Nothing that conformed at 0.5.2 stops
+conforming (a response carrying no such field already reads `not-held-pending`), no `asset` id moves,
+no envelope field is added on either plane, no `schema_id` or published digest moves, and **DEFER-C
+stays unmoved** — this is a slot, not a duty to hold.
+
+#### MA-18 (Med, mis-route) — the refusal detail points at a shape defined for a verb this one is excluded from
+
+§4.5(a) closes with a SHOULD: where a store can distinguish *why* it refused — *"a rate limit, an
+egress gate, a missing `fetch:asset` grant"* — it *"SHOULD say so alongside `refused`, **in the shape
+§4.3h fixes for a refused dispatch**"*. §4.3h's minimum is two MUSTs: name **which gate refused** —
+*"this section"*, i.e. §4.3 — and name **which class** was not admitted. Neither is available to a
+`fetch`, and §4.3 says so twice in its own words: (a) *"A class is a property of what an `invoke` or a
+`subscribe` does. **`fetch` gets none**"*, and (f) *"A `fetch` is not evaluated against a posture at
+all."* The one shape §4.5 names for a refusal reason is the shape of a **posture** refusal, on the one
+verb posture deliberately does not reach — so a store following the SHOULD literally names a gate that
+did not refuse it and a class that does not exist.
+
+**Med, not High**, and the reasons are on the record rather than assumed: it is a SHOULD, §4.5 calls
+the detail *"a courtesy to the caller"* and states that *"a bare `refused` is conformant"*, so nothing
+normative rests on it and a charitable reader recovers the intent — name the gate, do not disclose
+what is behind it. It is recorded because it is **V-10's class exactly** (a MUST or SHOULD routed to a
+table or shape that does not name the thing), and because §4.5 cites V-10 **by name** as the failure
+it was written to avoid.
+
+**Fold: the same §4.5(a) edit.** Either state KCB's own minimum for a `fetch` refusal in §4.5 — name
+the gate that refused (§4.2f's rate limit, §5's grant, KMI §7.1(b)(e)'s egress evaluation) and do not
+disclose what is behind it, which is §4.3h's discipline without §4.3h's two class-shaped MUSTs — or
+generalise §4.3h to *a refusal on this bus*, letting §4.3's two MUSTs be the posture case of it. The
+first is smaller, and MA-17's edit is already opening the paragraph it lands in.
+
+🔴 **Does not flip.** MA-12 is **discharged in substance and reopened in carriage**.
+
+| # | Severity | Gap | Delta | Spec |
+|---|---|---|---|---|
+| **MA-17** | **High (carrier)** | §4.5(a) forbids a consumer to **infer** an outcome from a status code, an empty body or a timeout, and then fixes **no field, key, header or response envelope** for it — *"an implementation binds them to its transport in the ordinary way"*. `fetch` has no ordinary way: §4 types it as a *"CAS GET"* rather than a protocol, §4.1 audits it as *"not an MCP call at all"*, and §4.5 states that an outcome *"is not a port declaration"*, so no `schema_id` types it either. Every other structured response on this bus is typed somewhere — `find` by MA-8's named fields, `invoke` by a port `schema_id`, `describe` by the A2A card — and `fetch` alone is typed by nothing. Two conformant stores put the same normative token in different places and neither reads the other, so the implementation-private status string KMI §7.1(f) forbids returns **as the slot** rather than the value; and because §4.5(c) reads absence as `not-held-pending`, a store saying *not expected* into an unread slot is **heard to say *pending***, restoring the unfalsifiable answer MA-12 was folded to close. Reproduces with **one store and one authority**. | One §4.5(a) edit, additive and KCB-only: name the field the outcome is carried in, as MA-8 named `find`'s, transport-independent so any wire must carry it; carry **`held`** in the same field (today it is carried by the presence of the bytes — the empty-body inference (a) forbids for the other three); and restate (c)'s fail-safe as the answer for a response that carried **no** field. Nothing that conformed at 0.5.2 stops conforming, no `asset` id moves, no envelope field is added, no published digest moves, **DEFER-C unmoved**. | KCB §4.5(a) |
+| **MA-18** | **Med (mis-route)** | §4.5(a)'s closing SHOULD routes a `fetch` refusal's *why* to *"the shape §4.3h fixes for a refused dispatch"*, whose two MUSTs are *name which gate refused — **this section*** (§4.3) and *name which class was not admitted*. §4.3 excludes `fetch` from posture in terms — (a) *"`fetch` gets none"*, (f) *"A `fetch` is not evaluated against a posture at all"* — so a store following the SHOULD names a gate that did not refuse and a class that does not exist. Med because it is a SHOULD over a declared *"courtesy"* with *"a bare `refused` is conformant"* stated beside it, so nothing normative rests on it; recorded because it is **V-10's class**, which §4.5 cites by name as the failure it avoids. | The same §4.5(a) edit: either state KCB's own minimum for a `fetch` refusal (name the gate — §4.2f, §5, KMI §7.1(b)(e) — and do not disclose what is behind it), or generalise §4.3h to *a refusal on this bus* with §4.3's two MUSTs as its posture case. | KCB §4.5(a), §4.3h |
+
+### What this re-run does and does not close
+
+| Count | Steps | Outcome |
+|---|---|---|
+| **KMI** — count (i) of **two**, gating §7.1 alone | 8, 9, 10 | 🔴 **Does not close, and it still needs two folds.** Step 8 holds. Step 9 does not flip — **MA-13 stands, unfolded**. Step 10 does not flip — **MA-12 does not reproduce**, and **MA-17** + **MA-18** replace it. Count (ii) is **KCB's** work and is untouched by this pass. |
+| **KCB** — count (vi) of **six**, gating §4.5 alone | 10 | 🔴 **Does not close.** §4.5's model held under attack at every clause — (a)'s closed set, (b)'s per-request rule, (c)'s absence-reads-pending and never-synthesize rules, (d)'s reconciliation of §4.2f, (e)'s boundary — and the section breaks on its **perimeter**: **MA-17** (High) and **MA-18** (Med), one additive KCB-only edit between them. KCB's five other counts are untouched and none moves. |
+
+**Count (i) has changed shape a fifth time.** It has read, in order: *re-run Steps 8–10 against the
+folded text* (0.3.5) → *fold MA-12, then re-run* (first pass) → *fold MA-12 **and** MA-13, then re-run*
+(second pass) → *fold MA-13, then re-run* (after 0.3.7) → **fold MA-13 (KMI-only) and MA-17 + MA-18
+(KCB-only, one §4.5(a) edit), then re-run Steps 8–10 again**. The half-KMI reading the second pass
+recorded holds and has now happened twice: count (i) is KMI's as a **count**, and as **work** it keeps
+landing on KCB's verb.
+
+**Every new finding is a carrier or perimeter break, and no model is in question** — on either plane.
+§4.5(a)–(e) were attacked directly and the rules did not yield; §7.1(f)'s conclusion rule, its
+three meanings and the define-once split between the planes all survive. MA-17 is the **fifth** finding
+in this repo on one axis — **a rule with a declared normative consequence and nothing that carries
+it** — after MA-8, V-10, BP-7 and ADR-0014's marking, and the first to land on a fold written to
+close an earlier one.
+
+**DR-9 still bounds every federation property here.** Domain B's authority and both CAS stores were
+stand-ins in the 2026-08-24 run, so what a hand-walk establishes is a reading of the contracts and
+nothing more.
+
+### KMI's status — the conditions, re-checked
+
+Restated because this document's *Re-ratification* section exists to stop a reader concluding a spec
+is promotable from one satisfied gate — and because **not one of the three has moved**:
+
+| # | Condition | Holds? |
+|---|---|---|
+| 1 | **Count (i)** — §7.1 CAS federation, Steps 8–10 | ❌ **No.** Re-run three times now (2026-09-03 ×2, 2026-09-12). **MA-13**, **MA-17** and **MA-18** open; MA-13 is KMI's own edit and is **queued** (`chief/930-fold-ma-13-most-restrictive-pair`), and **MA-17 + MA-18 are KCB's and unowned**. |
+| 2 | **Count (ii)** — the [`e2e-media-transform.md`](e2e-media-transform.md) re-run | ❌ **No.** Walked 2026-09-03 and **not clean** → **MT-1**. **KCB's** work; no KMI edit moves it. |
+| 3 | **The conformance gate** ([`../specs/README.md`](../specs/README.md#the-ratification-gate)) | ❌ **No**, on two documents for two reasons — **DR-4** (`kcs:kmi-otio-roundtrip` is `kcs:media-transform` re-titled over the same fixture) and **DR-8**/**DR-7** (`kcs:multi-authority` predates the 0.3.5 fold *and now 0.3.7's*, asserts none of §2's `license`/`egress` or §7.1(d)(e)(f), and must be **extended**). Downstream under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md), bounded by **MA-11**, **unowned**. |
+
+**None of the three holds, and KMI stays Candidate — as it would have on a clean walk.** One of its
+two counts is not KMI's to discharge and the conformance gate binds on top of both, so no result of
+Steps 8–10 could have promoted it. The same is true of KCB, which has six counts and would have
+cleared one.
+
+> **Fourth-pass note (2026-09-12).** Steps 8–10 re-run by hand against **KCB 0.5.2 / KMI 0.3.7**, the
+> versions that fold **MA-12**. **MA-12 does not reproduce**: the three answers are named, owed per
+> request, never synthesized, absence reads *pending*, §4.2f is reconciled and §7.1(f)'s conclusion
+> rule is preserved word for word. **Step 8 holds; Step 9 does not flip (MA-13, unfolded); Step 10
+> does not flip on new deltas MA-17 (High, carrier — the outcomes are named and the slot they are read
+> from is not) and MA-18 (Med, mis-route).** **Neither KMI count (i) nor KCB count (vi) closes**, both
+> new deltas are one additive KCB-only §4.5(a) edit and are **unowned** (MA-13 is queued as
+> `chief/930-fold-ma-13-most-restrictive-pair`). **No
+> spec version moves and no clause moves for this walk.**
+
+---
+
 ## Re-ratification — what this pass gates
 
 The older scenarios keep a **Resolution** note naming the spec version that folded their deltas

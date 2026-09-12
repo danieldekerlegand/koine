@@ -220,7 +220,7 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
-- `specs/capability-bus.md` — KCB 0.5.1, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.5.2, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -458,9 +458,11 @@ vocabulary.
   promoted and is not promotable**: count (iii) and ADR-0013's **W3** stand regardless, and four clean
   re-runs would not have promoted it either.
   **What remains is written down flat, with an owner or an explicit *unowned*, in
-  `docs/reference/promotability.md` § *The seven things that stand between KCB and `ratified`*** — seven
-  items, **six of the seven still unowned in this repo and in every other** — item (6) found an
-  owner on 2026-09-11 and the rest did not: (1) was ADR-0014's four-part clause, a
+  `docs/reference/promotability.md` § *The eight things that stand between KCB and `ratified`*** —
+  **eight** items since 2026-09-12, when count (vi)'s walk added (8) the **MA-17 + MA-18** fold
+  (§4.5(a), one edit for two findings). Read the ownership column as of its date: item (6) found an
+  owner on 2026-09-11, and queued tasklists in this repo now name items (2)–(5) — *queued* is not
+  *merged*, none has run, and no count moves: (1) was ADR-0014's four-part clause, a
   precondition of counts **(ii) and (iii)**, not one — **written at 0.5.1 on 2026-09-12**, and item
   (1) is now the **MA-14 + MA-15 + MA-16** fold (§3/§3.1(d), one edit for three findings) that count
   (iii)'s re-run returned against it, gating count (iii) alone; (2) the **MT-1** fold (§3/§4.4c); (3) **V-9 +
@@ -554,7 +556,61 @@ vocabulary.
   then re-run Steps 5–7 again*. **No version and no clause moved for the walk** — every normative clause of
   §1–§8 byte-unchanged, §3.1(a)–(f) included, and no published digest moves; the edit is §3.1's
   *Re-ratification* gate paragraph, the 0.5.1 status note, a changelog entry and a scenario section. **KCB is not promotable**, and would not have been on a clean walk.
-- `specs/media-interchange.md` — KMI 0.3.6, **candidate**. Media data plane; asset envelope +
+  **0.5.2 (2026-09-12, patch) folds MA-12 — `fetch` gains a named response vocabulary, and it is the
+  half of a KMI delta whose carrier belongs here.** KMI §7.1(f) (the MA-10 fold) requires a store to
+  answer, for an id it is asked for, *not held, and not expected* **distinctly from** *not reachable*
+  and *not held, pending* — and **nothing carried it**: KMI §7 defines *the payloads, not the pipe*,
+  §4 here typed `fetch` as *"a CAS GET by `asset` id"* with a grant and **no response vocabulary at
+  all**, KCB cited §7.1(f) nowhere, and §4.2f independently spent *pending fetch* on a rate-limited
+  refusal, so a fourth state shared (f)'s default word on the same verb — **MA-8's class of break,
+  one plane over**. New **§4.5** carries the answers on the verb that delivers them, in the shape the
+  2026-09-03 Step 10 re-attack fixed and which was not optional: the outcomes are **NAMED** in the
+  table that types the verb (`held` / `not-held-pending` / `not-held-not-expected` / `refused`), not
+  left to a status string — the failure **V-10** records; the answer is owed **per request** and is
+  about the id asked for, never a registration-time property of a store — the failure **BP-7**
+  records; and **`not-held-not-expected` is never synthesized** by a party that did not determine it
+  — **ADR-0014**'s second decision read on this plane. **Absence reads *pending***: no outcome, an
+  unknown outcome, or no response at all is `not-held-pending`, and *not reachable* is deliberately
+  **not a value** — it is the absence of an answer, asserted by no one. §7.1(f) keeps the meanings and
+  its **conclusion rule is cited, not restated** (a consumer concludes only for the set it reached);
+  on disagreement §7.1(f) governs. §4.2f is **reconciled, not contradicted** — its *pending fetch* is
+  the consumer's **handling**, which `refused`, `not-held-pending` and silence all still compose onto
+  under delta L, while a rate-limited refusal MUST now answer `refused` and MUST NOT answer
+  `not-held-pending`, since a busy holder is not evidence toward *no holder remains*. Additive: **no
+  verb added** (§4 still types five), no `asset` id moves, no envelope field, no plane/port
+  kind/grant/authority role, §7.2's table undisturbed, **no published `schema_id` or digest moves**,
+  and a single-store deployment behaves exactly as at 0.5.1. **DEFER-C unmoved.** Patch, and **0.6.0
+  stays spoken for** by §2.3's removal; the bump is deliberately **not** declared under §7.2's table
+  (BP-8/AP-9's defect, not repeated). New normative text, so a **sixth** count: a re-run of **Steps
+  8–10** of `scenarios/e2e-multi-authority.md` against the folded text, gating §4.5 alone — the
+  **same walk** as KMI count (i), not a second one. The five existing counts are restated, none
+  moves, and **KCB is no more promotable than it was**.
+  **That walk was run by hand the same day (2026-09-12) and count (vi) does NOT close.** **MA-12 does
+  not reproduce**: §4.5(a)–(e) were attacked clause by clause and none yielded, and KMI §7.1(f)'s
+  conclusion rule is preserved word for word. The section breaks on its **perimeter**, in the class its
+  own opening names — **MA-17** (High, carrier): (a) forbids a consumer to *infer* an outcome from a
+  status code, an empty body or a timeout and then fixes **no field, key, header or response envelope**
+  for it, and `fetch` is the one verb §4 types by no protocol, §4.1 audits as *not an MCP call at all*
+  and §4.5 itself states is **not typed by a port** — so where every other structured response on this
+  bus is typed somewhere (`find` by MA-8's named fields, `invoke` by a port `schema_id`, `describe` by
+  the A2A card), this one is typed by nothing, two conformant stores put the same normative token in
+  different places, and the implementation-private status string §7.1(f) forbids returns **as the
+  slot** rather than the value; (c)'s absence-reads-*pending* then makes the failure **silent**, a
+  store saying *not expected* into an unread slot being **heard to say *pending***, which is the answer
+  MA-12 was folded to close. It reproduces with **one store and one authority**, as ADR-0014's carrier
+  gap did with one registry. And **MA-18** (Med, mis-route): (a)'s closing SHOULD routes a `fetch`
+  refusal's *why* to §4.3h, whose two MUSTs name §4.3 as the refusing gate and a posture **class**,
+  both of which §4.3a/§4.3f exclude for `fetch` in terms — V-10's class again, which §4.5 cites by name
+  as the failure it avoids. **One additive, KCB-only §4.5(a) edit for both** (name the field the
+  outcome is carried in as MA-8 named §3's, carry `held` in it too rather than by the presence of the
+  bytes, and state KCB's own minimum for a `fetch` refusal), and **unowned**. Count (vi) now reads
+  *fold MA-17 and MA-18, then re-run Steps 8–10 again*; the five others are restated and none moves.
+  **No version and no clause moved for the walk** — every normative clause of §1–§8 byte-unchanged,
+  §4.5(a)–(e) included, and no published digest moves; the edit is §4.5's *Re-ratification* gate
+  paragraph, a changelog entry and a scenario section. The axis tally is now
+  **five** — MA-8, V-10, BP-7, ADR-0014's marking, MA-17 — every one *a rule with a declared normative
+  consequence and nothing that carries it*.
+- `specs/media-interchange.md` — KMI 0.3.7, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
@@ -678,6 +734,53 @@ vocabulary.
   than left to be found: `scenarios/e2e-worlds-to-fabric.md` carries the same example id, so a
   downstream encoding pinning the literal `analyzer:run/1a2b` needs the one-token update (ADR-0001,
   **unowned**).
+  **0.3.7 (2026-09-12, patch) folds MA-12's KMI half, and it is one paragraph on purpose.** §7.1(f)
+  has required the three-valued answer since 0.3.5 and **nothing carried it**; the carrier is KCB
+  **§4.5** (KCB 0.5.2), and §7.1(f) now names it. KMI mints **no field, enum or envelope** for the
+  answers — §7 defines *the payloads, not the pipe* — so this clause keeps the **meanings** (which is
+  why §4.5 cites it rather than restating them, and why on disagreement about a meaning §7.1(f)
+  governs) and states the three consequences of the split rather than leaving them to be derived one
+  plane over: the answer is owed **per request**, *not held, and not expected* is **never
+  synthesized** by a party that did not determine it, and silence is *not reachable* — the absence of
+  an answer, never an assertion that no holder remains. §7.1(f)'s conclusion rule is unchanged in
+  either direction. **Additive**: no clause of §2–§6 moves, **no `asset` id moves**, no envelope
+  field, no lineage relation, media type, timeline shape or `fetch` grant changes, **no schema twin
+  is touched**, and a single-store deployment behaves exactly as at 0.3.6 (a store that never
+  distinguishes *not expected* from *pending* stays conformant — the fold requires only that one
+  which **does** has a name its caller reads the same way). **0.4.0 stays spent** on the EDL removal;
+  **DEFER-C is unmoved** and keeps its trigger — MA-12 asked that an answer be *sayable*, not that
+  any store be obliged to *hold*. Extent reasoned as MA-12's own row in
+  `docs/reference/federation-fold-dispositions.md`, beside the MA-1…MA-11 dispositions. **No count
+  closes and none is added**: count (i) changes shape a **fourth** time — *fold **MA-13**, then
+  re-run Steps 8–10* — since MA-13 stands and a fold does not close its own gate, count (ii) is
+  **KCB's** work and unmoved, and the conformance gate still fails on DR-4 and DR-8/DR-7. KMI stays
+  **candidate** and is not promotable.
+  **Steps 8–10 were then re-run by hand the same day (2026-09-12) against KMI 0.3.7 / KCB 0.5.2, and
+  count (i) does NOT close — it changes shape a fifth time.** Prose, never a replay
+  (`kcs:multi-authority` now predates **three** folds — DR-8). **MA-12 does not reproduce**: §4.5's
+  outcomes are named in the table that types the verb, owed per request, never synthesized, absence
+  reads *pending*, §4.2f is reconciled, and §7.1(f)'s conclusion rule is preserved word for word — and
+  the *set it can see* premise it rests on turns out to be **already carried**, since §7.1(b) routes
+  store discovery through the registry (KCB §2/§4, §3.1) and §3.1's `incomplete[]` reports an
+  incomplete one. **Step 8 holds a third time** — the digest axis was put to §7.1(a) once more and
+  separates the same way (an operand outside a digest is a hazard for *decisions taken over it*, never
+  for the identity the digest establishes), with one property worth recording as a strength: the
+  §7.1(b)(e) fail-closed refusal lands on `refused`, which asserts **nothing** about holding, so the
+  egress gate cannot be used as an oracle for it. **Step 9 does not flip — MA-13 stands, unfolded**,
+  (d) and (e) byte-unchanged; and the question 0.5.2 made askable is answered *no*, correctly: §4.5
+  gives MA-13 **no** route to the missing operand, because a `fetch` response disclosing a restrictive
+  pair would be one holder learning another's envelope, which (d) forbids it to synthesize and no verb
+  returns — so MA-13's answer stays the most-restrictive-governs rule **inside KMI**. **Step 10 does
+  not flip either**, on two deltas that are **KCB's** and not this spec's: **MA-17** (High, carrier —
+  §4.5(a) names four outcomes and fixes no field to read them from) and **MA-18** (Med, mis-route),
+  one additive §4.5(a) edit and **unowned**. Count (i) now reads *fold **MA-13** here (queued,
+  `chief/930`), and **MA-17 + MA-18** in KCB §4.5(a), then re-run Steps 8–10 again* — the half-KMI
+  reading of this count holding for a **second** time: it is KMI's as a count and keeps landing on
+  KCB's verb as work. Count (ii) is restated and unmoved (MT-1, KCB's), the conformance gate still
+  fails on DR-4 and DR-8/DR-7, **DEFER-C is unmoved**, and **KMI stays candidate** — as it would have
+  on a clean walk, since one of its two counts is not KMI's to discharge. **No version and no clause
+  moved for the walk**: §1–§6, §8, §9 and §7's normative text byte-unchanged, no `asset` id moves, no
+  schema twin touched; the edit is §7.1's gate paragraph, a changelog entry and a scenario section.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output

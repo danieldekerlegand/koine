@@ -1,6 +1,6 @@
 # The federation fold — a disposition for each of MA-1…MA-11
 
-> **Status:** Current · **Updated:** 2026-08-26 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-09-12 · **Owner:** koine · **Informative**
 
 [`../../scenarios/e2e-multi-authority.md`](../../scenarios/e2e-multi-authority.md) — the
 cross-authority break test that [ADR-0012](../../decisions/ADR-0012-federated-authority-roles.md)
@@ -109,6 +109,44 @@ Two corrections to the scenario's own framing, found by reading the clauses rath
 **Count: 10 FOLD, 1 CLOSE, 0 whole-finding DEFER, 3 deferred remainders.** Every blocking finding
 (MA-1…MA-6) folds. No finding is dismissed as a scenario error — the pass was accurate, and the two
 corrections above are refinements to its framing, not defects in its findings.
+
+### MA-12 — a twelfth finding, and its disposition (added 2026-09-12)
+
+The eleven above are what the **pass** found. **MA-12** is what the **re-run of the fold** found, on
+2026-09-03, when Steps 8–10 were walked by hand against the folded text: MA-10's answer was folded
+and **nothing carried it**. Its disposition belongs here, beside the others, because the question
+this page exists to answer — *forced to what extent?* — is the same question, and because MA-12 is a
+second-order finding of the fold MA-10's row planned.
+
+| # | Severity | Disposition | Lands in | Extent — what changes, and what deliberately does not |
+|---|---|---|---|---|
+| **MA-12** | Med, carrier | **FOLD** (two-spec) | [KCB](../../specs/capability-bus.md) **§4.5** (new) — the carrier; [KMI](../../specs/media-interchange.md) **§7.1(f)** — a pointer at it | A **named** response vocabulary on the verb that must deliver the answers: `held` / `not-held-pending` / `not-held-not-expected` / `refused` on the `fetch` response, owed **per request**, never **synthesized** by a party that did not determine it, with **absence reading *pending*** and *not reachable* deliberately **not a value** — it is the absence of an answer, asserted by no one. KCB §4.5 cites KMI §7.1(f) for the **meanings** and fixes only the wire; §4.2f's *pending fetch* is reconciled as the consumer's **handling**, with a rate-limited refusal owing `refused`. **Not written:** any KMI field, enum or envelope for the answers (§7 defines *the payloads, not the pipe*, and restating them on both planes is exactly the drift the define-once rule prevents); any obligation to **hold**, as against to **say** — no retention, durability, replica-count or designated-durable-holder obligation, so **DEFER-C is unmoved** and keeps its trigger; any polling cadence, TTL or freshness bound on an answer; any protocol for discovering the set of stores a consumer can see (§3/§3.1 return addresses); and no new verb, grant, port kind or envelope field on either plane. |
+
+**What the break forces, and the line this row draws.** The break is that a clause was **asserted
+and unmechanized** — MA-8's class, one plane over — so what it forces is a *carrier*, and a carrier
+is a name on a wire. It does **not** force the thing the absence of an answer makes tempting: a
+guarantee that some store will answer *held*. A consumer that polls a set and is told *not held, and
+not expected* by all of it has learned something it could not learn before, and that is the whole of
+what MA-10 asked for; that it may still be unable to obtain the bytes is **DEFER-C's** case, whose
+trigger is stated below and is unchanged by this fold. The two are easy to run together and they are
+different findings.
+
+**Which plane it lands on is the define-once rule, applied in reverse.** Seven of the original eleven
+folded at exactly one spec with the others inheriting by citation, and the rule picked the spec that
+*defines* the thing. Here the thing is two things: the **meanings** are KMI's (§7.1(f) defines them
+and keeps them) and the **wire** is KCB's (§4 types the verb). So MA-12 folds at one clause on each
+plane and restates nothing across the boundary — KCB §4.5 cites §7.1(f) for what an answer means,
+§7.1(f) cites §4.5 for how it is carried, and on disagreement about a meaning §7.1(f) governs. That
+is the same economy the eleven were held to, not an exception to it.
+
+**Versions, and what does not close.** The carrier lands as **KCB 0.5.2** and the pointer as **KMI
+0.3.7** — patches on both planes, under each spec's own rules (every surface optional or additive;
+KCB's 0.6.0 stays spoken for by §2.3's legacy-extension-URI-root removal, KMI's 0.4.0 by §4.4's EDL
+removal). It adds a **sixth** count to KCB (a re-run of Steps 8–10, gating §4.5 alone) and closes
+none of KMI's: count (i) now reads *fold **MA-13**, then re-run Steps 8–10 again*, since **MA-13**
+(High, structural — the divergent-envelope case Step 9 reversed on) stands and is a separate,
+KMI-only fold whose disposition belongs with it when it lands. **A fold does not close its own gate**
+— the rule this page has applied since the first eleven.
 
 ---
 
