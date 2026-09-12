@@ -1276,7 +1276,7 @@ vocabulary.
   console's vocabulary from this repo. When KCS does promote it is under the **ordinary,
   conformance-gated** rule, not 0.2.0's grandfathering — that clause does not survive a demotion, and
   the artefact debt it covered was paid 2026-08-19.
-- `specs/fine-tuning.md` — KFT 0.7.1, **candidate** (ratified 2026-07-23 on two pressure passes:
+- `specs/fine-tuning.md` — KFT 0.8.0, **candidate** (ratified 2026-07-23 on two pressure passes:
   `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L; a **third**
   pass, `scenarios/e2e-producer-exhaust-finetune.md`, then pressure-tested a *producing application's*
   training exhaust arriving via ADR-0008 and found the §4 **intake** incomplete — FT-M `dataset.records[]`
@@ -1477,6 +1477,49 @@ vocabulary.
   silently inside an example correction would be the drift the trigger exists to surface. Same
   cross-repo consequence as KMI's: `scenarios/kft-resume-checkpoint.md` carries the literal
   `ft-run/7c3d`, and a downstream encoding pinning it needs the one-token update (**unowned**).
+  **0.8.0 (2026-09-12, minor) mints the third audio row — `audio-text-to-text` — and it is koine
+  answering its own published trigger.** `docs/reference/generative-audio-modalities.md` §4 declined
+  an audio-*understanding* row at 0.7.0 **in terms** (*"not minted here because nothing has asked for
+  it … the trigger: the first consumer that does"*), and a **specialized `finetune` provider role**
+  asked for it in a proposal dated **2026-08-25** — this token, at `lora`/`qlora`, `sft` deliberately
+  not requested. The reading is recorded in **§7 of the document that declined the row**, with the
+  landing in §7.6: the trigger's three clauses each read false-now/met, and what it does **not** say
+  is recorded too, so the bar is not raised retroactively — §5 contracts *ahead of* providers, so the
+  probe, processor, memory profile and committed Apache-2.0 base are **corroboration, not the
+  qualification**. A fired trigger says *when* to decide, not *what*, so the row was then put through
+  §3.1's own columns: no new plane (`knowledge + media (KMI audio)`, the `image-/video-text-to-text`
+  pairing); distinguishable from both sibling families on *Data-plane port* and from the two audio
+  rows on the thing `modality` names (this run adapts a model to **emit text**); and without it an
+  audio-understanding job must declare `text-to-audio` — false **and reversed** — making **FT-F**
+  validate a false declaration, or is refused `unknown-modality` at the **vocabulary** gate, which
+  runs before placement, base anchor and probe, so it blocks an **arm** rather than a combination.
+  **No clause of §4 moves**, checked against §4's text per AU-2's lesson: its paired **asset + text**
+  corpus is exactly §4.1's **FT-I** shape, the side of §4.1 that *carries* — with the one consequence
+  stated rather than left to be found, that FT-I's bullet **enumerates** its members, so **AU-1's
+  fold widens from two rows to three** (same sentence, same defect, **no new delta**; AU-3 does not
+  widen, the new port being discriminable). **The grain was the real question** — closed, additive,
+  tokens **immutable once published**, so minting is cheap and unminting impossible — decided as
+  **one** token over transcription/captioning/audio-QA, the grain `image-text-to-text` and
+  `text-to-audio` already use, with the split condition stated (a provider whose admission check must
+  accept a `method` or a base for one and refuse it for another). Landed in **all four statements**
+  of the vocabulary — `registry/enums/modality.tsv` (8 rows), §3.1's table, the inline enum in
+  `schemas/finetune-job.schema.json` (8 tokens), and `registry/README.md`'s prose bullet, the one
+  **no guard checks** — **appended, never inserted**, because the four are equal *including order*
+  and a mirror may index positionally; `registry/entity-types.tsv`'s `refinement_enum` is a **path**
+  and was checked rather than edited, and `registry/media-types.tsv` does not move. **Minor** because
+  §3.1's table is surface a reader implements against and a new admissible token widens what a
+  conformant provider must recognise, **additive** (nothing conformant at 0.7.x stops conforming),
+  and the status does not move. **No count closes and none is added**: the row is **unexercised
+  vocabulary** the way 0.7.0's two were, and it re-enters validation on `scenarios/kft-audio-modalities.md`,
+  which **reserved the slot in advance** — so KFT's third condition **widens in scope** rather than
+  gaining a fourth, and counts (i) (FT-W) and (ii) (FT-X/FT-Y) are restated and neither moves. The
+  header's stale-pin trigger is **again recorded rather than pulled** (re-pinning is a precondition
+  on the *status transition* and obliges re-reading every cross-plane citation; doing it inside a
+  vocabulary fold would be the drift the trigger exists to surface). The mirrors are told in §10 of
+  `docs/reference/generative-audio-modalities-downstream.md` — a validator on the 7-token enum
+  refuses a **conformant** 8-token job `invalid` (terminal) instead of `out-of-envelope`, which is
+  AUD-5's failure mode — and **AUD-6 stays half-discharged**: the row is *published*, not
+  *exercised*, and the encoding half (**DR-14**) is downstream and unowned.
 - `registry/` — shared **agnostic** vocabularies only: `relations.tsv` (core, **binary** relations
   only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
   `relations/social.tsv` (soc:) + `relations/eval.tsv` (eval: — **added 2026-09-12**, two

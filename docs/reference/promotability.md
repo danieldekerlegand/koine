@@ -168,6 +168,19 @@ Ranked by what a promotion actually costs from here. This ordering is the point 
    disposition, AU-6 a row) plus three re-runs, and **the swap this item predicted with KINP is now
    certain rather than expected**. The artefact axis got worse too and on this count is **not**
    discharged: the leg has **no KCS encoding and no run** (**DR-14**), stated on the day it landed.
+   **Added the same day — KFT 0.8.0, a third audio `modality` token, and it changes the count of
+   folds by nothing.** `audio-text-to-text` was declined at 0.7.0 **with a published trigger**, a
+   named provider role asked for it on 2026-08-25, the trigger fired and the row is ratified into
+   §3.1 (the reading is [`generative-audio-modalities.md`](generative-audio-modalities.md) §7, the
+   landing its §7.6). It adds **no fourth count**: the row is *unexercised vocabulary* the way
+   0.7.0's two were, and it re-enters validation on the audio leg above, which reserved the slot in
+   advance — so count (iii) **widens in scope**. The one open delta it touches is **AU-1**, whose
+   defect is that §4.1's FT-I bullet **enumerates** its members, so that fold now carries three rows
+   rather than two: the same sentence and the same defect, **no new delta**, and **AU-3 does not
+   widen** because the new row's port (`knowledge + media (KMI audio)`) is discriminable from the
+   duplicate pair. Counts (i) and (ii) are restated and neither moves. So the *five folds in one
+   spec* above is unchanged, and so is the artefact objection: the leg still has no encoding, and the
+   new row is not exercised by anything.
 4. **KINP — no koine-side work is left, and this walk is why it now outranks KMI.** The four
    blocking deltas plus MA-7 landed at **0.4.0** on 2026-08-26: §6's convergence target is
    domain-scoped, §4.5 has its fail-closed fourth branch, §4.2 has `world_aligns_with`, §4.1 carries

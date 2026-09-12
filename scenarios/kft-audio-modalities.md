@@ -386,6 +386,21 @@ It walks two rows of one section on purpose, so what it forces is unambiguous:
   [`../docs/reference/generative-audio-modalities.md`](../docs/reference/generative-audio-modalities.md)
   §4 and is a decision, not a delta; if a third row is ever ratified it re-enters validation here
   and this leg is where it lands.
+
+  **Corrected 2026-09-12 — that condition fired the same day this leg landed.** The trigger §4
+  published was read against a dated ask, the verdict was **ratify**
+  ([`../docs/reference/generative-audio-modalities.md`](../docs/reference/generative-audio-modalities.md)
+  §7), and **`audio-text-to-text` is published at KFT 0.8.0** in all four statements of the
+  vocabulary. The bullet above stands as written — this leg walked **KFT 0.7.1** and exercises the
+  two rows that were published when it was walked — and what it reserved is now **owed**: the third
+  row is unexercised vocabulary, it re-enters validation **here**, and a job for it is the next
+  extension of this leg. Two consequences are already known and are **not** new deltas. **AU-1
+  widens from two rows to three** — §4.1's FT-I bullet *enumerates* its members, so the fold that
+  answers AU-1 must carry the third `…-text-to-text` row; same sentence, same defect. And **AU-3
+  does not widen**: the new row's *Data-plane port* is `knowledge + media (KMI audio)`, distinct
+  from the `media (KMI audio)` pair, so it is discriminable by port and adds no ambiguity to the one
+  AU-3 found. KFT's third condition — this leg's AU-1…AU-6 — **widens in scope rather than gaining
+  a sibling**, and counts (i) and (ii) still do not move.
 - **KCS delta R reaches audio and is not re-filed.** A generated `audio/wav` is exactly the case
   KCS 0.3.0 forbids asserting by byte equality, and `structure_matches`'s comparison basis is fixed
   nowhere ([`kcs-format-stress.md`](kcs-format-stress.md#findings-from-the-re-validation)) — with

@@ -212,6 +212,16 @@ Status stayed **Candidate**, both standing gates were restated and neither moved
 tokens are recorded in *Pressure test* as **unexercised vocabulary** — no pass or leg walks an audio
 job — rather than as a third gate.
 
+**And `audio-text-to-text` landed at KFT 0.8.0** (2026-09-12), in the same four surfaces, on the
+verdict in [§7](#7-the-audio-text-to-text-ask-the-trigger-fired-2026-09-12) below — **appended,
+never inserted**, because §1 of the [downstream notice](generative-audio-modalities-downstream.md)
+records that the four statements are equal *including order* and that a mirror may index
+positionally. `registry/entity-types.tsv` again needed no edit and was checked rather than assumed
+(the `model` row's `refinement_enum` is a **path**). Status stayed **Candidate**, all three counts
+were restated and none moved, and the token is recorded in *Pressure test* as **unexercised
+vocabulary** exactly as the first two were — with one difference this time: the leg it re-enters
+validation on already exists and reserved the slot.
+
 ---
 
 ## 7. The `audio-text-to-text` ask — the trigger fired (2026-09-12)
@@ -382,3 +392,42 @@ Three things are stated here rather than left to be derived at landing:
    existing status. **The row closes no gate**, and it has a leg to re-enter validation on that the
    first two rows did not: [`kft-audio-modalities.md`](../../scenarios/kft-audio-modalities.md),
    which was written for exactly that and says so.
+
+### 7.6 Landed — KFT 0.8.0, 2026-09-12
+
+The act §7.5 held separate has been performed, the same day and by the next story of the same
+tasklist. Recorded here so this page does not stop one step short of the thing it decided.
+
+- **The token is in all four statements** §6 enumerates —
+  [`../../registry/enums/modality.tsv`](../../registry/enums/modality.tsv) (8 rows),
+  [KFT §3.1](../../specs/fine-tuning.md)'s table (8 rows),
+  [`../../schemas/finetune-job.schema.json`](../../schemas/finetune-job.schema.json)'s
+  `properties.modality.enum` (8 tokens), and
+  [`../../registry/README.md`](../../registry/README.md)'s unguarded prose bullet — **equal
+  including order**, which was proved by diffing the TSV's first column against the schema enum
+  rather than by reading them side by side.
+- **Appended, never inserted.** §1 of the [downstream notice](generative-audio-modalities-downstream.md)
+  records that a mirror may index positionally, so the family grouping this row belongs to is a
+  *semantic* fact and file order is a *compatibility* one. The 0.7.0 landing appended for the same
+  reason.
+- **`registry/entity-types.tsv` was checked, not assumed.** The `model` row's `refinement_enum` is
+  the **path** `enums/modality.tsv`, so it picks up a new token by resolving and needed no edit.
+  `registry/media-types.tsv` does not move either: it registers only the types koine *mints*.
+- **KFT 0.7.1 → 0.8.0, minor, status unchanged.** The reasoning §7.5 point 3 stated, applied: §3.1's
+  table is normative surface, a new admissible token widens what a conformant provider must
+  recognise, and nothing conformant at 0.7.x stops conforming. All three of KFT's counts are
+  restated and **none moves**; the three status mirrors moved with the header and
+  `check-doc-integrity.mjs` was run to prove it.
+- **The row is unexercised vocabulary and says so in *Pressure test*** — the same reading 0.7.0's
+  two rows were given, so it may not be cited in a re-ratification until a pass walks an
+  audio-understanding job. It adds **no fourth count**: the leg
+  [`kft-audio-modalities.md`](../../scenarios/kft-audio-modalities.md) reserved this slot in
+  advance, and the one open delta the row touches — **AU-1**, whose defect is that §4.1's FT-I
+  bullet *enumerates* its members — widens from two rows to three on the same sentence. KFT's third
+  condition **widens in scope**; it does not gain a sibling.
+- **What is not koine's, stated so it is not mistaken for done.** The provider's adoption is its
+  own act under [ADR-0001](../../decisions/ADR-0001-control-plane-topology.md), and the other two
+  mirrors of this enum have their own drift gates; what each must do is
+  [§10 of the downstream notice](generative-audio-modalities-downstream.md). And the token is not
+  yet *exercised*: that needs a pass on the leg above **and** its KCS encoding (**DR-14**, still
+  unowned and downstream).
