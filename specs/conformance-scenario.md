@@ -1,8 +1,8 @@
 # Koine Conformance-Scenario format (KCS)
 
-**Spec version:** 0.3.0
+**Spec version:** 0.4.0
 **Status:** Candidate
-**Last updated:** 2026-09-03
+**Last updated:** 2026-09-12
 **Applies to:** the conformance console (executor) and every participant it drives
 **Depends on:** [`identity.md`](identity.md) (KINP), [`grounding-pack.md`](grounding-pack.md)
 (KGP), [`capability-bus.md`](capability-bus.md) (KCB), [`media-interchange.md`](media-interchange.md)
@@ -24,14 +24,18 @@ actual protocols, not a mock.
 ## 1. Scope
 
 KCS defines the **scenario document** (§2), the **step vocabulary** (§3), the **execution &
-observation model** (§4), and the **cross-plane assertion vocabulary** (§5). It does not define
-the console UI, transport internals (that's MCP/A2A + KCB), or payload formats (KGP/KMI/KINP).
+observation model** (§4), the **cross-plane assertion vocabulary** (§5) — including §5.1's
+normative **evidence-precedence** rule, which fixes *which* evidence decides an assertion — and the
+**exchange record** (§9), the optional emitted-telemetry shape an observer may rely on. It does not
+define the console UI, transport internals (that's MCP/A2A + KCB), or payload formats
+(KGP/KMI/KINP); §9 fixes what an emitted record *says*, never that a participant must emit one, and
+§5.1 fixes what it is *worth* when the runner also saw the exchange itself.
 
 ## 2. Scenario document
 
 ```jsonc
 {
-  "kcs_version": "0.3.0",
+  "kcs_version": "0.4.0",
   "id":    "kcs:worlds-to-fabric",
   "title": "Fiction stays uncontaminated across the media→knowledge bridge",
   "timeout_ms": 120000,                     // scenario-level liveness bound (delta P)
@@ -138,6 +142,148 @@ When a scenario exercises generated or otherwise nondeterministic output, its as
 test the stable structure/invariants that the contract promises, rather than exact generated
 content. Exact-content assertions remain valid only where exact content is itself the contract.
 
+### 5.1 Evidence precedence — which evidence decides a predicate (NORMATIVE)
+
+Three of the predicates above can be decided off **two different kinds of evidence about one
+exchange**: an outcome the runner **observed itself** on a connection it opened (§4 steps 1–2), and
+an **exchange record** a participant emitted (§9). They are `tier_resolved(invoke, tier)`,
+`cost_within_ceiling(invoke, budget)` and `refused(step)` — the three §9 names as already being
+asserted, downstream, over frames carrying that shape. Until this section nothing said which of the
+two decides, or what a runner does when they disagree.
+
+That is not a matter of taste. Two conformant runners resolving one disagreement differently produce
+**different conformance reports from one run**, which is delta **R**'s defect — an open basis under a
+predicate — moved from the *comparison* axis onto the *evidence* axis. **The property this rule
+exists to guarantee, stated so that a later revision can be measured against it: two conformant
+runners evaluating one run MUST reach the same verdict for each of these three predicates.**
+Everything below is written to make that true, and nothing below may be read in a way that makes it
+false.
+
+**a. Two kinds of evidence, and the ordering between them.**
+
+- A **direct observation** is an entry the runner recorded in §4 step 2's observation log from a
+  connection it opened itself — a request it sent, a response it received, a stream frame it read.
+  It is the runner's own account of the exchange.
+- An **attributed record** is a §9 exchange record. It is its emitter's assertion and nobody else's
+  (§9g): a runner never composes one, never completes a field its emitter left absent, and never
+  rewrites one.
+- **A direct observation outranks an attributed record, always. The reverse ordering is
+  forbidden.** The reason is fixed by §9(a) and is not a preference: emission is OPTIONAL and this
+  class of data is **droppable by construction**, so an absent record asserts nothing and a present
+  one is a *declaration* rather than a *measurement*. A rule letting a record override what the
+  runner saw would let a participant decide, by choosing what to emit, what the run concluded about
+  it — and conformance evidence a subject can author is not evidence.
+
+**b. A record is bound to a step before anything is compared.** A runner **MUST** bind a record to a
+step on the facts the record states — §9(b)'s `verb`, `capability`, `caller`/`callee`, and the
+`trace` / `refs` correlation — and **MUST NOT** bind on timing proximity, log adjacency, or ordering
+in the log. A record the runner cannot so bind is **not evidence for that step**, MUST be ignored
+for it, and MAY be reported as unbound. This clause comes first because two runners that bound
+different records to one step would diverge *before* the ordering rule was ever reached.
+
+**c. The four cases (NORMATIVE).** A runner evaluating one of the three predicates for a step
+**MUST** decide it exactly as follows, and **MUST NOT** apply any other rule:
+
+| The runner's own observation | Bound record(s) (b) | Verdict |
+|---|---|---|
+| present | none | decided by the **observation** |
+| present | present, agreeing (e) | decided by the **observation**; a record that agrees corroborates and adds no weight |
+| present | present, disagreeing (e) | the assertion **FAILS** — see (d) |
+| none | one, or several that agree | decided by the **record**, and reported as an **attributed assertion, not as an observation** (d) |
+| none | several that disagree | the assertion **FAILS** — see (d) |
+| none | none | the assertion **FAILS**: an assertion with no evidence does not pass |
+
+The last row is where this rule **changes how an existing predicate evaluates**, and it is stated
+plainly rather than left to be discovered: before this section, a `cost_within_ceiling` for which
+the runner held neither an observed accounting nor a record could be read as passing on the ground
+that nothing refused the `invoke`. It cannot now. That reading is the fail-open inversion this
+fabric refuses by name everywhere else — KCB §4.4c forbids *highest published* as a default for
+exactly this reason, and KMI §7.1 makes an unreachable store a pending fetch and never a conclusion.
+It is also why this publication is a **minor** and not a patch.
+
+**d. A disagreement is reported, never resolved.**
+
+- A runner **MUST NOT** silently prefer either reading, **MUST** fail the assertion, and **MUST**
+  carry **both** readings in §4 step 4's report slice, each named by the kind of evidence it came
+  from and — for a record — by its emitter's KINP id.
+- Why the assertion fails rather than being settled by (a)'s ordering: the ordering fixes which
+  account a runner may report **as its own finding**; it does not make a contradiction disappear.
+  Two accounts of one exchange that contradict each other mean either that a participant
+  misdeclared — which KCB §4.3i makes a breach of a term this format can assert against — or that
+  the runner mis-observed. In neither case did the run *establish* the property asserted, and a
+  conformance format that reported a pass over a contradiction would be reporting the tie-break
+  rather than the run.
+- Reporting is the whole of the fix, and the reason is §4's own report shape: the report is
+  **content-addressed**, so a divergence resolved silently is not merely invisible, it is
+  *reproducibly* invisible — the same hash over two runs that disagreed. That is exactly how delta
+  **R**'s divergence hides, one axis over.
+- Where the verdict is decided by a record (the fourth row of (c)), the report **MUST** mark it as
+  attributed and name the emitter. A verdict standing on a participant's own account of itself is
+  still a verdict; what it may not do is read, in the report, as though the runner had seen it.
+- This mints **no new report verdict**. A disagreement is a **fail**, and §4 step 4's per-assertion
+  pass/fail shape is unchanged.
+
+**e. What counts as a disagreement — and what does not.**
+
+- Comparison is on the **predicate's own fact**, never on the record as a whole. Two records
+  differing in `trace`, `refs`, timings, or any field the predicate does not read are **not** in
+  disagreement.
+  - `refused(step)` reads whether a **gate refused**. §9(d)'s `refused` against an observed refusal
+    agrees; `failed` is *not* `refused` in §9(d)'s closed enum, so a record reading `failed` against
+    an observed refusal (or the reverse) **is** a disagreement, and so is `ok` against one.
+  - `cost_within_ceiling(invoke, budget)` reads the spend measured against the ceiling **in the
+    ceiling's stated unit** (§9c). Nothing is converted, by the emitter or by the runner.
+  - `tier_resolved(invoke, tier)` reads the **provenance trust tier** §9(e) fixes that field on. A
+    record carrying one of the fabric's other two *tier* axes in it is not a disagreement about the
+    tier — it is a **non-conformant record**, and the runner reports it as one rather than comparing
+    it.
+- **An absence is not a disagreement.** A field that reads *unstated* under §9 — an absent `tier`,
+  an absent `ceiling` or `spend`, an amount carrying no unit (§9c), an absent `world` which §9(b)
+  forbids reading as `null` — supplies nothing to compare, so it can neither agree nor disagree with
+  an observation. A runner **MUST NOT** substitute a default in order to obtain a comparison, and in
+  particular **MUST NOT** read an un-denominated amount as *within* or as zero. Such a record is
+  simply not evidence for that predicate, and the row of (c) that applies is the one for a record
+  that is absent.
+- **Several records are attributions, and are never merged.** Where both parties to an exchange
+  emit, a runner holds **two attributed records** and **MUST NOT** compose a single one from them.
+  They agree, or they disagree and (d) applies. That is
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s *a merge merges
+  attributions, never contents*, read on this plane — the same discipline §9(g) applies to a single
+  record.
+
+**f. What this binds, and the part of §7 question 1 it makes larger rather than smaller.**
+
+- This rule is part of the **fixed core**. A runner implementing §5's vocabulary implements this
+  evaluation; one that implements the three predicate *names* under a different evidence rule is not
+  implementing §5, however the names line up.
+- And it lands squarely on §7 question 1's second half — *a fixed core is only fixed if something
+  checks it* — which is recorded there on the evidence of **DR-10**: the downstream §5 vocabulary
+  omits `structure_matches`, the predicate the 0.3.0 fold *is*, and declares a `media_map_complete`
+  this spec names nowhere, while every document it replays declares `kcs_version: 0.3.0`, and the
+  check meant to catch that drift is a hardcoded count of names rather than a comparison against §5.
+  **This rule makes that question larger.** A name check would not catch a divergence here at all:
+  two runners can agree on every predicate name, reject the same unknown ones, and still return
+  different reports, because the evidence rule those names are evaluated under **is not visible in a
+  scenario document**. Whether the fixed core needs a conformance obligation on the *runner* —
+  declare the vocabulary version **and** the evidence rule you implement — is the question, it is
+  recorded in §7 question 1, and it is **not closed here**.
+- A **declared console extension** (§7 question 1's escape hatch, used as designed by **V-8** and
+  **MA-11**) that decides its predicate off an exchange record is bound by (a)'s ordering — a record
+  never outranks the runner's own observation, whatever predicate reads it — and its author declares
+  the evidence rule beside the predicate, as the extension itself is declared.
+- §5's fixed core is otherwise **unchanged**: no predicate is added, removed or re-signatured, and
+  `structure_matches`'s open comparison basis — blocking delta **R** — is **untouched**. R is a
+  *comparison* basis and this is an *evidence* basis; supplying one does not supply the other, and a
+  runner given this rule tomorrow would still have to invent R's.
+
+**g. What this rule does not do.** It adds no predicate, no step (§3), no field or participant entry
+(§2), no binding (§2.1) and no report verdict (§4). It adds no obligation to emit — §9(a) stands
+unchanged, and a scenario runs identically against participants that emit nothing, since a run in
+which no record exists is decided entirely by the first and last rows of (c). It does **not** close
+delta **R**, does **not** discharge **DR-10** — which is downstream work under
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and stays unowned — and does **not**
+promote KCS.
+
 ## 6. Relationship to the written scenarios
 
 The two hand-authored pressure tests are the first KCS instances to encode, making them
@@ -170,6 +316,18 @@ Encoding them is a downstream conformance-console tasklist (see `../tasks/chief/
    obligation on the *runner* — declare the vocabulary version you implement, and reject a document
    declaring one you do not — rather than only on the document. Taking it up is a normal minor
    revision gated by a pressure test.
+   *And 0.4.0's **§5.1** makes that second half larger rather than smaller, which is recorded here
+   because it is the opposite of what a fold usually does to an open question.* The evidence-
+   precedence rule is fixed-core surface a runner implements, and **a name check cannot see it**:
+   two runners may agree on every predicate name, reject the same unknown ones, and still return
+   different reports for one run, because the evidence rule those names are evaluated under appears
+   **nowhere in a scenario document** — §2 declares a `kcs_version` and no evidence profile, and §5.1
+   deliberately adds no field to change that (§5.1g). So the runner-side declaration this question
+   contemplates would have to cover the vocabulary version **and** the evidence rule, and the drift
+   DR-10 records — a name missing, a name invented — is now the *detectable* half of the problem.
+   §5.1 states the property it exists to guarantee (two conformant runners, one run, one verdict per
+   predicate) precisely so that a later revision can measure a proposed check against it. **Not
+   closed by 0.4.0.**
 2. **Determinism** — **folded in 0.3.0:** model outputs vary; scenarios MUST assert
    *structure/invariants* (firewall, cost, world-scoping), not exact generated content, unless
    exact content is itself the contract. `structure_matches(a, b)` is the fixed-core predicate
@@ -273,6 +431,216 @@ Two of the five map onto open questions already on the record (§7.1 assertion e
 determinism); the other three are new surface. Taking any of them up is a normal minor revision of
 this spec, not an editorial one.
 
+## 9. The exchange record (emitted telemetry)
+
+A participant may emit a record of an exchange it took part in — what was called, by whom, under
+what ceiling, and how it ended. Participants in the console role do, and koine's own conformance
+evidence is in part computed off records of that shape: §5's `cost_within_ceiling(invoke, budget)`,
+`tier_resolved(invoke, tier)` and `refused(step)` are asserted in the cited downstream live run over
+frames carrying it. Until this section the shape was specified **nowhere** — so a predicate this
+format defines was being decided off a document this format did not describe. This section
+describes it.
+
+The prior-art sweep that gates it is
+[`../docs/reference/kcs-telemetry-prior-art.md`](../docs/reference/kcs-telemetry-prior-art.md),
+read **2026-09-12** and dated as a first reading, under the profile-by-reference-or-mint-and-record
+discipline of [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) /
+[ADR-0010](../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md). Of the eleven facts a record
+carries, standardised work covers **three** — correlation, timings, and the *shape* of a status
+field — and does not cover the eight that make a record evidentiary for a KCS assertion rather than
+diagnostic for an operator. Correlation is therefore **profiled by reference** (W3C Trace Context,
+pinned in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md)) and
+the rest is **minted here**, with the reading recorded there rather than asserted here.
+
+**a. Emission is OPTIONAL; what this section fixes is OBSERVATION (NORMATIVE).**
+
+- **A participant that emits no exchange record is fully conformant.** Nothing in this
+  specification requires instrumentation, a console, a collector, an exporter, or any sampling
+  rate. This is [`capability-bus.md`](capability-bus.md) §4.3g's rule read on this plane: koine
+  fixes what a thing **means** when it crosses a boundary, never that a participant must produce it.
+- The reason is measured rather than a courtesy to the un-instrumented. The mature standardised
+  work in this space **declines to require emission**: OpenTelemetry's trace SDK defines a sampler
+  whose `DROP` decision is conformant and whose exporters receive only sampled spans, so a
+  deployment sampling at zero exports nothing and remains conformant. A koine clause requiring
+  emission would require what the entire field declines to require.
+- It follows that **an absent record asserts nothing**. Absence is not evidence that the exchange
+  did not happen, that it was refused, or that it stayed within a ceiling. That is the reading
+  koine has already written on four other planes — [`capability-bus.md`](capability-bus.md)
+  §4.5(c)'s absent `fetch` outcome reads *pending*, §4.2b's unanswered adjustment reads *not in
+  force*, [`media-interchange.md`](media-interchange.md) §2's absent `egress` is *not*
+  `exportable`, and that spec's §7.1 unreachable store is a pending fetch and never a conclusion.
+- What is fixed here is **observation**: where a record *is* emitted, what it says and what an
+  observer may rely on it for. Nothing below is an obligation to instrument.
+
+**b. The record (NORMATIVE).** A record is a single object carrying the fields below. Every field
+is named here, and an observer reads a fact from the field that names it and from no other.
+
+| Field | Presence | Value | Absent reads |
+|---|---|---|---|
+| `kind` | REQUIRED | exactly `"exchange"` — the discriminator by which an observer recognises a record of this shape rather than inferring it from the fields present | not a record of this shape |
+| `verb` | REQUIRED | one of [`capability-bus.md`](capability-bus.md) §4's five verbs — `discover` · `describe` · `invoke` · `subscribe` · `fetch`. A closed set **by reference**: KCB owns it, and a token outside it is unrecognised, never mapped onto a neighbour | — |
+| `capability` | REQUIRED where the verb names one (`invoke`, `subscribe`, `describe`) | KCB §7.1's identity pair `{ name, version }` — **never the name alone**, which is what §7.1 says in terms; §7.1's **`0.0.0`-unknown** where the entry the exchange resolved carried no version — a *value* and not an omission, the reading KCB §3 already names a plan leg under | unstated; never *any version* |
+| `caller` / `callee` | REQUIRED | the two parties as KINP ids ([`identity.md`](identity.md) §3.1) — the participant that dialed and the participant dialed | — |
+| `world` | OPTIONAL | a KINP `world` id ([`identity.md`](identity.md) §5), or explicit `null` for an exchange that is not world-scoped | unstated. An observer **MUST NOT** read an absent `world` as `null` — the distinction is the one §5's `source_world_is(asset, world\|null)` already draws |
+| `tier` | OPTIONAL | the **provenance trust tier** the deciding participant resolved, a token of [`../policy/trust-tiers.json`](../policy/trust-tiers.json). One of three axes this fabric calls *tier* — see (e) | unresolved; never a default |
+| `status` | REQUIRED | one of exactly four tokens — see (d) | `unknown`. A record omitting it is non-conformant, and an observer still reads it rather than guessing: a defect in the emitter never licenses an inference in the reader |
+| `ceiling` | OPTIONAL | `{ budget_units, unit }`, optionally `issuer` — the spend ceiling the enforcing party read, **and the unit it denominates in** (KCB §5; see (c)) | no ceiling was stated; never *unbounded* |
+| `spend` | OPTIONAL | `{ budget_units, unit }` — what the exchange actually spent, denominated in the ceiling's unit (c) | unstated; never zero, never *within* |
+| `started_at` / `ended_at` | OPTIONAL, and together | transaction-time instants in [`grounding-pack.md`](grounding-pack.md) §3.2's fixed form — ISO-8601, UTC, `Z` suffix, millisecond precision. Reused, not minted | unstated |
+| `refs` | OPTIONAL | the KINP ids the exchange touched, each typed by its own kind segment ([`identity.md`](identity.md) §3.1's `ent` · `claim` · `asset` · `world` · `agent` · `activity` · `src`) | unstated — never *the exchange touched nothing* |
+| `trace` | OPTIONAL | `{ trace_id, parent_id }` — **W3C Trace Context** Level 1 values **as propagated**, never minted afresh for the record where a `traceparent` was present (e) | uncorrelated |
+
+A record MAY carry further fields. An observer **MUST** ignore a field it does not recognise and
+**MUST NOT** read one as though it were a field above — KCB §7.2's ignore-unknown-fields rule,
+reused rather than restated differently.
+
+```jsonc
+{
+  "kind":   "exchange",                                  // the discriminator (b)
+  "verb":   "invoke",                                    // one of KCB §4's five
+  "capability": { "name": "compose", "version": "1.4.0" },   // KCB §7.1's pair, never the name alone
+  "caller": "orchestrator:agent:planner",                // KINP §3.1
+  "callee": "mediastore:agent:composer",
+  "world":  "worldsim:world:alderforest",                // or null where the exchange is not world-scoped
+  "tier":   "synthetic",                                 // provenance trust tier (e) — never a price tier
+  "status": "ok",                                        // closed enum (d)
+  "ceiling": { "budget_units": 5000, "unit": "orchestrator:credit",
+               "issuer": "orchestrator:agent:host" },    // KCB §5 — the unit is not optional (c)
+  "spend":   { "budget_units": 1200, "unit": "orchestrator:credit" },
+  "started_at": "2026-09-12T14:03:11.482Z",              // KGP §3.2's fixed form
+  "ended_at":   "2026-09-12T14:03:14.006Z",
+  "refs":  [ "mediastore:asset:sha256-9f2a1c7d",         // typed by their own kind segment
+             "analyzer:activity:1a2b" ],
+  "trace": { "trace_id":  "4bf92f3577b34da6a3ce929d0e0e4736",   // W3C Trace Context Level 1
+             "parent_id": "00f067aa0ba902b7" }
+}
+```
+
+**c. Spend denominates its unit, or it is not evidence (NORMATIVE).**
+
+- `ceiling` and `spend` each state their unit. Where both are present the unit **MUST** be the
+  same, and neither the emitter nor an observer may **convert** one into the other.
+- An amount carrying no unit is **not evidence** for `cost_within_ceiling`: it reads *unstated* —
+  never *within*, never zero, never the observer's own unit.
+- This is a **precedent applied, not a novelty**. KCB §5 already refuses an `invoke` whose
+  `budget_units` ceiling crosses an authority-domain boundary without stating its unit, and refuses
+  **for want of one** rather than assuming its own, because `budget_units` is a quantity in the
+  *issuing host's* governance and two governance domains have no reason to mean the same thing by
+  it. A record reporting spend against such a ceiling in no unit cannot be compared to it, so the
+  rule reaches the record unchanged. The nearest standardised neighbour demonstrates the failure
+  rather than the fix: the GenAI conventions' token **counts** are counts and not amounts, and
+  carry no unit at all.
+- koine fixes that the unit is **stated**, not what units exist — KCB §5 leaves the quantity in the
+  issuing host's governance and this section does not take it back. The namespaced token in (b) is
+  illustrative. Where the exchange crossed an authority-domain boundary the record SHOULD carry
+  `ceiling.issuer`, the issuing host by KINP id that KCB §5 already requires a grant to name: a
+  unit with no attributable issuer is comparable only inside one domain.
+
+**d. `status` is a CLOSED enum (NORMATIVE).** Exactly four tokens, and a record carries one of them:
+
+| Token | Meaning |
+|---|---|
+| `ok` | the exchange completed as asked |
+| `refused` | a gate refused it. This is the token §5's `refused(step)` reads; a refusal is **not** a failure and MUST NOT be recorded as one — the whole point of `expect: reject` (§3) is that a correct refusal is a pass |
+| `failed` | it did not complete, and not because a gate refused it |
+| `unknown` | the emitter did not determine the outcome |
+
+- An absent `status`, and an unrecognised token, both read **`unknown`**. An observer **MUST NOT**
+  map an unrecognised token onto one of the four, and SHOULD report it as unrecognised.
+- A free-form `status_detail` MAY accompany `refused` and `failed`, and **MUST NOT** accompany
+  `ok` — OpenTelemetry's `Status` rule (a description is permitted only with `Error`), which is
+  where the closed shape comes from and why closing it is a **correction rather than an invention**.
+- Where the refusal was graded by the gate that made it (KCB §4.3h's minimum, KFT §8.1's table),
+  the record MAY carry the grade **as that gate stated it**, and MUST NOT synthesize one (g).
+- Why this cannot be left free-form: a field **documented** free-form and **consumed** as closed is
+  two conformant readers with two readings of one document. That is delta **R**'s class of defect
+  — an open basis under a predicate — four sections up, and the reason it is worth fixing before
+  the record is relied on rather than after.
+
+**e. What the record borrows, and the three axes called *tier*.**
+
+Nothing here re-defines what a sibling spec already fixes: the verbs are KCB §4's, the capability
+pair is KCB §7.1's, the parties and the `refs` are KINP §3.1 ids, the world is KINP §5's, the
+ceiling and spend are KCB §5's `budget_units` with a stated unit, and the timestamps are KGP
+§3.2's fixed form. **Correlation is profiled by reference**: where a record carries a correlation
+identifier it is a **W3C Trace Context** `trace-id` — pinned at **Level 1, the Recommendation of
+2021-11-23**, in
+[`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) — and never a
+koine-minted one. koine reads `trace-id` and `parent-id`, claims nothing of `tracestate`, and adds
+no propagation rule: the convention already rides the HTTP that carries MCP and A2A, so a parallel
+koine trace identifier would compete with a working convention and lose. What this section mints is
+the field names of (b) and the closed `status` of (d), and nothing else.
+
+**Three axes in this fabric are called *tier*, and `tier` carries exactly one of them.** It is the
+**provenance trust tier** — [`../policy/trust-tiers.json`](../policy/trust-tiers.json)'s `curated` ·
+`acquired` · `synthetic` · `personal`, the axis [`grounding-pack.md`](grounding-pack.md) §7 and
+[`fine-tuning.md`](fine-tuning.md) §4.3 gate on. It is **not** KGP §5's **dialect** tier
+(`grounding-only` · `horn-safe` · `full-prolog`), which is a property of a pack and not of an
+exchange, and it is **not** KCB's `cost.tier` (`free` · `paid`), which is a **price** and rides
+inside the published cost, never in this field. §5's `tier_resolved(invoke, tier)` names no axis of
+its own; where it is decided off a record, this field is the axis, and a record **MUST NOT** put
+another axis's token in it. §5's grouping of that predicate is unchanged by this section.
+
+**f. Where a record lives, and what this format deliberately does not carry it on (NORMATIVE).**
+
+- **The carrier is this format's own.** A record an observer holds is an entry in §4 step 2's
+  **observation log**, stamped like every other entry with participant, plane, KINP ids touched and
+  transaction time; §5's predicates are evaluated against that log (§4 step 3), so a record is read
+  exactly where every other observation is read. The `kind` discriminator (b) is what makes it
+  recognisable there rather than guessed at from the fields present.
+- **How a record reaches an observer is transport, and §1 excludes transport.** Where a deployment
+  delivers one in band on a KCB binding, KCB §4.2d mints the **one** in-band control channel with a
+  MUST against a second, and KCB §7.3g is the one place that channel's frame vocabulary is named.
+  So **this section names no frame**: a record delivered that way rides a frame KCB mints, and
+  minting one here would put a normative token in a slot another spec reserves.
+- Stated rather than left implicit, because the alternative has a name in this repository: *a rule
+  with a declared normative consequence and nothing that carries it* has been filed **eight** times
+  across these specs. §9 is not the ninth, and the reason is checkable — every normative
+  consequence above is discharged at a carrier KCS owns (a named field of (b), read from §4's
+  observation log), and the one carrier KCS does **not** own is stated as *not specified here*
+  rather than asserted into existence.
+
+**g. A record is its emitter's assertion, and nobody else's (NORMATIVE).**
+
+- An observer **MUST NOT** compose a record for a participant that emitted none, **MUST NOT** fill
+  a field the emitter left absent, and **MUST NOT** rewrite a field it emitted.
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s never-synthesize
+  rule, read on this plane: an observation may be *attributed*, never *manufactured*.
+- What a declaration is worth across a boundary is KCB §4.3i's answer and is not restated
+  differently here: silence costs the declarant, and a misdeclaration is a breach of a term this
+  format can assert against — which is what makes a record usable as evidence at all, and what
+  keeps it from being usable as proof.
+- An observer's **own** observation of the same exchange is evidence of a different kind, made by a
+  different party. Which of the two decides a §5 predicate when they disagree is (h).
+
+**h. What a record is worth as evidence is §5.1, and it is NORMATIVE.** This section fixes what a
+record **says**; what it is *worth* against an outcome the runner observed itself is **§5.1**, the
+other half of this same **0.4.0** publication. Read there and not here: a direct observation
+**outranks** an attributed record and never the reverse (§5.1a, on this section's own optionality
+argument — a droppable document is a declaration, not a measurement); a record is bound to a step
+on the facts (b) states and never on timing (§5.1b); and a disagreement between the two **fails the
+assertion and is reported with both readings**, never silently resolved (§5.1d). It could not be
+left informative: two conformant runners resolving one disagreement differently produce **different
+conformance reports from one run**, which is delta **R**'s defect moved from the comparison axis
+onto the evidence axis. Two consequences land back on this section rather than staying in §5 — the
+*unstated* readings of (b), (c) and (d) are **absences and never disagreements**, so a runner may
+not default them into a comparison; and where both parties to one exchange emit, a runner holds
+**two attributions** and may not merge them into one.
+
+**i. What this section does not do.**
+
+- It adds **no obligation to instrument**, no sampling rule, no retention or redaction policy (how
+  much the log retains is §7 question 3), no collector, no exporter and no transport.
+- It adds **no schema twin**. [`../schemas/`](../schemas/) models interchange documents a producer
+  must hit; KCS has no twin for §2's scenario document either, and minting one for §9 alone would
+  put a machine-checkable floor under one section and none under the document that carries it. If a
+  twin is ever added it is added for §2 and §9 together.
+- It adds **no step** (§3), **no participant field** (§2) and **no binding** (§2.1). A record is
+  *observed*, not declared: nothing in a scenario document changes because a participant emits one,
+  and a scenario runs identically against participants that emit nothing.
+- It does not close delta **R**, does not discharge **DR-10**, and does not promote KCS.
+
+
 ## Pressure test
 
 Exercised by [`../scenarios/kcs-format-stress.md`](../scenarios/kcs-format-stress.md) (encoding
@@ -352,6 +720,26 @@ invisible from inside one implementation of it. The drift itself is untouched by
 koine specifies the vocabulary and the console implements it, so closing DR-10 from this repo is not
 available.
 
+**§9 and §5.1 are new normative surface, and no pass exercises either (2026-09-12).** The exchange
+record and the evidence-precedence rule added at 0.4.0 are recorded here the way
+[`fine-tuning.md`](fine-tuning.md) records an unexercised modality row: **published, not
+exercised**. No document in [`../scenarios/`](../scenarios/) emits an exchange record, and the
+downstream evidence that motivated both halves **predates** them — a run green over frames of the
+pre-0.4.0 shape asserts nothing about §9's clauses, which is **DR-7**'s shape read on this spec's
+own fold rather than on another's. What that costs is stated rather than smoothed over: (a)'s
+optionality, (c)'s denomination rule, (d)'s closed enum and (f)'s carrier are readable and are
+unrefuted, not validated. **§5.1 is the sharper case of the two**, and the reason is worth writing
+down: it is a rule about **divergence between two runners**, and the fabric has exactly one runner.
+A green run from that one runner is internally consistent by construction and therefore cannot
+falsify it — which is the property this spec already recorded when it noted that a replay could not
+have found delta **R** even with the predicate implemented. What would exercise §5.1 is a leg that
+puts an emitted record and a directly observed outcome **in disagreement on purpose** and reads the
+report, and that leg does not exist in [`../scenarios/`](../scenarios/) today. The single count
+above is **restated and does not move** — it is still *fold R, then re-validate* — and neither §9
+nor §5.1 closes it or touches `structure_matches`: R is a **comparison** basis and §5.1 fixes an
+**evidence** basis. Rewriting the emitting implementation against this text is downstream work under
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and is **unowned**.
+
 **Which rule a promotion would be under, when one comes.** KCS 0.2.0 was ratified under the
 **previous** rule and grandfathered past the conformance artefact; the debt was named and was paid on
 2026-08-19 ([`README.md`](README.md#the-ratification-gate)). The grandfather clause does not survive
@@ -360,6 +748,124 @@ a clean re-validation **and** the machine-replayable artefact, which for this sp
 the nine documents and is the part already paid.
 
 ## Changelog
+
+- **0.4.0** (2026-09-12) — **Candidate.** Added **§9, the exchange record**, and **§5.1, the
+  evidence-precedence rule** — two halves of one fold, published together because the first is
+  unsafe without the second. §9 is the emitted-telemetry
+  shape a participant in the console role has been shipping and this format had never specified.
+  It was not academic: §5's `cost_within_ceiling`, `tier_resolved` and `refused` are asserted in the
+  cited downstream live run **over frames carrying that shape**, so a predicate this format defines
+  was being decided off a document this format did not describe. **Emission stays OPTIONAL and the
+  section says so in a NORMATIVE clause** — a participant that emits nothing is fully conformant,
+  [`capability-bus.md`](capability-bus.md) §4.3g's rule on this plane — and the reason is measured
+  rather than polite: OpenTelemetry's trace SDK makes a `DROP` sampling decision conformant, so a
+  clause requiring emission would require what the whole standardised field declines to require.
+  It follows that **an absent record asserts nothing**, the reading koine already writes at KCB
+  §4.5(c), KCB §4.2b, KMI §2 and KMI §7.1. What §9 fixes is **observation**: where a record *is*
+  emitted, what it says and what an observer may rely on it for.
+  **The fold is gated by a dated prior-art sweep**
+  ([`../docs/reference/kcs-telemetry-prior-art.md`](../docs/reference/kcs-telemetry-prior-art.md),
+  read 2026-09-12 and dated as a **first** reading — no koine spec had ever cited this prior art in
+  writing), under [ADR-0006](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md) /
+  [ADR-0010](../decisions/ADR-0010-kmi-lineage-bridge-not-vocabulary.md)'s
+  profile-by-reference-or-mint-and-record discipline. The verdict is a **split**: standardised work
+  covers **three** of the record's eleven facts and not the eight that make it evidentiary rather
+  than diagnostic, so **correlation is profiled by reference** — a **W3C Trace Context** `trace-id`,
+  pinned at **Level 1 (Recommendation 2021-11-23)** in
+  [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md), whose row
+  moves to ✅ with this citation — and the rest is **minted here**. **OpenTelemetry is resembled,
+  not adopted**, and therefore takes no pin: no §9 clause delegates to it and no §9 field is defined
+  by it.
+  **The two substantive reconciliations are answered in the text rather than inherited from the
+  implementation.** *Spend denominates its unit* (§9c) — an amount with no unit is **not evidence**
+  for `cost_within_ceiling` and reads *unstated*, never *within* and never zero; KCB §5 already
+  refuses an `invoke` **for want of** a stated unit when a ceiling crosses an authority-domain
+  boundary, and a record reporting spend against that ceiling in no unit cannot be compared to it.
+  *`status` is a CLOSED enum* (§9d) — `ok` · `refused` · `failed` · `unknown`, with a free-form
+  detail permitted only beside `refused`/`failed` (OpenTelemetry's own `Status` rule), because a
+  field documented free-form and consumed as closed is two conformant readers with two readings of
+  one document — delta **R**'s class of defect, on a field rather than a predicate.
+  **The carrier is named rather than assumed** (§9f): a record is an entry in §4's **observation
+  log**, discriminated by `kind: "exchange"` and read where every other observation is read, and
+  the one carrier KCS does **not** own is stated as *not specified here* — KCB §4.2d mints the one
+  in-band control channel and §7.3g is the one place its frame vocabulary is named, so §9 names no
+  frame. That is deliberate: *a rule with a declared normative consequence and nothing that carries
+  it* is a defect filed **eight** times across these specs, and §9 declines to be the ninth.
+  **§9 mints nothing a sibling already defines** — verbs from KCB §4, the `(name, version)` pair
+  from KCB §7.1, parties and `refs` as KINP §3.1 ids, world from KINP §5, ceiling and spend as KCB
+  §5's `budget_units` **with** a unit, timestamps in KGP §3.2's fixed UTC form — and it disambiguates
+  the **three axes this fabric calls *tier***, fixing `tier` as the **provenance trust tier**
+  ([`../policy/trust-tiers.json`](../policy/trust-tiers.json)) and never KGP §5's dialect tier or
+  KCB's `free`/`paid` price tier.
+  **The other half of the same publication is §5.1, the evidence-precedence rule, and it could not
+  stay informative.** §9 fixes what a record *says*; §5.1 fixes what it is *worth* when a step
+  carries **both** an emitted record and an outcome the runner observed itself. Three predicates are
+  decidable off either — `tier_resolved`, `cost_within_ceiling` and `refused`, the three already
+  being asserted downstream over frames of that shape — and nothing said which decided, so two
+  conformant runners resolving one disagreement differently would have produced **different
+  conformance reports from one run**: delta **R**'s defect moved from the *comparison* axis onto the
+  *evidence* axis. §5.1 states the property it exists to guarantee **first**, in the text, so that a
+  later revision can be measured against it: *two conformant runners evaluating one run MUST reach
+  the same verdict for each of these three predicates.* Four clauses make it true. **(a) A direct
+  observation outranks an attributed record, always, and the reverse ordering is forbidden** — not a
+  preference but §9(a)'s own argument followed through: this class of data is droppable by
+  construction, so a record is a *declaration* and never a *measurement*, and conformance evidence a
+  subject can author by choosing what to emit is not evidence. **(b) Binding comes before
+  comparison** — a record binds to a step on the facts §9(b) states and **never** on timing
+  proximity or log adjacency, because two runners that bound different records would diverge before
+  the ordering rule was ever reached. **(c) Four cases, exhaustively**, in a table a runner
+  implements directly. **(d) A disagreement is reported, never resolved** — the assertion **fails**
+  and the report carries **both** readings, each named by the evidence kind and, for a record, by
+  its emitter's KINP id; the ordering of (a) fixes which account a runner may report as its own
+  finding and does not make a contradiction disappear, and §4's report being **content-addressed**
+  means a silently resolved divergence is not merely invisible but *reproducibly* invisible, which
+  is precisely how R's divergence hides. It mints **no new report verdict** — a disagreement is a
+  fail — and (e) fixes what a disagreement *is*: comparison on the predicate's own fact and never on
+  the record as a whole; an **absence is never a disagreement**, so an unstated `tier`, an absent
+  ceiling or an un-denominated amount (§9c) may not be defaulted into a comparison; and where both
+  parties emit, a runner holds **two attributions and merges nothing** —
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) read on this plane.
+  **Minor, and the reasoning is stated rather than assumed.** §9 and §5.1 are both new normative
+  surface a reader implements against, which alone is a minor; but the decisive fact is that **§5.1
+  changes how three existing §5 predicates evaluate**, so this is **not a patch**. The change is in
+  the last row of §5.1(c): a predicate for which the runner holds **neither** an observation nor a
+  bound record now **fails**, where before this section a `cost_within_ceiling` could be read as
+  passing on the ground that nothing refused the `invoke`. That reading is the fail-open inversion
+  this fabric refuses by name elsewhere ([`capability-bus.md`](capability-bus.md) §4.4c's forbidden
+  *highest published* default, [`media-interchange.md`](media-interchange.md) §7.1's unreachable
+  store that is a pending fetch and never a conclusion), and closing it is a narrowing of how a
+  conformant runner may evaluate — which is what makes the bump a minor on the nose rather than by
+  courtesy. Everything else is **additive**: §2's document shape, §2.1's bindings, §3's step
+  vocabulary and §4's execution and observation model are unchanged; **no predicate is added,
+  removed or re-signatured**; no step, field, participant entry, binding or report verdict is
+  minted; **no schema twin is added** (KCS has none for §2 either, and one section is the wrong
+  unit); and a 0.3.0 scenario runs identically against participants that emit nothing, a run with no
+  records being decided entirely by the first and last rows of (c). The three status mirrors
+  ([`../README.md`](../README.md), [`README.md`](README.md),
+  [`../ECOSYSTEM.md`](../ECOSYSTEM.md)) move with the header, as
+  `scripts/check-doc-integrity.mjs` enforces.
+  **What it does to §7 question 1 is the opposite of what a fold usually does — it makes it
+  larger.** That question's second half is *a fixed core is only fixed if something checks it*,
+  recorded on **DR-10**'s evidence (the downstream §5 vocabulary omits `structure_matches`, the
+  predicate the 0.3.0 fold *is*, and declares a `media_map_complete` this spec names nowhere, while
+  every document it replays declares `kcs_version: 0.3.0`, and the check meant to catch it is a
+  hardcoded count of names). §5.1 is fixed-core surface **a name check cannot see**: two runners may
+  agree on every predicate name and still return different reports, because the evidence rule those
+  names are evaluated under appears nowhere in a scenario document — §2 declares a `kcs_version` and
+  no evidence profile, and §5.1 deliberately adds no field to change that. The runner-side
+  declaration the question contemplates would therefore have to cover the vocabulary version **and**
+  the evidence rule. Recorded in §7 question 1; **not closed here**.
+  **KCS stays Candidate, and this fold closes nothing.** The single count is *fold R, then
+  re-validate*, and it is **restated and unmoved**: delta **R** — `structure_matches`'s open
+  **comparison** basis — is untouched and still **unowned**, and §5.1 fixing an **evidence** basis
+  does not supply it, since a runner given this rule tomorrow would still have to invent R's.
+  **DR-10** is still downstream work under
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and unowned. Both new sections are
+  recorded in *Pressure test* as **published, not exercised**, and §5.1 is the sharper of the two:
+  it is a rule about **divergence between two runners** and the fabric has exactly one, so a green
+  run from that runner is internally consistent by construction and cannot falsify it — the same
+  property this spec already recorded when it noted that a replay could not have found R. Rewriting
+  the emitting implementation against the folded text is the implementer's work, not koine's.
 
 - **Editorial** (2026-09-03) — Recorded the **re-validation of the 0.3.0 determinism fold**, walked
   by hand on 2026-09-03 against

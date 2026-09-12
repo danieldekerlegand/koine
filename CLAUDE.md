@@ -1244,7 +1244,7 @@ vocabulary.
   fold**. **No version and no clause moved for the walk**: §1–§6, §8, §9 and every normative clause of
   §7 byte-unchanged, no `asset` id moves, no schema twin touched; the edit is §7.1's gate paragraph, a
   changelog entry and a scenario section.
-- `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
+- `specs/conformance-scenario.md` — KCS 0.4.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
   scenarios to assert stable structure/invariants rather than exact bytes/content; §7.1 and §7.3
@@ -1276,6 +1276,74 @@ vocabulary.
   console's vocabulary from this repo. When KCS does promote it is under the **ordinary,
   conformance-gated** rule, not 0.2.0's grandfathering — that clause does not survive a demotion, and
   the artefact debt it covered was paid 2026-08-19.
+  **0.4.0 (2026-09-12, minor) adds §9, the exchange record** — the emitted-telemetry shape a
+  participant in the console role has been shipping and this format had never specified, while §5's
+  `cost_within_ceiling` / `tier_resolved` / `refused` were being asserted downstream **over frames
+  carrying it**. Gated by a **dated prior-art sweep** (`docs/reference/kcs-telemetry-prior-art.md`,
+  2026-09-12, a *first* reading — no koine spec had cited this prior art) under ADR-0006/ADR-0010:
+  the verdict splits, **correlation profiled by reference** (W3C Trace Context **Level 1**,
+  Recommendation 2021-11-23, now a ✅ row in `docs/reference/upstream-standards.md`) and the other
+  eight of eleven facts **minted**, with **OpenTelemetry resembled, not adopted** (no pin) and
+  CloudEvents dismissed with a re-open trigger. **Emission is OPTIONAL in a NORMATIVE clause** — a
+  participant that emits nothing is fully conformant (KCB §4.3g's rule on this plane), measured
+  rather than polite, since OTel's SDK makes a `DROP` sampling decision conformant — so **an absent
+  record asserts nothing** (KCB §4.5(c), §4.2b, KMI §2, KMI §7.1's reading). Two reconciliations are
+  **answered rather than inherited** from the implementation: **spend denominates its unit** (an
+  amount with no unit is *not evidence* for `cost_within_ceiling`, reading *unstated* and never
+  *within* — KCB §5's refusal-for-want-of-a-unit, MA-6), and **`status` is a CLOSED enum**
+  (`ok`/`refused`/`failed`/`unknown`, detail only beside the two negative tokens — OTel's `Status`
+  rule; free-form documented and closed consumed is delta **R**'s defect on a field). The **carrier
+  is named**: a record is an entry in §4's observation log discriminated by `kind: "exchange"`, and
+  the one carrier KCS does not own is stated as *not specified here* (KCB §4.2d's single channel,
+  §7.3g's single vocabulary) — §9 declines to be the **ninth** finding on ADR-0014's axis. It mints
+  nothing a sibling defines and disambiguates the **three axes called *tier*** (`tier` is the
+  **provenance trust tier**, never KGP §5's dialect tier and never KCB's `free`/`paid` price tier).
+  Additive at every existing surface (§2/§2.1/§3/§4/§5 unchanged by this half, no step/field/binding,
+  **no schema twin** — KCS has none for §2 either), minor because §9 is new normative surface.
+  **The other half of the same publication is §5.1, the evidence-precedence rule, and it is the half
+  that could not stay informative.** §9 fixes what a record *says*; §5.1 fixes what it is *worth*
+  when a step carries **both** an emitted record and an outcome the runner observed itself — the
+  three predicates decidable off either being `tier_resolved`, `cost_within_ceiling` and `refused`,
+  the same three already asserted downstream over frames of that shape. Left unsaid, two conformant
+  runners resolving one disagreement differently produce **different conformance reports from one
+  run**: delta **R**'s defect moved from the *comparison* axis onto the *evidence* axis. §5.1 states
+  the property it exists to guarantee **first** (two conformant runners, one run, the same verdict
+  per predicate) and then makes it true in four clauses: **(a)** a direct observation **outranks** an
+  attributed record, **always**, the reverse being forbidden — §9(a)'s own argument followed through,
+  since a droppable document is a *declaration* and never a *measurement*, and evidence a subject can
+  author by choosing what to emit is not evidence; **(b)** binding **precedes** comparison, on the
+  facts §9(b) states and **never** on timing proximity or log adjacency, because two runners binding
+  different records diverge before the ordering is reached; **(c)** four cases in a table a runner
+  implements directly; **(d)** a disagreement **fails the assertion and is reported with both
+  readings**, each named by evidence kind and, for a record, by its emitter's KINP id — the ordering
+  fixes which account a runner reports as its own finding and does not make a contradiction go away,
+  and since §4's report is **content-addressed** a silently resolved divergence is not merely
+  invisible but *reproducibly* invisible, which is exactly how R's divergence hides. **No new report
+  verdict** (a disagreement is a fail), and **(e)** fixes what a disagreement *is*: on the
+  predicate's own fact and never the record as a whole, an **absence is never a disagreement** (an
+  unstated `tier`, an absent ceiling, an un-denominated amount may not be defaulted into a
+  comparison), and two emitting parties leave a runner holding **two attributions it merges
+  nothing** from (ADR-0014 on this plane). **Minor on the nose rather than by courtesy**: §5.1
+  **changes how three existing §5 predicates evaluate** — a predicate with **neither** an observation
+  nor a bound record now **fails**, closing the reading under which a `cost_within_ceiling` passed
+  because nothing refused the `invoke`, which is the fail-open inversion KCB §4.4c and KMI §7.1 refuse
+  by name — so it is not a patch. Everything else is additive: **no predicate added, removed or
+  re-signatured**, no step/field/participant entry/binding/report verdict minted, and a 0.3.0
+  scenario runs identically against participants that emit nothing. It makes **§7 question 1 larger
+  rather than smaller**, which is the opposite of what a fold usually does: a **name** check cannot
+  see an evidence rule, so two runners may agree on every predicate name and still return different
+  reports — the rule appears nowhere in a scenario document (§2 declares a `kcs_version` and no
+  evidence profile, and §5.1 adds no field to change that), so the runner-side declaration that
+  question contemplates would have to cover the vocabulary version **and** the evidence rule.
+  **KCS stays candidate and this closes nothing**: delta **R** untouched and unowned — R is a
+  *comparison* basis and §5.1 an *evidence* basis, and supplying one supplies nothing to the other —
+  **DR-10** still downstream, and the downstream re-write against the folded text is the
+  implementer's. Both sections are recorded in *Pressure test* as **published, not exercised**, and
+  §5.1 is the sharper case: it is a rule about divergence **between two runners** and the fabric has
+  one, so a green run from that runner is internally consistent by construction and cannot falsify
+  it — the same property that made delta R unfindable by replay. What would exercise it is a leg
+  putting a record and an observation in disagreement **on purpose**, and no document in
+  `scenarios/` does.
 - `specs/fine-tuning.md` — KFT 0.8.0, **candidate** (ratified 2026-07-23 on two pressure passes:
   `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L; a **third**
   pass, `scenarios/e2e-producer-exhaust-finetune.md`, then pressure-tested a *producing application's*
