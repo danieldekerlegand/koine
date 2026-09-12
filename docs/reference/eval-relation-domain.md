@@ -14,7 +14,7 @@ about **vocabulary**, taken axis by axis *before* a row is written — the disci
 [`generative-audio-modalities.md`](generative-audio-modalities.md) used for KFT's two audio rows,
 and the reason this is a reference record rather than an [ADR](../../decisions/README.md): it
 decides what the registry admits, not how the fabric is shaped. The rows themselves land in
-`registry/relations/eval.tsv` — the file is the record that they did, and §9 lists every surface
+[`registry/relations/eval.tsv`](../../registry/relations/eval.tsv) — the file is the record that they did, and §9 lists every surface
 that moves with them.
 
 **Verdict, up front.** **ACCEPT — both relations, as a namespaced domain extension, at
@@ -239,10 +239,19 @@ as an oversight:
 
 | Surface | Change |
 |---|---|
-| `registry/relations/eval.tsv` | **New** — the fourth domain file. Two rows, the columns every relation file carries, typed at every position. |
+| [`registry/relations/eval.tsv`](../../registry/relations/eval.tsv) | **New** — the fourth domain file. Two rows, the columns every relation file carries, typed at every position. |
 | [`registry/README.md`](../../registry/README.md) | `eval:` named alongside `cine:`, `media:` and `soc:`, with the same one-line framing, so a project can tell which domains it may load. |
 | [KGP §3.2](../../specs/grounding-pack.md) | The count in its *"a position the registry does not type"* paragraph, which reads the registry's width. Value only — no clause, and **not** a version move. |
 | [`ROADMAP.md`](../../ROADMAP.md) | The row that recorded the ask now records the answer. |
 
 The count of published relation names moves from **29 to 31**, across the core file and **four**
 domain files, with none blank and no position untyped.
+
+**Landed 2026-09-12.** All four surfaces above are written, and `node scripts/check-registry.mjs`
+reports **31 relation names, unique across the core file and every domain file** — the count this
+section predicted, observed rather than asserted. The KGP edit is carried as a dated **Editorial**
+changelog entry ([`grounding-pack.md`](../../specs/grounding-pack.md) § *Changelog*): **no clause
+moves, no version moves, and no `claim` id moves**, because no published signature was edited and
+a new relation name mints no id that previously existed. The signature settled in §6 landed
+byte-for-byte — immutability binds from here, so arity, argument order, symmetry and type are
+closed for both rows, and any change to either is a **new relation name**, never an edit in place.

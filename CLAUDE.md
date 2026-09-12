@@ -838,11 +838,17 @@ vocabulary.
   `ft-run/7c3d`, and a downstream encoding pinning it needs the one-token update (**unowned**).
 - `registry/` — shared **agnostic** vocabularies only: `relations.tsv` (core, **binary** relations
   only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
-  `relations/social.tsv` (soc:), plus `entity-types.tsv`, `media-types.tsv`, and `enums/`.
+  `relations/social.tsv` (soc:) + `relations/eval.tsv` (eval: — **added 2026-09-12**, two
+  `grounding-only` rows, `eval:evaluated_by` and `eval:verdict_of`, typed `id|id` at every
+  position; the proposal, the ACCEPT verdict and the **no-score boundary** with its reconsideration
+  trigger are `docs/reference/eval-relation-domain.md`, and the landing moved **no clause, no
+  version and no claim id** — a registry addition by PR is the mechanism working), plus
+  `entity-types.tsv`, `media-types.tsv`, and `enums/`.
   A relation's signature is immutable once published (changing it changes every dependent claim
   id), so a change means a NEW relation name, never an edit in place — and since **KGP 0.6.0** the
   signature includes each argument's **type**, published in the `arg_types` column (positional,
-  parallel to `arg_roles`, all 29 relations typed at every position; `id` → §3.2 rule 3, a literal
+  parallel to `arg_roles`, every published relation typed at every position — 29 when the column
+  landed, **31** since the `eval:` domain; `id` → §3.2 rule 3, a literal
   token → that branch of rule 5). That cost is now a **standing rule** in `registry/README.md`
   § *The ordering rule for a signature-bearing column*, not a note about one column: a
   signature-bearing column lands **before wide production use** or it re-mints every claim that

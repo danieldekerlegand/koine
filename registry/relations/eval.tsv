@@ -1,0 +1,3 @@
+relation	arity	arg_roles	arg_types	symmetric	tier	domain	inverse	description
+eval:evaluated_by	2	artifact|evaluator	id|id	false	grounding-only	eval		An artifact was assessed by an evaluator — the fact that an evaluation happened, never its outcome (no score; see docs/reference/eval-relation-domain.md §7)
+eval:verdict_of	2	verdict|artifact	id|id	false	grounding-only	eval		A verdict entity is an assessment about an artifact — aboutness, not lineage (cf. derived_from, which is what crosses without it)
