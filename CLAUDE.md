@@ -610,7 +610,7 @@ vocabulary.
   paragraph, a changelog entry and a scenario section. The axis tally is now
   **five** — MA-8, V-10, BP-7, ADR-0014's marking, MA-17 — every one *a rule with a declared normative
   consequence and nothing that carries it*.
-- `specs/media-interchange.md` — KMI 0.3.7, **candidate**. Media data plane; asset envelope +
+- `specs/media-interchange.md` — KMI 0.3.8, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
@@ -781,6 +781,42 @@ vocabulary.
   on a clean walk, since one of its two counts is not KMI's to discharge. **No version and no clause
   moved for the walk**: §1–§6, §8, §9 and §7's normative text byte-unchanged, no `asset` id moves, no
   schema twin touched; the edit is §7.1's gate paragraph, a changelog entry and a scenario section.
+  **0.3.8 (2026-09-12, patch) folds MA-13 — which of two conformant policy pairs governs a serve —
+  and it is the half of count (i) that genuinely is KMI's own work.** MA-5 gave §7.1(e)'s gate an
+  operand; what the 2026-09-03 re-attack found is that the operand is not **singular**. §2 makes
+  `license`/`egress` an ordinary envelope field — **per-asserter**, unsigned, read off its own `prov`
+  — while the `asset` id binds **bytes**, so two participants holding the same bytes hold the same id
+  and may each assert a **conformant** envelope carrying a different pair; (e) bullet 2 was a MUST
+  over *"an asset's `egress`"* as though there were one, (d) sourced the travelling pair from the
+  **requester's** copy, and a holder with only the permissive one satisfied bullet 1, breached bullet
+  2 and **could not discover** the pair that would have stopped it — laundering by **divergence**
+  rather than absence, with **no misbehaviour at any hop**, which is why §2's attribution answer
+  (whose assertion a pair is) does not reach the question (which honest assertion **governs**). Three
+  edits: **§7.1(d)** names the **serving** participant's pair *as it evaluated it under (e)* as the
+  one that travels — measured, not a preference between equal sources, since the server must evaluate
+  before it serves at all while the requester may hold **no** envelope whatever; **§7.1(e)** states
+  that where a holder has more than one conformant pair for one `asset` id the **most restrictive
+  governs**, taken **per axis** (narrowest `license` class; `local-only` over `exportable`), with a
+  holder forbidden to prefer its own pair **or** the pair that permits the serve; and **(e) bullet
+  2's MUST is scoped** to the pairs a holder **holds or has received** — an obligation to act on what
+  it knows, never a duty to discover what it does not (no verb returns another participant's envelope
+  and (d) still forbids synthesizing one). The rule is **reused, not minted**: ADR-0013's
+  monotone-restrictive discipline, as ADR-0014 applies it to a federated merge and KFT §4.2 already
+  applies it across a job's inputs, on the measured asymmetry that a restriction taken in error costs
+  a **refused serve** (recoverable) while one missed is bytes across an authority boundary (nothing
+  undoes it). Deliberately **not** written: a registry of pairs, a canonical asserter, a signature, or
+  a discovery verb — each answers *whose pair is authoritative*, a different question from the one the
+  break asks — and nothing **reconciles** the two assertions, both of which stay conformant and
+  attributable to their own `prov`. **Patch and additive**: no field, enum or envelope minted, **no
+  `asset` id moves**, no clause of §2–§6 moves, **no KGP clause or enforcement point moves** (KGP
+  §7.1/§7.2 still classify and filter **records** at pack construction; these govern **bytes** at
+  `fetch` time), no schema twin touched, a holder that only ever sees one pair behaves exactly as at
+  0.3.7, **0.4.0 stays spent** on the EDL removal and **DEFER-C is unmoved**. Extent reasoned as
+  MA-13's own row in `docs/reference/federation-fold-dispositions.md`. **No count closes and none is
+  added**: count (i) becomes *re-run Steps 8–10 against text carrying **both** this fold and MA-12's*,
+  **MA-17 + MA-18 stay KCB's** work on KCB's verb, count (ii) is KCB's and unmoved (MT-1), the
+  conformance gate still fails on DR-4 and DR-8/DR-7 — so **KMI stays candidate** and is not
+  promotable, though with MA-13 folded it now has **no koine-side item of its own** outstanding.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output

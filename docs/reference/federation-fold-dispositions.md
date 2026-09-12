@@ -1,4 +1,4 @@
-# The federation fold — a disposition for each of MA-1…MA-11
+# The federation fold — a disposition for each of MA-1…MA-11 (and MA-12, MA-13)
 
 > **Status:** Current · **Updated:** 2026-09-12 · **Owner:** koine · **Informative**
 
@@ -147,6 +147,48 @@ none of KMI's: count (i) now reads *fold **MA-13**, then re-run Steps 8–10 aga
 (High, structural — the divergent-envelope case Step 9 reversed on) stands and is a separate,
 KMI-only fold whose disposition belongs with it when it lands. **A fold does not close its own gate**
 — the rule this page has applied since the first eleven.
+
+### MA-13 — the thirteenth finding, and its disposition (added 2026-09-12)
+
+**MA-13** is what the **re-attack of the fold's re-run** found, on 2026-09-03, when Steps 8–10 were
+walked a second time after the KCB counts were walked: four of those walks' seven findings sit on
+**one axis** — *an operand deliberately kept outside a content digest, carrying a declared normative
+consequence, with nothing that carries it*, the axis
+[ADR-0014](../../decisions/ADR-0014-federated-merge-merges-attributions.md) named — and §2's
+`license`/`egress` pair is outside the `asset` id by exactly that design. Step 9, which the first
+re-run flipped, **reverses**. Its disposition belongs here for the same reason MA-12's does: the
+question this page exists to answer is *forced to what extent?*, and MA-13 is a second-order finding
+of the fold **MA-5**'s row planned.
+
+| # | Severity | Disposition | Lands in | Extent — what changes, and what deliberately does not |
+|---|---|---|---|---|
+| **MA-13** | High, structural | **FOLD** (one spec) | [KMI](../../specs/media-interchange.md) **§7.1(d)** and **§7.1(e)** | Three edits. (1) **(d)** names the **serving** participant's pair, *as evaluated under (e)*, as the one that travels with a replicated copy — not the pair on the envelope the **requesting** participant already holds, which is how a permissive copy reached a holder that then served under it. (2) **(e)** states that where a holder has **more than one** conformant pair for one `asset` id the **most restrictive governs**, taken **per axis** (narrowest `license` class; `local-only` over `exportable`), and that a holder **MUST NOT** prefer its own pair or the pair that permits the serve — [ADR-0013](../../decisions/ADR-0013-autonomy-posture-boundary-clause.md)'s monotone-restrictive discipline **reused**, as ADR-0014 reuses it for a federated merge and as [KFT](../../specs/fine-tuning.md) §4.2 already takes the most restrictive `egress` across a job's inputs. (3) **(e) bullet 2's MUST is scoped** to the pairs a holder **holds or has received**. **Not written:** any new field, enum or envelope (the operand already exists — what was missing was a **ranking** over it); any obligation to **discover** another participant's pair, and no verb that would return one — (d)'s prohibition on synthesizing an envelope is undisturbed; any **reconciliation** of two assertions (both stay conformant and attributable to their own `prov`; what is decided is which governs *this serve*); any change to the fail-closed default for **absence**, which stays (e) bullet 3's; any signing or hard binding on the pair (§2 already says a deployment wanting one uses KCB §5's shape); and any KGP clause or enforcement point — KGP §7.1/§7.2 still classify and filter **records** at pack construction. **DEFER-C is unmoved.** |
+
+**What the break forces, and the line this row draws.** The break is **not** that the gate lacks an
+operand — MA-5 fixed that, and it held under re-attack. It is that the operand is **per-asserter**
+while the id is **per-bytes**, so *one asset, two conformant pairs* is a reachable state with **no
+misbehaviour at any hop**, and (e) was written as though it could not arise. What that forces is a
+**ranking**, which is the smallest thing that makes bullet 2 decidable at a holder that has both. It
+does **not** force a registry of pairs, a canonical asserter, a signature, or a discovery verb — each
+of which would answer a *different* question (whose pair is authoritative?) than the one the break
+asks (which of two honest pairs governs?), and the first three would also re-open §2's deliberate
+choice to keep the pair unsigned and outside the id.
+
+**Why the rule is reused rather than minted.** ADR-0013 decided that a posture crossing an
+organizational boundary is **monotone-restrictive** — the effective value is the intersection and the
+restriction always wins — precisely because no hub exists to arbitrate (ADR-0001), and ADR-0014
+applied the same discipline when a federated merge meets two readings of a **gate**. This is the
+third application and the asymmetry is the same one, measured on this plane: a restriction taken in
+error costs a **refused serve**, which is recoverable in the ordinary way, while a restriction missed
+is bytes across an authority boundary, which nothing undoes.
+
+**Versions, and what does not close.** The fold lands as **KMI 0.3.8** — a patch under KMI's own
+rules (no field minted, every surface additive, a holder that only ever sees one pair behaves exactly
+as at 0.3.7, and **0.4.0 stays spent** on §4.4's EDL removal). It is **KMI-only**: no KCB, KGP or
+KINP clause moves, and no schema twin is touched. It closes **no** count: a fold does not close its
+own gate, so KMI's count (i) becomes a re-run of Steps 8–10 against text carrying **both** this fold
+and MA-12's, while **MA-17** and **MA-18** stay KCB's work on KCB's verb and count (ii) stays KCB's
+either way. **KMI remains Candidate**, and would on a clean re-run.
 
 ---
 

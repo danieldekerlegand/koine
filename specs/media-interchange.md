@@ -1,6 +1,6 @@
 # Koine Media-Interchange Protocol (KMI)
 
-**Spec version:** 0.3.7
+**Spec version:** 0.3.8
 **Status:** Candidate
 **Last updated:** 2026-09-12
 **Applies to:** media authorities (producer/authority for assets + timelines), media producers of
@@ -65,6 +65,25 @@ composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline
 > two **KCB-side** findings — **MA-17** (High, carrier: §4.5(a) names the outcomes and no field to read
 > them from) and **MA-18** (Med). Count (i) takes a **fifth** shape — fold MA-13 here, MA-17 + MA-18 in
 > KCB §4.5(a), then re-run — and no version or clause moves for the walk.)*
+
+> **Status note (0.3.8):** **MA-13 is folded**, and it is the half of count (i) that genuinely is this
+> spec's own work. §7.1(d) now names the **serving** participant's evaluated pair as the one that
+> travels with a replicated copy — never the pair carried by the envelope the *requesting* participant
+> already holds — and §7.1(e) states that where a holder has **more than one** conformant
+> `license`/`egress` pair for one `asset` id the **most restrictive governs**, per axis, with a holder
+> forbidden to prefer its own; (e) bullet 2's MUST is scoped to the pairs a holder **holds or has
+> received**, leaving the fail-closed default for **absence** exactly as it was at 0.3.5.
+> [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md)'s monotone-restrictive
+> discipline **reused**, as [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)
+> reuses it for a federated merge and as [`fine-tuning.md`](fine-tuning.md) §4.2 already takes the most
+> restrictive `egress` across a job's inputs. **Patch and additive: no field, enum or envelope is
+> minted, no `asset` id moves, no clause of §2–§6 moves, no KGP clause or enforcement point moves, and
+> no schema twin is touched**; a holder that only ever sees one pair behaves exactly as at 0.3.7, and
+> **0.4.0 stays spent** on §4.4's EDL removal. **DEFER-C is unmoved.** **Count (i) does not close** — a
+> fold does not close its own gate, so it becomes a re-run of Steps 8–10 of
+> [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) against text carrying
+> **both** this fold and MA-12's — and count (ii) is **KCB's** work and unmoved, so **KMI stays
+> Candidate** whatever that re-run returns.
 
 > **Status note (0.3.3):** folds the §9.5 additive-metadata-survival pressure break. A third-party
 > OTIO round-trip may remain structurally valid while dropping `metadata.koine.asset`; KMI now
@@ -795,8 +814,12 @@ permanently. With §2's pair the gate is decidable at every holder:
 - A participant that serves a copy MUST evaluate the asset's **own** `license` and `egress` — the
   values that travelled with it under (d) — **in addition to**, never instead of, its own authority
   domain's policy. Both must permit the serve; either alone may refuse it.
-- Where an asset's `egress` is `local-only`, it MUST NOT be replicated across an authority-domain
-  boundary and no holder may serve it across one, irrespective of that holder's own policy.
+- Where an `egress` of `local-only` governs an asset, it MUST NOT be replicated across an
+  authority-domain boundary and no holder may serve it across one, irrespective of that holder's own
+  policy. This MUST binds a holder over the pairs it **holds or has received** — which of them
+  governs, where there is more than one, is fixed immediately below (**MA-13**). It is an obligation
+  to act on what a holder knows, never a duty to discover what it does not: no verb returns another
+  participant's envelope for an id, and (d) forbids synthesizing one.
 - A holder that holds bytes **without** the governing policy — a copy taken before this clause, or
   one whose envelope it never received — MUST NOT serve them onward across an authority-domain
   boundary. It MAY still serve them inside its own domain, and it MUST NOT synthesize the missing
@@ -805,6 +828,50 @@ permanently. With §2's pair the gate is decidable at every holder:
 
 This adds no new decision point and moves none: the serving participant decides, in its own domain,
 as it already did.
+
+**Two conformant pairs may disagree, and the most restrictive governs (MA-13).** The rule above
+speaks of *"an asset's `egress`"* as though an asset had exactly one, and §2 does not make it one.
+The pair is an ordinary envelope field — **per-asserter**, unsigned, read off its own `prov` — while
+the `asset` id binds **bytes**, so two participants holding the same bytes hold the same id ((a),
+working as designed) and may each assert a **conformant** envelope carrying a different pair.
+Through 0.3.7 nothing ranked them, so a holder that had only the permissive one satisfied bullet 1,
+breached bullet 2 and could not discover the pair that would have stopped it — MA-5's
+laundering hole returning through **divergence** rather than absence, with **no misbehaviour at any
+hop**. This is what §2's attribution answer does not reach: attribution says *whose* assertion a pair
+is, and the question here is which honest assertion **governs**.
+
+- Where a holder has **more than one** conformant `license` / `egress` pair for one `asset` id —
+  its own envelope's and one that travelled under (d), or two that travelled by different routes —
+  the **most restrictive** of them governs the serve. It is taken **per axis**: the narrowest
+  `license` class admitted by any of them (KGP §7.1,
+  [`../policy/license-classes.json`](../policy/license-classes.json)), and `local-only` over
+  `exportable` on `egress` (KGP §7.2).
+- A holder **MUST NOT** prefer its own pair, and MUST NOT prefer the pair that permits the serve.
+  A holder that serves under the permissive pair of a divergent set breaches this clause even where
+  every other clause it can evaluate is satisfied.
+
+This is [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md)'s
+**monotone-restrictive** discipline — the restriction always wins, with no arbitration and no trusted
+third party — **reused rather than a second convention invented**: it is the rule
+[ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) applies when a federated
+merge meets two readings of a gate, and the rule [`fine-tuning.md`](fine-tuning.md) §4.2 already
+applies when it takes the *most restrictive* `egress` across all of a job's inputs. The asymmetry is
+measured, not stylistic: a restriction taken in error costs a **refused serve**, which is recoverable
+— the requester asks in the domain that holds the restrictive envelope, or the two asserters reconcile
+out of band — while a restriction missed is bytes across an authority boundary, which no later
+correction undoes.
+
+**What this ranks, and what it deliberately leaves alone.** It ranks the pairs a holder **holds or
+has received**, and nothing more: it obliges no holder to go looking for another pair, makes none
+discoverable (no verb returns another participant's envelope for an id, and (d) forbids synthesizing
+one), and is **not a reconciliation** — both assertions remain conformant and attributable to their
+own `prov`, and what is decided is which governs **this serve**, not which is true. The fail-closed
+default for **absence** is unchanged and is bullet 3's, not this rule's: a holder with bytes and **no**
+governing policy MUST NOT serve them onward across an authority-domain boundary, MAY still serve them
+inside its own domain, and MUST NOT synthesize the missing pair to pass the gate. No field is minted,
+**no `asset` id moves**, and **no KGP clause or enforcement point moves** — KGP §7.2 still filters
+`local-only` **records** out at pack construction, while these fields govern **bytes** and are
+evaluated by the serving participant at `fetch` time (§2). **DEFER-C is unmoved.**
 
 **f. An unreachable store delays retrieval; it invalidates nothing.** Per ADR-0012, an authority
 role is not a hard dependency. A store that cannot be reached MAY delay or deny byte retrieval —
@@ -1003,6 +1070,23 @@ and **KMI stays Candidate** — as it would have on a clean walk, since one of i
 KMI's to discharge. Record: that scenario's *Re-run — Steps 8–10 walked by hand against KCB 0.5.2 /
 KMI 0.3.7 (2026-09-12)* section.
 
+**MA-13 is folded at 0.3.8, and count (i) does not close on it.** The fold is the one the second
+pass named and no more: (d) names the **serving** participant's evaluated pair as the one that
+travels, the divergence rule above states that the **most restrictive** of the pairs a holder holds
+or has received governs and that a holder MUST NOT prefer its own, and (e) bullet 2's MUST is scoped
+to what a holder can know, with the fail-closed default for **absence** left exactly where 0.3.5 put
+it. **KMI-only and additive** — no field, enum or envelope is minted, **no `asset` id moves**, no
+clause of §2–§6 moves, no KGP clause or enforcement point moves, no schema twin is touched, and
+**DEFER-C is unmoved**; the extent is reasoned as **MA-13**'s row in
+[`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md),
+beside MA-1…MA-12. **A fold does not close its own gate**, so count (i) now reads *re-run Steps 8–10
+against text carrying **both** this fold and MA-12's* — the first walk on which both of the deltas
+that reversed Step 9 and held Step 10 are in the text. **MA-17** and **MA-18** remain **KCB's** work
+on KCB's verb and no clause here waits on them. Count (ii) is restated and does not move (it is
+KCB's, and **not clean** — **MT-1**), the conformance gate is unmoved (**DR-4**, **DR-8**/**DR-7**),
+and **KMI stays Candidate** whatever that re-run returns, because one of its two counts is not KMI's
+to discharge.
+
 ---
 
 ## 8. Mapping (by role)
@@ -1107,6 +1191,59 @@ Neither closes a count, and one carries a caveat an owner must read before citin
   §7.1.
 
 ## Changelog
+
+- **0.3.8** (2026-09-12) — **MA-13 folded: which of two conformant policy pairs governs a serve
+  (patch).** 0.3.5's MA-5 fold gave §7.1(e)'s egress gate the operand it never had, and the
+  2026-09-03 re-attack of Steps 8–10 found that the operand was not **singular**: §2 makes
+  `license`/`egress` an ordinary envelope field — **per-asserter**, unsigned, read off its own `prov`
+  — while the `asset` id binds **bytes**, so two participants holding the same bytes hold the same id
+  and may each assert a **conformant** envelope carrying a different pair. (e) bullet 2 was a MUST
+  over *"an asset's `egress`"* as though there were one; (d) sourced the travelling pair from *"the
+  envelope the requesting participant already holds"*; and a holder with only the permissive copy
+  satisfied bullet 1, breached bullet 2, and **could not discover** the pair that would have stopped
+  it. MA-5's laundering hole returned through **divergence** rather than absence, with **no
+  misbehaviour at any hop** — which is why §2's attribution answer, sufficient for the *downgrade*
+  case, does not reach it: attribution says whose assertion a pair is, and the question is which
+  honest assertion **governs**.
+
+  **Three edits, each held to what the break forces.** (1) **§7.1(d)** names the **serving**
+  participant's pair, *as it evaluated it under (e)*, as the one that travels with a replicated copy —
+  measured, not a preference between equal sources: the server must evaluate before it serves at all,
+  so the value exists at the instant of the serve, whereas the requester may hold **no** envelope
+  whatever. (2) **§7.1(e)** states that where a holder has **more than one** conformant pair for one
+  `asset` id the **most restrictive governs**, taken **per axis** (narrowest `license` class;
+  `local-only` over `exportable`), and that a holder **MUST NOT** prefer its own pair or the pair that
+  permits the serve. (3) **(e) bullet 2's MUST is scoped** to the pairs a holder **holds or has
+  received** — an obligation to act on what it knows, never a duty to discover what it does not.
+
+  **The rule is reused, not invented.**
+  [ADR-0013](../decisions/ADR-0013-autonomy-posture-boundary-clause.md)'s monotone-restrictive
+  discipline — the restriction always wins, no arbitration, no trusted third party — applied here as
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) applies it to a federated
+  merge and as [`fine-tuning.md`](fine-tuning.md) §4.2 already applies it across a finetune job's
+  inputs. The asymmetry is measured: a restriction taken in error costs a **refused serve**, which is
+  recoverable; a restriction missed is bytes across an authority boundary, which nothing undoes.
+
+  **Patch, and additive at every surface.** No field, enum or envelope is minted; **no `asset` id
+  moves** (the pair is outside the id by §2's own rule and (a)'s byte hash is untouched); no clause of
+  §2, §3, §4, §5 or §6 moves; **no KGP clause or enforcement point moves** — KGP §7.1/§7.2 still
+  classify and filter **records** at pack construction, while these fields govern **bytes** at `fetch`
+  time; no schema twin is touched
+  ([`../schemas/media-timeline.schema.json`](../schemas/media-timeline.schema.json) profiles an OTIO
+  document and models neither the §2 envelope nor a `prov` record); and a holder that only ever sees
+  one pair behaves exactly as at 0.3.7. **0.4.0 stays spent** on §4.4's EDL removal (KCB §7.3c forbids
+  declaring and removing in the same publication), which is the other reason this is a patch.
+  **DEFER-C is unmoved** — MA-13 is about which policy governs a serve, not about whether any store is
+  obliged to hold. Extent reasoned as **MA-13**'s row in
+  [`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md).
+
+  **No count closes and none is added.** A fold does not close its own gate, so count (i) becomes a
+  re-run of Steps 8–10 of
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) against text carrying
+  **both** this fold and MA-12's. **MA-17** and **MA-18** stay **KCB's** work on KCB's verb. Count
+  (ii) is **KCB's** and unmoved (**MT-1**), the conformance gate still fails on **DR-4** and
+  **DR-8**/**DR-7**, and **KMI stays Candidate** — as it would on a clean re-run, since one of its two
+  counts is not KMI's to discharge.
 
 - **Editorial** (2026-09-12) — **count (i) walked by hand against the folded text, and it does not
   close.** Steps 8–10 of
