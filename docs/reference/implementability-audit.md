@@ -1,6 +1,6 @@
 # Implementability audit — what a third party receives, and what they cannot build from it
 
-> **Status:** Current · **Updated:** 2026-09-03 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-09-12 · **Owner:** koine · **Informative**
 
 **This document binds no clause.** It is a record of an audit, not a contract: every finding below
 is a statement about the *receivable artefacts*, and where a finding and a spec disagree the spec
@@ -94,6 +94,9 @@ gap. Where they explain a gap, that is noted — an explanation is not a dischar
 Nineteen findings, graded. **Blocking** = an outside implementation will diverge from an inside one
 without either side detecting it. **Gap** = the implementer is stopped or misled, but the failure is
 visible. **Fixed** = closed in this pass.
+A finding closed **after** this pass carries a dated **CLOSED** tag and a subsection of its own
+instead — the finding's own text is never rewritten, because it describes the day it was written.
+One finding is so tagged: **IMP-7** (2026-09-12, § 3.3).
 
 ### 3.1 The canonical encoding does not exist (blocking)
 
@@ -180,8 +183,8 @@ but derivable is not specified, and the IRI expansion of a namespace containing 
 segment of `https://id.<root>/<kind>/<namespace>/<local-id>` — is not stated at all. This is
 claim-identity-bearing: §3.2 rule 3 requires the canonical CURIE inside `HASH_INPUT`.
 
-**IMP-7 · gap · KINP §3.1 vs KINP §7.1, KMI §2, KFT §3/§5/§6, the schema.** Three identifier forms
-in active use fall outside §3.1's closed kind enum (`ent | claim | asset | world | agent | src`):
+**IMP-7 · gap — CLOSED 2026-09-12 · KINP §3.1 vs KINP §7.1, KMI §2, KFT §3/§5/§6, the schema.**
+Three identifier forms in active use fall outside §3.1's closed kind enum (`ent | claim | asset | world | agent | src`):
 
 - `analyzer:run/1a2b` — KINP §7.1 `prov.activity` and KMI §2 `produced_by`. No kind segment; `/` is
   not in the `<local-id>` charset. §3.4 mentions the form once in a table note.
@@ -191,6 +194,82 @@ in active use fall outside §3.1's closed kind enum (`ent | claim | asset | worl
 
 Meanwhile `src` **is** in the enum and is never used as a kind anywhere in the receivable set. An
 implementer has no stated rule for minting the activity id that every `prov` record requires.
+
+#### IMP-7 is CLOSED (2026-09-12)
+
+The finding above is left as written — it describes 2026-08-18, and this document corrects its
+*counts* but never its *findings* ([`doc-drift-corrections.md`](doc-drift-corrections.md)). What
+follows is what closed it.
+
+**What landed, and where.** [KINP **0.5.0**](../../specs/identity.md) §3.1 adds **`activity`** to the
+`<kind>` enum — seven kinds, not six — and states the run-activity spelling **normatively**:
+`<namespace>:activity:<local-id>`, expanding to `https://id.<root>/activity/<namespace>/<local-id>`,
+so a consumer MAY recognise a run **by its kind segment alone**, across participants and without
+knowing the minting namespace's local conventions. That is the property the two forms above denied:
+an implementer minting the activity id every `prov` record requires now meets a rule instead of a
+contradiction between a normative grammar and three worked examples.
+
+**The `<local-id>` charset was deliberately NOT widened, and the reason is IMP-6's.** Admitting `/`
+would make the IRI expansion non-invertible — `https://id.<root>/activity/orchestrator/ft-run/9f2a`
+no longer parses back to one `(kind, namespace, local-id)` triple and §3.2's CURIE↔IRI mapping stops
+being a function — which is the same class of defect IMP-6 records one segment to the left. A
+namespace wanting structure in a run id uses a separator the charset already admits
+(`orchestrator:activity:ft-run.9f2a`), opaque within that namespace. The rejected route — stating
+the bare `<ns>:run/<runid>` normatively and correcting §3.4 to match — is on the record in that
+spec: it makes the kind segment optional for exactly one kind, which is precisely what made the two
+spellings unmatchable.
+
+**Both spellings are reconciled wherever they were load-bearing**, which is the half a grammar fix
+alone would not have closed: KINP §3.4's `analyzer` row, §4.2's `src(…)`, §7.1's assertion envelope
+and §7.2's `produced_by` (inside 0.5.0); [KMI **0.3.6**](../../specs/media-interchange.md) §2's
+`produced_by` and §6's bridge; [KFT **0.7.1**](../../specs/fine-tuning.md) §3's `job`, §3.4's
+`resume.of_job`, §5.2's worked PROV activity and §6's telemetry event; and, in the receivable set's
+machine-readable half, `finetune-job.schema.json`'s `kinpId` description together with the fixtures
+`fixtures/finetune-job.json` and `fixtures/participant-self-description.json`. Both KMI and KFT moved
+by **patch**: value-only, no clause moves, no `asset` id moves and no `claim` id moves — all of `prov`
+is outside KGP §3.1's hashed set and `src(…)` is an annotation beside `confidence(…)`, never a
+relation argument.
+
+**Nothing conformant was invalidated, and the transition is stated rather than guessed.** §3.4's
+immutability rule binds a **prefix**, and this fold moves none; `activity` was *added* to a closed
+enum and the charset is unchanged, so nothing §3.1 admitted before stops being admitted. The two
+legacy forms were never admitted, so §3.1 states the migration outright: a resolver MAY accept
+either on **read** and MUST then return the `activity` form as the canonical id, and a minting
+participant MUST NOT emit either.
+
+**The companion observation is answered, not left standing.** `src` stays in the enum. Removing it
+would **narrow** a published closed enum while this fold widens one, and the useful fact is not the
+token but that `src`-the-kind is a **name collision** with the `src(…)` provenance annotation of
+§4.2/§7.1 rather than evidence of a use — in every example in the receivable set that annotation's
+argument is an `activity` id or an `agent` id, never a `src`. §3.1 records the re-open condition.
+
+**The independent reproduction, recorded as corroboration.** A **producer role** implementing these
+contracts had to mint a run activity for its own `prov` records and found **no spelling satisfying
+KINP §3.1 and KFT §5.2 at once** — from the outside, without being pointed at this finding. It
+reported the contradiction as a proposed koine change rather than choosing one of the two forms and
+forking the contract, the behaviour
+[ADR-0008](../../decisions/ADR-0008-fabric-producer-adapter.md) asks for. That is what raises IMP-7
+from a **reading to a measurement**. The premise stated at the top of this document — *the specs have
+only ever been implemented inside the tree that authored them* — makes every finding here an argument
+about what a competent engineer who has never seen this tree *would* hit, made by the tree's own
+authors reading their own artefacts (§2). Here one hit this finding without the argument. The
+producer is named by **role** and not by repository or product, the rule this tree holds to everywhere, and the reason
+this paragraph records a behaviour rather than a name.
+
+**What this closure does not do.** Three things, each stated because a reader could reasonably assume
+otherwise:
+
+- **The third bullet is not closed.** `cs:language:Q1860` is **IMP-8's** defect, not this one:
+  `provenance.schema.json#/$defs/csid` still carries a literal `cs:` prefix and a second segment that
+  is not a KINP kind, and that schema is untouched by this fold (it carries no activity id at all).
+- **IMP-6 is untouched**, and is if anything *cited* here: no namespace grammar, no parse rule for the
+  multi-segment world-scoped form and no IRI expansion for it. The 0.5.0 text uses that class of
+  defect as its reason not to widen the charset, which is a use of IMP-6, not a closure of it.
+- **The machine-readable twin still does not enforce §3.1's grammar.** `finetune-job.schema.json`'s
+  `kinpId` pattern is deliberately left permissive in its third group, because a KINP id may be
+  world-scoped (`worldsim:world:alderforest:ent:npc-renaud`) and tightening it to §3.1's `<local-id>`
+  charset would reject ids §3.1 admits. Enforcing the full grammar means modelling the kind enum and
+  world scoping together — **IMP-6 again**, and a KINP-side artefact this fold did not open.
 
 ### 3.4 The machine-readable twin contradicts the prose (blocking)
 
@@ -363,9 +442,15 @@ never-merge-destructively rule, §4.2's equivalence layer, §4.3's `same_as`/`ba
 §4.5's normative relation-choice rule and §6's offline-first minting are unambiguous, and an
 engineer will build them correctly from the text. What they cannot do:
 
-- **Parse or mint identifiers unambiguously** (IMP-6, IMP-7). No namespace grammar, no parse rule for
-  the multi-segment world-scoped form, no IRI expansion for it, and no form at all for the activity
-  ids every `prov` record carries.
+- **Parse or mint identifiers unambiguously** (IMP-6; **IMP-7 closed 2026-09-12**). *Minting a run
+  activity is now specified*: KINP 0.5.0 §3.1 admits kind `activity` and fixes the spelling
+  `<namespace>:activity:<local-id>` normatively, so the one identifier every `prov` record carries —
+  and which this section listed as having **no form at all** — has exactly one, recognisable by its
+  kind segment alone. **Parsing is still not**: IMP-6 stands unchanged, so there is still no namespace
+  grammar, no parse rule for the multi-segment world-scoped form and no IRI expansion for it. The two
+  halves are independent, and the half that remains is the claim-identity-bearing one — §3.2 rule 3
+  puts the canonical CURIE inside `HASH_INPUT`, so a parse disagreement still moves a `claim` id where
+  a minting disagreement never did. This subsection's verdict does not move: **partially**.
 - **Interoperate on the resolver API** (§8). The five operations are five signatures in a code fence:
   no wire binding, no request/response shapes, no error model, no pagination on
   `same_as_closure[]` or `query`, and no statement of which are required of which role. KCS §3's
@@ -432,10 +517,25 @@ move a version.
 All three are editorial or description-only: no clause, no field, no pattern and no `claim` id moves,
 and no spec version or status changes.
 
+**Since that pass — one more finding is closed, and it is not one of these three.** **IMP-7** closed
+**2026-09-12** (§ 3.3, [*IMP-7 is CLOSED*](#imp-7-is-closed-2026-09-12)) by KINP 0.5.0 §3.1 plus
+value-only corrections in KMI 0.3.6 and KFT 0.7.1 — so of the sixteen recorded as open above,
+**fifteen** stand. Unlike the three in the table, that one **did** move spec versions and normative
+text: it was scheduled and carried out by the spec owner, which is the route this document said such
+a finding must take. Nothing else in §3 is re-derived here, and no other finding's grade moves.
+
 ---
 
 ## Changelog
 
+- **2026-09-12** — **IMP-7 closed.** KINP 0.5.0 §3.1 admits kind `activity` and
+  states the run-activity spelling normatively; KMI 0.3.6 and KFT 0.7.1 carry the corrected value, as
+  do `finetune-job.schema.json` and two fixtures. The finding's text is preserved as written and a
+  dated *CLOSED* subsection records what landed, what it does **not** close (IMP-8's third bullet,
+  IMP-6, and the twin's unenforced grammar), and the outside reproduction — a **producer role** that
+  found no spelling satisfying KINP §3.1 and KFT §5.2 at once, named by role only. §4.2's *parse or
+  mint identifiers* bullet is split into the half that closed and the half that did not; §6 records
+  fifteen findings now open, not sixteen. No other finding is re-derived.
 - **2026-08-18** — Cross-referenced the [interop trial](interop-trial.md), which tested §4's answer
   by emitting a pack. No finding above changed: the trial confirms ten of them and opens nine of its
   own under its own INT-n series.
