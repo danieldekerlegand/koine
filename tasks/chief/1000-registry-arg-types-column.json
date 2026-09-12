@@ -28,8 +28,8 @@
         "`registry/README.md`'s columns table gains the row, describing what the column fixes and citing the KGP rules it feeds, alongside the existing rows for `arg_roles` (rule 1) and `symmetric` (rule 2).",
         "GATES: `node scripts/check-registry.mjs` green with the observed row counts recorded, plus `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh`."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "29 relation names typed at every position, no blank (15 core + 5 cine + 5 media + 4 soc; 27 rows id|id, cine:says and cine:reads id|string). Vocabulary widened past INT-3's id|literal to id|string|integer|decimal|boolean|datetime, justified in registry/README.md (rule 5's typed-literal trigger is a judgement, so id|literal leaves R1 vs R3 open, and arg_types is part of an immutable signature so refining it later re-mints claim ids). Guard moved with the data: RELATION_COLUMNS gains arg_types; verified it FAILS on the old header ('registry: 1 error(s) ... a relations file's columns are [relation, arity, arg_roles, arg_types, ...]') and passes after restore. GATES ALL GREEN as observed: check-registry OK, 29 relation names, rows 15/5/5/4; check-doc-integrity OK, 60 markdown files, 1618 relative links, 3 status tables match; check-doc-links --ratchet --base main '0 dead vs 0 on main'; check-schemas OK, 9 schemas, 278 positions, 80 $refs, 3 fixtures; check-tasklist-categories OK, 12 tasklists; check-roadmap-truth coverage/stale/park all OK."
     },
     {
       "id": "US-2",
