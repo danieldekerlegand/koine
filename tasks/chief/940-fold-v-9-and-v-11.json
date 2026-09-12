@@ -28,8 +28,8 @@
         "Additive and KCB-only: no verb is added, no plane or port kind is added, `payload_schema_id` stays OPTIONAL, and a card conformant at 0.5.0 stays conformant. Checked against the text.",
         "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "KCB 0.5.3: §7.1 gains NORMATIVE (a)-(e) for `payload_schema_id` + a scoped falsifiability paragraph; §2.1 pointer extended. (a) sha256 over the declaration's published bytes (a content address, KINP §3 `asset` form), no key set so step 5's rule id MUST NOT appear; (b) determinism yes, cross-provider convergence explicitly NOT claimed; (c) §4's five verbs checked one by one — `fetch` is the only carrier, because the digest already IS an `asset` address; (d) two branches, retrievable = fact, unretrievable = provider-attested with failure mode 2 declared open; (e) no provider obligation added. Sixth verb + reserved capability name refused on the record with a re-open condition. Additive: operand stays OPTIONAL, no verb/field/plane/port kind added, §7.2 table undisturbed, step 1 kept set and kcb1/kcb2 byte-unchanged so no published digest moves. GATES all green: check-doc-integrity exit 0 ('OK — every relative link resolves and all 3 status tables match their headers', 61 md files / 1782 links, capability-bus 0.5.3 candidate); check-doc-links --ratchet --base main '0 dead vs 1 on main, retired 1'; check-schemas 'OK' (9 schemas, 278 positions, 80 $refs, 3 fixtures); check-registry 'OK' (31 relation names); check-tasklist-categories 'OK — 6 tasklists categorized'; check-roadmap-truth exit 0 (coverage/stale/park all OK). Also fixed a pre-existing dead link in promotability.md:54 (930 tasklist moved to tasks/chief/completed/) which had doc-integrity red on main."
     },
     {
       "id": "US-2",
