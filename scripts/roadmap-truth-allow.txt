@@ -1,0 +1,37 @@
+# roadmap-truth-allow.txt — tasklist stems exempt from the STALE leg of
+# scripts/check-roadmap-truth.sh, each with the reason it is exempt.
+#
+# The STALE leg fails a ROADMAP.md row whose FIRST CELL reads open (⬜/🚧/…) while
+# the row cites a tasklist stem that has merged. That is the right default: a row
+# claiming work is unstarted when it shipped describes a repo that no longer exists.
+#
+# This file is the declared exception, and it is narrow. A stem belongs here only
+# when the row is DELIBERATELY BROADER than the tasklist that merged — the tasklist
+# landed in full, the row it is cited in tracks a condition the tasklist never
+# claimed to close, and the row states what remains. It is NOT a place to park a row
+# nobody has updated: the check's own message offers that route first, and it is the
+# one to take whenever it applies.
+#
+# The exemption is by STEM and therefore reaches every row citing it. Adding one is
+# a claim about all of them, so read all of them before you add it.
+#
+# Format: one stem per line. Blank lines and `#` comments ignored.
+
+# Merged 2026-09-12 as 18215d2 (recorded @ e9f6627). It landed its own scope in
+# full — the `audio-text-to-text` decision taken against koine's published trigger,
+# KFT 0.8.0, and the row in all four statements of the enum. The two rows that cite
+# it are conditions it never claimed to close and both say so in their own text:
+#
+#   "Re-ratify KFT 0.7.0" — a THREE-count re-ratification, and this tasklist added
+#   the third rather than closing any. Counts (i) FT-W and (ii) FT-X/FT-Y are folds
+#   that have never been written, and (iii) is AU-1…AU-6, widened by 0.8.0's row
+#   from two rows to three. All six deltas are unowned.
+#
+#   "Pick up KFT 0.7.0's two audio `modality` rows" — a CROSS-REPO obligation, and
+#   koine cannot close it from here (ADR-0001). AUD-4 is deferred and provider-owned,
+#   and AUD-6 is half-discharged rather than closed: the leg has no KCS encoding and
+#   no run (DR-14), so the rows are published and still unexercised.
+#
+# Both rows would read as finished if marked done, which is the failure this check
+# exists to prevent, one direction over.
+980-audio-modality-pickup
