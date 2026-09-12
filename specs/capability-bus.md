@@ -1643,7 +1643,7 @@ limit must survive the hop, and Step 6 must name a party that is actually on the
 **fourth** count on this spec's status, gating §4.2 alone; the three existing counts in the status
 note are restated and none of them moves.
 
-**Walked twice, and it does not close.** The first walk (2026-09-03) met five of those six
+**Walked three times, and it does not close.** The first walk (2026-09-03) met five of those six
 conditions and returned **BP-7** (Med-High — §4.2b's honour-or-refuse is stated at **registration**
 only, and no clause says what a producer owes a **live** adjustment on (d)'s channel) and **BP-8**
 (Med — (a) declares a `volume` change a **minor** bump *"(§7.2)"* against a table with no row for it).
@@ -1663,6 +1663,40 @@ are the whole of what this count still stood on. Record:
 [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) § *Re-run —
 Steps 1–8 walked by hand against §4.2 (2026-09-03)* and § *Re-run — Step 8 walked by hand against
 KCB 0.5.5 (2026-09-12)*.
+
+**That re-run was walked by hand the same day (2026-09-12), against 0.5.8 — the first text carrying
+both folds — and count (iv) still does NOT close.** Steps **3, 6, 7 and 8** walked, Steps **1, 2, 4
+and 5** restated unmoved on the verified ground that §4.2a, §4.2c, §4.2e and §4.2f are byte-identical
+to 0.5.7. Prose, never a replay: that encoding now predates **three** publications of this section
+(**DR-7**). **BP-7 does not reproduce** — re-attacked on the ground it was filed on, the three answers,
+the fail-closed reading of silence, the conformant-by-refusing rule and the unmoved §4.2g all hold —
+and **BP-8 does not reproduce**, **blocking BP-5 does not reproduce for a third consecutive walk**, and
+Step 8's four holds survive re-probing in the corrected form (*no live subscriber breaks*). The section
+breaks on its **perimeter**, in the class it has now returned six walks running: **BP-9** (High,
+carrier) — (b) requires an answer to *"a subscriber → producer adjustment frame (d)"*, names three
+outcome tokens and requires an echoed subscriber-minted id, and fixes **no frame name, field, key or
+envelope** for the request, the answer or the id, while (d)'s *ignore what you do not understand* rule —
+**widened at 0.5.8 to either direction** — makes an unnamed frame one every conformant participant MUST
+ignore; the criterion is **§7.3g's own**, folded at 0.5.5 to close **V-10** and quoted inside the very
+bullet this fold widened, so the MUST binds only a producer that already understood the frame, two
+conformant implementations discard each other's, and (b)'s fail-closed reading makes the failure
+**silent**. It reproduces with **one producer and one subscriber**, and (e)'s approaching-the-ceiling
+MUST has been routed at the same absent carrier since 0.4.7 — three MUSTs on this half of the channel,
+zero named frames, against §7.3g's four. And **BP-10** (Med-High, collision) — the answer is owed *"in
+exactly one of three ways"* per **frame** while (ii) and (iii) are written per **operand**, so a
+multi-operand adjustment with one meetable and one unmeetable operand has no correct answer and the
+fail-closed default does not reach it (that frame **was** answered); and `applied`'s *"operands now in
+force"* does not fix whether it enumerates the adjustment's operands or the subscription's whole
+effective set. **No model is in question**: §4.2's placement, its lossless-vs-lossy governing question
+and BP-7's own extension of the registration rule were each attacked directly and none yielded. Both
+findings are **one additive, KCB-only §4.2b/§4.2d edit** — name the two frames, their fields and the
+id's slot where §7.3g's own argument says the channel's vocabulary belongs, and settle atomicity in the
+same bullet set — and both are **unowned**. Count (iv) now reads: **fold BP-9 and BP-10, then re-run
+Steps 1–8 again**; the five other counts are restated and none moves. **No version and no clause moved
+for the walk** — every normative clause of §1–§8 byte-unchanged, §4.2a–g included, and no published
+digest moves; the edit is this paragraph, a changelog entry and a scenario section. Record:
+[`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) § *Re-run —
+Steps 1–8 walked by hand against KCB 0.5.8 (2026-09-12)*.
 
 ---
 
@@ -3199,6 +3233,33 @@ most important thing an owner citing this run must understand:
   DR-13 adds no count, removes no count, and promotes nothing — all five stand.
 
 ## Changelog
+
+- **Editorial** (2026-09-12) — **count (iv) re-run by hand against 0.5.8 and it does NOT close; no
+  version and no clause moves.** The first text carrying both of that count's folds — BP-8's
+  (0.5.4/0.5.5) and BP-7's (0.5.8) — walked as one pass rather than two, which is what the gate
+  paragraph asked for. Steps **3, 6, 7 and 8** walked; Steps **1, 2, 4 and 5** restated unmoved on the
+  verified ground that §4.2a, §4.2c, §4.2e and §4.2f are byte-identical to 0.5.7. Prose, never a replay
+  (**DR-7**: `kcs:subscription-firehose` is green and now predates **three** publications of the
+  section it gates). **BP-7 does not reproduce**, **BP-8 does not reproduce**, **blocking BP-5 does not
+  reproduce for a third consecutive walk**, and Step 8's four holds survive re-probing in the corrected
+  *no live subscriber breaks* form. Two new **perimeter** findings, both on the fold published hours
+  earlier: **BP-9** (High, carrier — three named outcome tokens and an echoed id, and **no frame name,
+  field, key or envelope** for the request, the answer or the id, on a channel whose §7.3g rule makes an
+  unnamed frame one every conformant participant MUST ignore, now in **both** directions after this
+  fold's own widening; it reproduces with one producer and one subscriber, and §4.2e's
+  approaching-the-ceiling MUST has been routed at the same absent carrier since 0.4.7) and **BP-10**
+  (Med-High, collision — the answer is per-**frame** and (ii)/(iii) are written per-**operand**, so a
+  multi-operand adjustment has no correct answer and the fail-closed default does not reach an answered
+  frame; and `applied`'s *"operands now in force"* does not fix which set it enumerates). Both are **one
+  additive, KCB-only §4.2b/§4.2d edit** and **unowned**; count (iv) now reads *fold BP-9 and BP-10, then
+  re-run Steps 1–8 again*, and the five other counts are restated unmoved. **BP-9 is the eighth finding
+  in this repo on ADR-0014's axis** (after MA-8, V-10, BP-7, the marking, MA-17, MA-20 and MT-2) and
+  this is the **sixth consecutive** walk here to break on a fold's perimeter rather than its model.
+  Every normative clause of §1–§8 is byte-unchanged, §4.2a–g included, and no published digest moves;
+  the edit is §4.2's gate paragraph, this entry and
+  [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) § *Re-run —
+  Steps 1–8 walked by hand against KCB 0.5.8 (2026-09-12)*. **KCB is not promoted and is not
+  promotable.**
 
 - **0.5.8** (2026-09-12, patch) — **BP-7 folded: a producer owes a live adjustment an answer, and
   silence is not one of them.** §4.2b's honour-or-refuse rule was stated **at registration** only,

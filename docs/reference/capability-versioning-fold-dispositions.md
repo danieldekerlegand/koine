@@ -1,4 +1,4 @@
-# The capability-versioning fold — a disposition for each of V-1…V-8 (and V-9, V-11; V-10 with BP-8 and AP-9; and MT-1)
+# The capability-versioning fold — a disposition for each of V-1…V-8 (and V-9, V-11; V-10 with BP-8 and AP-9; MT-1; and BP-7)
 
 > **Status:** Current · **Updated:** 2026-09-12 · **Owner:** koine · **Informative**
 
@@ -530,6 +530,86 @@ condition, and no response names the resolved major). Both are additive and KCB-
 **unowned**. MT-2 is the **seventh** finding on the axis
 [ADR-0014](../../decisions/ADR-0014-federated-merge-merges-attributions.md) named, and that walk is
 the **fifth consecutive** one in this repo to break on a fold's perimeter rather than its model.
+
+---
+
+### BP-7 — a lever with no obligation behind it (added 2026-09-12)
+
+**Why it is on this page.** BP-7 is not this break-test's finding. It is
+[`../../scenarios/kcb-subscription-firehose.md`](../../scenarios/kcb-subscription-firehose.md)'s —
+**count (iv)**, returned by that count's 2026-09-03 walk alongside **BP-8**. It is dispositioned here
+for the reason BP-8, AP-9 and MT-1 are: the sibling half of the pair is already reasoned on this page
+(*"count (iv) is held open by BP-7, which no part of this fold touched"*), and a third page carrying one
+§4.2 delta would scatter a count whose reasoning a reader is already following here. The fold itself
+lands nowhere near §7 — it is **KCB §4.2b and §4.2d**, in that section's own idiom — and this page
+decides only its **extent**.
+
+**The finding, in the terms this page uses.** §4.2b gave `subscribe` four flow-control operands and one
+enforcement rule: *"a producer that cannot honour a declared limit MUST refuse the subscription **at
+registration**, with a stated reason, rather than accept it and exceed it."* §4.2b's own preamble then
+makes those operands *"set at registration **and adjustable in-band** (d)"*, and §4.2d calls its
+subscriber → producer direction *"the lever Step 3 of the leg went looking for and did not find."* So the
+section minted a lever, governed the moment before it exists, and said nothing about the moment it is
+pulled.
+
+**What kind of defect it is, which decides the extent.** It is not a missing mechanism. The channel
+exists, the operands exist, the adjustment is expressible, and the placement — between the two peers, on
+the binding's own axis — is the blocking finding (**BP-5**) this leg was built to force and is not in
+question. It is a rule **scoped to one moment of a binding's life and silently absent at the other**:
+the failure class the multi-authority leg names at MA-8 and the `fetch` leg at §4.5(b), and the reason it
+bites here is that the moment it is absent from is the one the leg's Step 3 occupies. A subscriber does
+not learn it is 13× behind at registration; it learns ninety seconds in, which is when a merge queue
+tells you and not when a card does.
+
+**And the answer was already written one paragraph away**, which is what bounds the fold more than any
+other fact about it. §4.2c governs the *other* in-band operand and gets exactly this right — *"A producer
+MUST answer a `resume` in exactly one of three ways, and **silence is not one of them**"* — so the fold
+is **the section's own discipline extended over its own operands**, not a new convention, and the extent
+question reduces to *how far past the answer may it go*.
+
+| # | Severity | Disposition | Lands in | Extent — what changes, and what deliberately does not |
+|---|---|---|---|---|
+| **BP-7** | Med-High | **FOLD (minimal)** | KCB **§4.2b** (four bullets) + **§4.2d** (three amendments), 0.5.8 | A producer receiving a subscriber → producer adjustment frame MUST answer it in exactly one of three ways and **silence is not one of them**: `applied` (naming the operands now in force), `cannot-honour` (naming, per operand, the value it *can* meet — `gap-unavailable`'s shape reused) or `unsupported`. A producer that cannot honour a live adjustment is **conformant by refusing**; one that takes the frame and keeps delivering under the old envelope is **not**. Four consequences are stated rather than left to be derived, three of them findings this repo has already paid for: the answer **echoes the adjustment's subscriber-minted id** (**MA-17**'s carrier failure, not repeated — and the id orders nothing and is not a cursor); an **unanswered adjustment reads *not in force***, fail-closed on the **reading** side as §4.5(c) reads an absent `fetch` outcome as *pending*; the three named answers are what make the **outcome** assertable, closing §4.2d's own argument for preferring a frame over transport flow control; and the answer fixes a **shape, never a latency**. **Not written:** any rate, deadline, drain time, ramp, schedule, retry curve or liability; any obligation to *accept* an adjustment; any change to the lossless-vs-lossy rule or to *a retraction is never shed*; any second signalling mechanism, verb, plane, port kind, grant or authority role; any obligation on a subscriber that never adjusts; and any change to §7.1 step 1's key sets, so **no published `schema_id` or digest moves**. |
+
+**The one thing this fold must not become, and how it is held off.** A rule about what a producer owes a
+request to go slower is one sentence away from a **quality-of-service contract**, which is the thing
+§4.2g exists to refuse: *"KCB fixes the shape of the volume declaration, the subscription operands, and
+the control frames … scheduling, queue discipline, buffer sizing, admission policy and the retry curve
+behind a refused `fetch` live in each participant's own infra."* Three properties keep the fold on the
+right side of that line, and they are properties of the clause rather than assurances about it:
+
+1. **What is obliged is an answer, never a behaviour.** `applied` states which operands are in force. It
+   commits to no time by which deliveries already in flight drain, no ramp and no schedule, and §4.2b
+   says so in terms. A producer that answers `applied` and is still delivering the previous window's
+   backlog is conformant.
+2. **Refusal is always available and is fully conformant.** `cannot-honour` and `unsupported` are
+   first-class outcomes, not failure states, which is the same shape §4.2c gives `resume-unsupported` and
+   the same shape every gate on this bus has: the obligation is to be **legible**, never to be **fast**.
+3. **§4.2g is byte-unchanged and re-affirmed in the fold's own text**, rather than merely left alone.
+   That is the difference between a boundary that holds and one that is assumed to.
+
+The counter-proposal the fold declines is worth recording because it is the obvious one: require the
+producer to state *when* the new envelope takes effect. It would make the answer far more useful to a
+saturated subscriber — and it is a **latency commitment**, which §4.2g forbids and which no participant
+can make without the scheduling facts KCB deliberately does not model. The subscriber's recourse for a
+producer that answers `applied` and does not slow down is the recourse it always had, now with a stated
+term it can assert against: the answer is a frame, so **KCS §5 can range over it**.
+
+**Versions, and what does not close.** The fold lands as **KCB 0.5.8** (2026-09-12), **patch**, on
+§7.3b's axis — named rather than assumed, because §7.2's table governs *a published capability's* bumps
+and decides nothing about KCB's own spec version; the table is consulted for the two questions it does
+answer and both are **No**. **0.6.0 stays spoken for** by §2.3's legacy-extension-URI-root removal,
+checked rather than tripped. **Count (iv) does not close**, and the re-run walked the same day says why:
+**BP-7 does not reproduce** — the rule holds under direct attack at every clause — and the count breaks
+on the fold's **perimeter**, in the class this repo has now returned six walks running. **BP-9** (High,
+carrier): the three answers, the request they answer and the id that correlates them have **no frame
+name, field, key or envelope**, on a channel whose own §7.3g rule — widened by this very fold to run in
+both directions — makes an unnamed frame one every conformant participant MUST ignore; it is **MA-17**'s
+defect one plane over, and §4.2e's approaching-the-ceiling MUST has been routed at the same absent
+carrier since 0.4.7. **BP-10** (Med-High, collision): the answer is owed per **frame** while two of the
+three ways are written per **operand**, and `applied` does not fix which set it enumerates. Both are one
+additive, KCB-only §4.2b/§4.2d edit; both are **unowned**. BP-9 is the **eighth** finding on the axis
+[ADR-0014](../../decisions/ADR-0014-federated-merge-merges-attributions.md) named in advance.
 
 ---
 
