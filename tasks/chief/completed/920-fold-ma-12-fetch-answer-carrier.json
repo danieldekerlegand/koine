@@ -60,5 +60,13 @@
       "passes": true,
       "notes": "Steps 8-10 re-run BY HAND against KMI 0.3.7 / KCB 0.5.2 (prose, not a replay — DR-8: kcs:multi-authority returned green over six blocking deltas and now predates three folds). Verdicts: Step 8 HOLDS (third confirmation — the digest axis put to §7.1(a) again; (a)/(c)/(d) byte-unchanged), Step 9 DOES NOT FLIP (MA-13 stands, unfolded — §7.1(d)(e) verbatim; §4.5 correctly gives it no route to the missing operand), Step 10 DOES NOT FLIP. MA-12 DOES NOT reproduce — §4.5(a)-(e) attacked clause by clause, none yielded, §7.1(f)'s conclusion rule preserved word for word — but two NEW deltas: MA-17 (High, carrier — §4.5(a) forbids inferring an outcome and then fixes no field/key/header for it, on the one verb §4 types by no protocol, §4.1 audits as 'not an MCP call at all' and §4.5 says is not typed by a port; the private status string §7.1(f) forbids returns AS THE SLOT, and (c)'s absence-reads-pending makes the failure silent; reproduces with one store and one authority) and MA-18 (Med, mis-route — (a)'s SHOULD routes a fetch refusal's why to §4.3h, whose MUSTs name §4.3 and a posture class, both excluded for fetch by §4.3a/§4.3f). One additive KCB-only §4.5(a) edit for both, unowned. NEITHER count closes: KMI count (i) takes a fifth shape (fold MA-13 + MA-17 + MA-18, then re-run), KCB count (vi) reads fold MA-17 + MA-18. Recorded honestly as not-clean. KMI stays Candidate either way and promotability.md says so: count (ii) is KCB's work (MT-1) and the conformance gate fails on DR-4 and DR-8/DR-7 — no result of Steps 8-10 could have promoted it. promotability.md updated: KMI row, KCB row (five counts -> six), register seven -> eight things + item (8), ranking rows 5/6, section 5 prose, and a dated ownership note correcting the 'unowned' column (queued tasklists 940/950/960/970 name items 2-5; MA-13 is queued as 930). No version and no clause moved — proven by section slice: KCB §1-§3, §5-§8 and Pressure test 'same', KMI §1-§6, §8, §9 and Pressure test 'same'; the only removed lines in either spec are two status-note lines I replaced. GATES green: chief verify exit 0 RECORDED (tree b72e8c14); by hand doc-integrity OK (61 files, 1741 links, all 3 status tables match), doc-links 0 dead vs 0 on main, schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures — none touched), registry OK (31 relation names), tasklist-categories OK (8 categorized), roadmap-truth OK (coverage 54, stale 44, park clean)."
     }
-  ]
+  ],
+  "mergedToMain": "43498da",
+  "gates": {
+    "local": {
+      "state": "passed",
+      "detail": "the project verify hook (verify.sh) ran and exited 0"
+    },
+    "ci": []
+  }
 }
