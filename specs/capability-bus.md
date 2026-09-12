@@ -956,6 +956,19 @@ deployment needs more than one, they **peer** (§3.1).
   a deployment that computes no paths gains no obligation; a **single-registry** deployment is
   conformant unchanged; and a consumer MUST ignore fields it does not understand (§7.2), so a
   consumer that reads no leg version is unaffected.
+
+  **Re-ratification — this adds no count, and the re-run has been walked (2026-09-12).** MT-1 is a
+  delta of count **(i)**, so this bullet and §4.4c's cross-check re-enter validation there rather
+  than opening a seventh count. That re-run has now been done — by hand, against the prose, at 0.5.7
+  / KMI 0.3.8, the first text carrying both halves:
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) § *Re-run — Steps 1,
+  3, 4 and 8 walked by hand against KCB 0.5.7 / KMI 0.3.8*. **MT-1 does not reproduce** and F/J/K/G/L
+  hold for a second consecutive walk, but the count does **not** close: it breaks on **MT-2** (High,
+  carrier) — this bullet's *"it mints no field"* is true of a **leg** and false of a **path**, since
+  §3's *Query* bullet types `find` by four operand kinds returning *"matching manifests, ranked"* and
+  no clause of §3, §4 or §7 types a path **request** or a path **result** at all, while §4.4c then
+  types `planned_leg` *"as §3 returned it"* against that absence. The fold is MA-8's shape applied to
+  the path result, additive and KCB-only, and **unowned**.
 - **Route-by-lookup, not proxy ([ADR-0001](../decisions/ADR-0001-control-plane-topology.md)).**
   The registry returns *addresses*; peers then connect **directly** over MCP/A2A — no
   inter-service traffic flows through it. An optional **aggregator facade** MAY present a unified
@@ -1897,6 +1910,22 @@ lives and where the walk found it. The clause above is the enforcement half of t
 half landed at 0.5.6), so it re-enters validation on count (i) rather than opening a seventh: that
 re-run against the folded text is what exercises it, and a fold does not close its own gate. The other
 five counts are restated and none of them moves.
+
+**And that re-run has been walked (2026-09-12), and count (i) does not close.** Steps 1, 3, 4 and 8
+were re-run by hand against 0.5.7 / KMI 0.3.8 — the first text carrying both halves of the fold —
+and recorded at that scenario's § *Re-run — Steps 1, 3, 4 and 8 walked by hand against KCB 0.5.7 /
+KMI 0.3.8*. **MT-1 does not reproduce**: §3's plan says what it planned over, the refusal above
+names both majors, the major-only comparison holds under probe, no default is minted, a leg naming
+another capability is refused rather than discarded, and the grant rule is untouched and correctly
+named a different party. The count breaks instead on the clause's **perimeter**: **MT-2** (High,
+carrier — the path result `planned_leg` is typed against has no shape anywhere in §3, §4 or §7) and
+**MT-3** (Med-High, scope — the cross-check binds the party that cannot detect the condition, since
+`planned_leg` is optional by design while a provider resolving at (c)(2) **selects among published
+majors** and says nothing, and **no response names the resolved major**, so the disagreement is
+undetectable after the fact as well as before it; the contrast is §4.5, which named `fetch`'s
+outcomes for exactly this reason). Count (i) now reads *fold **MT-2** (§3) and **MT-3** (§4.4c),
+then re-run Steps 1, 3, 4 and 8 again*; both are additive and KCB-only, both are **unowned**, and
+the other five counts are restated and none moves.
 
 ### 4.5 The `fetch` response — an absence that answers (0.5.2)
 
@@ -2940,6 +2969,44 @@ byte-unchanged, §7.3g's four rows and §7.2's table included, and no published 
 is three scenario sections, three gate paragraphs and a changelog entry. **KCB is not promoted and is
 not promotable.**
 
+**2026-09-12 (third entry this day) — count (i) was re-run against 0.5.7, and it does not close.**
+The MT-1 fold landed in the house form for a fold with a carrier half and an enforcement half — two
+patches in one publication cycle, **0.5.6** (§3's path leg names the `(name, version)` it was matched
+over) and **0.5.7** (§4.4c refuses a resolved major that differs from a presented plan leg) — and
+Steps **1, 3, 4** and **8** of
+[`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) were then walked by hand
+against 0.5.7 / KMI 0.3.8, the first text carrying both halves. Against the **prose**: the encoding
+now predates **eight** publications of the spec it gates (**DR-7**), is the same encoding
+`kcs:kmi-otio-roundtrip` re-titles over one fixture (**DR-4**), and answered Steps 3 and 4's provider
+half from a `standin` (**DR-1**). **MT-1 does not reproduce**, re-attacked on the ground it was filed
+on: the plan says what it planned over, the refusal names both majors, the comparison is bounded on
+the major so an ordinary compatible upgrade is not refused, the operand cannot be used to select
+(probed), and the grant rule is byte-unchanged and names a different party. **F, G, J, K and L hold
+for a second consecutive walk**, and K is stronger by construction — the projected cost is now read
+from the same entries the legs are named from, so delta K and delta F compose rather than merely
+coexist. Two new **perimeter** deltas, both landing on the fold published hours earlier: **MT-2**
+(High, carrier) — §3's *"it mints no field"* is true of a **leg** and false of a **path**, because
+§3's *Query* bullet types `find` by four operand kinds returning *"matching manifests, ranked"*, §4's
+verb table types `discover` the same way, neither takes a (start port, goal port) pair or returns a
+path, and §4.4c nonetheless types `planned_leg` *"as §3 returned it"* — so a provider must compare a
+value whose shape is fixed nowhere, and an unparseable plan is an absent plan, which is MT-1's own
+silence returning through the shape; it reproduces with **one registry and one provider**, and the
+contrast is MA-8, §4.5 and ADR-0014's marking, all of which minted a carrier for exactly this reason.
+**MT-3** (Med-High, scope) — `planned_leg` is OPTIONAL by design (§4.4e), so the refusal binds the one
+party that **cannot know a selection happened**, while a provider resolving at (c)(2) *does* select
+among published majors where (c)(3) forbids exactly that, and **no response names the resolved
+major** (KMI's `produced_by` names the run activity, not the capability version), so the disagreement
+is undetectable after the fact as well as before it. Count (i) now reads *fold MT-2 and MT-3, then
+re-run Steps 1, 3, 4 and 8 again*; both additive, both KCB-only, both **unowned**, and the other five
+counts are restated and none moves. **MT-2 is the seventh finding on the axis** ADR-0014 named (after
+MA-8, V-10, BP-7, the marking, MA-17 and MA-20) and this is the **fifth consecutive** walk in this
+repo to break on a fold's perimeter rather than its model. **No version and no clause moved for the
+walk** — every normative clause of §1–§8 is byte-unchanged, §3's MT-1 bullet and §4.4c's cross-check
+included, and no published digest moves; the edit is two gate paragraphs, this paragraph, a changelog
+entry and a scenario section. Count (i) is also **KMI's second promotion condition**, so a clean walk
+here would have been worth more than one spec's count — it closes only KCB count (i) either way, and
+**KCB is not promoted and is not promotable**.
+
 **Downstream evidence (2026-08-24) — and this spec is where reading it wrong costs the most.** The
 KCS encodings of three of the five gating scenarios were run over real MCP/A2A links and all three
 came back `green` (`kcs:media-transform`, `kcs:live-schema-mutation`, `kcs:multi-authority`; recorded
@@ -2986,6 +3053,28 @@ most important thing an owner citing this run must understand:
 
 ## Changelog
 
+- **Editorial** (2026-09-12, fourth entry this day) — **count (i) was re-run against 0.5.7, and it
+  does not close.** Steps 1, 3, 4 and 8 of
+  [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) walked by hand against
+  0.5.7 / KMI 0.3.8, the first text carrying both halves of the MT-1 fold. Against the prose, never a
+  replay: that encoding now predates **eight** publications of this spec (**DR-7**), is the one
+  `kcs:kmi-otio-roundtrip` re-titles (**DR-4**), and answered the provider half of Steps 3 and 4 from
+  a `standin` (**DR-1**). **MT-1 does not reproduce** — the plan says what it planned over, the
+  refusal names both majors, the major-only comparison holds, the operand cannot select, and the
+  grant rule is untouched and names a different party — and **F, G, J, K and L hold for a second
+  consecutive walk**, with K stronger by construction. Two new perimeter deltas on the fold published
+  hours earlier: **MT-2** (High, carrier) — *"it mints no field"* is true of a **leg** and false of a
+  **path**; no clause of §3, §4 or §7 types a path **request** or **result**, and §4.4c types
+  `planned_leg` *"as §3 returned it"* against that absence, so an unparseable plan is an absent plan;
+  reproduces with one registry and one provider. **MT-3** (Med-High, scope) — the cross-check binds
+  the party that cannot detect the condition, since a provider resolving at (c)(2) selects among
+  published majors where (c)(3) forbids exactly that, and **no response names the resolved major**.
+  Count (i) now reads *fold MT-2 and MT-3, then re-run Steps 1, 3, 4 and 8 again*; both additive,
+  both KCB-only, both **unowned**; the other five counts restated and none moves. MT-2 is the
+  **seventh** finding on ADR-0014's axis and this is the **fifth consecutive** walk to break on a
+  fold's perimeter rather than its model. **No version and no clause moved** — §1–§8 byte-unchanged,
+  no published digest moves; the edit is §3's and §4.4's gate paragraphs, a *Pressure test*
+  paragraph, this entry and a scenario section.
 - **Editorial** (2026-09-12, third entry this day) — **counts (ii), (iv) and (v) were each re-run
   against 0.5.5, and none of the three closes.** One edit, three pressure legs, **three separate
   verdicts** — one per count, against the section that count gates, because a combined verdict would

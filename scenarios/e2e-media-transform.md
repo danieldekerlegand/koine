@@ -370,6 +370,244 @@ the edit is this section, a gate paragraph in
 
 ---
 
+## Re-run — Steps 1, 3, 4 and 8 walked by hand against KCB 0.5.7 / KMI 0.3.8 (2026-09-12)
+
+**What this is.** The re-run count **(i)** took after the 2026-09-03 walk found **MT-1**: *fold MT-1
+(additive; KCB §3 + §4.4), then re-run Steps 1, 3, 4 and 8 again*. That fold has landed, in the
+house form for a fold with a carrier half and an enforcement half — two patches in one publication
+cycle, **KCB 0.5.6** (§3's path leg names the `(name, version)` it was matched over) and **KCB
+0.5.7** (§4.4c refuses a resolved major that differs from a presented plan leg). This section is the
+re-run against that text. A fold does not close its own gate, so the question here is not *was MT-1
+folded* but *does MT-1 reproduce, and does anything else break on the way through*.
+
+**Method, and why it is not a replay.** By hand, against the **prose**, at KCB **0.5.7** and KMI
+**0.3.8** — the first text carrying both halves. `kcs:media-transform` ran `green` / `partial-live`
+on 2026-08-24 and is recorded below; it is **not** the verdict here, for three separate reasons.
+**DR-7**: an encoding deliberately does not assert an unfolded delta, and this one was written
+before §2.4, §4.4 and §7.3g existed, let alone §3's MT-1 bullet — it now predates **eight**
+publications of the spec it gates. **DR-4**: `kcs:kmi-otio-roundtrip` is this same scenario
+re-titled over the same fixture, so the downstream set carries one encoding of it and not two.
+**DR-1**: the provider half of Steps 3 and 4 answered from a `standin` recording and was never live.
+An exit code is not a verdict here.
+
+**Which steps, and why these.** Steps **1, 3, 4** and **8** are the KCB legs — deltas **F**
+(cross-plane ports), **K** (capability `cost` + spend ceiling), **G** (`fetch` verb + grant), **J**
+(`world_pattern`) and **L** (dangling-reference tolerance) — and Step **1** is where MT-1 was found
+and where both halves of its fold land. Steps **2, 5, 6, 7** are KMI legs, re-validated clean at KMI
+0.3.0 in *Re-validation — KMI 0.3.0* above and unmoved since: MA-5 (0.3.5) added optional
+`license`/`egress` to the §2 envelope, MA-13's fold (0.3.8) states which of two conformant pairs
+governs a serve, and MA-12's KMI half (0.3.7) names KCB §4.5 as §7.1(f)'s carrier — none of the
+three moves a clause those four steps read (`source_world` still rides the envelope per-asset;
+lineage is still a graph over assets outside the timeline). The OTIO re-validation stands unamended.
+
+### Per-step verdicts
+
+| Step | Delta under test | Verdict |
+|---|---|---|
+| **1** — Discovery & path planning | F, J, K, **MT-1** | 🟡 **MT-1 does not reproduce; F/J/K hold; breaks on the fold's own perimeter** → **MT-2**, **MT-3** |
+| **3** — Cross-participant `invoke` | K | ✅ **holds** *(regression)* — and 0.5.6/0.5.7 are confirmed additive by execution |
+| **4** — Fetch the master bytes | G, L | ✅ **holds** *(regression)* |
+| **8** — Discover-by-world | J | ✅ **holds** *(regression)* — and is deliberately outside the new clause |
+| 2, 5, 6, 7 | H, I, and the OTIO layer | — *not reached by §3/§4.4; re-validated at KMI 0.3.0 and unmoved by MA-5, MA-12 or MA-13* |
+
+### Step 1 — Discovery & path planning 🟡 *MT-1 does not reproduce; the clause breaks on its perimeter*
+
+**MT-1 does not reproduce, and it was re-attacked on the ground it was filed on.** MT-1 was filed as
+*two sections of KCB disagreeing with nothing on the wire carrying the disagreement*: §3 built a plan
+over the highest satisfying version and said nowhere which, and §4.4c(2) resolved a version-free
+`invoke` to the granted major, so `analyzer` — planning over `compose 2.0.0`, holding a grant issued
+at major 1 — was served **`1.4.0`** with no gate breached and no signal at either end. Walked again
+at 0.5.7 with the same cast and the same two published majors:
+
+- §3's plan now **says what it planned over**. The returned leg names `(compose, 2.0.0)` — the exact
+  version of the entry whose ports satisfied the leg, *"never a range, never the name alone, and
+  never a version the registry did not match"* — and the projected cost is *"the cost of exactly the
+  legs as named"*. The half of MT-1 that made the disagreement **unsayable** is gone, and it is gone
+  without a ranking change: the leg named is the one *Ranking across versions* already selected.
+- §4.4c now **catches the disagreement**. `analyzer` presents `planned_leg = (compose, 2.0.0)`, the
+  order resolves at (2) to major **1**, the majors differ, and the provider MUST refuse **plan
+  mismatch** *"naming the major it resolved **and** the major the caller planned over"*. The silent
+  serve is a named refusal, and the refusal names the right condition — the caller learns it planned
+  against a contract it is not authorized to run, which is a fact about its grant and its plan
+  together and which neither §5's gate nor §4.4c's first rule could have told it.
+- **Nothing was minted to do it, and the boundaries hold under direct attack.** The comparison is on
+  the major alone, so `1.4.0` against major 1 is not a mismatch and an ordinary compatible upgrade is
+  not turned into a refusal (probed). The check is applied **after** the resolution order and never
+  inside it — *"MUST NOT treat it as a fifth case … MUST NOT let it stand in for a missing `version`
+  operand at (c)(3)"* — so no default is minted and *highest published* appears nowhere (probed by
+  trying to use `planned_leg` as a selector: the clause forbids it in terms). A leg naming another
+  capability is refused rather than ignored, which is the one place §7.2's ignore-unknown-**fields**
+  rule could have been over-read into discarding an understood field with a disagreeing value. And
+  the grant rule is byte-unchanged and named a different party — the disagreement caught is with
+  §3's plan, and where the resolution read the grant the grant was correct.
+- **F, J and K hold, and K is now stronger by construction.** F's cross-plane mood→score leg still
+  matches off the card extension (§2.1's plane-typed port table, §3's *Composition*); J's
+  `world_pattern` still rides a media port and is still matched by §3's *Query*; K's cost-aware path
+  search is unchanged and the new bullet **binds the quote to the leg** — the projected cost is read
+  *from the same entries* the legs were named from, so a caller gating spend on the plan is gating
+  against the same `(name, version)` it planned over. That is delta K and delta F composing rather
+  than merely coexisting, and it is the first time this scenario has been able to say so.
+
+**🔴 BROKE (MT-2, High — carrier). A path result has no shape, and `planned_leg` is typed against
+it.** §3's new bullet is NORMATIVE about what a leg **names** and states, as the reason it costs
+nothing, that *"it mints no field"*. Put beside the request that produces it, that claim does not
+hold:
+
+- §3's *Query* bullet types the registry's one query as `find(port | plane | world | capability)` →
+  **"matching manifests, ranked"**. §4's verb table types `discover` as *"registry query (§3) — find
+  providers by capability / interchange type / world"*. Neither takes a **(start port, goal port)**
+  pair, and neither returns a **path**. The *Composition* bullet asserts the registry computes one
+  and the MT-1 bullet opens *"Where a `find` returns a path"* — but no clause of §3, §4 or §7 says
+  how a path is **asked for** or what a path **is** on the wire: no legs array, no ordering, no
+  field a leg's `name` and `version` are read from, no place the projected cost sits.
+- §4.4c then types its operand **against that absence**: `planned_leg` is *"the `(name, version)`
+  §3 named for the leg this call executes, **carried as §3 returned it**"*. A provider is required
+  to compare a value whose shape is fixed nowhere, and a caller is required to carry it forward
+  unchanged from a result that has no form. Two conformant registries return a plan in two shapes
+  and neither caller's `planned_leg` is readable by the other's provider.
+- The contrast is **inside this spec, and recent**. MA-8 minted `served_by`, `observed_at` and
+  `incomplete[]` precisely because §3.1 asserted three clauses with no carrier in the `find`
+  response; §4.5 (0.5.2) named `fetch`'s four outcomes in the table that types the verb on the
+  stated ground that *"where every other structured response on this bus is typed somewhere"*; and
+  ADR-0014's marking got its carrier at 0.5.1 for the same reason. The registry's **path** result is
+  now the structured response that is typed nowhere, and the fold that most needed it to be typed is
+  the one that declined to.
+- **Why High.** It is the carrier for the fold's own operand, so the enforcement half is inoperable
+  across an authority boundary exactly where MT-1 bites — and it reproduces with **one registry, one
+  provider and no federation**, which is where ADR-0014's carrier gap and MA-17's reproduced too.
+  It fails **silently** in the direction that matters: a `planned_leg` a provider cannot parse is a
+  `planned_leg` that is absent, and *"Absent, nothing changes"* makes an unreadable plan and an
+  unpresented one the same plan — which is MT-1's own silence returning through the shape rather
+  than through the clause.
+- **The fold is additive and one spec.** Give §3 the path request and result the *Composition*
+  bullet has always assumed — a start port and a goal port as a `find` form, and a result that is an
+  ordered list of legs, each naming `name`, `version` and the address it resolves to, with the
+  projected cost at the result level — in MA-8's shape and with MA-8's discipline (a carrier for
+  clauses already normative, emitted only where a deployment computes paths, ignorable by a consumer
+  that does not read it, §7.2). Nothing here needs a new verb: `discover` already *is* the registry
+  query. → KCB §3 (and §4's `discover` row).
+
+**🔴 BROKE (MT-3, Med-High — scope). The cross-check binds the party that cannot detect the
+condition, and no response names the resolved major.** §4.4c's refusal fires only where the caller
+presents `planned_leg`, which is OPTIONAL and deliberately so (§4.4e: *"no requirement that a caller
+pin"*). Walk the case where it is absent, which is the case MT-1 was filed on:
+
+- `analyzer` plans over `compose 2.0.0`, presents nothing, and is served major **1** — *silently, no
+  gate breached and no signal at either end*, which is MT-1's sentence verbatim. The fold's answer is
+  that the caller should have presented its plan; the difficulty is that the caller is the one party
+  that **cannot know a selection happened**, and the provider — which resolved at (c)(2) knowing it
+  publishes two majors — owes nothing.
+- The asymmetry is **inside §4.4c's own order**. At **(3)** a provider publishing more than one major
+  MUST refuse rather than pick, *"and MUST NOT resolve to the highest published major"*, because a
+  selection among majors is not the provider's to make. At **(2)** a provider publishing more than
+  one major **does** select among them — correctly, on the grant's authority — and says nothing. The
+  authorization is sound; what is missing is that the *selection* is unstated, and the two majors
+  differ in their ports (2.0.0 adds a required `style_ref` and tightens the output `world_pattern`,
+  which is [`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md)'s Step 7 exactly).
+- **No response names the resolved major**, so the disagreement is not detectable after the fact
+  either. §4's `invoke` row types the request side — the version and the quoted cost travel as
+  operands — and no clause of §4, §4.4 or §7 puts the resolved `(name, version)` in the response.
+  KMI does not supply it by another route: §2's `produced_by` names the run activity, not the
+  capability version that ran, so the output asset of a `compose` leg is un-attributable to a major.
+  A caller can learn which contract executed **only** by pre-declaring which one it expected.
+- **This is MA-12's shape on the other verb.** 0.5.2 gave `fetch` a named response vocabulary
+  because a store's normative answer had nowhere to land; `invoke` resolves a major by an order §4.4c
+  calls NORMATIVE and the result of that resolution is carried nowhere at all.
+- **Why Med-High and not High.** It fails **silently** rather than closed, which is the class §7.2
+  rates non-recoverable — but it is reachable only where a provider publishes more than one major and
+  the caller declines an operand available to it, and the caller that does present one is fully
+  protected. It is a narrowing of MT-1's blast radius, not a reopening of it.
+- **The fold is additive and one spec.** Where a provider resolves at (c)(2) **and publishes more
+  than one major of that name**, it MUST name the resolved `(name, version)` in its response — the
+  same move §3 makes for the plan and §4.5 makes for `fetch`, one plane over, and the smallest thing
+  that makes a selection **stated** rather than guessed-at. It mints no default, no negotiation and
+  no obligation on the caller, and an `invoke` against a single-major provider is untouched.
+  → KCB §4/§4.4c.
+
+### Step 3 — Cross-participant `invoke` ✅ *holds (regression)*
+
+Delta K reproduces nothing and the two new clauses are confirmed additive **by execution**.
+`mediastore` publishes **one** major of `compose` in this scenario's cast, so: §3's plan names that
+one `(name, version)` and the projected cost is read off the same entry; `analyzer` carries no
+`planned_leg` and no `version`, so §4.4c resolves at **(4)** — *"exactly as it did at 0.4.9"* — and
+the new cross-check is never reached, *"Absent, nothing changes"* executed rather than read. The
+chain knowledge-producer → media-producer → paid model still runs under `invoke:compose` with
+`budget_units`, the projected cost still arrives before the call, and a raise beyond the remaining
+ceiling still fails at the gate (§5). §4.4d's `quoted_cost` is carried by nobody here; §4.3's posture
+gates on nothing (`analyzer` declares none, `compose` declares no `effect`); §5's MA-6 issuer and
+unit rules are silent because this cast is single-domain. MT-2 does not reach this step, because a
+one-leg plan whose leg is never presented is a plan nothing reads. MT-3 does not reach it either:
+with one published major there is no selection to state.
+
+### Step 4 — Fetch the master bytes ✅ *holds (regression)*
+
+Delta G is intact and neither 0.5.6 nor 0.5.7 touches it: `fetch` is one of §4's five verbs,
+addressed by `asset` id, self-verifying against the hash, gated by a `fetch:asset` grant (§5), and
+§4.4's operands are `invoke`'s. Three later clauses were probed against it again. §4.5's named
+outcomes (0.5.2) are reached only in the `held` case here — `worldsim` holds the bytes and serves
+them — so the outcome carried is the bytes themselves and **MA-17 is not reached by this step**, as
+the 2026-09-03 walk recorded. §4.2f's fan-out limit is still a **refusal** and still lands on delta
+L's pending-fetch tolerance rather than a new surface. KMI **0.3.8**'s MA-13 fold was put to this
+step for the first time: this fetch is in-domain, `worldsim` holds one conformant `license`/`egress`
+pair for the master, so §7.1(e)'s most-restrictive-governs rule ranks a set of one and (d) carries
+the pair the serving participant evaluated — a **no-op**, which is 0.3.8's own additivity claim
+executed rather than cited. Delta L is unmoved.
+
+### Step 8 — Discover-by-world ✅ *holds (regression)*
+
+Delta J is intact and is Step 1's J leg read from the query side: media `produces` entries in the
+extension's `params` carry `world_pattern` and §3's *Query* bullet matches on it. The MT-1 bullet is
+deliberately outside this step and was checked to be: it governs *"where a `find` returns a path"*,
+and a discover-by-world query returns **matching manifests, ranked** and no path, so no leg is named
+and nothing is added to this response. §3's 0.4.9 federation shape (`served_by`, `observed_at`,
+`incomplete[]`) is absent here because this deployment does not federate, and §2's `deprecated` /
+`removal_version` (0.5.1) are absent because no provider in this cast published either — both
+conformant unchanged, which is what those folds said they would be.
+
+### What this re-run does and does not close
+
+**Count (i) does NOT close, and it changes shape for the second time.** What the count exists to ask
+— *does the port/cost/world model survive being served as an AgentCard extension?* — was answered
+**yes** by execution on 2026-09-03 and is answered yes again here; F, G, J, K and L hold for a second
+consecutive walk, now against text carrying five more folds. **MT-1 does not reproduce**: §3's plan
+says what it planned over, §4.4c refuses the disagreement naming both majors, the comparison is
+bounded on the major, no default is minted, and the grant rule is untouched and correctly named a
+different party. The count does not close because the walk found **MT-2** (High, carrier — the path
+result has no shape, and `planned_leg` is typed against it) and **MT-3** (Med-High, scope — the
+cross-check binds the party that cannot detect the condition, and no response names the resolved
+major). Both land on the fold published hours earlier, and **neither is a break in its model**: §3's
+naming rule and §4.4c's refusal instrument were attacked directly and did not yield. Count (i) now
+reads **fold MT-2 (§3's path request and result, in MA-8's shape) and MT-3 (§4.4c names a resolved
+major where it selected among several), then re-run Steps 1, 3, 4 and 8 again**. Both are additive,
+both are **KCB-only**, and both are **unowned**.
+
+**MT-2 is the seventh finding in this repo on one axis** — *a rule with a declared normative
+consequence and nothing that carries it*, after MA-8, V-10, BP-7, ADR-0014's marking, MA-17 and
+MA-20 — and this walk is the **fifth consecutive** one in this repo to break on a fold's own
+perimeter rather than its model (after §4.5's MA-17, KMI §7.1(d)'s MA-19/MA-20, §7.1's V-12/V-14 and
+§7.3g's V-16/AP-10). The shape is the same every time: the mechanism is checked hard and the
+**claim the prose makes about it** is not — here, *"it mints no field"*, which was true of the leg
+and false of the path.
+
+**What a clean count (i) would and would not have bought, stated because it is easy to over-read.**
+This count is also **KMI's second promotion condition** (*"rides with KCB"*), so a clean walk here is
+worth more than one spec's count — but it closes only **KCB count (i)**. KCB's other five counts are
+untouched by this walk and none moves: (ii) the §7.5 mutate-live-schema re-run, (iii) the
+cross-authority re-run, (iv) the firehose re-run, (v) the cross-owner-posture re-run plus ADR-0013's
+**W3**, and (vi) the §4.5 re-run. **KCB is not promoted and is not promotable**, and would not have
+been on a clean walk. KMI is not promoted either: its count (i) stands on MA-19/MA-20 and MA-17/MA-18,
+and the fabric-wide conformance gate still fails on **DR-4** and **DR-8**/**DR-7**.
+
+**What it does not touch.** KMI's own half of this scenario is unmoved — the OTIO re-validation above
+stands, no KMI clause is read differently, and the one KMI clause this walk did exercise (§7.1(d)(e)
+at 0.3.8) was a no-op in-domain as its fold said it would be. **No spec version moves for this walk
+and no clause moves**: the edit is this section, two gate paragraphs and a *Pressure test* paragraph
+in [`../specs/capability-bus.md`](../specs/capability-bus.md), a changelog entry, a disposition row
+in [`../docs/reference/capability-versioning-fold-dispositions.md`](../docs/reference/capability-versioning-fold-dispositions.md),
+and the promotability record.
+
+---
+
 ## Downstream results
 
 > **What this section is.** The recorded result of a **downstream run** of this pressure test's

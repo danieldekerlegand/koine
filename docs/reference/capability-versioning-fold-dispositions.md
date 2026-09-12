@@ -1,4 +1,4 @@
-# The capability-versioning fold — a disposition for each of V-1…V-8 (and V-9, V-11; and V-10 with BP-8 and AP-9)
+# The capability-versioning fold — a disposition for each of V-1…V-8 (and V-9, V-11; V-10 with BP-8 and AP-9; and MT-1)
 
 > **Status:** Current · **Updated:** 2026-09-12 · **Owner:** koine · **Informative**
 
@@ -468,6 +468,68 @@ and leaves §4.3d's floor no evaluation point on a live stream; count **(iv)** r
 the same omission was put to `volume` and does **not** bite, for reasons recorded at that leg's Step
 8. V-16 and AP-10 are **one additive §7.3g edit**, and **unowned**. Count (iv) is held open by
 **BP-7**, which no part of this fold touched.
+
+### MT-1 — a path plan carries no version, and §4.4c selects one silently (added 2026-09-12)
+
+**Why it is on this page.** MT-1 is not a finding of this break-test. It is
+[`../../scenarios/e2e-media-transform.md`](../../scenarios/e2e-media-transform.md)'s — **count (i)**,
+returned by that count's 2026-09-03 walk. It is dispositioned here for the same reason **BP-8** and
+**AP-9** are: the question this page exists to answer — *forced to what extent?* — is answered by
+**§4.4**, which is this fold's section and V-5's home, and a second page reasoning one delta onto
+§4.4c would have decided the same thing twice.
+
+**The finding, in the terms this page uses.** §7.1 makes `(name, version)` the unit of discovery and
+§3's *Ranking across versions* rule makes the registry match the **highest satisfying version**
+first, so a composed path is **already built over a specific version of each leg** — and §3's
+*Composition* bullet named ports, planes, providers and a projected cost, and no version. §4.4c(2)
+then resolves a version-free `invoke` to the **grant's** major. A caller that planned over a
+top-ranked successor and holds a predecessor grant is therefore served the **predecessor**: §5's gate
+is satisfied, nothing is refused, and the leg that runs is not the leg that was matched or the one
+the projected cost was quoted from.
+
+**What kind of defect it is, which decides the extent.** It is not an authorization hole. V-5 was —
+*highest published* let a v1-granted caller reach v2, inverting fail-closed into fail-open, which is
+why §4.4c forbids that default **by name**. MT-1 is the **symmetric** silent selection with the sign
+reversed, and the party it disagrees with is **not the grant**: the grant is correct, binding and
+satisfied. It disagrees with **§3's own plan**, and the plan could not be disagreed with because it
+said nothing. So the fold is in two halves with two homes, and the first is a **carrier**:
+
+| Half | What was asserted | What was missing | Lands in |
+|---|---|---|---|
+| **The statement** | §3: the registry computes a path, prefers zero-`cost` routes, and *"returns the path's projected cost so the caller can gate spend before invoking"*. §7.1: `(name, version)`, *"not the name alone"*, is the unit of discovery. | The path result named **no version for any leg**, so a caller gating spend on the plan could not say which `(name, version)` the quote was for, and no clause anywhere could catch a disagreement about it — there was nothing to disagree **with**. | KCB **§3** (0.5.6) |
+| **The refusal** | §4.4c resolves the target major by a NORMATIVE order with no default, refusing where it is genuinely ambiguous. | The order reads the **operand** and the **grant**, and nothing else. Case (2) is a silent selection among published majors, and a caller holding a plan had no way to present it. | KCB **§4.4c** (0.5.7) |
+
+| # | Severity | Disposition | Lands in | Extent — what changes, and what deliberately does not |
+|---|---|---|---|---|
+| **MT-1** | High, structural | **FOLD (split)** | KCB **§3** (one NORMATIVE bullet, 0.5.6) + **§4.4c** (one OPTIONAL operand and one MUST, 0.5.7) | **§3**: each leg of a returned path MUST name the `(name, version)` it was matched over — an exact version, never a range, never the name alone, §7.1's `0.0.0`-unknown as a **value** where the entry carries none — and the projected cost is the cost of **exactly those legs**, read from the same entries. A plan leg is stated to be the registry's account of *what it matched*: it reserves nothing, expires by nothing and binds no provider, and which major an `invoke` reaches stays **§4.4's**. **§4.4c**: an OPTIONAL **`planned_leg`**, and where the **resolved** major differs from the presented leg's major the provider MUST refuse **plan mismatch** naming **both** — the instrument §5 (MA-6's unstated ceiling unit) and §4.4c(3) (want of a version) already share, applied a **third** time. Bounded by five further rules: the comparison is on the **major only**; a leg naming another capability is refused and **never ignored**; a `0.0.0`-unknown leg is compared like any other and nothing matches leniently; it is a **cross-check, never an operand of resolution** — after the order, never a fifth case, never a stand-in for a missing `version`; and the grant rule is byte-unchanged. **Not written:** the alternative the walk named — making §4.4a's `version` operand **REQUIRED** of a caller fulfilling a §3 path leg — which would have made planning through the registry a **pinning** obligation and broken §4.4e's *"no requirement that a caller pin"*; any change to §3's ranking; any default, any *highest published* fallback, any counter-offer (§4.4e); any new field, verb, plane, port kind, grant or authority role; and any change to §7.1 step 1's key sets, so **no published `schema_id` or digest moves**. |
+
+**Why the grant rule is deliberately unmoved, and it is the whole reason the fold is shaped this
+way.** The tempting fold is to make §4.4c(2) refuse whenever more than one major is published — the
+symmetry with (3) is right there. It is wrong, and the reason is the one §4.4 opens with: *"whatever
+the grant says is correct and the provider does not hold the issuance record."* Case (2) is the case
+(b) exists for, it is the only case in the order with an **authorized** basis, and refusing it would
+make every version-free call against a dual-serving provider fail — which is exactly the *"a
+successor unreachable forever"* failure §4.4 rejects by name, arriving from the other side. The
+disagreement MT-1 names is not with the grant; it is with the **plan**, a document the grant knows
+nothing about. So what the fold adds is a **second statement to compare against**, not a new
+authority. The grant still binds, a resolved major outside it is still refused at the gate before the
+work, and a caller presenting no plan is served exactly as it was.
+
+**Versions, and what does not close.** The two halves land as **KCB 0.5.6** and **0.5.7**
+(2026-09-12), both **patch**, in the two-patches-one-publication-cycle form 0.5.4/0.5.5 established
+for a fold with a carrier half and an enforcement half. The bump axis is named rather than assumed:
+§7.2's table governs **a published capability's** bumps and decides nothing about KCB's own spec
+version, which moves on §7.3b's axis; the table is consulted for the two questions it *does* answer
+and both are **No**. **0.6.0 stays spoken for** by §2.3's legacy-extension-URI-root removal —
+checked, not tripped. **Count (i) does not close**, and the re-run walked the same day says why:
+**MT-1 does not reproduce**, and the count breaks on the fold's **perimeter** — **MT-2** (High,
+carrier: §3's *"it mints no field"* is true of a **leg** and false of a **path**, since no clause
+types a path request or result and §4.4c types `planned_leg` *"as §3 returned it"* against that
+absence) and **MT-3** (Med-High, scope: the cross-check binds the party that cannot detect the
+condition, and no response names the resolved major). Both are additive and KCB-only; both are
+**unowned**. MT-2 is the **seventh** finding on the axis
+[ADR-0014](../../decisions/ADR-0014-federated-merge-merges-attributions.md) named, and that walk is
+the **fifth consecutive** one in this repo to break on a fold's perimeter rather than its model.
 
 ---
 
