@@ -1,0 +1,64 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/920-fold-ma-12-fetch-answer-carrier",
+  "dependsOn": [],
+  "touches": [
+    "specs",
+    "scenarios",
+    "docs"
+  ],
+  "iters": 8,
+  "warmup": [
+    "sed -n '/Absence must be answerable/,/DEFER-C/p' specs/media-interchange.md",
+    "sed -n '/^## 4. Verbs/,/^### 4.1/p' specs/capability-bus.md",
+    "sed -n '/^\\*\\*f. Composition across a fetch fan-out/,/^\\*\\*g\\./p' specs/capability-bus.md",
+    "grep -n 'MA-12' scenarios/e2e-multi-authority.md docs/reference/*.md | head -20"
+  ],
+  "description": "Fold MA-12 — the blocker the 2026-09-03 re-run left on KMI count (i), and the half whose carrier belongs on KCB §4's verb.\n\nVERIFIED AGAINST THE TEXT (2026-09-12, before this tasklist was authored). Every leg of the row's claim holds:\n\n1. KMI §7.1(f)'s MA-10 paragraph requires the three-valued answer: a store MUST be able to answer, for an id it is asked for, 'not held, and not expected' — it holds no copy and has no replication of that id in flight or scheduled — DISTINCTLY FROM 'not reachable' and from 'not held, pending'.\n2. NOTHING CARRIES IT. KCB §4's verb table defines `fetch` as 'CAS GET by `asset` id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant (§5)' — an address and a grant, and no response vocabulary at all.\n3. KMI §7 defines the payloads, not the pipe, and mints no field, enum or envelope for any of the three answers.\n4. KCB does not cite §7.1(f). The one KCB clause that reaches for KMI §7.1 is §4.2f, which cites it for replication-on-reference placement ('the limit is applied by the participant that holds the bytes, in its own authority domain') and not for the three answers.\n5. §4.2f ALREADY SPENDS THE FOURTH STATE: 'a refused `fetch` is a pending fetch, which delta L's dangling-reference tolerance already requires every consumer to handle.' So a rate-limited refusal and a not-yet-propagated reference are the same word today, and *pending* is exactly the reading a fold must not let absence collapse into.\n\nTHE FOLD, AND ITS SHAPE — CONSTRAINED BY THE 2026-09-03 WALK. Two specs, KCB §4 + KMI §7.1(f): give the three answers a carrier ON THE VERB THAT DELIVERS THEM, with KCB §4 citing KMI §7.1(f) as the clause that defines their meaning. The Step 10 re-attack of 2026-09-03 constrained it further and those constraints are not optional: the response vocabulary is NAMED, it is owed PER REQUEST, and it is never SYNTHESIZED. Absence reads *pending* and NEVER *not expected* — a store that says nothing has not said 'no holder remains'.\n\nADDITIVE. No `asset` id moves, no envelope field is added, a single-store deployment is unaffected, and DEFER-C — the optional designated durable holder — is UNMOVED and keeps its stated trigger.\n\nTHEN RE-RUN STEPS 8-10. KMI's other count is KCB's work (the `e2e-media-transform` re-run), so even a clean re-run leaves KMI Candidate. Say so in the record. MA-13 is the second blocker on the same count and is the next tasklist; the re-run that closes count (i) must clear both.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "A named response vocabulary on KCB §4's fetch, owed per request and never synthesized",
+      "description": "The carrier half. §4's `fetch` is a CAS GET with no response vocabulary; give it one, for the three answers KMI §7.1(f) already requires a store to distinguish.",
+      "acceptanceCriteria": [
+        "KCB §4's `fetch` gains a NAMED response vocabulary for the three answers KMI §7.1(f) requires — *not held, and not expected* / *not reachable* / *not held, pending* — with §4 citing KMI §7.1(f) as the clause that defines their meaning rather than restating it.",
+        "The three constraints the 2026-09-03 Step 10 re-attack imposed all hold in the text: the vocabulary is NAMED (not left to an implementer's status string), it is owed PER REQUEST, and a value for it is NEVER synthesized by a party that did not determine it.",
+        "ABSENCE READS *pending*, and never *not expected*. A store that answers nothing, or that a consumer cannot reach, has not asserted that no holder remains — §7.1(f)'s own conclusion rule (a consumer MAY conclude only for the set it reached) is preserved word for word.",
+        "§4.2f's existing *pending fetch* for a rate-limited refusal is reconciled rather than contradicted: the text says which of the answers a refused `fetch` is, so the fourth state §4.2f already spent is not two things at once.",
+        "Additive: no verb is added (§4's table still has exactly five entries), no `asset` id moves, no envelope field is added, and a single-store deployment behaves exactly as it did before. Verified against the text, not asserted.",
+        "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "KMI §7.1(f) points at the carrier, and DEFER-C stays deferred",
+      "description": "The KMI half is small on purpose: §7.1(f) states the obligation already, and what it lacked was a wire. Point it at the wire and change nothing else.",
+      "acceptanceCriteria": [
+        "KMI §7.1(f) names KCB §4's response vocabulary as where the three answers are carried, without restating the vocabulary or minting a KMI field for it — §7 defines the payloads and not the pipe, and this fold must not reverse that.",
+        "DEFER-C is explicitly UNMOVED: no minimum replica count, no retention obligation, no durability guarantee, and no designated durable holder. Its trigger in `docs/reference/federation-fold-dispositions.md` is unchanged.",
+        "The version moves for BOTH specs are decided under each spec's own rules and recorded with reasoning; if either moves, all three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it, which `check-doc-integrity.mjs` enforces. KMI's declared removal of `application/vnd.koine.edl+json` at KMI 0.4.0 and KCB's legacy namespace-root removal at KCB 0.6.0 are checked rather than tripped by whatever bump this takes.",
+        "A fold disposition is recorded for MA-12 in the fold-disposition reference alongside the MA-1…MA-11 dispositions, reasoning the fold's EXTENT — what the break forces and what it does not.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Re-run Steps 8-10, and record that KMI stays Candidate either way",
+      "description": "The re-run is the point of the fold. Walk the prose; a green encoding is not the verdict here (DR-8).",
+      "acceptanceCriteria": [
+        "`scenarios/e2e-multi-authority.md` Steps 8-10 are re-run BY HAND against the folded text, with a per-step verdict recorded in the scenario. Step 10 is the step MA-12 was found on and re-confirmed on, so it is the step the walk must answer.",
+        "The walk is against the PROSE: DR-8 records `kcs:multi-authority` returning `green` over six blocking deltas, so the encoding's exit code is not evidence.",
+        "The verdict is recorded honestly, including a NOT-clean one. Count (i) does not close while MA-13 stands — say which blockers remain rather than implying the count moved.",
+        "The record states that KMI's other count is the `e2e-media-transform` re-run, which is KCB's work, so KMI stays Candidate even on a clean walk. `docs/reference/promotability.md` is updated to match.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

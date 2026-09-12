@@ -1,0 +1,68 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/980-audio-modality-pickup",
+  "dependsOn": [],
+  "touches": [
+    "specs",
+    "scenarios",
+    "registry",
+    "schemas",
+    "docs"
+  ],
+  "iters": 8,
+  "warmup": [
+    "sed -n '/^### 3.1 Modality vocabulary/,/^### 3.2/p' specs/fine-tuning.md",
+    "cat registry/enums/modality.tsv",
+    "sed -n '/^## 4. What is deliberately/,/^## 5. Who these rows/p' docs/reference/generative-audio-modalities.md",
+    "grep -rn 'AUD-6' docs/reference/generative-audio-modalities-downstream.md",
+    "grep -rli 'text-to-audio\\|audio-to-audio' scenarios/ || echo 'NO SCENARIO WALKS AN AUDIO JOB'"
+  ],
+  "description": "KFT 0.7.0's two audio `modality` rows — the half of the pickup that is koine's own (AUD-6), and the third row a named consumer has now asked for.\n\nVERIFIED AGAINST THE TEXT (2026-09-12, before this tasklist was authored).\n\nAUD-6 HOLDS. `grep -rli 'text-to-audio\\|audio-to-audio' scenarios/` returns NOTHING: none of the twelve pressure tests walks an audio job. `e2e-finetune-multimodal.md` — the fully-multimodal KFT leg — contains the string 'audio' zero times; it walks `image-text-to-text` and `text-to-video`. So KFT §3.1's two audio rows are UNEXERCISED VOCABULARY: no KCS encoding can assert one, and neither row is citable in a re-ratification. Four of the six AUD findings are discharged downstream and the fifth is deferred and owned there; AUD-6 is the only one that is koine's, and the scenario plus its encoding are the join neither side can author alone.\n\nTHE THIRD ROW, AND THE TRIGGER THAT FIRED. `docs/reference/generative-audio-modalities.md` §4 declines `audio-text-to-text` and states its own reversal condition in terms: 'Audio *understanding* — transcription, captioning, audio QA — is the fourth member of the `…-text-to-text` family and IS A GENUINE GAP. It is not minted here because NOTHING HAS ASKED FOR IT … a row is worth contracting when a named provider needs the vocabulary. THE TRIGGER: THE FIRST CONSUMER THAT DOES.' A specialized local-only fine-tuning provider has now asked, in a written proposal dated 2026-08-25 held in its own tree, for `audio-text-to-text` on §3.1 at `lora`/`qlora` — with `sft` deliberately not requested, since both of its backends implement LoRA SFT — carrying a capability probe, a tested audio processor, a declared memory profile and an Apache-2.0 anchored base already committed behind a row it cannot reach. NO FILE IN THIS REPO CITES THAT PROPOSAL: `grep -rn 'koine-audio-modality-proposal'` matches only the roadmap row that records the ask. So the first thing this tasklist owes is a record that the proposal exists and was read.\n\nRATIFYING IS KOINE'S ACT; ADOPTING IS THE PROVIDER'S. Until koine answers, an audio-understanding job there is refused `unknown-modality` at the VOCABULARY gate — which runs before the placement gate, the base anchor and the probe — so the refusal blocks that whole arm rather than one combination. That is why this is categorised `unblock`: its value is releasing work that is otherwise stopped, in one repo by a missing scenario and in another by a missing token.\n\nFOUR STATEMENTS OF ONE ENUM. If the row is ratified it is not one edit: `registry/enums/modality.tsv` is the registry statement, KFT §3.1's table is the prose statement, `schemas/finetune-job.schema.json` carries the enum inline (seven tokens today), and `registry/entity-types.tsv` points the `model` entity's `modality` refinement at the registry file. §3.1's own discipline binds the decision either way: the vocabulary is CLOSED and ADDITIVE, a new modality 'adds a row plus a capability variant (§2), never a new plane', and the tokens are IMMUTABLE once published — a change is a new token, never an edit in place. So minting is cheap and unminting is not, which is the asymmetry the decision must be taken against.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "A pressure leg that walks an audio job, so the two rows stop being unexercised vocabulary",
+      "description": "AUD-6, and it is koine's half. Without a scenario, `text-to-audio` and `audio-to-audio` are tokens no re-ratification can cite.",
+      "acceptanceCriteria": [
+        "A pressure leg exists under `scenarios/` that walks an audio finetune job end to end, exercising BOTH rows — `text-to-audio` (caption→audio, the third row of the `text-to-image`/`text-to-video` family) and `audio-to-audio` (paired asset↔asset with NO caption side, which is the distinction §3.1 argues at length and the one a leg must actually put pressure on).",
+        "It is adversarial in the house style — it prefers finding breaks over asserting correctness, tags every step held or broke, and files each break as a numbered delta. A leg that returns clean because it avoided the hard seams is not a pass.",
+        "It exercises what §3.1 claims moves NO clause of §4: that both sides of an audio pair are `dataset.media[]` entries, so §4.2's effective-egress union over every media asset and §4.3's license/trust union already reach them. That claim is checked against §4's text by the walk rather than restated.",
+        "The leg is added to `scenarios/README.md`'s table with its pressure-tested sections, what it hunts, its deltas and its KCS-encoding column — the index is how a scenario is reachable, and `check-doc-integrity.mjs` enforces that every relative link resolves.",
+        "AUD-6 is updated in `docs/reference/generative-audio-modalities-downstream.md` to record what now exercises the rows and what remains — in particular that the machine-replayable encoding of this leg is downstream work, not koine's.",
+        "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Answer the `audio-text-to-text` ask — against koine's own stated trigger",
+      "description": "koine declined the row in advance and published the condition that reverses the decline. A named consumer now needs the vocabulary. Record the reading and the verdict.",
+      "acceptanceCriteria": [
+        "The proposal is CITED in this repo for the first time — who asked, when (dated 2026-08-25), what exactly was asked for (`audio-text-to-text` on §3.1 at `lora`/`qlora`, with `sft` deliberately not requested), and what stands behind it (a capability probe, a tested audio processor, a declared memory profile, an Apache-2.0 anchored base). Refer to the asker BY ROLE, never by repository or product name: this repo is public and its rows are role-scoped and product-agnostic by design.",
+        "The published trigger in `docs/reference/generative-audio-modalities.md` §4 is quoted and applied: *'nothing has asked for it … The trigger: the first consumer that does.'* The verdict states whether the trigger has fired and follows from that reading rather than from preference.",
+        "The verdict is recorded either way, in the same document that declined the row, so a later reader sees the decline and its answer in one place. §5's forward-declaration standard — a row is worth contracting when a named provider needs the vocabulary — is the standard actually applied.",
+        "The asymmetry §3.1 states is weighed on the record: the vocabulary is closed and additive, a new modality adds a row plus a capability variant and never a new plane, and tokens are IMMUTABLE once published — splitting later is additive and cheap, unsplitting is not.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "If the row is ratified, every statement of the enum moves together",
+      "description": "One token, four places. A validator on a stale enum rejects a conformant job, which is the exact failure the 0.7.0 pickup was written to prevent.",
+      "acceptanceCriteria": [
+        "If US-2's verdict is to RATIFY: the token lands in EVERY statement of the enum in this repo, in file order, with the data-plane port, typical base and typical `method` columns filled — `registry/enums/modality.tsv`, KFT §3.1's table, and the inline `modality` enum in `schemas/finetune-job.schema.json`; `registry/entity-types.tsv`'s `model` refinement pointer is checked to still resolve. A grep proving no statement was missed is recorded, not asserted.",
+        "The `modality × method` pairing is stated as asked and as decided — the admission check under FT-F validates the combination and rejects an incompatible request with a report before any compute is committed, so a row whose methods are wrong makes that check validate a false declaration.",
+        "If US-2's verdict is to DECLINE: no file is edited except the record of the decision and the trigger, restated so the next asker meets a condition rather than a silence. This story is satisfied by either verdict, provided the verdict was reached in US-2 and the record says which.",
+        "The KFT version move follows §3.1's additive discipline and is recorded with reasoning; if it moves, all three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it, which `check-doc-integrity.mjs` enforces. The downstream notice is updated so mirrors know which of koine's statements to vendor from.",
+        "`node scripts/check-schemas.mjs` and `node scripts/check-registry.mjs` are both green over the edited enum and TSV, with the observed row counts recorded (today: 7 modality rows, 29 relation names, 9 schemas).",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

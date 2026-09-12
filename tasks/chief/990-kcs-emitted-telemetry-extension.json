@@ -1,0 +1,64 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/990-kcs-emitted-telemetry-extension",
+  "dependsOn": [],
+  "touches": [
+    "specs",
+    "decisions",
+    "docs"
+  ],
+  "iters": 8,
+  "warmup": [
+    "grep -n '^## ' specs/conformance-scenario.md",
+    "sed -n '/^## 5. Cross-plane assertion vocabulary/,/^## 6./p' specs/conformance-scenario.md",
+    "grep -rn 'emitted-telemetry\\|ObservedSpan' . --include=*.md | grep -v ROADMAP || echo 'ZERO FILES OUTSIDE THE ROADMAP ROW'",
+    "grep -rni 'opentelemetry\\|traceparent\\|trace-context' specs/ || echo 'NO TRACE-CONTEXT PRIOR ART CITED IN ANY SPEC'"
+  ],
+  "description": "The KCS emitted-telemetry (observability) extension — the clause a downstream conformance console has been shipping without.\n\nVERIFIED AGAINST THE TEXT (2026-09-12, before this tasklist was authored).\n\nKOINE HAS NEVER RECEIVED THIS. `grep -rn 'emitted-telemetry\\|ObservedSpan'` over this repo matches NOTHING outside the roadmap row that records the gap. KCS's numbered sections run §1 Scope … §8 Prior art, so there is no §9 and no observability clause anywhere in it, while the console downstream shipped the vocabulary, declared its own tasklist gated on the ratified koine extension, and has reported SHIPPED AHEAD on every gate run since.\n\nIT IS NOT ACADEMIC. koine's own ratification evidence is computed in part off that vocabulary: §5's control-plane predicates `cost_within_ceiling(invoke, budget)`, `tier_resolved(invoke, tier)` and `refused(step)` are asserted, in the cited live-run artifact, over frames carrying the emitted shape. So the shape is already load-bearing on this repo's evidence and is specified nowhere in it.\n\nTWO HALVES, AND ONLY ONE OF THEM MAY STAY INFORMATIVE.\n(1) AN OPTIONAL §9 — an exchange record (a `kind: \"exchange\"` frame carrying the verb, the capability, the two parties as KINP ids, world, tier, status, the ceiling AND ITS UNIT, actual spend, timings, and the ids the exchange touched). Emission stays OPTIONAL and a participant with no console is fully conformant — what is specified is OBSERVATION, not instrumentation.\n(2) A §5 EVIDENCE-PRECEDENCE RULE, which cannot stay informative. It must say which decides `tier_resolved` / `cost_within_ceiling` / `refused` when a step carries BOTH an emitted record and an outcome the runner observed itself, and what happens when the two disagree. Without it two conformant runners choosing differently produce DIFFERENT CONFORMANCE REPORTS FROM ONE RUN — which is the same class of defect KCS §7 question 2's re-validation already found in `structure_matches` (delta R: its comparison basis is fixed nowhere, so two conformant runners may return different verdicts for one document).\n\nA DATED PRIOR-ART SWEEP GATES THE FOLD. Span models and trace-context are mature standardised work, and `grep -rni 'opentelemetry\\|traceparent\\|trace-context'` over `specs/` returns NOTHING — this repo has never recorded reading them. Under the ADR-0006 / ADR-0010 discipline the choice is: profile by reference, or mint and record what was read and when. Taking the second without doing the first is what those ADRs exist to prevent.\n\nVERSION. Minor, KCS 0.3.0 → 0.4.0: additive by section, but the precedence rule changes how existing §5 predicates evaluate, so it is not a patch.\n\nTHE SPLIT OF WORK. Ratifying is koine's; rewriting the console's span implementation against the folded text is the downstream implementer's. A draft with nine reconciliations (including un-denominated spend beside a grant that must denominate, and a `status` documented free-form but consumed as a closed enum) exists in that implementer's own tree and should be read as an input, not adopted as a decision.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "The dated prior-art sweep, before a clause is written",
+      "description": "ADR-0006/ADR-0010 discipline: profile by reference, or mint and record what was read and when. The sweep gates the fold.",
+      "acceptanceCriteria": [
+        "A dated prior-art sweep is recorded covering the mature standardised work in this space — span/trace data models and trace-context propagation at minimum — saying WHAT was read, WHEN, and what each does and does not cover for an exchange record.",
+        "The verdict is explicit and is one of profile-by-reference or mint-and-record, with the reason stated. If anything is profiled by reference it is added to `docs/reference/upstream-standards.md` with its pin, so the drift check covers it like every other upstream.",
+        "The starting fact is recorded rather than assumed: no koine spec cites any of this prior art today (`grep -rni 'opentelemetry|traceparent|trace-context' specs/` returns nothing), so the sweep is a first reading and is dated as one.",
+        "The downstream draft and its nine reconciliations are read as INPUT and cited as a proposal, never adopted as a decision — and the implementer is referred to by ROLE, not by repository or product name, since this repo is public and its rows are role-scoped by design.",
+        "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "An OPTIONAL §9 — the exchange record, specified as observation",
+      "description": "Emission stays optional; what is specified is what an observer may rely on when a record IS emitted.",
+      "acceptanceCriteria": [
+        "KCS gains a §9 specifying the exchange record: the verb, the capability, the two parties as KINP ids, world, tier, status, THE CEILING AND ITS UNIT, actual spend, timings, and the ids the exchange touched.",
+        "Emission is OPTIONAL and the text says so: a participant that emits nothing is fully conformant, consistent with KCB §4.3g. What §9 fixes is OBSERVATION — the shape an observer may rely on — not an obligation to instrument.",
+        "The two reconciliations the downstream draft flags as substantive are answered in the text rather than inherited: spend that is un-denominated beside a grant that MUST denominate its unit (KCB §5's refusal instrument for an unstated unit is the precedent), and a `status` documented free-form while consumed as a closed enum.",
+        "The record is expressed in terms the rest of the fabric already fixes — KINP ids for parties, KCB's `cost` shape and `budget_units` for the ceiling and the spend, KCB §4.2d frames where a frame is what carries it — and mints nothing a sibling spec already defines.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "The §5 evidence-precedence rule — the half that cannot stay informative",
+      "description": "Two runners, one run, two reports is a defect in the gate itself. Fix it normatively.",
+      "acceptanceCriteria": [
+        "§5 gains a NORMATIVE evidence-precedence rule saying which evidence decides `tier_resolved`, `cost_within_ceiling` and `refused` when a step carries BOTH an emitted record and an outcome the runner observed itself — and what a runner MUST do when the two disagree (a disagreement that is silently resolved is the failure mode; a disagreement that is reported is not).",
+        "The rule is written so that two conformant runners over ONE run produce the SAME verdict for each of those three predicates. That property is stated in the text as the thing the rule exists to guarantee.",
+        "The rule's interaction with KCS §7 question 1 is recorded: the fixed core versus declared console extensions, and the DR-10 drift finding that the downstream §5 vocabulary omits `structure_matches` and declares a predicate this spec names nowhere — a fixed core is only fixed if something checks it.",
+        "The version move is KCS 0.3.0 → 0.4.0 and the reasoning is stated: additive by section, but the precedence rule changes how EXISTING §5 predicates evaluate, so it is not a patch. All three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it, which `check-doc-integrity.mjs` enforces.",
+        "What the fold does NOT close is stated: KCS stays Candidate, delta R (`structure_matches`'s comparison basis) is untouched and still unowned, and the downstream re-write against the folded text is the implementer's work, not koine's. `docs/reference/promotability.md` is updated to match.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

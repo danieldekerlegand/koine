@@ -1,0 +1,66 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/910-adr-0014-deprecation-carrier-clause",
+  "dependsOn": [],
+  "touches": [
+    "specs",
+    "decisions",
+    "scenarios",
+    "docs"
+  ],
+  "iters": 8,
+  "warmup": [
+    "sed -n '/^## Decision/,/^## Consequences/p' decisions/ADR-0014-federated-merge-merges-attributions.md",
+    "sed -n '/^### 7.3 Deprecation/,/^### 7.4/p' specs/capability-bus.md",
+    "grep -n 'served_by\\|observed_at\\|incomplete' specs/capability-bus.md | head -20",
+    "sed -n '/^### 3.1 Registry federation/,/^## 4. Verbs/p' specs/capability-bus.md | grep -n 'd\\.\\|e\\.\\|converse' | head -20"
+  ],
+  "description": "Write ADR-0014's clause — the blocker the 2026-09-03 re-run left on KCB count (iii), and the one the ADR itself said would 'land with counts (ii) and (iii)'.\n\nVERIFIED AGAINST THE TEXT (2026-09-12, before this tasklist was authored). ADR-0014's Decision section states four parts and says each is written 'so it can be implemented without consulting this record' — and none of them is in the spec. §7.3a requires 'an explicit deprecated marking on the predecessor' plus a removal version; §7.3d requires discovery to keep returning a deprecated entry 'marked, and carrying its removal version' while ranking it below any non-deprecated entry; §3's ranking bullet repeats the same obligation. NO FIELD CARRIES EITHER: §2's manifest example carries `version`, `schema_id`, `binding`, `cost`, `volume` and `effect` and no marking, and §3's `find` response shape — extended by MA-8 with `served_by`, `observed_at` and a result-level `incomplete[]` — names no deprecation field. The ADR's own amendment of 2026-09-03 records the walk confirming it from the other direction: 'no deprecation field exists on a §2 capability entry or in §3's response shape.'\n\nWHY IT IS A BLOCKER AND NOT A TIDY-UP. §3.1(d)'s de-duplication converse merges two attributions that agree on provider KINP id, `(name, version)` and `schema_id`. A deprecation marking is none of those three — §7.1 step 1 drops every non-shape key, so the digest does not move; the predecessor's own entry gains the marking in place, so `version` does not move; and §7.2's table has no bump row for marking a capability deprecated. So a stale attribution and a deprecation-marked one satisfy the converse EXACTLY and MUST be returned as one entry whose marking is undefined, because the field is undefined — and §3.1(e) cannot fire, because the converse has just removed the visible disagreement.\n\nTHE FOUR PARTS, AS THE ADR STATES THEM: (1) the marking and its removal version are named fields on the §2 capability entry, carried through §3's `find` response — an extension of MA-8's shape, never a second envelope, optional on read and write, absent meaning NOT deprecated; (2) a registry MUST NOT synthesize a value for a field outside the merge key — where attributions disagree the merged entry carries each attribution's own copy bound to the `served_by` and `observed_at` that supplied it and MUST mark that they disagree; (3) where the disagreeing field is a gate, the restriction wins — any attribution marking the capability deprecated makes the merged entry deprecated for §7.3d's ranking, ADR-0013's monotone-restrictive discipline reused rather than a second convention invented; (4) none of it licenses reconciliation — §3.1(d)'s prohibition on silently picking between two AUTHORITIES is untouched, and parts 2 and 3 apply only within the converse.\n\nADDITIVE, AND BOUNDED. No verb, plane, port kind or authority role is added; a single-registry deployment emits none of it and is conformant unchanged; a consumer MUST ignore fields it does not understand (§7.2). What the ADR deliberately does NOT decide stays undecided: no wall-clock timestamp on the marking (DEFER-E unmoved), no cadence or TTL on a discovery binding (DEFER-D unmoved), no bump row for `volume` or `effect` (a separate §7.2 change, and a separate tasklist), and no peering topology, membership or trust weighting.\n\nWHAT IT CLOSES, AND WHAT IT DOES NOT. Count (iii) does not close until the Steps 5-7 re-run walks clean against the folded text, and clearing it still leaves KCB's other FOUR counts open — so this promotes nothing on its own. Say that in the record rather than leaving a reader to re-derive it.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "The marking gets a carrier — §2's entry and §3's find response",
+      "description": "ADR-0014 Decision part 1. Name the deprecated marking and the removal version as fields on the §2 capability entry and carry them through §3's `find` response, as an extension of the shape MA-8 already gave that response.",
+      "acceptanceCriteria": [
+        "The §2 capability entry carries the deprecated marking and the removal version as named, OPTIONAL fields, absent meaning NOT deprecated, on the same additive terms as `version`, `schema_id`, `binding` and `auth.accepted_issuers[]`. The §2 example is updated so the fields are visible where a reader looks for them.",
+        "§3's `find` response carries both through — an extension of the MA-8 shape (`served_by`, `observed_at`, result-level `incomplete[]`), NEVER a second envelope. §3's ranking bullet and §7.3d now have a field to read where today they have none.",
+        "§7.1 step 1's key set is checked and stated: the marking is NOT shape, is dropped before hashing like `cost`, `volume`, `effect` and `binding`, and NO published `schema_id` moves for this edit. Record that as a checked fact, not an assumption.",
+        "A single-registry deployment that carries neither field is conformant unchanged, and the §7.2 ignore-unknown-fields rule is cited as what makes that true.",
+        "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "Parts 2-4 — no synthesis, the restriction wins, and no reconciliation licensed",
+      "description": "The merge rule itself, on §3.1(d)'s converse. Three clauses, each stated so an implementer needs neither the ADR nor this tasklist to get it right.",
+      "acceptanceCriteria": [
+        "A registry MUST NOT synthesize a value for a field outside the merge key. Where attributions disagree on such a field, the merged entry carries EACH attribution's own copy bound to the `served_by` and `observed_at` that supplied it, and MUST mark that the attributions disagree — which is what §3.1(e) needs in order to fire, and what keeps §3.1(a) intact.",
+        "Where the disagreeing field is a gate, the restriction wins: if ANY attribution marks the capability deprecated, the merged entry is deprecated for the purposes of §7.3d's ranking and marking. The clause cites ADR-0013's monotone-restrictive discipline as reused, and states the measured asymmetry that justifies it (a false deprecation costs a ranking demotion on an entry §7.3d keeps returning and keeps functional; a missed one is the silent case §7.2 makes non-recoverable).",
+        "The clause says explicitly that it licenses NO reconciliation: two entries from two AUTHORITIES naming the same capability are still both returned and still never silently picked between; parts 2 and 3 apply only WITHIN the converse — one provider, one `(name, version)`, one `schema_id`, reached more than once.",
+        "What ADR-0014 leaves undecided is left undecided and said so in the text or in the fold record: no wall-clock timestamp (DEFER-E unmoved), no cadence or TTL on a discovery binding (DEFER-D unmoved), no §7.2 bump row for `volume` or `effect`, no peering topology or trust weighting.",
+        "The KCB version move is decided under §7.2's own table and recorded with its reasoning, and the two declared removals riding on KCB's minor axis are checked rather than tripped: §2.3's legacy extension-URI namespace root is declared removed at KCB 0.6.0 and KMI's `application/vnd.koine.edl+json` at KMI 0.4.0. If the version moves, all three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it — `check-doc-integrity.mjs` enforces that.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Re-run e2e-multi-authority Steps 5-7 against the folded text, and record what still blocks KCB",
+      "description": "Count (iii) does not close until the re-run walks clean. Walk the prose — an encoding's exit code is not the verdict (DR-8 records `kcs:multi-authority` returning green over six blocking deltas).",
+      "acceptanceCriteria": [
+        "`scenarios/e2e-multi-authority.md` Steps 5-7 are re-run BY HAND against the folded text, with a per-step verdict recorded in the scenario's own re-run section. Step 5 is the one that broke on this clause, so it is the step the walk must answer.",
+        "The walk is against the PROSE, not a replay: DR-8 records this scenario's own encoding returning `green` over six blocking deltas, so a green encoding is not evidence here.",
+        "The verdict is recorded honestly, including a NOT-clean one and any new delta it returns. Count (iii) closes only on a clean walk.",
+        "The record states that KCB's other FOUR counts stay open regardless of this verdict, so this tasklist promotes nothing on its own; `docs/reference/promotability.md` is updated to match what this walk changed.",
+        "ADR-0014 gains a short amendment recording that its clause landed and where, so the ADR does not keep reading as decided-but-unwritten.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

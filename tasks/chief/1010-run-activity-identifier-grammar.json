@@ -1,0 +1,61 @@
+{
+  "project": "koine",
+  "category": "fix",
+  "branchName": "chief/1010-run-activity-identifier-grammar",
+  "dependsOn": [],
+  "touches": [
+    "specs",
+    "schemas",
+    "docs"
+  ],
+  "iters": 7,
+  "warmup": [
+    "sed -n '/^### 3.1 Canonical form/,/^### 3.2/p' specs/identity.md",
+    "grep -n 'analyzer:run/\\|activity:ft-run/' specs/identity.md specs/fine-tuning.md specs/media-interchange.md",
+    "sed -n '183,200p' docs/reference/implementability-audit.md",
+    "grep -rn 'activity' schemas/provenance.schema.json | head"
+  ],
+  "description": "Reconcile the run-activity identifier with KINP §3.1's grammar — IMP-7, and a defect koine's own examples demonstrate.\n\nVERIFIED AGAINST THE TEXT (2026-09-12, before this tasklist was authored). Every leg holds, and the two spellings do not even agree with each other.\n\nWHAT §3.1 FIXES. `<kind>` is 'one of: `ent` | `claim` | `asset` | `world` | `agent` | `src`' — a closed list of six. `<local-id>` is 'opaque within the namespace; `[a-z0-9][a-z0-9._-]*` (lowercase, percent-encode anything else)' — a charset that admits letters, digits, dot, underscore and hyphen, and NOT the solidus.\n\nWHAT THE EXAMPLES ACTUALLY WRITE.\n- KFT §5.2's worked PROV activity is `orchestrator:activity:ft-run/9f2a` (and §3's job field, and §6's `of_job`, use the same form). Kind `activity` is not in the enum; the `/` is not in the charset. TWO violations.\n- KINP's own §7.1 assertion-envelope example writes the same thing as `analyzer:run/1a2b`, and §3.4's namespace-registry table gives the `analyzer` row as 'Run-scoped locals: `analyzer:run/<runid>`'. No kind segment at all, and the `/` again.\n- KMI §2's envelope example carries `\"produced_by\": \"analyzer:run/1a2b\"`, so the second spelling is load-bearing on a third spec.\n\nSO THE TWO DO NOT AGREE WITH EACH OTHER, and a consumer cannot pattern-match a run activity across participants. This is already IMP-7 in `docs/reference/implementability-audit.md` §3.3 — filed as a gap against KINP §3.1 vs KINP §7.1, KMI §2, KFT §3/§5/§6 and the schema — which also notes that `src` IS in the enum and is used as a kind NOWHERE. A producer that had to mint one has since reproduced it from the outside and found no spelling satisfying §3.1 and §5.2 at once.\n\nWHY IT IS A `fix` AND NOT A FEATURE. Nothing new is being contracted. A normative grammar and three worked examples in three specs disagree, and every `prov` record depends on the id: KINP §7.1's envelope carries `prov.activity`, KFT §5.2 makes the run a PROV activity and the reproducibility anchor (FT-C), and §6's `of_job` is 'what makes the leg attributable'.\n\nEITHER FIX IS ACCEPTABLE; DOING NEITHER IS NOT. Admit `activity` to the §3.1 enum and widen the local charset to admit the separator the examples use; OR state the run-activity spelling normatively in §3.1 and correct the §3.4 row to match. Either way the two examples MUST be reconciled to one spelling, and the schema checked against it.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "Decide the run-activity spelling, and make §3.1 normative about it",
+      "description": "Two routes, one outcome: a run activity has exactly one spelling that §3.1 admits.",
+      "acceptanceCriteria": [
+        "KINP §3.1 admits the run-activity identifier — either by adding `activity` to the `<kind>` enum and widening `<local-id>`'s charset to admit the separator the examples use, or by stating the run-activity spelling normatively in §3.1 — and the choice is recorded with its reasoning.",
+        "Whichever route is taken, the resulting grammar ADMITS a run activity and the text says so explicitly, so an implementer minting one meets a rule instead of a contradiction. The immutability consequence is weighed on the record: identifiers already minted under either spelling must keep resolving, as §3.4 requires of a published prefix.",
+        "The audit's companion observation is answered rather than left standing: `src` is in the §3.1 enum and is used as a kind nowhere in this repo. Either it gets a stated use or the record says why an unused kind stays.",
+        "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "One spelling, everywhere it appears",
+      "description": "The two forms are load-bearing in three specs and a schema. Reconciling the grammar without reconciling the examples fixes nothing.",
+      "acceptanceCriteria": [
+        "Every occurrence of a run-activity id in this repo uses the ONE decided spelling: KINP §7.1's assertion-envelope example and §3.4's `analyzer` namespace row, KFT §3's `job`, §5.2's worked PROV activity and §6's `of_job`, and KMI §2's `produced_by`. A grep proving no occurrence was missed is recorded, not asserted.",
+        "The schemas are checked against the decided spelling and updated where they constrain or exemplify it — `schemas/provenance.schema.json` and `schemas/finetune-job.schema.json` at minimum — and `node scripts/check-schemas.mjs` is green over the result with its observed counts recorded (today: 9 schemas, 278 schema positions, 80 $refs, 3 fixtures).",
+        "Any schema fixture carrying a run-activity id is updated with it, so the fixtures keep carrying production shapes rather than a form the spec no longer admits.",
+        "Version moves for every spec touched are decided under each spec's own rules and recorded with reasoning; where a version moves, all three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it, which `check-doc-integrity.mjs` enforces.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Close IMP-7, and record the outside reproduction",
+      "description": "The finding is koine's own, and it has now been independently hit. Close it where it lives.",
+      "acceptanceCriteria": [
+        "IMP-7 is marked closed in `docs/reference/implementability-audit.md` §3.3 with what landed and where, and the outside reproduction is recorded as corroboration — a producer that had to mint a run activity and found no spelling satisfying §3.1 and §5.2 at once.",
+        "The producer is referred to BY ROLE, never by repository or product name — this repo is public and its rows are role-scoped and product-agnostic by design.",
+        "The audit's own summary line — that a third party cannot parse or mint identifiers unambiguously (IMP-6, IMP-7) — is updated to reflect what this closes and what IMP-6 still leaves open.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

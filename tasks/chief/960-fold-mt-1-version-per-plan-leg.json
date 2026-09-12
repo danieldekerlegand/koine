@@ -1,0 +1,64 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/960-fold-mt-1-version-per-plan-leg",
+  "dependsOn": [],
+  "touches": [
+    "specs",
+    "scenarios",
+    "docs"
+  ],
+  "iters": 7,
+  "warmup": [
+    "sed -n '/^## 3. Discovery registry/,/^### 3.1/p' specs/capability-bus.md",
+    "sed -n '/^\\*\\*c. Resolution/,/^\\*\\*d. The quoted cost/p' specs/capability-bus.md",
+    "grep -n 'MT-1' scenarios/e2e-media-transform.md ROADMAP.md docs/reference/*.md | head",
+    "grep -n 'Composition\\|path' specs/capability-bus.md | sed -n '1,25p'"
+  ],
+  "description": "Fold MT-1 — the finding the 2026-09-03 re-run of `e2e-media-transform.md` returned, and the blocker on KCB count (i).\n\nVERIFIED AGAINST THE TEXT (2026-09-12, before this tasklist was authored).\n\n§3'S PATH PLAN NAMES NO VERSION PER LEG. §3's *Composition* bullet has the registry compute 'a *path* from a start port to a goal port across planes and providers … resolved by matching the ports crawled off peers' card extensions', preferring zero-`cost` routes and returning the path's projected cost. It names ports, planes, providers and cost — and no `(name, version)` for any leg. §3's *Ranking across versions* bullet does fix that the registry ranks the HIGHEST SATISFYING VERSION first, so the plan is BUILT over a specific version even though it does not SAY which.\n\n§4.4c(2) THEN RESOLVES SOMEWHERE ELSE, SILENTLY. §4.4c's normative order is: (1) the `version` operand where present; (2) otherwise THE GRANT'S MAJOR, where readable; (3) otherwise, where more than one major is published, REFUSE for want of a version; (4) otherwise the one published major. A caller that planned over the top-ranked successor and holds a predecessor grant carries no `version` operand, so case (2) fires and it is served the PREDECESSOR — silently, having planned over the successor, and having been quoted the successor's cost by §3's own path search.\n\nWHY IT IS THE SYMMETRIC CASE §4.4c ALREADY FORBIDS BY NAME. §4.4c(3) forbids resolving to the highest published major in terms: 'A provider MUST NOT pick, and MUST NOT resolve to the highest published major: that is the fail-open inversion V-5 found, and it is forbidden by name.' MT-1 is the same failure with the sign reversed — a silent resolution AWAY from what the caller planned over. And it does not disagree with the GRANT, which is correct and binding; it disagrees with §3's own PLAN, which nothing on the wire carries.\n\nTHE FOLD. Additive, KCB-only, two edits: §3 names the version a leg was MATCHED OVER, so a plan says what it planned against; and §4.4c refuses a resolved major that DIFFERS from a presented plan leg — the same instrument §4.4c and §5 already use, refusing where a value could mean two things and no party is entitled to guess. Nothing here requires a caller to pin, nothing makes the plan binding on the provider, and a consumer content to follow a provider's single published major carries nothing and stays conformant (§4.4e).\n\nTHEN RE-RUN COUNT (i). That re-run is also KMI's second condition, so a clean walk here is worth more than one spec's count — but it closes only KCB count (i), and KCB's other four counts are untouched.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "§3's path plan names the version each leg was matched over",
+      "description": "The plan is built over a specific version by §3's own ranking rule and says so nowhere. Make it say so.",
+      "acceptanceCriteria": [
+        "§3's *Composition* bullet (and the path result it describes) names the `(name, version)` each leg was MATCHED OVER, so a plan carries what it planned against — consistent with §3's *Ranking across versions* rule, which already selects the highest satisfying version.",
+        "Additive and consistent with the rest of §3: the registry still returns ADDRESSES and never proxies (ADR-0001), ranking rules do not change, and a single-registry deployment is conformant unchanged. A consumer MUST ignore fields it does not understand (§7.2), so an older consumer is unaffected.",
+        "The projected cost §3 already returns is reconciled with the named version, so a caller that gates spend on the plan is gating against the same leg it planned over.",
+        "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "§4.4c refuses a resolved major that differs from a presented plan leg",
+      "description": "The refusal instrument §4.4c and §5 already use, applied to the one disagreement they do not currently catch.",
+      "acceptanceCriteria": [
+        "§4.4c refuses an `invoke` whose RESOLVED major differs from the major of a presented plan leg, naming both — the same instrument §4.4c(3) uses for *want of a version* and §5 uses for an unstated `budget_units` unit, and stated as one rule applied again rather than a new convention.",
+        "The grant still binds and is not widened: §4.4c's existing rule that a resolved major outside the granted major is refused at the gate, before the work, is untouched. The new refusal is about the PLAN, which is a different disagreement from the grant.",
+        "The fold does not reintroduce what §4.4c forbids: no default is minted, no highest-published fallback appears, and a refusal is a refusal and not a counter-offer (§4.4e) — a re-dispatch under a different operand is a new `invoke`.",
+        "Additive at every surface: presenting a plan leg is OPTIONAL, an `invoke` carrying none of §4.4's operands against a provider publishing one major behaves exactly as it did at 0.4.9, and no verb, plane, port kind or authority role is added.",
+        "The KCB version move is decided under §7.2's own table and recorded with reasoning; if it moves, all three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it, and §2.3's legacy namespace-root removal declared at KCB 0.6.0 is checked rather than tripped.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Re-run count (i) and give it a verdict",
+      "description": "`e2e-media-transform.md` is the count MT-1 blocks, and its re-run has been outstanding since 2026-07-22 against the 0.3.0 AgentCard-extension shape.",
+      "acceptanceCriteria": [
+        "`scenarios/e2e-media-transform.md` is re-run BY HAND against the folded text, with a per-step verdict recorded in the scenario, and count (i) gets an explicit verdict — including a NOT-clean one with any new delta named.",
+        "The walk is against the PROSE. `kcs:media-transform` ran green in 2026-08 and DR-4 records `kcs:kmi-otio-roundtrip` being that same scenario re-titled over the same fixture, so a green encoding is not evidence about the folded text.",
+        "The record states what a clean count (i) does and does not buy: it is also KMI's second promotion condition, and it closes only KCB count (i) — KCB's other four counts are untouched, so nothing is promoted here.",
+        "A fold disposition for MT-1 is recorded in the fold-disposition reference, reasoning the extent of the fold — in particular that it disagrees with §3's plan rather than with the grant, and that the grant rule is deliberately unmoved.",
+        "`docs/reference/promotability.md` is updated to match what this walk changed.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/930-fold-ma-13-most-restrictive-pair",
+  "dependsOn": [
+    "920-fold-ma-12-fetch-answer-carrier"
+  ],
+  "touches": [
+    "specs",
+    "scenarios",
+    "docs"
+  ],
+  "iters": 8,
+  "warmup": [
+    "sed -n '/license.*and.*egress.*optional; MA-5/,/hard binding/p' specs/media-interchange.md",
+    "sed -n '/The one exception, and it is narrow/,/^\\*\\*f\\./p' specs/media-interchange.md",
+    "grep -n 'MA-13' scenarios/e2e-multi-authority.md ROADMAP.md | head",
+    "grep -n 'most restrictive' specs/fine-tuning.md decisions/ADR-0013*.md | head"
+  ],
+  "description": "Fold MA-13 — the second blocker on KMI count (i), and the half that genuinely is KMI's own work. MA-12's carrier belongs on KCB §4; this one moves no clause outside KMI.\n\nVERIFIED AGAINST THE TEXT (2026-09-12, before this tasklist was authored). The break is real and it is structural:\n\n- §7.1(e) bullet 2 is written over the asset: 'Where an ASSET'S `egress` is `local-only`, it MUST NOT be replicated across an authority-domain boundary and no holder may serve it across one, irrespective of that holder's own policy.'\n- But §2 makes the pair a PER-ASSERTER ENVELOPE FIELD: `license` and `egress` are 'envelope fields, so they are asserted by whoever asserted the envelope and are read off its `prov` — never off the store that served the bytes (§7.1(d))', and both are 'excluded from the id like every other field here'.\n- And the `asset` id binds BYTES: §7.1(a) — 'the `asset` id *is* the hash of the bytes, so the same bytes carry the same id in every store'.\n- So TWO CONFORMANT ENVELOPES FOR ONE ID MAY DISAGREE, and nothing ranks them. §7.1(d) sources the travelling pair from 'the envelope the REQUESTING participant already holds', so a holder with only the permissive copy satisfies bullet 1 (it evaluated the asset's own pair), breaches bullet 2 (the asset's `egress` is `local-only` somewhere it cannot see), and CANNOT DISCOVER the pair that would have stopped it — (d) forbids synthesizing an envelope, and no verb hands it a second one.\n- NO MISBEHAVIOUR AT ANY HOP. That is why §2's attribution answer does not reach it: attribution says whose assertion a pair is, and the question here is which of two honest assertions governs.\n\nTHE FOLD — KMI-ONLY, ADDITIVE, MINTING NO FIELD. Three edits, each held to what the break forces:\n(a) §7.1(d) names the SERVING participant's evaluated pair as the one that travels, closing the gap (d) opens by sourcing it from the requester's copy;\n(b) §7.1(e) states that where a holder has more than one conformant pair the MOST RESTRICTIVE GOVERNS, and a holder MUST NOT prefer its own — ADR-0013's monotone-restrictive discipline reused, exactly as ADR-0014 reuses it, and exactly as KFT §4.2 already takes the most restrictive `egress` across a job's inputs;\n(c) (e) bullet 2's MUST is scoped to the pairs a holder HOLDS OR HAS RECEIVED, leaving the fail-closed default for ABSENCE unchanged — §7.1(e)'s existing rule that a holder without the governing policy MUST NOT serve onward across a boundary, and MUST NOT synthesize the missing pair to pass the gate, is untouched.\n\nWHAT DOES NOT MOVE. No `asset` id moves, no envelope field is added, no KGP clause moves (KGP §7.2 still filters `local-only` RECORDS at pack construction; these fields govern BYTES and are evaluated by the serving participant at `fetch` time), and DEFER-C is unmoved.\n\nTHEN RE-RUN STEPS 8-10 — WITH MA-12, which the same re-run must clear. That is why this depends on `920`: a Steps 8-10 walk that clears only one of the two blockers cannot close count (i), and walking it twice against half-folded text buys nothing.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "§7.1(d) — the serving participant's evaluated pair is the one that travels",
+      "description": "Close the sourcing gap. (d) today takes the travelling pair from the envelope the REQUESTING participant holds, which is how a permissive copy reaches a holder that will then serve under it.",
+      "acceptanceCriteria": [
+        "§7.1(d) names the SERVING participant's evaluated pair as the one that travels with a replicated copy, replacing the current sourcing from the requesting participant's copy, with the reason stated in the text.",
+        "The narrow-exception framing of (d) is preserved: the `license`/`egress` pair remains the SINGLE thing permitted to accompany a replication besides the bytes, precisely because it is not synthesized. No envelope is fabricated, no lineage edge is written, no `prov` record is minted.",
+        "No field is minted and no `asset` id moves. Verified against §2's field list and §7.1(a), not assumed.",
+        "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "§7.1(e) — the most restrictive pair governs, and absence still fails closed",
+      "description": "The ranking rule the break asked for, plus the scoping that keeps it from disturbing what already works.",
+      "acceptanceCriteria": [
+        "§7.1(e) states that where a holder has MORE THAN ONE conformant `license`/`egress` pair for one `asset` id, the MOST RESTRICTIVE governs, and a holder MUST NOT prefer its own. The clause cites ADR-0013's monotone-restrictive discipline as reused — naming that KFT §4.2 already takes the most restrictive `egress` across a job's inputs, so this is one rule applied again rather than a second convention invented.",
+        "(e) bullet 2's MUST is scoped to the pairs a holder HOLDS OR HAS RECEIVED. The existing fail-closed default for ABSENCE is unchanged and said to be unchanged: a holder with bytes and no governing policy MUST NOT serve them onward across an authority-domain boundary, MAY still serve them inside its own domain, and MUST NOT synthesize the missing pair to pass the gate.",
+        "No KGP clause moves and no KGP enforcement point moves — KGP §7.2 still filters `local-only` records at pack construction; these fields govern bytes and are evaluated by the serving participant at `fetch` time. Checked against the text of KGP §7.1/§7.2, not asserted.",
+        "DEFER-C is explicitly unmoved, and a disposition for MA-13 is recorded alongside the existing MA dispositions, reasoning the fold's extent.",
+        "The KMI version move is decided under KMI's own rules and recorded with reasoning; if it moves, all three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it, and KMI's declared removal of `application/vnd.koine.edl+json` at KMI 0.4.0 is checked rather than tripped.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Re-run Steps 8-10 with BOTH folds in the text, and give count (i) a verdict",
+      "description": "MA-12 landed in `920`; MA-13 lands here. One walk, against text carrying both.",
+      "acceptanceCriteria": [
+        "`scenarios/e2e-multi-authority.md` Steps 8-10 are re-run BY HAND against text carrying BOTH the MA-12 and MA-13 folds, with a per-step verdict recorded. Step 9 is the step MA-13 was found on — and the step whose first pass it reversed — so it is the step the walk must answer.",
+        "The walk is against the PROSE, not a replay of the encoding (DR-8: `kcs:multi-authority` returned `green` over six blocking deltas).",
+        "Count (i) gets an explicit verdict, honestly recorded including a NOT-clean one and any new delta. If it closes, the record says so; if it does not, the record names what still blocks it.",
+        "Even on a clean walk the record states that KMI stays Candidate, because its other count is the `e2e-media-transform` re-run and that is KCB's work. `docs/reference/promotability.md` is updated to match what this walk changed.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

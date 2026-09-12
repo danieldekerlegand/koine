@@ -1,0 +1,62 @@
+{
+  "project": "koine",
+  "category": "fix",
+  "branchName": "chief/1000-registry-arg-types-column",
+  "dependsOn": [],
+  "touches": [
+    "registry",
+    "specs",
+    "docs"
+  ],
+  "iters": 7,
+  "warmup": [
+    "head -1 registry/relations.tsv registry/relations/*.tsv",
+    "sed -n '/^### 3.2 Canonicalization rules/,/^### 3.3/p' specs/grounding-pack.md",
+    "grep -n 'arg_types' docs/reference/interop-trial.md",
+    "grep -n 'RELATION_COLUMNS' scripts/check-registry.mjs"
+  ],
+  "description": "An `arg_types` column for the shared relation registry — INT-3, blocking, and the only row in this band with a deadline.\n\nVERIFIED AGAINST THE TEXT (2026-09-12, before this tasklist was authored).\n\nA ROLE IS NOT A TYPE. `registry/relations.tsv` and all three domain tables publish exactly these columns: `relation`, `arity`, `arg_roles`, `symmetric`, `tier`, `domain`, `inverse`, `description` — checked against every header, and hardcoded as `RELATION_COLUMNS` in `scripts/check-registry.mjs`, which fails a file whose header differs. `arg_roles` fixes ORDER; nothing fixes TYPE. So for `cine:reads` with `arg_roles` `frame|text`, nothing says whether `text` is a rule-5 LITERAL or a rule-3 IDENTIFIER.\n\nAND KGP §3.2 CANONICALIZES THE TWO DIFFERENTLY. Rule 3 emits an identifier argument as the canonical CURIE — lowercase namespace and kind, NFC, no percent-encoding beyond what the grammar requires. Rule 5 emits a string literal as NFC wrapped in `\"` with inner `\"` and backslash escaped. Different bytes into `HASH_INPUT`, therefore a DIFFERENT CLAIM ID for one observation, and rule 1 explicitly rests the whole scheme on the registry: 'Arity and the semantic order of arguments are fixed by the registry, so argument order is NOT producer-dependent.' The registry fixes order and leaves type to the producer, which is the gap.\n\nFOUND FROM THE INSIDE, THEN REPRODUCED FROM THE OUTSIDE. koine found it as INT-3 — blocking, with the remedy and the ordering cost in `docs/reference/interop-trial.md` § C3, which already names the fix: 'an `arg_types` column (`id|literal`, positional, parallel to `arg_roles`)'. A producer has since reproduced it independently: its adapter falls back to the `csid` grammar's no-whitespace rule, so `cine:reads(frame-9, \"EXIT\")` emits an entity CURIE where a peer typing the role as a literal emits a string, and two identical observations DO NOT MERGE. Single-token spans — OCR, sign text, short utterances — are where the divergence concentrates, which is where the vocabulary is densest. An independent reproduction is what raises this from a reading to a measurement.\n\nTHE ORDERING IS THE COST. A relation's signature is IMMUTABLE once published — `registry/README.md` states it and gives the reason: changing arity, argument order or symmetry 'would silently change every dependent `claim` id', so a change means a NEW relation name, never an edit in place. The column therefore lands BEFORE the registry has wide production use, or it re-mints every claim that disagrees with it. That is a deadline about adoption, not about effort.\n\nSCOPE NOTE. `scripts/check-registry.mjs` hardcodes the eight relation columns and fails on a header that differs, so the guard moves with the data — that is the check working, not an obstacle. `registry/README.md`'s columns table is the prose statement of the same shape and moves with it too.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "The column, on every relation file, with the guard moved with it",
+      "description": "`arg_types` positional and parallel to `arg_roles`, per the remedy INT-3 already states.",
+      "acceptanceCriteria": [
+        "Every relation file gains an `arg_types` column — `registry/relations.tsv` and all three domain files (`cinematography.tsv`, `media.tsv`, `social.tsv`) — positional and parallel to `arg_roles`, with one entry per argument position and the vocabulary stated (the remedy in `interop-trial.md` § C3 proposes `id|literal`; a wider vocabulary is allowed only if the fold says why).",
+        "Every existing relation is typed — all 29 relation names across the core file and the three domain files, with no position left blank. The count is recorded as observed, not assumed.",
+        "`scripts/check-registry.mjs` moves with the data: `RELATION_COLUMNS` includes the new column, so a relation file missing it fails, and the guard still enforces that every file's last column is `description`. The guard failing on the old header is the check working — it is updated, never bypassed.",
+        "`registry/README.md`'s columns table gains the row, describing what the column fixes and citing the KGP rules it feeds, alongside the existing rows for `arg_roles` (rule 1) and `symmetric` (rule 2).",
+        "GATES: `node scripts/check-registry.mjs` green with the observed row counts recorded, plus `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh`."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "KGP §3.2 reads the column, so one observation mints one claim id",
+      "description": "The column is inert unless the canonicalization rules point at it. Rules 3 and 5 are the two branches that must stop being a producer's choice.",
+      "acceptanceCriteria": [
+        "KGP §3.2 states that an argument's TYPE is fixed by the registry, exactly as rule 1 already states that arity and argument order are — so which of rule 3 (canonical CURIE) and rule 5 (typed literal) applies to a position is read from the registry and is NOT producer-dependent.",
+        "The worked case is settled in the text: `cine:reads(frame-9, \"EXIT\")` canonicalizes ONE way for all producers, and a producer whose fallback heuristic disagrees with the registry is non-conformant rather than differently-opinionated.",
+        "A producer with no `arg_types` value to read — an older registry copy, or a relation published before the column — meets a stated rule rather than a silence, and that rule is written down.",
+        "The KGP version move is decided under KGP's own rules and recorded with reasoning. KGP is the one RATIFIED spec in this repo, so whether this is a clarification or a normative change is answered explicitly, and if the version moves all three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Close INT-3, and say what the deadline was about",
+      "description": "The finding is recorded in two places and reproduced in a third. Close it where it lives, with the ordering cost stated so the next vocabulary addition inherits the rule.",
+      "acceptanceCriteria": [
+        "INT-3 is marked closed in `docs/reference/interop-trial.md` with what landed and where, and the independent outside reproduction is recorded as corroboration — an adapter falling back to the `csid` no-whitespace rule, two identical observations failing to merge, the divergence concentrating on single-token spans.",
+        "The ordering cost is written down as a standing rule, not as a one-off note: a signature is immutable once published, so a typing column lands before wide production use or it re-mints every claim that disagrees with it. A later reader adding a relation must meet that rule.",
+        "The producer that reproduced it is referred to BY ROLE, never by repository or product name — this repo is public and its rows are role-scoped and product-agnostic by design.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

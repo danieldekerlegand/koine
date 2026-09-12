@@ -1,0 +1,64 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/940-fold-v-9-and-v-11",
+  "dependsOn": [],
+  "touches": [
+    "specs",
+    "scenarios",
+    "docs"
+  ],
+  "iters": 8,
+  "warmup": [
+    "sed -n '/^### 7.1 A capability is/,/^### 7.2/p' specs/capability-bus.md",
+    "grep -n 'payload_schema_id' specs/capability-bus.md",
+    "grep -n 'V-9\\|V-11' scenarios/e2e-live-schema-mutation.md | head -20",
+    "sed -n '/^## 4. Verbs/,/^### 4.1/p' specs/capability-bus.md"
+  ],
+  "description": "Fold V-9 + V-11 — two findings of the 2026-09-03 re-run of count (ii), both on §7.1, both additive, both KCB-only. One edit.\n\nVERIFIED AGAINST THE TEXT (2026-09-12, before this tasklist was authored).\n\nV-9 — `payload_schema_id` IS NOT CONSUMER-VERIFIABLE. §7.1 states a canonicalization for `schema_id` in five numbered steps (keep only shape keys; normalize values; normalize the serialization; hash and prefix; name the rule) and states NONE for `payload_schema_id`. The 0.5.0 fold made `payload_schema_id` a shape key kept INSIDE that canonicalization, and described it as a digest 'over its own canonical declaration of that payload' — but no verb retrieves that declaration. §4's five verbs are `discover`, `describe`, `invoke`, `subscribe`, `fetch`; `describe` fetches the AgentCard plus `tools/list` tool schemas, and `fetch` is a CAS GET by `asset` id. So a consumer told by §2.1 that a payload cross-check EXISTS cannot perform it: it holds a digest, and nothing hands it the bytes the digest is over. §7.1's *falsifiability is the point* paragraph — 'a consumer recomputes the digest from the card it fetched itself and compares it against the published value' — is true of `schema_id` and false of `payload_schema_id`.\n\nV-11 — THE RULE ID IS `MAY` ON THE BRANCH THAT NEEDS A `MUST`. §7.1 step 5 reads: 'A `schema_id` MAY carry a canonicalization rule id in its prefix, as `sha256/<rule>-<lowercase hex>`. An absent rule id means `kcb1`.' The MUST NOT lands on the branch that does not need it — 'a provider MUST NOT emit a `kcb2` prefix for such a port', where 'such a port' is one declaring NO `payload_schema_id` and therefore canonicalizing byte-identically under both rules. There is no MUST on the branch that does: a port that DOES declare a `payload_schema_id` digests differently under `kcb2` than under `kcb1`, and may publish that digest under the absent prefix, which step 5 defines to mean `kcb1`. A consumer then compares two digests computed under two rules while believing them comparable — restoring exactly the non-recoverable *silent mutation* verdict V-3's fold was written to prevent.\n\nTHE FOLD. Additive, KCB-only, one §7.1 edit: state a canonicalization for `payload_schema_id` and a way for a consumer to obtain the declaration it digests (or, if the honest answer is that the cross-check cannot be made verifiable without a verb KCB does not have, say THAT normatively and make §2.1/§7.1 read consistently with it rather than promising a check that cannot be performed); and turn step 5's rule id into a MUST on the branch whose digest depends on it, leaving the absent prefix meaning `kcb1` so NO PUBLISHED DIGEST MOVES.\n\nTHEN RE-RUN COUNT (ii). Expect it NOT to close on this tasklist alone: V-10 is the third finding of the same re-run and lands in `950`. Record the verdict honestly rather than implying the count moved.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "V-9 — a payload cross-check a consumer can actually perform, or an honest statement that it cannot",
+      "description": "§7.1 promises a cross-check and gives a consumer no way to run it. Close the gap, or state the limit normatively — but do not leave a clause that reads as a check and is not one.",
+      "acceptanceCriteria": [
+        "§7.1 states a canonicalization for `payload_schema_id` with the same determinism its five `schema_id` steps have, so two providers declaring the same payload produce the same digest and one provider re-serializing produces no drift.",
+        "The declaration the digest is over is OBTAINABLE by the consumer that is told a cross-check exists — verified against §4's five verbs rather than assumed (`describe` fetches the card plus `tools/list` tool schemas; `fetch` is a CAS GET by `asset` id). If the honest conclusion is that no existing verb carries it, the fold says so NORMATIVELY and makes §2.1 and §7.1 read consistently with that limit instead of promising a check nothing can perform; adding a sixth verb is out of scope for this fold and any such finding is recorded rather than built.",
+        "§7.1's *falsifiability is the point* paragraph is made true of both digests, or is scoped to the one it is true of. A reader must not be able to come away believing `payload_schema_id` is recomputable when it is not.",
+        "Additive and KCB-only: no verb is added, no plane or port kind is added, `payload_schema_id` stays OPTIONAL, and a card conformant at 0.5.0 stays conformant. Checked against the text.",
+        "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "V-11 — the rule id becomes a MUST on the branch whose digest depends on it",
+      "description": "Step 5's MAY sits on the branch that needs a MUST, and its MUST NOT sits on the branch that does not. Swap the strengths without moving a published digest.",
+      "acceptanceCriteria": [
+        "§7.1 step 5 requires (MUST) a canonicalization rule id on a digest whose value DEPENDS on the rule — a knowledge port declaring a `payload_schema_id`, which digests differently under `kcb2` than under `kcb1`.",
+        "The absent prefix still means `kcb1` and NO PUBLISHED DIGEST MOVES. The existing MUST NOT on emitting a `kcb2` prefix for a port that canonicalizes byte-identically under both rules is preserved, so the two branches now carry opposite, correct strengths.",
+        "The consumer-side rules are unchanged and re-checked: an unknown rule id is read as *no cross-check available*, never as a defect and never as a mutation (§7.2); comparison is meaningful only between digests computed under the same rule id; growing §2.1's shape vocabulary again mints the NEXT rule id.",
+        "V-3's verdict is restored in the text rather than in a comment: the case §7.2 makes non-recoverable is reserved for the same rule, the same port, a moved digest and an unmoved version — and a `kcb2` digest published under the absent prefix can no longer reach it.",
+        "The KCB version move is decided under §7.2's own table and recorded with reasoning; if it moves, all three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it, and §2.3's legacy namespace-root removal declared at KCB 0.6.0 is checked rather than tripped.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Re-run count (ii), and record honestly that V-10 still stands",
+      "description": "The re-run is what the fold exists for. It is not expected to close the count — V-10 gates (ii) too and lands in `950`.",
+      "acceptanceCriteria": [
+        "`scenarios/e2e-live-schema-mutation.md` is re-run BY HAND against the folded text for the steps V-9 and V-11 were found on, with a per-step verdict recorded in the scenario's re-run section.",
+        "The walk is against the PROSE: DR-7 records `kcs:live-schema-mutation` returning `green` over four blocking deltas, and the encoding still predates the 0.5.0 fold, so its exit code is not evidence about this one either.",
+        "The verdict is recorded honestly and the record states that count (ii) does NOT close while V-10 stands. Fold dispositions for V-9 and V-11 are added to the capability-versioning fold-disposition reference, each reasoning the fold's extent.",
+        "`docs/reference/promotability.md` is updated to match what this walk changed, and states that KCB's other counts are untouched by it.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

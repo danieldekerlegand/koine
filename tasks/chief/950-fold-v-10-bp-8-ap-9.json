@@ -1,0 +1,67 @@
+{
+  "project": "koine",
+  "category": "unblock",
+  "branchName": "chief/950-fold-v-10-bp-8-ap-9",
+  "dependsOn": [
+    "940-fold-v-9-and-v-11"
+  ],
+  "touches": [
+    "specs",
+    "scenarios",
+    "docs"
+  ],
+  "iters": 8,
+  "warmup": [
+    "sed -n '/^### 7.2 The subscriber-compatibility rule/,/^### 7.3/p' specs/capability-bus.md",
+    "sed -n '/^\\*\\*g. A live subscriber is told/,/^### 7.4/p' specs/capability-bus.md",
+    "grep -n 'volume\\|effect' specs/capability-bus.md | sed -n '1,40p'",
+    "sed -n '/^## Decision/,/^---/p' decisions/ADR-0014-federated-merge-merges-attributions.md | tail -20"
+  ],
+  "description": "Fold V-10 + BP-8 + AP-9 — ONE EDIT, THREE FINDINGS. They are filed as three because three different pressure tests returned them, and they are folded as one because they are one hole: §7.2's normative table does not govern the two operands added after it was written, and the one clause that tries to route around the gap points at frames that do not exist.\n\nVERIFIED AGAINST THE TEXT (2026-09-12, before this tasklist was authored).\n\nHALF ONE — THE TABLE HAS NO ROW (V-10 / BP-8 / AP-9). §7.2's normative table has thirteen rows and NOT ONE of them is `volume` or `effect`. Both operands nevertheless declare a minor in their own sections: §4.2a says of `volume` that 'changing it is a minor bump on the capability that carries it (§7.2) — the version moves, so a pinned subscriber can see it — exactly as a re-price is', and §4.3a says of `effect` that 'it sits outside the port's `schema_id` digest exactly as `cost` does … is a minor bump on the capability that carries it (§7.2), so the version moves and a pinned consumer sees it'. So two sections declare a bump that the table governing bumps does not authorize — and the nearest row that would reach them ('Editorial only — `description`, examples; no `schema_id` change') reads PATCH. ADR-0014 names this exposure explicitly and declines to close it: 'no bump row for `volume` or `effect` — the exposure is recorded above, and closing it is a §7.2 change that belongs to whichever pressure test breaks it.' Three pressure tests have now broken it.\n\nHALF TWO — A MUST ROUTED TO FRAMES THAT DO NOT EXIST (V-10). §7.2's `binding` row reads: 'Change a capability's transport `binding` (§2.4) | minor | No — but a live `subscribe` MUST be told on §4.2d's channel (§7.3g), never left to a failed dial.' §2.4 routes the same way: 'A live `subscribe` learns of it on §4.2d's control channel, alongside the §7.3g signals, and never by a failed dial.' But §7.3g names exactly THREE frames — `successor_published`, `deprecated`, `removal` — and NONE of them announces a binding change. Two clauses state a MUST and point at a frame table that cannot carry it.\n\nWHY ALL THREE ARE THE SAME AXIS. ADR-0014 named it and tabulated it: an operand kept OUTSIDE the `schema_id` digest, with a declared consequence, and nothing carrying it. `cost` and `binding` are rescued by the `version` their declared bump moves; `volume`, `effect` and the deprecation marking are not rescued at all, because no bump row moves a version for them. §7.1 step 1 confirms the digest half from the other side: `description`, `cost`, `volume` (§4.2a), `effect` (§4.3a), `version` and `binding` are all dropped before hashing, by name.\n\nTHE FOLD. Additive, KCB-only. Give §7.2's table the rows the two operands' own sections already declare, and give §7.3g's frame table whatever the `binding` MUST needs — a fourth frame, or a re-routing of that MUST onto a mechanism that exists. It gates counts (ii), (iv) AND (v), which is why it is one tasklist and not three: three separate edits to §7.2 would collide, and three separate re-runs of three counts over one hole would each be re-reading the other two's absence.",
+  "userStories": [
+    {
+      "id": "US-1",
+      "title": "§7.2's table governs `volume` and `effect`",
+      "description": "Two sections declare a bump the table does not authorize. Put the rows in the table that governs bumps, so the declaration and the authority agree.",
+      "acceptanceCriteria": [
+        "§7.2's normative table gains a row for a change to `volume` (§4.2a) and a row for a change to `effect` (§4.3a), each stating the bump and whether it breaks a live subscriber, and each agreeing with what §4.2a and §4.3a already declare in their own text — a minor, so the version moves and a pinned subscriber can see it.",
+        "The disagreement the fold removes is stated on the record: before this edit the nearest applicable row read PATCH, and ADR-0014 had named the exposure and deferred it to 'whichever pressure test breaks it'. Three did — V-10, BP-8 and AP-9.",
+        "The merge-key consequence is followed through to §3.1(d): an operand rescued by a declared bump is rescued by the `version` the bump moves, not by the key, and the text says which of `cost`, `binding`, `volume`, `effect` and the deprecation marking are now rescued and which are not.",
+        "§7.1 step 1's key set does NOT change: `volume` and `effect` stay outside the `schema_id` digest, so no published digest moves. Verified against step 1's explicit drop list, not assumed.",
+        "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-2",
+      "title": "The binding MUST points at a frame that exists",
+      "description": "§7.2's `binding` row and §2.4 both route a MUST to §4.2d's channel citing §7.3g, and §7.3g's three frames do not include this one.",
+      "acceptanceCriteria": [
+        "The MUST that §7.2's `binding` row and §2.4 both state is carried by a mechanism that EXISTS: either §7.3g's frame table gains the frame that announces a changed `binding`, or the MUST is re-routed onto a named mechanism that already carries it. A dangling citation is not an acceptable outcome, and neither is deleting the MUST.",
+        "If a frame is added it obeys §7.3g's own rules: it rides §4.2d's EXISTING in-band control channel and mints no second signalling mechanism, it PRECEDES the fact it announces, a subscriber that does not understand it ignores it (§4.2d), and a producer that emits none is detectable rather than merely silent so a scenario can assert its absence (KCS §5).",
+        "§2.4's own bounded-on-purpose paragraph is preserved: no provider is required to serve two majors at two endpoints, no naming convention for transport ids is defined, `binding` does not become a discovery key, and §7.1's ban on version-in-the-name is untouched.",
+        "§7.3g's stated boundary is unchanged: a discovery binding with no stream open, and a grant (§5), still have no channel, and DEFER-D (a cadence or TTL) stays deferred with its trigger intact.",
+        "The KCB version move is decided under §7.2's own table — now including the rows this tasklist added — and recorded with reasoning; if it moves, all three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it, and §2.3's legacy namespace-root removal declared at KCB 0.6.0 is checked rather than tripped.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-3",
+      "title": "Three counts, three verdicts — (ii), (iv) and (v), each gating only its own section",
+      "description": "One edit, three pressure tests. Each count gets its own recorded verdict; a combined verdict destroys the structure the five counts exist to keep.",
+      "acceptanceCriteria": [
+        "The three legs are re-run BY HAND against the folded text for the steps their findings were on — `e2e-live-schema-mutation.md` (V-10, count (ii)), `kcb-subscription-firehose.md` (BP-8, count (iv)) and `kcb-cross-owner-posture.md` (AP-9, count (v)) — with a SEPARATE recorded verdict per count, each against the section it gates.",
+        "Count (ii)'s walk is made against text that also carries `940`'s V-9/V-11 fold, which is why this tasklist depends on it: a count (ii) re-run over half the findings of one re-run cannot close it.",
+        "Every walk is against the PROSE. DR-7 records `kcs:live-schema-mutation` returning `green` over four blocking deltas, and that encoding still predates the 0.5.0 fold — an exit code is not a verdict here.",
+        "Verdicts are recorded honestly including NOT-clean ones and any new deltas, and the record names what still blocks each of the three counts. Fold dispositions for V-10, BP-8 and AP-9 are added to the fold-disposition reference, reasoning why one edit answers three findings.",
+        "`docs/reference/promotability.md` is updated to match what these walks changed, and states plainly that KCB is not promoted by this tasklist even on three clean re-runs, naming the conditions that remain.",
+        "GATES: koine's six checks green, with observed output recorded."
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
