@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.5.6
+**Spec version:** 0.5.7
 **Status:** Candidate
 **Last updated:** 2026-09-12
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -9,6 +9,45 @@ capability consumers (most participants are both provider and consumer).
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
+> **Status note (0.5.7):** stays **Candidate** on the same **six** counts, and **none of them
+> moves.** 0.5.7 is the second half of the **MT-1** fold, and it is the half that **refuses**. 0.5.6
+> made the disagreement sayable — §3's path result now names the **`(name, version)` each leg was
+> matched over** — and a statement nothing reads is not yet a rule: §4.4c's resolution order ran on the
+> operand and the grant alone, so a caller that planned over a top-ranked successor and holds a
+> predecessor grant was still served the **predecessor**, now holding a plan that said so and having no
+> way to present it. §4.4c therefore gains one further rule and one OPTIONAL operand: an `invoke`
+> executing a planned leg MAY carry **`planned_leg`** — the `(name, version)` §3 named for that leg,
+> carried as §3 returned it — and where the **resolved** major differs from the major of the presented
+> leg the provider MUST refuse **plan mismatch**, naming **both**. That is not a new convention but
+> **the instrument this bus already shares**, applied a third time: §5 refuses a `budget_units` ceiling
+> whose unit is unstated (MA-6), §4.4c(3) refuses for want of a version where more than one major is
+> published, and a plan that disagrees with what was resolved is refused the same way — *where a value
+> could mean two things and no party is entitled to guess, refuse rather than assume*. Five things are
+> stated rather than left to be derived: the comparison is on the **major and only the major**, so an
+> ordinary compatible upgrade (`1.4.0` resolved against major 1) is **not** a mismatch; a presented leg
+> naming a different capability is refused and **never ignored**, silent discard being the exact
+> silence MT-1 is about; the operand is a **cross-check, never an operand of resolution** — applied
+> after the order has resolved, never a fifth case of it, never a stand-in for a missing `version`, and
+> minting **no default and no *highest published* fallback**, so the fail-open inversion **V-5** found
+> is not reintroduced from the other side; the **grant is untouched and is a different party** — a
+> resolved major outside the granted major is still refused at the gate, before the work, and nothing
+> here widens a grant; and a *plan mismatch* refusal is a **refusal, not a counter-offer** (§4.4e), a
+> re-dispatch under a different operand being a new `invoke`. **Patch, and the axis is named rather
+> than assumed** — §7.2's table governs **a published capability's** bumps and decides nothing about
+> KCB's own spec version, which moves on §7.3b's axis; the table is consulted for the two questions it
+> *does* answer and both are **No** (no published digest moves, no live subscriber breaks). Additive at
+> every surface: the operand is OPTIONAL on read and on write, an `invoke` carrying none of §4.4's
+> operands against a provider publishing one major behaves exactly as it did at 0.4.9, **no verb,
+> plane, port kind, grant or authority role is added**, no ranking rule and no resolution case changes,
+> a caller that presents no plan is served exactly as at 0.5.6, **§7.1 step 1's kept and dropped sets
+> are byte-unchanged so no published `schema_id` or digest moves**, §7.2's table is undisturbed, and
+> **0.6.0 stays spoken for** by §2.3's legacy-extension-URI-root removal — checked, not tripped. **No
+> count closes and none is added**: MT-1 was found inside count **(i)**'s own walk, so that count
+> changes shape rather than gaining a sibling, this clause re-enters validation there rather than on
+> §7.5's, and a fold does not close its own gate. What remains of count (i) is the **re-run** of
+> [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) against text carrying
+> both halves.
+>
 > **Status note (0.5.6):** stays **Candidate** on the same **six** counts, and **none of them
 > moves.** 0.5.6 is the first half of the **MT-1** fold — the finding count **(i)**'s 2026-09-03
 > walk of
@@ -1766,6 +1805,60 @@ Two rules bound the outcome:
   things and no party is entitled to guess, this bus refuses rather than assumes. The two clauses are
   one rule applied twice, not two conventions.
 
+**A presented plan leg is a cross-check, and a mismatch is refused by name (MT-1).** Since 0.5.6 §3's
+path result names the **`(name, version)` each leg was matched over**, so a caller executing a planned
+leg holds a second statement of which capability it meant — one the resolution order above could not
+read, because nothing on the wire carried it. An `invoke` MAY therefore carry an OPTIONAL
+**`planned_leg`** — the `(name, version)` §3 named for the leg this call executes, carried as §3
+returned it — in the operand shape (a) established and (d) reuses. The following are NORMATIVE:
+
+- **A mismatch is refused, naming both.** Where `planned_leg` is present and the major resolved by the
+  order above differs from the major of the presented leg, the provider MUST refuse **plan mismatch**,
+  naming the major it resolved **and** the major the caller planned over. This is the instrument of the
+  rule immediately above applied once more, and the third place this bus uses it: where a value could
+  mean two things and no party is entitled to guess — a `budget_units` ceiling whose unit is unstated
+  (§5, MA-6), a version with no operand and more than one major published ((c)(3)), and now a plan that
+  disagrees with what was resolved — KCB refuses rather than assumes. One rule applied three times, not
+  three conventions.
+- **The comparison is on the major, and only the major.** A leg naming `1.4.0` resolved against major
+  **1** is **not** a mismatch — that is what §7.2 makes a minor mean, and refusing it would turn every
+  ordinary compatible upgrade into a refusal. A leg naming `2.0.0` resolved against major **1** is one,
+  and it is MT-1's case exactly.
+- **The presented leg names *this* call's capability.** A `planned_leg` whose `name` is not the
+  capability being invoked is not a plan for this call: the provider MUST refuse, naming both names,
+  and MUST NOT ignore the operand. Discarding it silently would restore the very silence MT-1 is
+  about, and §7.2's ignore-unknown-fields rule does not license it: that rule is about a **field** a
+  party does not understand, and here the field is understood and its **value** is the disagreement.
+- **A leg named at `0.0.0`-unknown is compared like any other.** §3 names a leg matched over an entry
+  carrying no `version` at §7.1's **`0.0.0`-unknown** reading, which is a *value* and not an omission,
+  so where the provider resolves a declared major that is a disagreement and it is refused the same
+  way. Nothing here makes `0.0.0` a wildcard and nothing matches leniently — a lenient match is a
+  guess, which is what this instrument exists not to make — and §7.1 already holds such a capability
+  *"pinnable only by digest"*, so a caller learning at a refusal that it planned over a declaration
+  naming no version is the clause working rather than failing.
+- **It is a cross-check, never an operand of resolution.** The check is applied **after** the order
+  above has resolved, never inside it. A provider MUST NOT use `planned_leg` to select a major, MUST
+  NOT treat it as a fifth case of that order, and MUST NOT let it stand in for a missing `version`
+  operand at (c)(3) — a caller that wants to **select** a major says so with (a)'s `version`, which is
+  the operand that names a target. No default is minted here and no *highest published* fallback
+  appears anywhere in this clause: it only ever **refuses**, and a plan leg binds no provider (§3).
+- **The grant is untouched, and is a different party.** The first rule above stands exactly as written:
+  a resolved major outside the granted major is still refused at the gate, before the work, whether or
+  not a plan leg was presented, and nothing here widens a grant or substitutes for one. The
+  disagreement this clause catches is with **§3's plan** — where the resolution read the grant, the
+  grant is correct and binding, and what is wrong is that the caller planned against something else and
+  no one could say so.
+- **Absent, nothing changes.** An `invoke` carrying no `planned_leg` is served exactly as at 0.5.6, and
+  (e)'s rule stands: no caller is required to pin, to plan, or to present a plan it holds. A provider
+  need not have served the plan, or have seen it — it compares two majors, both of which it can read.
+
+Where `planned_leg` and (d)'s `quoted_cost` are both carried they come from the **same** §3 result,
+whose projected cost is *"the cost of exactly those legs"*: the two operands cross-check one plan on
+its two axes — which leg, and at what price — and neither reserves anything, expires by anything, or
+binds the provider. A *plan mismatch* refusal is a refusal and not a counter-offer (e): it names the
+condition, proposes no version, and a re-dispatch carrying (a)'s `version` — or a re-plan against §3 —
+is a **new** `invoke`.
+
 **d. The quoted cost is an operand, and a mismatch is refused by name (V-1).** *"A cost change is
 never silent"* (§5) was asserted and not mechanized: §3's path search returns the projected cost
 *before* an `invoke`, §5 evaluates the ceiling against the **then-published** cost, and the call
@@ -1796,6 +1889,14 @@ provider's single published major carries nothing and is conformant.
 **§7.5** count (V-5, V-1), so it re-enters validation on that count rather than opening a new one: the
 mutate-live-schema re-run is what exercises it. The other four counts in the status note are restated
 and none moves.
+
+**And the MT-1 rule (0.5.7) adds no count either — it re-enters on a *different* one.** **MT-1** is a
+delta of count **(i)**, the extension-shape re-run of
+[`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md), where §3's path planning
+lives and where the walk found it. The clause above is the enforcement half of that fold (§3's naming
+half landed at 0.5.6), so it re-enters validation on count (i) rather than opening a seventh: that
+re-run against the folded text is what exercises it, and a fold does not close its own gate. The other
+five counts are restated and none of them moves.
 
 ### 4.5 The `fetch` response — an absence that answers (0.5.2)
 
@@ -2929,6 +3030,57 @@ most important thing an owner citing this run must understand:
   §7.2's table, §2.4, §4.2, §4.3 and §7.1 included — no canonicalization changes and **no published
   `schema_id` or digest moves**; the edit is three scenario sections, three gate paragraphs, a
   *Pressure test* paragraph and this entry. **All six counts stay open and KCB is not promotable.**
+
+- **0.5.7** (2026-09-12) — **the second half of the MT-1 fold: a plan that disagrees with what was
+  resolved is refused by name.** 0.5.6 made the disagreement **sayable**; a statement no clause reads
+  is not yet a rule. §4.4c resolved on the `version` operand and the grant alone, so the MT-1 case ran
+  unchanged — a caller that planned over the top-ranked successor and holds a predecessor grant served
+  the **predecessor**, with §5's gate satisfied, nothing refused, and now a plan in its hand naming the
+  leg it meant and no way to present it. §4.4c gains one OPTIONAL operand and one rule: an `invoke`
+  executing a planned leg MAY carry **`planned_leg`** — the `(name, version)` §3 named for that leg,
+  carried as §3 returned it, in the operand shape §4.4a established and §4.4d reuses — and where the
+  **resolved** major differs from the major of the presented leg the provider MUST refuse **plan
+  mismatch**, naming the major it resolved and the major the caller planned over. **The instrument is
+  reused, not minted**: §5 refuses a `budget_units` ceiling whose unit is unstated across an authority
+  boundary (MA-6), §4.4c(3) refuses for want of a version where more than one major is published, and
+  this is the same rule a third time — *where a value could mean two things and no party is entitled to
+  guess, refuse rather than assume*. Five boundaries are stated rather than left to be derived. The
+  comparison is on the **major and only the major**: `1.4.0` resolved against major 1 is **not** a
+  mismatch — that is what §7.2 makes a minor mean, and refusing it would make every compatible upgrade
+  a refusal — while `2.0.0` against major 1 is MT-1's case exactly. A presented leg naming a **different
+  capability** is refused and **never ignored**, silent discard being the very silence MT-1 names, and
+  the one place §7.2's ignore-unknown-fields rule does not reach: the field is understood and its
+  *value* is the disagreement. The operand is a **cross-check, never an operand of resolution** —
+  applied after the order has resolved and never inside it, never a fifth case, never a stand-in for a
+  missing `version` at (c)(3), and a caller that wants to **select** still says so with §4.4a's
+  `version` — so **no default is minted and no *highest published* fallback appears**, and the
+  fail-open inversion **V-5** found is not reintroduced from the other side. The **grant is untouched
+  and is a different party**: a resolved major outside the granted major is still refused at the gate,
+  before the work, whether or not a plan leg was presented, and nothing here widens a grant or
+  substitutes for one — where the resolution read the grant, the grant is correct and binding, and what
+  is wrong is that the caller planned against something else. And a *plan mismatch* refusal is a
+  **refusal, not a counter-offer** (§4.4e): it names the condition, proposes no version, and a
+  re-dispatch carrying `version` — or a re-plan against §3 — is a **new** `invoke`. Where `planned_leg`
+  and §4.4d's `quoted_cost` are both carried they come from the **same** §3 result, whose projected
+  cost is *"the cost of exactly those legs"*, so the two operands cross-check one plan on its two axes
+  — which leg, and at what price. **Patch, and the axis is named rather than assumed**: §7.2's table
+  governs *a published capability's* bumps and decides nothing about KCB's own spec version, which
+  moves on §7.3b's axis — the table is consulted for the two questions it does answer, and both are
+  **No**. Additive at every surface: the operand is OPTIONAL on read and on write, an `invoke` carrying
+  none of §4.4's operands against a provider publishing one major behaves exactly as at 0.4.9, no verb,
+  plane, port kind, grant or authority role is added, no ranking rule and no resolution case changes,
+  **§7.1 step 1's kept and dropped sets are byte-unchanged so no published `schema_id` or digest
+  moves**, §7.2's table is undisturbed, and **0.6.0 stays spoken for** by §2.3's
+  legacy-extension-URI-root removal — checked rather than tripped. **No count closes and none is
+  added**: MT-1 was found inside count **(i)**'s own walk, so that count changes shape rather than
+  gaining a sibling; §4.4's *Re-ratification* paragraph records that this clause re-enters validation
+  on count (i) and not on §7.5's, since that is where the delta was filed; and a fold does not close its
+  own gate. **KCB is no more promotable than it was.** Item **(2)** of
+  [`../docs/reference/promotability.md`](../docs/reference/promotability.md) § *The eight things that
+  stand between KCB and `ratified`* — the MT-1 fold — is **written** across 0.5.6 and 0.5.7, exactly as
+  item (1) was written at 0.5.1, and writing a fold is not closing a count: what count (i) now holds is
+  the **re-run**. Items (3), (4), (5) and (8) are unmoved, (6) is downstream under
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and (7) is external to this repo.
 
 - **0.5.6** (2026-09-12) — **the first half of the MT-1 fold: a path plan says what it planned
   over.** Count **(i)**'s 2026-09-03 walk of
