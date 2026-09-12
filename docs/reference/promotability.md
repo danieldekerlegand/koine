@@ -215,12 +215,15 @@ Ranked by what a promotion actually costs from here. This ordering is the point 
    deprecated marking — and observed that only the first two have a declared bump to be rescued by; the
    walks found the other three failing in exactly that way. **V-10, BP-8 and AP-9 are literally one
    edit** to §7.2's table and §7.3g's frame list.
-   **So the shape of the pile is now:** **one clause to write** (ADR-0014, four parts — and it is a
-   precondition of **two** counts, (ii) and (iii), because count (ii)'s walk reproduces it with a
-   **single registry and no peering**, making it a base carrier gap rather than a federation one),
-   **four additive KCB-only folds** collapsing to roughly three edits (MT-1 in §3/§4.4c; V-9 + V-11 in
-   §7.1; V-10 + BP-8 + AP-9 in §7.2/§7.3g; BP-7 in §4.2b/d), then **five re-runs again** — every count
-   having changed shape rather than closed. On top of that sit the two conditions no koine edit reaches:
+   **So the shape of the pile is now:** **five additive KCB-only folds** collapsing to roughly four
+   edits (MA-14 + MA-15 + MA-16 in §3/§3.1(d); MT-1 in §3/§4.4c; V-9 + V-11 in §7.1; V-10 + BP-8 +
+   AP-9 in §7.2/§7.3g; BP-7 in §4.2b/d), then **five re-runs again** — every count having changed
+   shape rather than closed. **ADR-0014's clause is no longer one of them**: it was written at KCB
+   **0.5.1** on 2026-09-12, which removed it as a precondition of count (ii) outright — count (ii)'s
+   walk had reproduced it with a **single registry and no peering**, making it a base carrier gap
+   rather than a federation one, and publishing the carrier discharges that. Count (iii)'s re-run then
+   returned **three defects in the new clause**, which is why item 1 of the register below is a fold
+   rather than a closure: the pile did not shrink, it changed hands. On top of that sit the two conditions no koine edit reaches:
    **DR-7**, count (ii)'s encoding, which *exists* but predates the fold and must be **extended** to the
    scenario's F1–F13 set (ten of thirteen need declared console extensions), and **W3**, ADR-0013's
    retained second-independent-implementation condition on §4.3. **DR-12 and DR-13 are closed** — the
@@ -258,7 +261,7 @@ and the useful output is *why*, plus what would move it next.
 | 3 | KFT | **3 folds, one spec** (FT-W + FT-X in one §4.1/§4.2/§4.3 edit; FT-Y in §5.2/§6) + 2 re-runs + the reopened pin precondition | none — its encoding exists and ran | Cost went **up** twice |
 | 4 | KINP | **none** | the `kcs:multi-authority` **extension** (DR-8), bounded by KCS open question 1 | Cost went **down**; only row with zero koine work |
 | 5 | KMI | **2 folds** (MA-12, two-spec; MA-13, KMI-only) + 1 re-run | DR-4, DR-8/DR-7 · **plus all of KCB count (i)** | Cost went **up** twice |
-| 6 | KCB | **1 clause** (ADR-0014) + **4 folds ≈ 3 edits** + 5 re-runs | DR-7's extension · ADR-0013 **W3** | Cost went **up** sevenfold |
+| 6 | KCB | **5 folds ≈ 4 edits** (ADR-0014's clause written 2026-09-12; count (iii)'s re-run returned MA-14/MA-15/MA-16 in its place) + 5 re-runs | DR-7's extension · ADR-0013 **W3** | Cost went **up** sevenfold, then **sideways** on 2026-09-12 |
 
 Three things this table says that the prose above says only in pieces:
 
@@ -344,6 +347,16 @@ KMI, **ADR-0014**'s four-part clause for KCB — followed by another re-run of t
 three remainders are **unowned by any tasklist in any repo**, and an unowned gate is the honest state,
 recorded as such here rather than parked against a tasklist that would make it look scheduled.
 
+**Updated 2026-09-12 — KCB count (iii)'s remainder changed hands rather than closing.** ADR-0014's
+clause was written at **KCB 0.5.1**, the re-run it unblocked was walked by hand the same day, and the
+2026-09-03 blocker **does not reproduce**: the carrier exists on both surfaces §7.3d names, the merged
+entry's marking is no longer undefined, and §3.1(e) is no longer structurally unable to fire. Step 6
+flips, Step 7 half-flips, and **Step 5 does not flip** — three new deltas against the new clause
+(**MA-14**, **MA-15**, **MA-16**), all additive, all KCB-only, **one edit between them**, and still
+**unowned**. Count (iii) now reads *fold MA-14/MA-15/MA-16, then re-run Steps 5–7 again*. Count (ii)
+loses ADR-0014 as a precondition without closing. **No spec version moves for the walk, and KCB is no
+more promotable than it was.**
+
 **And neither KCB nor KMI moved a step closer to `ratified` on this walk, even in the counterfactual
 where it had been clean.** KCB has **five** counts and KMI **two**; Steps 5–7 clear at most one of
 KCB's and Steps 8–10 at most one of KMI's, and KMI's other count is KCB's work to discharge. This is
@@ -354,8 +367,9 @@ is stated here because this walk is the first event that could have invited it.
 dismiss.** All five of KCB's counts and both of KMI's have now been re-run; **none closed**, so the
 paragraph above holds on the facts. But the interesting version is the one where they had all come back
 clean, and it is worth writing down because it is the shape of every future promotion argument on this
-page: **KCB would still not be promotable** — count (iii) rests on ADR-0014's unwritten clause, §4.3
-carries ADR-0013's **W3**, and count (ii) carries **DR-7** — and **KMI would still not be promotable**,
+page: **KCB would still not be promotable** — count (iii) rested on ADR-0014's then-unwritten clause
+and now rests on the three findings its re-run returned (MA-14/MA-15/MA-16), §4.3 carries ADR-0013's
+**W3**, and count (ii) carries **DR-7** — and **KMI would still not be promotable**,
 because its third condition is the conformance gate and that fails on two documents (**DR-4**,
 **DR-8**/**DR-7**). Five clean walks and two clean walks respectively would have moved **zero** rows on
 this page. A count is a *necessary* condition; the page's whole reason for existing is that a reader
@@ -381,7 +395,7 @@ against a tasklist that would make it look otherwise.
 
 | # | What | Where it lands | Kind | Owner |
 |---|---|---|---|---|
-| 1 | **[ADR-0014](../../decisions/ADR-0014-federated-merge-merges-attributions.md)'s four-part clause** — a carrier for §7.3's deprecated marking and removal version; a registry MUST NOT synthesize a value for a field outside the merge key; where the field is a gate, the restriction wins; none of it licenses reconciling two authorities | KCB §2/§3 — **counts (ii) and (iii)**, and it moves no version | koine, additive | **unowned** |
+| 1 | **MA-14 + MA-15 + MA-16 — one edit, three findings.** [ADR-0014](../../decisions/ADR-0014-federated-merge-merges-attributions.md)'s four-part clause **is written** (KCB **0.5.1**, 2026-09-12), and the count (iii) re-run it unblocked returned three defects in it: §3.1(d)(i)'s **per-attribution form is not a shape** (MA-14); (i) and (ii) **collide on `deprecated`**, with §7.3d defining *marking* as the field, so the derived reading is circular (MA-15); and the merge rule reaches a **capability entry** while the address and issuer list a consumer dials with ride on the **manifest**, where (e) is circular for a disputed `params.mcp` (MA-16). MA-14 and MA-15 are in the ADR's Decision verbatim; the decision is **not** reopened | KCB §3/§3.1(d) — **count (iii)**; count (ii) no longer waits on it, the carrier being published | koine, additive | **unowned** |
 | 2 | **MT-1** — §3 names the version a path leg was matched over; §4.4c refuses a resolved major that differs from a presented plan leg | KCB §3/§4.4c — count (i) | koine, additive | **unowned** |
 | 3 | **V-9 + V-11** — a canonicalization for `payload_schema_id` and a verb that retrieves what it digests; §7.1 step 5's rule id promoted to a MUST on the branch that needs it | KCB §7.1 — count (ii) | koine, additive | **unowned** |
 | 4 | **V-10 + BP-8 + AP-9** — §7.2's table gains rows for `volume` and `effect`, and §7.3g gains the frames §7.2's `binding` row and §4.3a already route a MUST to. **One edit, three findings** | KCB §7.2/§7.3g — counts (ii), (iv), (v) | koine, additive | **unowned** |

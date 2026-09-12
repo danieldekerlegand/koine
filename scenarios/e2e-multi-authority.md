@@ -457,11 +457,12 @@ demand on a ratified spec. → KCS §5/§7.1.
 | **MA-10** | Med | §7.1(f)'s *pending fetch, never a broken identifier* is right and becomes unfalsifiable under federation: retention is *MAY* (b), no clause requires a minimum replica count or a durable holder, and a consumer polling every reachable store cannot distinguish *not yet propagated* from *no holder remains*. A detectable outage becomes a permanent maybe. | Not a durability mandate — koine specifies contracts, not operations. A **stateable** one: an asset reference MAY name a designated durable holder, and a store MUST be able to answer *not held, and not expected* distinctly from *not reachable*, so a consumer can conclude. | KMI §7.1(b)(f), KCB delta L |
 | **MA-11** | Cleanup | KCS §5 has no vocabulary for an authority boundary — five of this pass's ten assertions have no predicate and three borrow a neighbour's meaning. Every §5 predicate was written for a fabric with one holder of each authority role. | Evidence for KCS open question 1 (*fixed core + escape hatch*); no demand on the ratified spec. | KCS §5/§7.1 |
 
-**MA-12 and MA-13 are not in the table above, deliberately.** Both were returned by the
-**2026-09-03 re-runs** of the folded text, not by this pass, and the table is the record of what the
-2026-08-24 pass found. Each is defined once: **MA-12** in *Re-run — Steps 1–10 walked by hand against
-the folded text*, under Step 10; **MA-13** in *Re-run — Steps 8–10 re-attacked after the KCB walks*,
-under Step 9.
+**MA-12…MA-16 are not in the table above, deliberately.** Every one was returned by a **re-run of
+the folded text** — 2026-09-03 or 2026-09-12 — not by this pass, and the table is the record of what
+the 2026-08-24 pass found. Each is defined once, in the section that found it: **MA-12** in *Re-run —
+Steps 1–10 walked by hand against the folded text*, under Step 10; **MA-13** in *Re-run — Steps 8–10
+re-attacked after the KCB walks*, under Step 9; **MA-14** and **MA-15** in *Re-run — Steps 5–7 walked
+by hand against KCB 0.5.1*, under Step 5; **MA-16** in that same section, under Step 7.
 
 **Not deltas — what this pass tried to break and could not.** **Offline-first minting** survived
 both authorities being gone, including the world-stamp back door, and there is no clause that could
@@ -1231,6 +1232,260 @@ both.
 > the first pass on new delta MA-13.** **No spec version moves and no clause moves** — nothing
 > normative changed in this walk. Count (i) now waits on **two** additive folds, and KMI is not
 > promotable.
+
+---
+
+## Re-run — Steps 5–7 walked by hand against KCB 0.5.1 (2026-09-12)
+
+**What this section is.** KCB's count **(iii)** — the one gating §3.1 alone — read, after the
+2026-09-03 walk above, *write [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s
+four-part clause, then re-run Steps 5–7*. That clause is now written: **KCB 0.5.1** (2026-09-12)
+lands the `deprecated` / `removal_version` carrier in **§2**, **§3**, **§7.1 step 1** and
+**§7.3a/§7.3d**, and the merge rule as the three rules of §3.1(d)'s *Merging attributions merges
+attributions, never contents*. **A fold does not close its own gate**, so this section is the re-run
+the count now names — Steps 5, 6 and 7 walked again against **KCB 0.5.1**, with KINP 0.5.0 and
+KMI 0.3.6 standing where they stood.
+
+**Method, unchanged and for the same reason.** This is a walk of the **prose**, clause by clause,
+with the bias the original pass declares — *prefer finding breaks over asserting correctness* — and
+it is deliberately **not** a replay of `kcs:multi-authority`. **DR-8** is the standing reason and it
+has not weakened: that encoding returned **`green`** over this pass's six blocking deltas, because an
+encoding does not assert a delta its spec has not folded, and it now predates *two* folds rather than
+one. A green run says nothing about clauses written after it was frozen. Steps 1–4 and 8–10 are not
+re-walked here: 0.5.1 moves no KINP and no KMI clause, and count (iii) is Steps 5–7.
+
+### Per-step verdicts (third pass — KCB's steps, against 0.5.1)
+
+| Step | At issue | Verdict |
+|---|---|---|
+| **5** | ADR-0014's clause, as written: §2/§3's carrier, §3.1(d)(i)(ii)(iii) | 🔴 **Does not flip.** The 2026-09-03 blocker **does not reproduce** — the carrier exists and the marking is no longer undefined — but the merge rule breaks twice on its own terms → new deltas **MA-14** and **MA-15**, both blocking, both one additive KCB-only edit. |
+| **6** | MA-7, re-attacked because the fold's merge rule runs on the key a prefix collision corrupts | ✅ **Flips (re-confirmed).** §3.4's disjointness precondition governs the converse, and the fold neither widens MA-7 nor routes around it. |
+| **7** | MA-6, re-attacked; and the merge rule's reach | 🟡 **Half-flips.** MA-6 holds under re-attack, unchanged by 0.5.1. The merge rule reaches a **capability entry** and the thing Step 7 dials rides on the **manifest** → new delta **MA-16** (Med-High). |
+
+### Step 5 — The peered `find` 🔴 *does not flip (new deltas, not the old one)*
+
+**First, the blocker the last walk returned, walked again: it does not reproduce.** The `compose
+1.4.0` case was rebuilt exactly — registry A holding a stale attribution crawled before the provider
+deprecated it, registry B holding a fresh one marked deprecated with its removal version, same
+provider KINP id, same `(name, version)`, same `schema_id` — and the outcome has changed on every
+leg the last verdict rested on:
+
+- **The carrier exists, on both surfaces §7.3d names.** A `params.capabilities[]` entry MAY carry
+  **`deprecated`** (absent = *not deprecated*) and **`removal_version`** (§2), §2's example entry
+  shows both, §3's ranking bullet names them and forbids a registry to *derive, infer, or synthesize*
+  either, §7.3d states that *marked* means the entry carries `deprecated` and *carrying its removal
+  version* means it carries `removal_version`, and §7.3a(ii)(iii) name them as the fields for a
+  retiring capability major. The four clauses that read a marking no field carried now read a field.
+  **`describe` needed nothing minted**: §4's `describe` fetches the provider's AgentCard *including*
+  the KCB extension in one fetch, so §7.3d's *"at discovery or `describe` time"* has a carrier on
+  both sides of the *or*, and §7.3g's `deprecated` frame is grounded on the same field by §7.3a
+  rather than carrying a second, independently-declared fact.
+- **The merged entry's marking is no longer undefined.** §3.1(d)(ii) answers the question the last
+  walk found unanswerable: any attribution marking the capability `deprecated` makes the merged entry
+  deprecated for §7.3d's ranking. The fail-open direction — a consumer shown one entry, ranked as
+  non-deprecated, with no reason to look further — is closed.
+- **§3.1(e) is no longer structurally unable to fire.** (i) requires the disagreement to survive the
+  merge rather than be collapsed by it, which is the precondition (e) was missing.
+- **MA-8, MA-9(i) and MA-9(ii) hold, re-attacked and not carried over.** The horizon still terminates
+  the mutual A↔B and the three-way A→B→C→A re-forwards; the converse still returns **one** entry with
+  **both** `served_by` attributions; `served_by`, `observed_at` and `incomplete[]` still carry (c),
+  (e) and (f). The declared residual is unchanged and still fails safe: `schema_id` is optional (§2),
+  so where a provider publishes none the three-part key cannot be met and both entries come back
+  unreconciled — which, with a marking now on each, means the consumer sees a marked entry beside an
+  unmarked one and §3's ranking puts the marked one lower. Visible, not silent.
+
+**The fold is a faithful transcription of ADR-0014 and the step still does not flip**, on two breaks
+inside the clause itself. Neither reopens the decision; both are the clause saying less than it needs
+to say.
+
+🔴 **BROKE (MA-14, High — blocking). (i)'s per-attribution form is not a shape.**
+
+(i) is a **cardinality switch** that a consumer is normatively required to detect: a field outside
+the merge key is carried *"**once** when every attribution agrees and **per attribution** when they
+do not"*, the per-attribution form *"**is** the mark of disagreement and MUST be machine-readable as
+one"*, and *"a consumer MUST read the second form as *unresolved at the registry*"*. For any of that
+to bind, §3 must say **what the second form is**. It does not. §3's new bullet says *"Nothing is
+added to the result-level shape for them"*; (i) says *"Nothing is added to the result-level shape for
+this; it is per-entry field data, not a second envelope."* Both sentences say what the form is **not**,
+and no clause in §2, §3 or §3.1 names a field, a structure, or a worked example for what it **is**.
+
+Two registries, each satisfying every MUST in (i), therefore emit two incompatible entries for the
+same merge — one nesting the disagreeing field under a per-attribution list, another hanging an
+`attributions[]` sibling off the entry and moving the field into it — and a consumer written against
+either meets the other's entry as an **unrecognised field**, which §7.2's ignore-unknown-fields rule
+tells it to **ignore**. A disagreement that (i) exists to make visible is then read as agreement,
+silently, which is the exact failure mode the rule was written against. §3.1(e) still cannot fire —
+for a new reason. Before 0.5.1 the disagreement was merged away; at 0.5.1 it is carried in a form the
+consumer may not be able to recognise.
+
+**ADR-0014 asked for the thing the clause dropped**, which is what makes this a gap in the writing
+rather than in the decision. Decision part 2 requires the merged entry to *"**mark** that the
+attributions disagree"* — an explicit mark — and the ADR's *Consequences* accepts the cost in exactly
+those terms: *"a federating registry's `find` response **grows a per-attribution shape** for fields
+that in a single-registry deployment are simply the card's."* §3.1(d)(i) renders both as *"the
+per-attribution form **is** the mark of disagreement"*: an **implicit** mark, carried by a shape the
+spec declines to name. That is a strictly weaker clause than the decision's own words, and it is the
+whole of this delta.
+
+Class: **the same one MA-8 folded and V-10 records** — a clause asserted with no carrier — arriving
+one clause further out than the fold that closed MA-8, which is the pattern this scenario's *Fold
+status* section warns about by name. **Fix: additive, KCB-only, §3 + §3.1(d)(i)** — name the
+per-attribution form the way MA-8 named `served_by`, `observed_at` and `incomplete[]`, and state what
+a consumer that does not recognise it may conclude, so §7.2's ignore rule cannot convert a
+disagreement into silence.
+
+🔴 **BROKE (MA-15, High — blocking). (i) and (ii) collide on `deprecated`, and §7.3d makes the
+collision unavoidable.**
+
+Three clauses of one fold, over one field name:
+
+- **(ii)**: if **any** attribution marks the capability `deprecated`, *"the merged entry is
+  **deprecated** for the purposes of §7.3d's ranking **and marking**"*.
+- **§7.3d**, as edited by the same fold: *"**Marked** means the entry the registry returns carries
+  §2's `deprecated`"*, and a registry *"MUST NOT drop, rewrite, or invent either"*.
+- **(i)**: where attributions disagree on a field outside the merge key, *"A registry MUST NOT pick
+  one, prefer its own, prefer the newest, average, or drop the field"*, and the merged entry carries
+  each attribution's own copy.
+
+Disagreement on `deprecated` is simultaneously the case (ii) is written for and a case (i) governs,
+and an implementer has two defensible readings with no clause choosing between them:
+
+- **(A) Carry per attribution only**, and let the deprecation be internal to the registry's ranking.
+  Then §7.3d's *marked* has nothing to read at entry level: a consumer that does not parse the
+  per-attribution form — which, per **MA-14**, it may well not — receives an entry with no
+  `deprecated`, ranked below its peers for no stated reason. That is §7.2's non-recoverable case
+  returning by a different route.
+- **(B) Write `deprecated: true` on the merged entry.** That is *picking one* of two disagreeing
+  attributions' values, forbidden by (i) in terms, with §7.3d's own *MUST NOT … invent* beside it.
+
+The charitable reading — that (ii) states a **derived** property of the merged entry and not an
+assignment to the field — is **circular as written**, because the only thing §7.3d defines *marking*
+as is the field. Nothing in §2, §3, §3.1(d) or §7.3d distinguishes **the field as published** from
+**the merged entry's effective marking**, and the clause needs exactly that distinction to be
+implementable.
+
+**The collision is in ADR-0014's Decision, verbatim, not in the transcription**: part 2 says carry
+each copy and mark the disagreement, part 3 says the merged entry *is* deprecated for §7.3d's ranking
+**and marking**, and the ADR draws no line between the two either. **The decision is not reopened** —
+part 3 is right, and the measured asymmetry that justifies it (a false deprecation costs a ranking
+demotion on an entry that keeps working; a missed one is non-recoverable) survived re-attack intact.
+What is missing is one sentence the ADR never had to write and the spec does.
+
+**Fix: additive, KCB-only, and the same edit as MA-14** — separate the **effective** marking (derived
+under (ii), restriction-wins, what §7.3d ranks and marks on) from the **carried** field (per
+attribution under (i), never synthesized, what (e) resolves against the provider's card), and say
+which of the two a consumer reads for which purpose. **MA-14 and MA-15 are one fold**, in the way
+**V-10 + BP-8 + AP-9** are one edit for three findings.
+
+### Step 6 — Who is `mediastore`? ✅ *flips (re-confirmed)*
+
+Re-attacked rather than carried over, for a specific reason: 0.5.1's merge rule runs on
+`(provider KINP id, (name, version), schema_id)`, and a prefix collision is precisely a corruption of
+the **first** element of that key. If MA-7's fold were load-bearing anywhere, it would be here.
+
+- **§3.4's collision rule is a precondition *on merging*, and the fold inherits it rather than
+  routing around it.** Disjointness MUST be established **before** merging any namespace-attributed
+  result set, and a collision is a reportable defect that blocks attribution for every identifier
+  under the prefix. So §3.1(d)'s converse — and therefore (i), (ii) and (iii) — never runs over a
+  colliding prefix in a conformant deployment.
+- **Attacked from the non-conformant side too**, because a precondition nobody checks is worth
+  testing: suppose two domains federate without establishing disjointness. Two unrelated participants
+  sharing a prefix must *also* agree on `(name, version)` **and** `schema_id` before the converse
+  fires — and `schema_id` is a content digest over the port shapes (§7.1), so an accidental merge
+  needs a digest collision on top of a prefix one. The fold does not widen MA-7's exposure by any
+  measurable amount, and if one ever occurred (ii) fails in the **safe** direction: an unrelated
+  entry is demoted in ranking, still returned, still functional.
+- **The prefix registry's exemption is unmoved.** KINP §3.4 states it as the one deliberately
+  non-federated commons, with the reason and the collision rule; 0.5.1 touches no KINP clause.
+
+✅ **Flips.** 🟡 **The navigability note the last walk filed is unchanged, and is still not a delta:**
+KINP §3.4 points forward at KCB §3.1(c)(d) and KCB §3.1 still does not point back, so a registry
+implementer reading KCB alone merges by namespace without meeting the disjointness precondition that
+governs it. 0.5.1 added a paragraph to §3.1(d) and did not add the back-citation — a citation missing
+in the citing direction, on a fold that had no mandate to add it.
+
+### Step 7 — The address resolves; the call does not 🟡 *half-flips*
+
+**MA-6 holds, re-attacked and not carried over.** All four cases were re-dialled against 0.5.1:
+an `orchestrator`-issued token presented to a domain-B provider accepting only `coordinator` is
+**refused, fail closed**; a provider listing `orchestrator` in `auth.accepted_issuers[]` authorizes
+the call, a federation being a **stated** set of accepted issuers; a provider stating no issuers
+honours only its own domain's, so a single-host deployment is unchanged; and a `budget_units` ceiling
+crossing a boundary states its unit or the `invoke` is refused for want of one. Nothing in 0.5.1
+touches §5, and the deprecation carrier does not reach authorization by any route tried: a deprecated
+capability stays **functional** until its removal version (§7.3f), grants bind to `(capability, major)`
+(§5), and a marking moves neither.
+
+🔴 **BROKE (MA-16, Med-High). The merge rule reaches a *capability entry*; the thing this step dials
+rides on the *manifest*.**
+
+What Step 7 dials is not a capability entry. §3's *Population* bullet indexes the KCB extension's
+`params`, and `params` carries **`mcp`** — the address — and **`auth`** — `scheme`,
+`grants_required`, and MA-6's own `accepted_issuers[]` — at the **manifest** level, beside
+`capabilities[]`. A `find` entry hands a consumer both halves because neither is usable without the
+other: the capability entry says *what*, the manifest half says *where* and *on whose token*.
+
+§3.1(d)'s converse keys on three per-**capability** facts. So two attributions merged into one entry
+may carry two **manifest** halves read at two different times — a provider that moved its
+`params.mcp` between registry A's crawl and registry B's, or that added `orchestrator` to
+`accepted_issuers[]` after the first and before the second. That is not an exotic case; it is the
+ordinary staleness (e) exists for, on the two fields Step 7 actually consumes.
+
+**(i)'s scope does not clearly reach them, and the ambiguity is in the text rather than in the
+reader.** The MUST itself is broad — *"a field outside the merge key"* — but the paragraph that
+frames it enumerates *capability entry* fields (`cost`, `binding`, `volume`, `effect`, `deprecated`,
+`removal_version`) and grounds every one of them in being *"deliberately outside §7.1's digest"*,
+which `params.mcp` and `params.auth` are not in any meaningful sense: they were never candidates for
+it. Both readings are available to an implementer, and under the narrow one a registry may silently
+pick an address.
+
+**And for the address specifically, (e)'s resolution rule is circular.** (e) tells a consumer to
+resolve any disagreement *"against the **provider's own card**"* — which is reached at the address
+that is the field in dispute. §3.1(c)'s resolvable address is the **registry's**, not the provider's,
+so where two attributions disagree about `params.mcp` the consumer has no undisputed route to the
+tiebreaker (e) names. No per-capability field has that property, which is exactly why the fold's own
+reasoning does not reach it: every field (i) enumerates is arbitrable by re-reading the card, and this
+one is the card's own coordinate.
+
+**Med-High, not High, and the reason is stated rather than felt.** Both failure modes are
+**detectable at the dial**: a stale `params.mcp` fails to connect, or serves a card that visibly
+disagrees with the entry; a stale `accepted_issuers[]` fails **closed** under MA-6's own rule, which
+is the direction that costs a refusal and not a breach. Nothing is silently *wrong* — what is missing
+is a stated rule, and one of (e)'s two resolution routes. **Fix: additive, KCB-only, and it composes
+with MA-14/MA-15's edit** — say whether *outside the merge key* reaches manifest-level fields, and
+give (e) a non-circular route for a disputed address (the never-pick-one discipline already has the
+shape: carry both per attribution, oblige the consumer to prefer neither, and let it reach the card at
+either).
+
+### What this re-run does and does not close
+
+| Count | Steps | Outcome |
+|---|---|---|
+| **KCB** — count (iii) of **five**, gating §3.1 alone | 5, 6, 7 | 🔴 **Does not close.** Step 6 flips and Step 7 half-flips; **Step 5 does not flip** → **MA-14** + **MA-15** (one edit), with **MA-16** from Step 7 composing into the same edit. The 2026-09-03 blocker — ADR-0014's unwritten clause — **is discharged**: the clause is written, and none of the three new deltas is that one. |
+
+**The count changed shape rather than closing, for the second time.** It has read, in order:
+*re-run Steps 5–7 against the folded text* (0.4.9) → *write ADR-0014's four-part clause, then re-run
+Steps 5–7* (2026-09-03) → **fold MA-14, MA-15 and MA-16 — one additive, KCB-only §3/§3.1(d) edit —
+then re-run Steps 5–7 again**. Every one of the three is a **carrier** or **scope** break in a clause
+whose model held: (ii)'s restriction-wins rule survived re-attack, (iii)'s no-reconciliation rule was
+attacked directly and did not yield, and the carrier itself does what §7.3a/§7.3d needed.
+
+**KCB's other four counts are untouched by this walk and none moves**, so this re-run promotes
+nothing and a clean one would not have either — **clearing one of five is not a promotion**, and
+items (2)–(5) of
+[`../docs/reference/promotability.md`](../docs/reference/promotability.md)'s register are still
+unowned KCB-only folds, item (6) is downstream and item (7) is external. **No spec version moves and
+no clause moves for this walk**: nothing normative changed in it.
+
+**DR-9 still bounds every federation property here.** Domain B's authority and both CAS stores were
+stand-ins in the 2026-08-24 run, so what a hand-walk establishes is a reading of the contracts, and
+nothing more.
+
+> **Third-pass note (2026-09-12).** Steps 5–7 re-run by hand against **KCB 0.5.1**, the version that
+> writes [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s clause. **The
+> 2026-09-03 blocker does not reproduce.** **Step 6 flips, Step 7 half-flips (MA-16), Step 5 does not
+> flip (MA-14, MA-15)** — three new deltas, all additive, all KCB-only, **one** edit between them, and
+> all **unowned**. **Count (iii) does not close.** No version moves and no clause moves.
 
 ---
 

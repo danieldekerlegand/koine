@@ -172,6 +172,44 @@ the shape of count (iii): it now reads *write this ADR's four-part clause, then 
 and it remains **unowned**. **Still no spec version moves and no count closes**; KCB stays
 **Candidate** on all five and is not promotable.
 
+**Amendment (2026-09-12) — the clause is written, and the re-run it unblocked returned three
+findings against it.** ADR-0014 stopped being *decided-but-unwritten* at **KCB 0.5.1** (2026-09-12,
+patch, `chief/910`). Part 1 landed as the optional **`deprecated`** and **`removal_version`** fields
+on a `params.capabilities[]` entry (§2), carried through §3's `find` response as **entry data** and
+not a second envelope, named on §7.1 step 1's drop list (so **no published `schema_id` moves**) and
+cited by §7.3a(ii)(iii) and §7.3d, which are the clauses that had nothing to read. Parts 2–4 landed
+as §3.1(d)'s *Merging attributions merges attributions, never contents* — (i) MUST NOT synthesize,
+(ii) where the field is a gate the restriction wins, (iii) no reconciliation licensed — each scoped
+*only within* the converse. **This record is no longer the blocker of count (iii)**, and the
+*"Not yet written"* disposition below is superseded by this amendment.
+
+**Count (iii) was then re-run by hand on the same day and did not close, on two defects in the
+clause itself.** Both are in the **Decision above, verbatim**, not in the transcription, which is why
+they are recorded here rather than only in the spec:
+
+- **MA-14** — part 2 requires the merged entry to *"MUST **mark** that the attributions disagree"*,
+  and *Consequences* accepts that the response *"grows a **per-attribution shape**"*. Neither this
+  record nor §3.1(d)(i) ever **names** that shape, and (i) renders the explicit mark as an implicit
+  one (*"the per-attribution form **is** the mark of disagreement"*). A consumer is then normatively
+  required to detect a form the spec does not define, and §7.2's ignore-unknown-fields rule converts
+  an unrecognised one into **agreement**.
+- **MA-15** — part 2 says carry each copy and never pick one; part 3 says the merged entry **is**
+  deprecated *"for the purposes of §7.3d's ranking **and marking**"*; and §7.3d defines *marking* as
+  *the entry carries §2's `deprecated`*. The three land on one field name, and this record draws no
+  line between **the field as published** and **the merged entry's effective marking**. Part 3 is
+  **not reopened** — its measured asymmetry survived re-attack — but it needs that distinction to be
+  implementable.
+- **MA-16** — a third finding, on scope rather than on this record's text: part 2 governs *"a field
+  outside the merge key"*, and the fields a consumer dials with (`params.mcp`, `params.auth`) sit at
+  the **manifest** level rather than on the capability entry, where §3.1(e)'s *resolve against the
+  provider's own card* is **circular** for a disputed address.
+
+**The decision is not reopened and no part is withdrawn.** All three are additive, KCB-only, and one
+§3/§3.1(d) edit between them; the count now reads *fold MA-14/MA-15/MA-16, then re-run Steps 5–7
+again*, and it is **unowned**. The walk is recorded in that scenario's *Re-run — Steps 5–7 walked by
+hand against KCB 0.5.1 (2026-09-12)* section. **No count closes and KCB stays Candidate on all
+five**, so nothing here promotes anything.
+
 ---
 
 ## Consequences
@@ -199,8 +237,9 @@ is the clause to re-read.
 ## Relationship to the specs
 
 - [`../specs/capability-bus.md`](../specs/capability-bus.md) — §2 and §3 gain the carrier; §3.1(d)
-  gains parts 2–4; §7.3a/d gain the pointer. **Not yet written**: the clause lands with counts (ii)
-  and (iii), per the section above. No KCB version moves for this record.
+  gains parts 2–4; §7.3a/d gain the pointer. **Written at KCB 0.5.1** (2026-09-12) — see the
+  amendment above, which also records the three findings the count (iii) re-run returned against the
+  clause. No KCB version moves *for this record*; 0.5.1 is the spec's own patch.
 - No other spec is touched. KINP, KGP, KMI, KFT and KCS carry no merge of a federated discovery
   result — §3.1 is the only place in the fabric where two attributions of one record are merged, and
   KMI §7.1's CAS replication is deliberately *not* an instance: an `asset` id **is** the bytes, so two
