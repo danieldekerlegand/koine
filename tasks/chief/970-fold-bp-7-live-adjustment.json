@@ -29,8 +29,8 @@
         "§4.2g is untouched and re-affirmed: this fixes the SHAPE of the answer, not a latency, a rate, or a liability. Scheduling, queue discipline, buffer sizing, admission policy and the retry curve stay in each participant's own infra.",
         "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "KCB 0.5.7 -> 0.5.8 (patch). §4.2b gains four new normative bullets + one amended tail bullet extending the registration-time honour-or-refuse rule to a live adjustment on §4.2d's channel (`applied` / `cannot-honour` / `unsupported`, silence is not one of them, in §4.2c's shape); §4.2d amended in three places; §4.2g untouched and re-affirmed in terms. Gates observed green: doc-integrity OK (61 markdown files, 1838 relative links, all 3 status tables match headers, capability-bus 0.5.8 candidate), doc-links 0 dead vs 0 on main, schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures), registry OK (31 relation names), tasklist-categories OK (3 tasklists), roadmap-truth OK (coverage 59/59, stale 49 checked none open, park OK). `chief verify` exit 0 RECORDED."
     },
     {
       "id": "US-2",
