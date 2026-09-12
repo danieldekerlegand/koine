@@ -10,9 +10,9 @@ capability consumers (most participants are both provider and consumer).
 carries.
 
 > **Status note (0.5.3):** stays **Candidate** on the same **six** counts, and **none of them
-> moves.** 0.5.3 folds **V-9** of
+> moves.** 0.5.3 folds **V-9 and V-11** of
 > [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) — the
-> structural finding count **(ii)**'s 2026-09-03 re-run left on Step 5. 0.5.0 minted
+> two structural findings count **(ii)**'s 2026-09-03 re-run left on **Steps 5 and 6**. 0.5.0 minted
 > `payload_schema_id` as *the* cross-check a knowledge port's bare `shape` could not be, and the
 > operand was **not consumer-verifiable**: §7.1 stated a five-step canonicalization for `schema_id`
 > and **none** for it, and **no verb retrieved the declaration it digests**, so §7.1's own
@@ -33,10 +33,33 @@ carries.
 > exactly as at 0.5.2. **0.6.0 stays spoken for** by §2.3's legacy-extension-URI-root removal, which
 > this fold has no mandate to discharge; the bump is deliberately **not** declared under §7.2's
 > table, which governs *a published capability* and whose absence of a row for a spec-axis bump is
-> the defect **BP-8/AP-9** found in §4.2a/§4.3a — not repeated here and not fixed here. **No seventh
-> count**: V-9 was found *inside* count (ii)'s own re-run, so the fold changes that count's shape
-> rather than adding one, and the other five are restated unmoved. **KCB is no more promotable than
-> it was** — **V-10** is the third finding of the same re-run and is not folded here.
+> the defect **BP-8/AP-9** found in §4.2a/§4.3a — not repeated here and not fixed here.
+>
+> The same publication folds **V-11**, Step 6's finding: V-3's fold answered canonicalization drift
+> with a **rule id** in the digest prefix and then made **naming it optional**, putting the `MUST NOT`
+> on the branch that does not need a name and **no MUST** on the branch that does — so a provider
+> could canonicalize under **`kcb2`** (step 1 keeps `payload_schema_id`) and publish under a **bare**
+> prefix the section defines to mean `kcb1`, **mislabelling** rather than unlabelling the digest and
+> landing a recomputing consumer on §7.2's **silent mutation** with no rule id present for §7.2's
+> *incomparable* branch to catch. Step 5 gains a third bullet, the **mirror** of the existing
+> `MUST NOT`: emit the rule id of the rule actually used, **except** where that canonicalization is
+> byte-identical to `kcb1`'s for the port in hand. Both arms are stated by the **property** that makes
+> them true and **neither names a rule**, so they carry to the next rule id unchanged; the
+> consumer-side rules are **unchanged and re-checked**; the **correction path** for an already
+> mislabelled digest is stated and is not itself a mutation; and §7.2's *not a silent mutation* bullet
+> now records that its own reservation holds **because** of this MUST. **No published digest moves** —
+> every digest published to date is `kcb1` and stays prefix-free, both key sets are byte-unchanged, no
+> next rule id is minted, and §2's worked card needed no correction. **Patch, and the narrowing is
+> stated rather than hidden**: 0.5.2's text does not determine whether the permissive reading was
+> conformant (the break-test's finding was that it enforces **neither** reading), so making the
+> stricter one normative **disambiguates**; no value moves, nothing is added, `payload_schema_id`
+> stays OPTIONAL, and a digest gaining a correct prefix reads *incomparable*, which is re-discovery
+> and not the non-recoverable verdict. **§2.3's 0.6.0 removal is checked rather than tripped.**
+>
+> **No seventh count**: V-9 and V-11 were both found *inside* count (ii)'s own re-run, so the fold
+> changes that count's shape rather than adding one, and the other five are restated unmoved. **KCB is
+> no more promotable than it was** — **V-10** is the third finding of the same re-run and is not folded
+> here.
 >
 > **Status note (0.5.2):** stays **Candidate**, now on **six** counts. 0.5.2 folds **MA-12** of
 > [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the blocker that
@@ -506,11 +529,12 @@ leg (delta F) the fabric is for (**V-2**). Media ports are protected without thi
 `media_type` names an externally standardized format, and entity ports because `types` are
 registry-controlled; knowledge ports have neither property. Unlike `cost`, `volume` and `effect`,
 `payload_schema_id` **is** shape: it sits **inside** the §7.1 canonicalization as a knowledge-plane
-shape key. It is optional on read and on write — and what a consumer must conclude from a knowledge
-port that carries **none** is fixed in §7.1, not here. So is what one that carries **one** is
-*worth*: §7.1 fixes the canonicalization, and fixes that the cross-check is performable only where
-the declaration the digest covers can be obtained, and **provider-attested** where it cannot
-(**V-9**).
+shape key — so declaring one puts that port's own `schema_id` on the **`kcb2`** rule, which §7.1
+step 5 requires the digest's prefix to **name** (**V-11**). It is optional on read and on write — and
+what a consumer must conclude from a knowledge port that carries **none** is fixed in §7.1, not
+here. So is what one that carries **one** is *worth*: §7.1 fixes the canonicalization, and fixes that
+the cross-check is performable only where the declaration the digest covers can be obtained, and
+**provider-attested** where it cannot (**V-9**).
 
 A port MAY additionally carry an OPTIONAL **`volume`** — the delivery envelope a subscriber to that
 port would be accepting (rate, payload size, asset references per delivery, resume horizon). Volume
@@ -1910,10 +1934,12 @@ provider re-serializing produces no drift:
    key. Step 4's own principle — *a future algorithm is a new prefix, never a reinterpretation* — is
    therefore extended from the **hash** to the **key-set rule**:
 
-   - A `schema_id` MAY carry a **canonicalization rule id** in its prefix, as
+   - A `schema_id` carries a **canonicalization rule id** in its prefix, as
      `sha256/<rule>-<lowercase hex>`. **An absent rule id means `kcb1`** — the key set and
      normalization of 0.4.x — so every digest already published keeps its meaning, nothing is
-     republished, and no already-conformant card moves.
+     republished, and no already-conformant card moves. That default is a **statement, not a
+     silence**: a bare prefix asserts `kcb1` exactly as `sha256/kcb1-…` would, which is why the
+     third bullet below is a MUST and not a SHOULD (**V-11**).
    - This version states **`kcb2`**: `kcb1`'s rules plus the knowledge plane's `payload_schema_id`.
      Because step 2 drops an absent key rather than serializing it, a port that declares **no**
      `payload_schema_id` canonicalizes **byte-identically** under both, and a provider MUST NOT emit a
@@ -1921,11 +1947,36 @@ provider re-serializing produces no drift:
      *does* declare one has changed its shape and its digest moves — which is a minor bump under §7.2
      like any other shape change, so a consumer on the old rule meets a moved digest at a **moved
      version** and takes the ordinary re-discovery path, never the silent-mutation one.
+   - **Naming the rule is a MUST wherever the digest depends on it (V-11).** NORMATIVE, and it is the
+     **mirror** of the MUST NOT above rather than a second rule: a provider MUST emit, in a
+     `schema_id`'s prefix, the rule id of the rule it actually canonicalized under — **except** where
+     that canonicalization is byte-identical to `kcb1`'s **for the port in hand**, which is the case
+     the previous bullet forbids naming, so that a digest which would have been published unchanged
+     at 0.4.x stays comparable to the one that was. Today the exception is exactly a knowledge port
+     declaring **no** `payload_schema_id`, and the MUST is exactly one **declaring** one: step 1 keeps
+     that key and `kcb1` drops it, so the two rules produce different bytes and the label is the only
+     thing that says which. Publishing such a digest under a **bare** prefix is **non-conformant** —
+     the prefix does not merely fail to say `kcb2`, it **says `kcb1`** by the first bullet's default,
+     so the digest is **mislabelled rather than unlabelled**, and a consumer recomputing under the
+     rule it was told gets a different value at an unmoved version and lands on §7.2's **silent
+     mutation**, the one verdict that table makes non-recoverable — reached with **no** rule id
+     present for §7.2's *incomparable* branch to catch it. The two branches therefore carry
+     **opposite** strengths, and each is stated by the property that makes it true rather than by
+     naming a rule: emit the rule id where the value depends on it, never where it does not. The
+     **correction path for a digest already mislabelled is safe, and is not itself a mutation**:
+     re-publishing it with its true rule id changes the prefix and not the hex, and the next bullet
+     holds comparison to digests computed under the **same** rule id — so a consumer that bound to the
+     bare form reads the corrected one as **incomparable** and re-discovers (§3), whether or not it
+     knows `kcb2`. A provider MUST NOT leave a mislabelled digest standing on the ground that
+     correcting it would move a published value.
    - **Comparison is meaningful only between digests computed under the same rule id.** A consumer
      that meets a rule id it does not know MUST read that digest as this section's *no cross-check
      available* default — never as a defect, and never as a mutation (§7.2).
-   - Growing §2.1's shape vocabulary again mints the **next** rule id. Re-interpreting `kcb1` or
-     `kcb2` is non-conformant, for the reason step 4 already gives about the hash.
+   - Growing §2.1's shape vocabulary again mints the **next** rule id, and the two obligations above
+     carry over to it unchanged **because neither names a rule**: a port whose canonicalization under
+     the new rule is byte-identical to `kcb1`'s MUST NOT be prefixed with it, and one whose
+     canonicalization differs MUST be. Re-interpreting `kcb1` or `kcb2` is non-conformant, for the
+     reason step 4 already gives about the hash.
 
    This is also what makes §7.4's archival pin *interpretable* rather than merely resolvable: a digest
    recorded decades out is comparable only if the rule that produced it can be named. §7.4 needs no
@@ -2049,7 +2100,10 @@ Two obligations fall out of that table, and both are normative.
   consumer read it as *no cross-check available* (**V-2**). (ii) A digest carrying a canonicalization
   **rule id** the consumer does not know is *incomparable*, not mutated, and is read the same way
   (**V-3**). The verdict this table makes non-recoverable is reserved for the case it was written for:
-  the same rule, the same port, a moved digest, an unmoved version.
+  the same rule, the same port, a moved digest, an unmoved version. **That reservation holds only
+  because §7.1 step 5 requires the rule id wherever the digest depends on it (V-11)**: a digest
+  produced under one rule and published under the prefix that names another would reach this verdict
+  carrying no rule id for (ii) to catch, which is why the naming is a MUST there and not a SHOULD.
 - **Which major a call runs against is §4.4c's, and it is not a default.** This table governs what a
   provider MAY change under a bump; §4.4 governs which of the published majors an `invoke` reaches.
   The two are complementary and neither substitutes: a provider dual-serving under this table MUST
@@ -2473,8 +2527,12 @@ most important thing an owner citing this run must understand:
 
 ## Changelog
 
-- **0.5.3** (2026-09-12) — **V-9 folded: the payload cross-check is given a canonicalization, and its
-  reach is stated instead of implied.** The structural finding Step 5 of
+- **0.5.3** (2026-09-12) — **V-9 and V-11 folded: the payload cross-check is given a
+  canonicalization and its reach is stated instead of implied, and the canonicalization rule id
+  becomes a MUST on the branch whose digest depends on it.** Two of the three findings count **(ii)**'s
+  2026-09-03 re-run returned, both on §7.1, both additive, both KCB-only.
+
+  **V-9 — the cross-check a consumer could not perform.** The structural finding Step 5 of
   [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) returned
   against count **(ii)** on 2026-09-03. V-2's fold (0.5.0) minted `payload_schema_id` so that a
   knowledge port could carry a payload identity its free-form `shape` could not — and then left the
@@ -2520,6 +2578,60 @@ most important thing an owner citing this run must understand:
   added**: V-9 was found inside count **(ii)**'s own re-run, so that count changes shape rather than
   gaining a sibling, the other five are restated unmoved, and **V-10** — the third finding of that
   re-run — is **not** folded here, so **KCB is no more promotable than it was**.
+
+  **V-11 — the rule id was `MAY` on the branch that needed a `MUST`.** Step 6 of the same re-run.
+  V-3's fold (0.5.0) answered the canonicalization-drift break by putting a **rule id** in the digest
+  prefix with **absent meaning `kcb1`**, and then made naming it optional: the `MUST NOT` landed on
+  the branch that does **not** need a name — a port declaring no `payload_schema_id`, which
+  canonicalizes byte-identically under `kcb1` and `kcb2` — and **no MUST** landed on the branch that
+  does. A conformant provider could therefore canonicalize a port **under `kcb2`**, because step 1
+  keeps `payload_schema_id`, and publish the result under a **bare** prefix that step 5 defines to
+  mean `kcb1`. The digest is then **mislabelled rather than unlabelled**: it names a rule that drops
+  the very key it includes, a consumer recomputes under the rule it was told, gets a different value
+  at an **unmoved version**, and lands on §7.2's **silent mutation** — the one verdict that table
+  makes non-recoverable — with **no rule id present** for §7.2's *incomparable* branch to catch it.
+  That is V-3's own verdict restored through the optionality of V-3's fix, and it is not repaired by
+  reading step 5 charitably: *"re-interpreting `kcb1` or `kcb2` is non-conformant"* governs
+  **re-defining a named rule**, not **omitting the name**, and the section's own default makes the
+  omission a positive assertion rather than a silence. Step 5 gains a third bullet, stated as the
+  **mirror** of the existing `MUST NOT` rather than as a second rule: a provider MUST emit the rule id
+  of the rule it actually canonicalized under, **except** where that canonicalization is byte-identical
+  to `kcb1`'s for the port in hand — today the exception is exactly a knowledge port declaring **no**
+  `payload_schema_id` and the MUST is exactly one declaring one. Both arms are stated by the
+  **property** that makes them true and **neither names a rule**, so they carry over unchanged to the
+  next rule id §2.1's vocabulary mints. Three things are stated rather than left to be derived: the
+  first bullet now says the absent prefix is a **statement, not a silence** (which is why this is a
+  MUST and not a SHOULD); the **correction path** for a digest already mislabelled is safe and is not
+  itself a mutation, since re-publishing it with its true rule id moves the prefix and not the hex and
+  the comparison bullet then makes it **incomparable** to what a consumer bound to, so re-discovery
+  (§3) is the recovery and a provider MUST NOT leave a mislabel standing on the ground that correcting
+  it would move a published value; and §7.2's *not a silent mutation* bullet records that its own
+  reservation — *the same rule, the same port, a moved digest, an unmoved version* — **holds only
+  because** of this MUST. **The consumer-side rules are unchanged and were re-checked**: an unknown
+  rule id is still read as *no cross-check available* and never as a defect or a mutation, comparison
+  is still meaningful only within one rule id, and growing §2.1's shape vocabulary still mints the
+  next rule id. **No published digest moves**: every digest published to date is `kcb1` and stays
+  prefix-free, the two rules' key sets are byte-unchanged, and the `sha256/<rule>-<hex>` form is
+  0.5.0's. §2's worked AgentCard needed **no correction** — checked, not assumed: its one input port
+  declaring a `payload_schema_id` already carries `sha256/kcb2-…` and every port declaring none
+  already carries a bare `sha256-…`. **Patch, not minor, and decided rather than assumed.** The
+  honest statement of what moves is that this is a **narrowing**: a provider reading 0.5.2
+  permissively could publish a `kcb2` digest under a bare prefix, and at 0.5.3 it cannot. It is a
+  patch because the set it narrows is one 0.5.2's own text does not determine — step 5's *comparison
+  is meaningful only between digests computed under the same rule id* and its ban on re-interpreting
+  a named rule already argue against the permissive reading, and the break-test's finding was that
+  the text **enforces neither reading**, not that the permissive one is right — so making the
+  stricter reading normative **disambiguates** rather than replaces; and because no `schema_id` value
+  moves, no key set moves, no rule id is minted, no field/verb/plane/port kind is added,
+  `payload_schema_id` stays OPTIONAL, and **no live subscriber breaks** (a digest gaining a correct
+  prefix is read as *incomparable*, which is re-discovery, not the non-recoverable verdict). The bump
+  is deliberately **not** declared under §7.2's table for the reason the V-9 paragraph gives; what
+  the table **is** consulted for is the two questions it does answer — does a published digest move
+  (**no**) and does a live subscriber break (**no**) — and its rows are **undisturbed**. **0.6.0
+  stays spoken for** by §2.3's legacy-extension-URI-root removal, checked rather than tripped: a
+  minor here would discharge a removal this fold has no mandate to discharge. **No count closes and
+  none is added** — V-11 was found inside count (ii)'s own re-run, alongside V-9 and **V-10**, which
+  is still not folded.
 
 - **Editorial** (2026-09-12) — **count (vi) walked by hand, and it does not close.** Steps 8–10 of
   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) re-run against **KCB
