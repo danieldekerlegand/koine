@@ -1,6 +1,13 @@
 # KGP §4.1 round-trip gate — what the downstream artifact actually delivers
 
-> **Status:** Current · **Updated:** 2026-08-28 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-09-12 · **Owner:** koine · **Informative**
+
+> **2026-09-12 — this record stands, and KGP no longer does.** KGP 0.6.0 folded INT-3 into §3.2 and
+> the model-shape rule returned the spec to `candidate`. That does **not** touch this gate: §4 and
+> §4.1 are byte-unchanged at 0.6.0, so the artifact read below still discharges exactly what it
+> discharged, and the fold's own count is elsewhere — the gating *scenario* and its encoding, which
+> predate the fold. See the KGP changelog and
+> [`promotability.md`](promotability.md).
 
 **This document binds no clause.** It is the record of one verification, not a contract. Where it
 and [`../../specs/grounding-pack.md`](../../specs/grounding-pack.md) disagree, the spec wins and

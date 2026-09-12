@@ -157,8 +157,9 @@ defined once in KINP and referenced, never redefined, by other specs*:
   construction for knowledge records, and KMI states separately where it is enforced for bytes.
 
 KGP was at `candidate` on **one** remaining item — a downstream round-trip fixture, since delivered,
-read on 2026-08-28 and closed, so KGP 0.5.2 is now `ratified` ([`promotability.md`](promotability.md))
-— and adding normative text here would have added a **second** gate to the spec closest to promotion, to restate semantics another spec already owns. The
+read on 2026-08-28 and closed, so KGP 0.5.2 was promoted to `ratified` ([`promotability.md`](promotability.md);
+KGP is `candidate` again since 0.6.0 on 2026-09-12, on a count of its own that has nothing to do with
+federation) — and adding normative text here would have added a **second** gate to the spec closest to promotion, to restate semantics another spec already owns. The
 appropriate record is a dated **Editorial** changelog entry citing this page and the three readings,
 which moves no version and adds no gate. US-2 writes it.
 

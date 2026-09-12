@@ -60,6 +60,15 @@ second split at the same time as the first. It also costs nothing later only if 
 would re-mint every dependent claim id — exactly the edit-in-place the immutability rule above
 forbids.
 
+**KGP reads this column, as of KGP 0.6.0** (2026-09-12). §3.2 rule 1 now fixes an argument's
+canonical *type* by the registry beside its arity and order, so `id` selects rule 3 and a literal
+token selects that branch of rule 5, and a producer MUST NOT infer a type from the value's syntax.
+Two consequences land here rather than there: rule 5's `^^` typed-literal form is **closed off for a
+claim argument** (the token already names the branch), and a position this registry does **not** type
+is **not canonicalizable** — a producer refuses rather than guessing, with no default and no
+fallback. The column and the clause are one mechanism; changing either without the other re-opens
+INT-3.
+
 **Every position of every relation is typed, with no position left blank** — the guard enforces the
 count against `arity` and the tokens against the vocabulary, and it rejects a symmetric relation that
 mixes types, since KGP §3.2 rule 2 sorts its operands against each other.

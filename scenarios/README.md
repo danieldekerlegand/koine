@@ -20,7 +20,7 @@ what the 2026-08-24 run of it did.
 
 | Scenario | Pressure-tests | What it hunts | Deltas | KCS encoding |
 |---|---|---|---|---|
-| [`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) | KINP ([`../specs/identity.md`](../specs/identity.md)), then KGP ([`../specs/grounding-pack.md`](../specs/grounding-pack.md)) | The **identity firewall** — a fiction NPC `based_on` real Napoleon flowing world-producer → knowledge-producer → identity-authority, so fictional facts never contaminate consensus reality. Its *Re-validation* pass then re-runs the claim-minting legs against KGP 0.5.1's retained canonical + RDF projection. | A–E, KGP-1/2 ✅ | ✅ **exists** — `kcs:worlds-to-fabric` · agora `console/src/kcs/scenarios/worlds-to-fabric.ts`. **Ran 2026-08-24, the one fully-live scenario (3/3)** → [results](e2e-worlds-to-fabric.md#downstream-results) |
+| [`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) | KINP ([`../specs/identity.md`](../specs/identity.md)), then KGP ([`../specs/grounding-pack.md`](../specs/grounding-pack.md)) | The **identity firewall** — a fiction NPC `based_on` real Napoleon flowing world-producer → knowledge-producer → identity-authority, so fictional facts never contaminate consensus reality. Its *Re-validation* pass then re-runs the claim-minting legs against KGP 0.5.1's retained canonical + RDF projection. | A–E, KGP-1/2 ✅ | ✅ **exists** — `kcs:worlds-to-fabric` · agora `console/src/kcs/scenarios/worlds-to-fabric.ts`. **Ran 2026-08-24, the one fully-live scenario (3/3)** → [results](e2e-worlds-to-fabric.md#downstream-results). ⚠️ **Predates KGP 0.6.0** — every claim here is `id\|id`, so it asserts nothing about the `arg_types` fold and must be **extended** (unowned) |
 | [`e2e-media-transform.md`](e2e-media-transform.md) | KCB + KMI ([`../specs/capability-bus.md`](../specs/capability-bus.md), [`../specs/media-interchange.md`](../specs/media-interchange.md)) | **Any-to-any across four participants** — discovery + cross-plane path planning (mood→score), cross-participant CAS byte-fetch, spend ceilings, and the media→knowledge bridge. | F–L | ✅ **exists** — `kcs:media-transform` · agora `console/src/kcs/scenarios/media-transform.ts`. Ran 2026-08-24, green, composer stood in → [results](e2e-media-transform.md#downstream-results) |
 | [`kmi-otio-roundtrip.md`](kmi-otio-roundtrip.md) | KMI §4.2a / §9.5 | **Additive metadata survival** — a third-party OTIO round-trip drops the KINP asset-id carrier and leaves only stale or local paths, forcing an answer on safe id re-attachment. | M-1 | ⚠️ **exists, but** (*focused pressure leg* — follow-up to `e2e-media-transform`) — `kcs:kmi-otio-roundtrip` · agora `console/src/kcs/scenarios/kmi-otio-roundtrip.ts`, which is `kcs:media-transform` re-titled over the same fixture, so **M-1 is unexercised** ([DR-4](kmi-otio-roundtrip.md#findings-from-the-downstream-run)) → [results](kmi-otio-roundtrip.md#downstream-results) |
 | [`e2e-finetune.md`](e2e-finetune.md) | KFT ([`../specs/fine-tuning.md`](../specs/fine-tuning.md)) | The seams KFT **adds** on top of the four planes — the KGP egress gate, model-as-entity identity, and weight/export artifact conventions — on two text finetune jobs. | FT-A…H | ✅ **exists** — `kcs:finetune` · agora `console/src/kcs/scenarios/finetune.ts`. Ran 2026-08-24, green; suite pins **KFT 0.5.0** ([DR-5](e2e-finetune.md#findings-from-the-downstream-run)) → [results](e2e-finetune.md#downstream-results) |
@@ -53,8 +53,16 @@ hold). Its two minor projection findings, **KGP-1/KGP-2**, are **closed** in **K
 ProbLog rule and §4.1's annotation vocabulary). KGP then sat at **candidate** on one remaining gate —
 the downstream RDF-star / PROV / JSON-LD **round-trip fixture**, a validator artifact per
 [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) — which was **delivered and read at a
-named sha on 2026-08-28**, closing it; **KGP 0.5.2 is `ratified`**
+named sha on 2026-08-28**, closing it; **KGP 0.5.2 was promoted to `ratified`**
 ([`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md)).
+**KGP is `candidate` again at 0.6.0** (2026-09-12) on the `arg_types` fold — INT-3, which makes
+which canonicalization rule a claim argument is emitted under a registry fact — and its count lands
+**on this page**: the fixture is untouched, but every claim in
+[`e2e-worlds-to-fabric.md`](e2e-worlds-to-fabric.md) stands on an `id|id` relation, so the scenario
+and `kcs:worlds-to-fabric` assert nothing about the fold and must be **extended, not re-run**
+(**DR-7**'s shape on a third spec) — one claim over a literal-typed position and one refusal over a
+position the registry does not type. The scenario half is koine's, the encoding downstream; both
+**unowned**.
 **KMI**'s OTIO adoption has been re-validated against
 [`e2e-media-transform.md`](e2e-media-transform.md) (see its *Re-validation* section — the additive
 layer holds, no delta reopened). Both **KCB 0.4.0** and **KMI 0.3.1** nonetheless remain

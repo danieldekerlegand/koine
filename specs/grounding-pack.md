@@ -1,8 +1,8 @@
 # Koine Grounding-Pack Protocol (KGP)
 
-**Spec version:** 0.5.2
-**Status:** ratified
-**Last updated:** 2026-08-28
+**Spec version:** 0.6.0
+**Status:** candidate
+**Last updated:** 2026-09-12
 **Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
 and control-plane hosts that broker packs on behalf of agents.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
@@ -117,18 +117,29 @@ the *same* `claim` id and therefore **merges**, while their provenance records b
 ### 3.2 Canonicalization rules
 
 1. **Relation** — a `snake_case` name drawn from the shared **relation registry**
-   (`registry/relations.tsv`, added to by PR). Arity and the semantic order of arguments are
-   fixed by the registry, so argument order is **not** producer-dependent.
+   (`registry/relations.tsv`, added to by PR). Arity, the semantic order of arguments, **and the
+   canonical *type* of each argument position** are fixed by the registry, so neither argument
+   order nor **which of the rules below an argument is emitted under** is producer-dependent.
+   The registry's `arg_types` column is positional and parallel to `arg_roles`
+   ([`../registry/README.md`](../registry/README.md)): the token at position *i* types argument
+   *i*, and it **selects the rule** — `id` selects **rule 3**, and every other token
+   (`string`, `integer`, `decimal`, `boolean`, `datetime`) selects the **rule 5** branch it
+   names. A producer MUST emit an argument under the rule its position is typed with, and MUST
+   NOT infer the type from the argument's own syntax, from a grammar's whitespace rule, or from
+   what the value looks like.
 2. **Symmetric relations** (`same_as`, `co_occurs`, …; flagged in the registry) — the two
    operands are sorted ascending by their canonical CURIE string before emission, so
    `same_as(a,b)` and `same_as(b,a)` hash identically.
-3. **Identifier arguments** — emitted as the **canonical CURIE** (KINP §3.2), never the IRI:
+3. **Identifier arguments** — the rule for a position the registry types `id`, and for no
+   other. Emitted as the **canonical CURIE** (KINP §3.2), never the IRI:
    lowercase namespace and kind, Unicode NFC, no percent-encoding beyond what the grammar
    requires. A provisional-local id is emitted as-is (it will re-normalize post-reconciliation
    — KINP §6).
 4. **World** — the claim's world as a canonical CURIE, prepended as shown. A claim with no
    explicit world uses the producer's declared default world (KINP §5).
-5. **Literal arguments** — typed and canonicalized:
+5. **Literal arguments** — the rule for a position the registry types with a literal token,
+   and for no other. **The token names the branch**; a producer does not choose among the
+   branches below, it reads which one applies:
    - *string*: NFC, wrapped in `"`, inner `"` and `\` backslash-escaped; no other escapes.
    - *integer*: base-10, no leading zeros, no leading `+`, `-0` → `0`.
    - *decimal*: shortest round-tripping base-10, no trailing zeros, no exponent unless
@@ -136,11 +147,36 @@ the *same* `claim` id and therefore **merges**, while their provenance records b
    - *boolean*: `true` / `false`.
    - *date/time*: ISO-8601 in **UTC**, `Z` suffix, millisecond precision fixed.
    - *typed literal*: `value^^type-curie` (e.g. `"42"^^xsd:integer`) when a bare literal is
-     ambiguous.
+     ambiguous — a condition that **cannot arise for a claim argument**, because rule 1 has the
+     registry name the branch. A producer MUST NOT emit the `^^` form for a registry-typed
+     argument position; the bullets above are exhaustive there. (The form remains available where
+     a literal appears outside `HASH_INPUT` — a projection annotation, §4.1 — and carries no
+     claim identity.)
 6. **No insignificant whitespace** anywhere in `HASH_INPUT`; the separators above are the
    only permitted spacing.
 7. **Hash** — SHA-256, lowercase hex, `sha256-` prefix. (Assets may use `blake3-` for large
    bytes per KINP §6; claims are small — SHA-256 is mandated for interoperability.)
+
+**A position the registry does not type (NORMATIVE).** Rule 1 reads a fact out of the registry, so
+it has to say what happens when the fact is not there. Every relation published in
+[`../registry/`](../registry/) is typed at every position — 29 of 29 relation names across the core
+file and the three domain files as of this version — so this rule does not bite on a current copy.
+It bites on the two cases that exist anyway: a **stale registry copy** taken before the `arg_types`
+column, and a relation a participant minted in an extension of its own that did not type it.
+
+- An argument position carrying no `arg_types` token is **not canonicalizable**. A producer MUST
+  refuse to mint a `claim` id for a claim over that relation, and MUST obtain a registry copy that
+  types the position (or publish the missing types before asserting the claim).
+- There is **no default and no fallback**. `id` is not a default, `string` is not a default, and
+  the value's own syntax is not evidence — the whitespace-free rendering of a short span is exactly
+  the heuristic that produced the divergence this rule exists to stop
+  ([INT-3](../docs/reference/interop-trial.md#c3-is-an-argument-a-curie-or-a-literal-int-3-new-blocking)).
+- A consumer that receives a claim over a relation **its own** copy does not type MUST NOT
+  re-derive or verify the `claim` id against a guessed type. It refuses the claim, or retains it
+  **unmerged** with the divergence recorded; it MUST NOT merge it onto a re-derived id.
+- Failing closed is the cheap side of this trade. The cost of refusing is fetching a current
+  registry; the cost of guessing is a `claim` id no other participant mints, which merges with
+  nothing and is discovered only by its absence.
 
 ### 3.3 Worked example
 
@@ -163,6 +199,42 @@ After the resolver links e-8842 → npc-renaud and the extracted claim is re-exp
                                                  worldsim:world:alderforest:ent:army-of-ash)
       → identical HASH_INPUT → identical claim_id → MERGE, provenance from both retained ✔
 ```
+
+**The second worked case — a literal-typed position, settled.** The example above turns on
+*reconciliation*; this one turns on *typing*, and it is the case the registry column was added for.
+`cine:reads` is published with `arg_roles = frame|text` and `arg_types = id|string`, so one
+observation — the on-screen text `EXIT` read from a frame — has exactly one canonical form, and it
+is the same one for every producer:
+
+```
+world = worldsim:world:alderforest
+relation = cine:reads   (registry arity 2, order: frame, text; types: id, string)
+
+CONFORMANT — rule 1 types argument 2 `string`, so rule 5's string branch applies:
+  worldsim:world:alderforest|cine:reads(mediastore:ent:frame-9,"EXIT")
+      → sha256-1893b75a06fa5a3ecee321795a7cf0f484f20934b240109255b733da3af726d2
+
+NON-CONFORMANT — argument 2 emitted under rule 3, as a minted entity:
+  worldsim:world:alderforest|cine:reads(mediastore:ent:frame-9,mediastore:ent:txt-exit-0001)
+      → sha256-a5155f18d2570290228cc4c51503233ce471a6896a869669744002b839ea50d2
+
+NON-CONFORMANT — argument 2 emitted under rule 5's typed-literal form:
+  worldsim:world:alderforest|cine:reads(mediastore:ent:frame-9,"EXIT"^^xsd:string)
+      → sha256-f6f292b740e407ba4f34d131eee5e9ae49b4e04a10feb7cdc063e75f19be9c69
+```
+
+Three renderings of one observation, three `claim` ids, and **two of the three are now wrong rather
+than merely different**. That is the whole content of this fold: before it, all three were readable
+out of §3.2 and a producer that emitted the second was *differently opinionated*; after it, the
+registry names the branch, so such a producer is **non-conformant** and its claim ids merge with
+nobody's. The second rendering is the worse of the two — it also **mints an entity**, so the two
+producers disagree about how many *things* exist as well as about the claim's identity — and the
+third is the split that survives even between two producers who both read the position as a literal,
+which is why rule 5's `^^` form is closed off for a claim argument rather than left to judgement.
+
+A producer whose adapter reaches the second or third rendering by falling back to a grammar rule —
+notably the `csid` no-whitespace rule, which renders a single-token span as an identifier — does not
+have a different reading of §3.2. It has a defect, and the registry row is where it is settled.
 
 ### 3.4 Why the canonical is a byte discipline (rationale, INFORMATIVE)
 
@@ -585,9 +657,10 @@ Ratified 2026-07-17.
 1. **Relation-registry governance → shared core + namespaced domain extensions.**
    `registry/relations.tsv` holds the unqualified **core** vocabulary every project loads;
    `registry/relations/<domain>.tsv` holds **domain-qualified** extensions (`cine:shows`,
-   `ling:cognate_of`, `dsp:modulates`). A relation's signature is **immutable once published** —
-   changing it would silently change every dependent `claim` id (§3), so a change means a new
-   name. See [`../registry/`](../registry/).
+   `ling:cognate_of`, `dsp:modulates`). A relation's signature — arity, argument order, symmetry,
+   and since 0.6.0 the **type of each argument position** (§3.2 rule 1) — is **immutable once
+   published**, because changing any of them would silently change every dependent `claim` id
+   (§3), so a change means a new name. See [`../registry/`](../registry/).
 2. **Embedding portability → record the model; re-embed on mismatch.** The assertion envelope
    carries `embedding_model` (added in KINP 0.2.1, §7.1). A consumer whose model differs MUST
    re-embed rather than compare vectors across models. Both `embedding` and `embedding_model`
@@ -598,6 +671,59 @@ Ratified 2026-07-17.
    attributable. Token issuance/rotation lives in the control-plane host's infra, not here.
 
 ## Changelog
+
+- **0.6.0 — the argument-type fold: which canonicalization rule an argument is emitted under is
+  read from the registry, not chosen by the producer** (2026-09-12). Folds
+  [INT-3](../docs/reference/interop-trial.md#c3-is-an-argument-a-curie-or-a-literal-int-3-new-blocking)
+  (blocking), whose defect was in this section's **perimeter** rather than its model: §3.2 rule 3
+  canonicalizes an identifier argument and rule 5 a literal one into different bytes, rule 1 rested
+  the whole scheme on the registry — *"arity and the semantic order of arguments are fixed by the
+  registry"* — and **nothing fixed the type**, so one observation had three defensible renderings
+  and three `claim` ids. The registry now carries `arg_types`, positional and parallel to
+  `arg_roles` and typed at every position of all 29 published relations
+  ([`../registry/README.md`](../registry/README.md)); this fold is §3.2 **reading it**. Four edits,
+  all in §3: **rule 1** gains argument *type* beside arity and order, with the token→rule mapping
+  stated (`id` → rule 3; `string` / `integer` / `decimal` / `boolean` / `datetime` → that branch of
+  rule 5) and an explicit MUST NOT on inferring a type from the value's syntax or from a grammar's
+  whitespace rule; **rules 3 and 5** say which positions they are the rule *for*, and rule 5's
+  `^^`-form bullet is **closed off for a claim argument** — its trigger, *"when a bare literal is
+  ambiguous"*, is a judgement that cannot arise once the registry names the branch, which is the
+  second split INT-3 recorded between two producers who *both* read a position as a literal; a new
+  NORMATIVE paragraph states the rule for **a position the registry does not type** — not
+  canonicalizable, refuse rather than guess, **no default and no fallback**, and a consumer never
+  re-derives or merges such an id — reachable today only from a stale registry copy or an untyped
+  private extension; and **§3.3** gains the settled worked case with all three renderings and their
+  hashes, of which exactly one is now conformant. §9 decision 1 restates the signature to include
+  types.
+
+  **Why minor, and why the status moves.** Minor, not patch: this is normative surface a reader
+  implements against — a conformant producer must now consult a registry column it previously did
+  not — and it **narrows conformance**, which no patch in this repo has done. Status: `ratified` →
+  **candidate**. §3 is the identity mechanism, and a producer conforming to 0.5.2's text could mint
+  a `claim` id that 0.6.0 forbids, so this is a change to the **model's shape** and the demotion is
+  the ordinary rule ([`README.md`](README.md#the-ratification-gate), [`../ECOSYSTEM.md`](../ECOSYSTEM.md)
+  §2), applied to the one spec that had come back from it. The count of ratified specs returns to
+  **0 of 6** on 2026-09-12. What does **not** move, checked rather than assumed: §3.1's hashed set
+  is byte-unchanged; the byte discipline of every rule is byte-unchanged; **no `claim` id over an
+  `id|id` relation moves**, which is 27 of the 29 published relations and every claim in every
+  worked example and scenario in this repo; §4 and §4.1's projection mapping, the annotation
+  vocabulary, §5, §6, §7 and §8 are byte-unchanged, so the §4.1 round-trip fixture's evidence is
+  untouched and no pack field is added. The two relations whose ids are at stake — `cine:says` and
+  `cine:reads` — are exactly the two positions INT-3 found, where no canonical existed to move.
+
+  **The re-ratification gate, and why it is not the replay the 2026-08-28 entry named.** That entry
+  said a later model-shape change would be re-ratified by *"a replay of `kcs:worlds-to-fabric` and
+  of this fixture"*. The fixture half stands. The replay half does **not**, and this is the
+  **DR-7 / DR-8** shape on a third spec: every claim in
+  [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) stands on `id|id`
+  positions — `commands`, `same_as`, `cine:shows`, `destroyed` — so its encoding asserts **no**
+  literal-typed position and would return `green` over this fold without touching it. The gate is
+  therefore an **extension, not a re-run**: the scenario and `kcs:worlds-to-fabric` must carry at
+  least one claim over a literal-typed position (two producers, one observation, one id) and one
+  **refusal** over a position the registry does not type. The encoding is downstream under
+  [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and the scenario section is koine's;
+  both are **unowned** as of this version. **KGP is not promotable today**, and it is the only spec
+  whose sole outstanding count was created by its own fold rather than inherited.
 
 - **Status: Candidate → ratified** (2026-08-28) — **the §4.1 round-trip gate is closed and both
   ratification counts are discharged.** No clause moves: this entry records a **status change**, not

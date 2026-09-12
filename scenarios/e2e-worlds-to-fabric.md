@@ -430,3 +430,47 @@ Suite-wide limits that also apply to this run — **DR-1** (stand-in coverage; n
 scenario was fully live) and **DR-2** (the evidence artifact records a per-scenario aggregate, not
 pass/fail per assertion) — are recorded once in
 [`README.md`](README.md#downstream-results-where-a-real-runs-result-lands).
+
+---
+
+## Re-ratification — what KGP 0.6.0 gates here (2026-09-12)
+
+**KGP 0.6.0** folds [INT-3](../docs/reference/interop-trial.md#c3-is-an-argument-a-curie-or-a-literal-int-3-new-blocking)
+into §3.2: an argument's canonicalization **type** is fixed by the registry's `arg_types` column, so
+`id` selects rule 3 and a literal token selects that branch of rule 5, the `^^` typed-literal form is
+closed off for a claim argument, and a position the registry does **not** type is not canonicalizable
+— refuse, no default, no fallback. That narrows conformance in the section this scenario exists to
+exercise, so the spec is `candidate` again and this scenario is its gate.
+
+**This pass, as written, does not reach the fold — and that is a measurement, not an opinion.** Every
+claim minted anywhere above stands on an argument position the registry types `id`: `commands`
+(Steps 1/3/4), `same_as` and `based_on` (Step 4), `cine:shows` (R2), `destroyed` (Step 6). All are
+`id|id`. Not one literal-typed position appears, so **every byte of every `HASH_INPUT` in this
+document is unchanged by 0.6.0** — R1's convergence result included, which is why the fold moves no
+claim id here — and a replay of `kcs:worlds-to-fabric` would return `green` while asserting nothing
+about the clause under test. That is **DR-7**'s shape (an encoding that predates the fold it would
+have to assert) arriving on a third spec, and it is why the count below says *extend*, not *re-run*.
+
+**What the extension must add.** Two legs, both new:
+
+1. **A literal-typed position, two producers, one id.** A claim over a relation the registry types
+   `id|string` — `cine:reads` is the natural one here, since Step 2 already puts footage in front of
+   the knowledge producer — asserted independently by two participants from the same observation, and
+   the two claim ids MUST be identical. The point is not that a string hashes; it is that the
+   *producer does not choose*, so a participant whose adapter renders a single-token span as an
+   entity CURIE (the `csid` no-whitespace fallback an outside producer actually shipped) mints a
+   different id and **fails** the leg rather than merging.
+2. **A refusal over an untyped position.** A relation whose registry entry types some position with
+   no token — a stale copy, or a private extension — and a producer that **refuses to mint** rather
+   than guessing. `expect: reject`, on the same footing as R2's two egress legs.
+
+**What this section does not change.** §4.1's round-trip **fixture** gate stays closed: §4 and §4.1
+are byte-unchanged at 0.6.0, so the artifact read at `agora af5b7dd` on 2026-08-28 still discharges
+what it discharged ([`../docs/reference/kgp-projection-gate-verification.md`](../docs/reference/kgp-projection-gate-verification.md)).
+**DR-3** is untouched and still says what it said. This pass's own verdict — deltas A–E, R1, R2, R3 —
+is not reopened; nothing here contradicts it.
+
+**Owner: unowned.** The scenario half is koine's and the encoding is downstream under
+[ADR-0001](../decisions/ADR-0001-control-plane-topology.md), and neither is claimed as of
+2026-09-12. Until both land, KGP is **not promotable**, on one count, which is the fewest of any spec
+in the repo — see [`../docs/reference/promotability.md`](../docs/reference/promotability.md).

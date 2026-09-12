@@ -117,7 +117,7 @@ vocabulary.
   Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
-- `specs/grounding-pack.md` — KGP 0.5.2, **ratified** (2026-08-28). Knowledge data plane; normative §3
+- `specs/grounding-pack.md` — KGP 0.6.0, **candidate** (ratified 2026-08-28 at 0.5.2; demoted again 2026-09-12 by the `arg_types` fold at the end of this bullet). Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
   **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
   the requirements RDF-star / PROV / JSON-LD do not meet natively plus the re-open test, and §4.1
@@ -156,6 +156,34 @@ vocabulary.
   without §7 moving, and KMI **reuses** §7.1/§7.2's classes on the asset envelope while KGP's own
   enforcement point (pack construction, for records) is unchanged. **No clause, no version, no second
   gate** — deliberately, on the spec closest to promotion.
+  **0.6.0 (2026-09-12) is the argument-type fold, and it cost KGP the status.** It folds **INT-3**
+  (blocking, and independently reproduced by an outside producer role): §3.2 rule 3 canonicalizes an
+  identifier argument and rule 5 a literal one into different bytes, rule 1 rested the scheme on the
+  registry, and **nothing fixed the type** — so one observation had three defensible renderings and
+  three claim ids. The registry now carries `arg_types` (positional, parallel to `arg_roles`, typed at
+  every position of all 29 published relations) and §3.2 **reads it**: rule 1 gains argument *type*
+  beside arity and order with the token→rule mapping stated (`id` → rule 3; `string`/`integer`/
+  `decimal`/`boolean`/`datetime` → that branch of rule 5) plus a MUST NOT on inferring a type from the
+  value's syntax or a grammar's whitespace rule; rules 3 and 5 say which positions they are the rule
+  *for*; rule 5's `^^` form is **closed off for a claim argument** (its *"when a bare literal is
+  ambiguous"* trigger cannot arise once the registry names the branch — the second split INT-3 found
+  between two producers who both read a position as a literal); a new NORMATIVE paragraph fixes **a
+  position the registry does not type** as *not canonicalizable* — refuse, **no default and no
+  fallback**, and a consumer never re-derives or merges such an id; §3.3 gains the settled worked case
+  with all three renderings and their hashes; §9 decision 1 restates the signature to include types.
+  **Minor, and the status moves**: normative surface a reader implements against, and it **narrows
+  conformance** — a producer conforming to 0.5.2's text could mint a claim id 0.6.0 forbids — so it is
+  a model-shape change and the demotion is the ordinary rule. The count of ratified specs is **0 of 6**
+  again. What does **not** move was checked: §3.1's hashed set, every rule's byte discipline, §4/§4.1's
+  mapping and annotation vocabulary and §5–§8 are byte-unchanged, **no claim id over an `id|id`
+  relation moves** (27 of 29 published relations, and every claim in every scenario here), and the
+  §4.1 round-trip fixture's evidence is untouched. **The re-ratification count is not the replay the
+  0.5.2 entry named**: `kcs:worlds-to-fabric` predates the fold and every claim in
+  `scenarios/e2e-worlds-to-fabric.md` stands on an `id|id` position, so it returns `green` asserting
+  nothing — **DR-7's shape on a third spec**. It must be **extended**: one claim over a literal-typed
+  position (two producers, one observation, one id) and one **refusal** over an untyped position. The
+  scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
+  `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
 - `specs/capability-bus.md` — KCB 0.5.0, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
@@ -675,7 +703,11 @@ vocabulary.
   byte-unchanged; the edit is a scenario section, two gate paragraphs and a changelog entry). It also
   found the header's **re-check trigger fired three times unpulled** — KINP 0.2.x→0.4.0, KCB
   0.4.x→0.5.0, KCS 0.2.x→0.3.0, all 2026-08-26 — a precondition on the status transition that
-  `chief/71` closed on 2026-08-13 and that has reopened, **not** a third gate. Record:
+  `chief/71` closed on 2026-08-13 and that has reopened, **not** a third gate. It has since fired a
+  **fourth** time, on 2026-09-12: **KGP 0.5.x→0.6.x**, the argument-type fold, a minor bump in the
+  plane §4 cites most directly (§4 → KGP §7/§7.2) — so four of five pins are stale. Recorded here
+  and in `ROADMAP.md`, deliberately **not** fixed in the KFT header: re-pinning is KFT's own edit
+  under its own gates, and a silent pin bump would be the drift the trigger exists to surface. Record:
   `scenarios/e2e-producer-exhaust-finetune.md` § *Re-run — the FT-M…FT-Q intake fold walked against
   KFT 0.7.0 (2026-09-03)*.
   **Gate (ii) was walked the same day and did NOT close either.** The six sections 0.6.0 changed —
@@ -774,6 +806,8 @@ vocabulary.
 - `schemas/` — the machine-readable twin of the prose specs (JSON Schema draft-2020-12):
   `provenance.schema.json` shared `$defs` + grounding-pack / entity-grounding-snapshot /
   canonical-world-export / canonical-graph-export / dataset-jsonl-header, updated to KGP 0.5.x
+  (and **unchanged by KGP 0.6.0** — the argument-type fold adds no field; which rule an argument is
+  emitted under is a registry fact, not a document shape)
   (grounding-pack = the §4 **JSON** encoding, not a JSON-LD document; no schema models a §4
   projection — a projection's conformance is the round-trip, not a document shape);
   `media-timeline` (KMI §4) + `finetune-job` (KFT §3) + `participant-self-description`
