@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.5.1
+**Spec version:** 0.5.2
 **Status:** Candidate
 **Last updated:** 2026-09-12
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -9,6 +9,29 @@ capability consumers (most participants are both provider and consumer).
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
+> **Status note (0.5.2):** stays **Candidate**, now on **six** counts. 0.5.2 folds **MA-12** of
+> [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the blocker that
+> scenario's Steps 8–10 left on **KMI count (i)**, and the half of it whose carrier belongs here.
+> KMI §7.1(f) requires a store to answer *not held, and not expected* distinctly from *not reachable*
+> and *not held, pending*; §4 typed `fetch` with **no response vocabulary at all**, cited §7.1(f)
+> nowhere, and §4.2f had already spent *pending fetch* on a rate-limited refusal. New **§4.5** gives
+> the three answers a **named** outcome set on the verb that delivers them — `held` /
+> `not-held-pending` / `not-held-not-expected` / `refused` — owed **per request**, **never
+> synthesized** (ADR-0014's second decision, read on this plane), with **absence reading *pending***
+> and *not reachable* deliberately **not a value**; §7.1(f) keeps the meanings and KCB fixes only the
+> wire. **Patch, not minor**: no verb is added (§4 still types five), no `asset` id moves, no envelope
+> field is added, §7.2's table is undisturbed and **no published `schema_id` or digest moves** — and
+> **0.6.0 stays spoken for** by §2.3's legacy-extension-URI-root removal, which this fold has no
+> mandate to discharge. The bump is deliberately **not** declared under §7.2's table: that table
+> governs *a published capability*, and declaring a spec bump under it is the defect **BP-8/AP-9**
+> found in §4.2a/§4.3a — not repeated here and not fixed here either. New normative text, so a
+> **sixth** count: a re-run of **Steps 8–10** of that scenario against the folded text, gating §4.5
+> alone — the **same walk** as KMI count (i), not a second one. The five existing counts are restated
+> and **none moves**, so **KCB is no more promotable than it was** — count (iii) still reads *fold
+> MA-14/MA-15/MA-16, then re-run Steps 5–7 again*, and items (2)–(5) of
+> [`../docs/reference/promotability.md`](../docs/reference/promotability.md) § *The seven things*
+> remain unowned.
+>
 > **Status note (0.5.1):** stays **Candidate** on all **five** counts. 0.5.1 writes
 > [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s four-part clause — the
 > `deprecated` / `removal_version` carrier (§2, §3, §7.3a/§7.3d) and the merge rule on §3.1(d)'s
@@ -953,7 +976,7 @@ KCB 0.5.1 (2026-09-12)* section.
 | **describe** | one A2A agent-card fetch (`/.well-known/agent-card.json`) + MCP `tools/list` for tool schemas | fetch the provider's AgentCard **including its KCB extension** (`capabilities.extensions[]`, §2) in a single fetch — there is no second `/.well-known/kcb-manifest.json` to retrieve |
 | **invoke** | MCP `tools/call` / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference. The target **version** and the **quoted cost** the caller gated against are optional operands, and which major runs is resolved by a stated rule with no default — §4.4. A declared autonomy posture is an optional operand, and the capability's declared effect class is what it reads — §4.3. |
 | **subscribe** | A2A streaming (MCP notifications only on the pre-2026-07-28 wire — §4.1) | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur. Rate, resumption, and the in-band control channel are §4.2; posture is §4.3; the §7 successor / deprecation / removal signals ride that same channel — §7.3g. |
-| **fetch** | CAS GET by `asset` id | retrieve asset bytes by their KINP id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant (§5). |
+| **fetch** | CAS GET by `asset` id | retrieve asset bytes by their KINP id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant (§5). The response carries exactly one **named outcome** — `held` / `not-held-pending` / `not-held-not-expected` / `refused` — owed **per request**, never synthesized, and absent reading *pending*; the names are §4.5, their meanings are KMI §7.1(f). |
 
 `subscribe` is the control-plane half of KGP §6 subscriptions: KGP defines the delta payload,
 KCB defines how a consumer registers and how the stream is delivered. Ordering-independence
@@ -1510,6 +1533,112 @@ provider's single published major carries nothing and is conformant.
 **§7.5** count (V-5, V-1), so it re-enters validation on that count rather than opening a new one: the
 mutate-live-schema re-run is what exercises it. The other four counts in the status note are restated
 and none moves.
+
+### 4.5 The `fetch` response — an absence that answers (0.5.2)
+
+What a `fetch` says when it does not return bytes. This folds **MA-12** of
+[`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), and it is the half of
+that delta that cannot be written on the other plane: KMI **§7.1(f)** requires a store to be able to
+answer, for an id it is asked for, **not held, and not expected** *distinctly from* **not reachable**
+and from **not held, pending**, and lets a consumer conclude from those answers for the set it
+reached — an obligation stated on the payload plane, where KMI §7 defines *the payloads, not the
+pipe*. Through 0.5.1 **nothing carried it**: §4 typed `fetch` as *"a CAS GET by `asset` id"* with a
+grant and **no response vocabulary at all**, this spec cited §7.1(f) nowhere, and §4.2f independently
+called a rate-limited refusal a *pending fetch* — so a fourth state shared (f)'s default word on the
+same verb. The clause was asserted and unmechanized: **MA-8's class of break, one plane over**.
+
+This section gives the three answers **a carrier on the verb that must deliver them**. The **meaning**
+of each answer is KMI §7.1(f)'s and is not restated here; on disagreement §7.1(f) governs and this
+section is the bug. What is fixed here is only what is on the wire.
+
+This section is **additive at every surface**. **No verb is added** — §4's table still types exactly
+five — and no plane, port kind, grant or authority role is added; no `asset` id moves (KINP §3 / KMI
+§7.1(a): the id *is* the hash of the bytes, and nothing here touches them); no envelope field is
+added on either plane; no `schema_id` canonicalization or published digest moves (§7.1), because a
+response outcome is not a port declaration; and §7.2's compatibility table is undisturbed. **A
+deployment with one store behaves exactly as it did at 0.5.1**: a store holding the bytes serves them
+as before, and a response carrying no outcome reads *pending* (c), which is the tolerance delta L has
+required of every consumer since 0.2.0.
+
+**a. The outcomes are NAMED (MA-12; the failure V-10 records).** A `fetch` response carries exactly
+one outcome, from this closed set. The names are normative; an implementation binds them to its
+transport in the ordinary way (`fetch` is request/response and not an MCP call — §4.1), and what
+this clause forbids is a consumer having to **infer** an outcome from a status code, an empty body,
+or a timeout.
+
+| Outcome | What the answering store asserts | Defined by |
+|---|---|---|
+| **`held`** | it holds the copy, and the bytes **are** the response — 0.5.1's behaviour unchanged, self-verifying against the id (delta G, KMI §7.1(c)) | §4, delta G |
+| **`not-held-pending`** | it holds no copy **now**, and it does **not** assert that none is coming — a replication of that id may be in flight, scheduled, or simply unknown to it | KMI §7.1(f) |
+| **`not-held-not-expected`** | it holds no copy and **no replication of that id is in flight or scheduled** — the one answer a consumer may conclude from, and the one this fold exists to make sayable | KMI §7.1(f) |
+| **`refused`** | it declines to serve **this** request, and asserts **nothing** about whether it holds the copy — §4.2f's rate limit and the fail-closed license / egress / trust-tier gate of KMI §7.1(b)(e) via §5 both land here | §4.2f, §5, KMI §7.1(b)(e) |
+
+**`not reachable` is deliberately not a value in that set.** It is the **absence** of a response,
+observed by the consumer and asserted by no one — see (c). A store that is not reachable has not
+answered, and an unanswered `fetch` is not an answer of any kind.
+
+Where a store can distinguish *why* it refused — a rate limit, an egress gate, a missing
+`fetch:asset` grant — it SHOULD say so alongside `refused`, in the shape §4.3h fixes for a refused
+dispatch. That detail is a courtesy to the caller; the **outcome** is what is normative, and a bare
+`refused` is conformant.
+
+**b. The answer is owed per request, and is about the id it was asked for (the failure BP-7
+records).** A store's outcome describes **that id, at the moment it was asked**. It is NOT a
+registration-time property of the store, NOT a capability-level declaration in §2, and NOT a standing
+fact a third party may cache and re-serve. A store that answers `not-held-not-expected` for an id,
+and later receives a copy of it, answers `held` for the next request and breaches nothing: §7.1(f)'s
+answers describe a moment, and a consumer that needs a later one asks again. Nothing in this section
+creates an obligation to **retain** what was answered `held`, or to **acquire** what was answered
+`not-held-not-expected`.
+
+**c. Absence reads *pending*, and `not-held-not-expected` is never synthesized
+([ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)).**
+
+- A response carrying **no outcome** reads **`not-held-pending`**. So does a response carrying an
+  outcome this version does not define — an unknown token is not an assertion, which is §7.2's
+  ignore-unknown-fields rule read on this surface.
+- A `fetch` that times out, fails to connect, or is otherwise **unanswered** is *not reachable*, and
+  for every purpose this section governs it reads **`not-held-pending`**: the consumer has learned
+  nothing about whether that store holds the copy. Silence is never `not-held-not-expected`, and a
+  store that says nothing has not said *no holder remains*.
+- **A participant MUST NOT synthesize `not-held-not-expected` for a store that did not assert it** —
+  not a peering registry (§3.1), not a host, not a cache, and not a store answering about another
+  store. Only the store asked may assert it, and only about **itself**. This is ADR-0014's second
+  decision on the other plane — *a party MUST NOT synthesize a value for a field it did not
+  determine* — and it is why §3's `find` returns an **address** and never an answer about bytes.
+- **The conclusion rule is KMI §7.1(f)'s, unchanged**: a consumer that reaches every store in the
+  set it can see and gets `not-held-not-expected` from all of them MAY conclude **for that set**, and
+  MUST NOT conclude anything about a store it could not reach. This section widens that not at all —
+  it only makes the premise something a store can actually say.
+
+**d. `refused` and *pending fetch* are reconciled, not conflated (§4.2f).** §4.2f states that a
+refused `fetch` is *"a **pending fetch**, which delta L's dangling-reference tolerance already
+requires every consumer to handle"*. That sentence is about the consumer's **handling** and it stands
+unchanged: `refused`, `not-held-pending`, and an unanswered `fetch` alike compose onto delta L's
+tolerance — retry later, treat no reference as broken. What this section adds is that they are no
+longer the same **assertion**. A rate-limited refusal MUST be answered **`refused`** and MUST NOT be
+answered `not-held-pending`: the refusing store may well hold the bytes, and a consumer polling for
+absence would otherwise count a busy holder as evidence toward *no holder remains*. The fourth state
+§4.2f spent is the consumer's **handling**, not a fourth answer competing with §7.1(f)'s three.
+
+**e. Bounded on purpose.** This section defines **no** minimum replica count, retention obligation,
+durability guarantee or designated durable holder — **DEFER-C is unmoved** and keeps its stated
+trigger
+([`../docs/reference/federation-fold-dispositions.md`](../docs/reference/federation-fold-dispositions.md));
+**no** polling cadence, TTL or freshness bound on any answer; **no** protocol for discovering the set
+of stores a consumer can see, which is §3 / §3.1 returning addresses; and **no** new grant — a
+`fetch` still requires `fetch:asset` (§5), and an ungranted one is refused at the gate, `refused`,
+before any of this is reached. A store that only ever holds or does not hold, and never says why,
+remains conformant: what (a) requires is that when it *does* distinguish *not expected* from
+*pending*, there is a name for it that its caller reads the same way.
+
+**Re-ratification — this adds a sixth count, and it is one walk, not two.** §4.5 is new normative
+surface on a verb, so it re-enters validation; the pass that exercises it is **Steps 8–10** of
+[`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md), which is where MA-12
+was found and re-confirmed. Count **(vi)**: a re-run of those steps against the folded text, gating
+§4.5 alone. That is the **same walk** as KMI's count (i), not a second one — and because count (i)
+also carries **MA-13** (KMI-only), the walk can close this count while leaving KMI's open. The five
+existing counts are restated and **none moves**.
 
 ---
 
@@ -2216,6 +2345,40 @@ most important thing an owner citing this run must understand:
 
 ## Changelog
 
+- **0.5.2** (2026-09-12) — **MA-12 folded: `fetch` gains a named response vocabulary.** The blocker
+  Steps 8–10 of [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) left on
+  **KMI count (i)** on 2026-09-03 and re-confirmed the same day. KMI **§7.1(f)** (the MA-10 fold, KMI
+  0.3.5) requires a store to be able to answer, for an id it is asked for, **not held, and not
+  expected** *distinctly from* **not reachable** and **not held, pending** — and **nothing carried
+  it**: KMI §7 defines *the payloads, not the pipe* and mints no field for any of the three, §4 here
+  typed `fetch` as *"a CAS GET by `asset` id"* with a grant and no response vocabulary, this spec
+  cited §7.1(f) nowhere, and §4.2f independently called a rate-limited refusal a *pending fetch*, so
+  a fourth state shared (f)'s default word on the same verb. **MA-8's class of break, one plane
+  over.** New **§4.5** carries the answers on the verb that delivers them, in the shape the
+  2026-09-03 Step 10 re-attack constrained it to and which was **not optional**: the outcomes are
+  **NAMED** in the table that types the verb (`held` / `not-held-pending` / `not-held-not-expected` /
+  `refused`) rather than left to a status string — the failure **V-10** records, of a MUST routed to
+  a table that names no such thing; the answer is owed **per request** and about the id asked for,
+  never a registration-time property of a store — the failure **BP-7** records; and
+  **`not-held-not-expected` is never synthesized** by a party that did not determine it, which is
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s second decision read on
+  this plane. **Absence reads *pending***: a response with no outcome, an unknown outcome, or no
+  response at all is `not-held-pending`, and *not reachable* is deliberately **not a value** — it is
+  the absence of an answer, asserted by no one. §7.1(f)'s **conclusion rule is unchanged** and is
+  cited rather than restated; on disagreement §7.1(f) governs. §4.2f is **reconciled, not
+  contradicted**: its *pending fetch* is the consumer's **handling**, which `refused`,
+  `not-held-pending` and silence all still compose onto under delta L, while a rate-limited refusal
+  MUST now be answered `refused` and MUST NOT be answered `not-held-pending` — a busy holder is not
+  evidence toward *no holder remains*. **Additive**: no verb added (§4 still types five), no `asset`
+  id moves, no envelope field added, no plane/port kind/grant/authority role added, §7.2's table
+  undisturbed, no `schema_id` canonicalization or published digest moves, and a single-store
+  deployment behaves exactly as at 0.5.1. **DEFER-C is unmoved** — no minimum replica count,
+  retention obligation, durability guarantee or designated durable holder — and §4.5(e) states the
+  rest of the boundary (no cadence or TTL, no store-set discovery protocol, no new grant). Patch,
+  and **0.6.0 stays spoken for** by §2.3's removal; the bump is deliberately **not** declared under
+  §7.2's table (BP-8/AP-9's defect, not repeated). **A sixth count**: a re-run of Steps 8–10 against
+  the folded text, gating §4.5 alone — the same walk as KMI count (i), not a second — since a fold
+  does not close its own gate. The five existing counts are restated and none moves.
 - **Editorial** (2026-09-12, second entry this day) — **count (iii) was re-run against the folded
   text, and it does not close.** 0.5.1 wrote
   [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s clause, so the count

@@ -220,7 +220,7 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
-- `specs/capability-bus.md` — KCB 0.5.1, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.5.2, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -554,6 +554,35 @@ vocabulary.
   then re-run Steps 5–7 again*. **No version and no clause moved for the walk** — every normative clause of
   §1–§8 byte-unchanged, §3.1(a)–(f) included, and no published digest moves; the edit is §3.1's
   *Re-ratification* gate paragraph, the 0.5.1 status note, a changelog entry and a scenario section. **KCB is not promotable**, and would not have been on a clean walk.
+  **0.5.2 (2026-09-12, patch) folds MA-12 — `fetch` gains a named response vocabulary, and it is the
+  half of a KMI delta whose carrier belongs here.** KMI §7.1(f) (the MA-10 fold) requires a store to
+  answer, for an id it is asked for, *not held, and not expected* **distinctly from** *not reachable*
+  and *not held, pending* — and **nothing carried it**: KMI §7 defines *the payloads, not the pipe*,
+  §4 here typed `fetch` as *"a CAS GET by `asset` id"* with a grant and **no response vocabulary at
+  all**, KCB cited §7.1(f) nowhere, and §4.2f independently spent *pending fetch* on a rate-limited
+  refusal, so a fourth state shared (f)'s default word on the same verb — **MA-8's class of break,
+  one plane over**. New **§4.5** carries the answers on the verb that delivers them, in the shape the
+  2026-09-03 Step 10 re-attack fixed and which was not optional: the outcomes are **NAMED** in the
+  table that types the verb (`held` / `not-held-pending` / `not-held-not-expected` / `refused`), not
+  left to a status string — the failure **V-10** records; the answer is owed **per request** and is
+  about the id asked for, never a registration-time property of a store — the failure **BP-7**
+  records; and **`not-held-not-expected` is never synthesized** by a party that did not determine it
+  — **ADR-0014**'s second decision read on this plane. **Absence reads *pending***: no outcome, an
+  unknown outcome, or no response at all is `not-held-pending`, and *not reachable* is deliberately
+  **not a value** — it is the absence of an answer, asserted by no one. §7.1(f) keeps the meanings and
+  its **conclusion rule is cited, not restated** (a consumer concludes only for the set it reached);
+  on disagreement §7.1(f) governs. §4.2f is **reconciled, not contradicted** — its *pending fetch* is
+  the consumer's **handling**, which `refused`, `not-held-pending` and silence all still compose onto
+  under delta L, while a rate-limited refusal MUST now answer `refused` and MUST NOT answer
+  `not-held-pending`, since a busy holder is not evidence toward *no holder remains*. Additive: **no
+  verb added** (§4 still types five), no `asset` id moves, no envelope field, no plane/port
+  kind/grant/authority role, §7.2's table undisturbed, **no published `schema_id` or digest moves**,
+  and a single-store deployment behaves exactly as at 0.5.1. **DEFER-C unmoved.** Patch, and **0.6.0
+  stays spoken for** by §2.3's removal; the bump is deliberately **not** declared under §7.2's table
+  (BP-8/AP-9's defect, not repeated). New normative text, so a **sixth** count: a re-run of **Steps
+  8–10** of `scenarios/e2e-multi-authority.md` against the folded text, gating §4.5 alone — the
+  **same walk** as KMI count (i), not a second one. The five existing counts are restated, none
+  moves, and **KCB is no more promotable than it was**.
 - `specs/media-interchange.md` — KMI 0.3.6, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
