@@ -15,7 +15,9 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
   The machine-readable form of the KINP [`identity.md`](../specs/identity.md) §7.1 assertion envelope
   and the KGP [`grounding-pack.md`](../specs/grounding-pack.md) §5/§7 axes.
 - [`grounding-pack.schema.json`](grounding-pack.schema.json) — KGP §2 grounding-pack envelope
-  ([`../specs/grounding-pack.md`](../specs/grounding-pack.md), KGP 0.5.0). This is the §4 **JSON**
+  ([`../specs/grounding-pack.md`](../specs/grounding-pack.md), KGP 0.5.0; **unchanged by KGP 0.6.0**,
+  whose argument-type fold adds no field — which of §3.2's rules an argument is emitted under is a
+  *registry* fact, read from `arg_types`, not a document shape any schema here can carry). This is the §4 **JSON**
   encoding — the lossless twin of the canonical TSV, and deliberately *not* a JSON-LD document: per
   [`../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md`](../decisions/ADR-0006-kgp-rdf-prov-jsonld-relationship.md)
   KGP **retains** its bespoke canonical, and RDF-star / W3C PROV / JSON-LD is a one-directional

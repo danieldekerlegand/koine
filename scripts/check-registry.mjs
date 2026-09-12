@@ -20,8 +20,8 @@
  *   2. DUPLICATE IDS. A relation name, entity type, media type or enum token
  *      appearing twice means one name with two signatures. For a relation that
  *      is the sharpest failure this repo has: a signature fixes canonical
- *      argument order (KGP §3.2), so two of them means two claim ids for the
- *      same claim. Relation names are unique across the CORE file and every
+ *      argument order AND argument type (KGP §3.2), so two of them means two
+ *      claim ids for the same claim. Relation names are unique across the CORE file and every
  *      domain file at once, not merely within one file.
  *
  *   3. REFERENTIAL INTEGRITY. Every cross-file pointer resolves: a domain
@@ -34,7 +34,7 @@
  * inverses it has not minted (`has_part`, `soc:child_of`), which is deliberate.
  * What is checked is that a declared one agrees: a symmetric relation has no
  * inverse, and where both halves of a pair exist they name each other and
- * reverse each other's roles.
+ * reverse each other's roles and arg_types.
  *
  * A TSV under registry/ that matches no kind below is an ERROR, not a file the
  * guard skips: an ungated registry file is exactly what this guard exists to
@@ -48,8 +48,15 @@ import { join } from 'node:path';
 const asJson = process.argv.includes('--json');
 
 const DIR = 'registry';
-const RELATION_COLUMNS = ['relation', 'arity', 'arg_roles', 'symmetric', 'tier', 'domain', 'inverse', 'description'];
+const RELATION_COLUMNS = ['relation', 'arity', 'arg_roles', 'arg_types', 'symmetric', 'tier', 'domain', 'inverse', 'description'];
 const TIERS = ['grounding-only', 'horn-safe', 'full-prolog'];
+/**
+ * The closed argument-type vocabulary. `id` selects KGP §3.2 rule 3
+ * (canonical CURIE); every other token selects one branch of rule 5, naming it
+ * outright so rule 5's "when a bare literal is ambiguous" judgement never has to
+ * be made for a registered relation.
+ */
+const ARG_TYPES = ['id', 'string', 'integer', 'decimal', 'boolean', 'datetime'];
 const NAME = /^[a-z][a-z0-9_]*$/;
 const QUALIFIED = /^[a-z][a-z0-9_]*:[a-z][a-z0-9_]*$/;
 /** Columns that may be empty; every other column of a kind is required. */
@@ -175,7 +182,7 @@ for (const path of existsSync(DIR) ? tsvFiles(DIR) : []) {
   }
 
   for (const row of table.rows) {
-    const { relation, arity, arg_roles: argRoles, symmetric, tier, domain, inverse } = row;
+    const { relation, arity, arg_roles: argRoles, arg_types: argTypes, symmetric, tier, domain, inverse } = row;
 
     if (spec.core) {
       if (domain !== 'core') errors.push(`${row.$at}: domain "${domain}" — every relation in the core file is domain "core"`);
@@ -197,6 +204,7 @@ for (const path of existsSync(DIR) ? tsvFiles(DIR) : []) {
     }
 
     const roles = argRoles.split('|');
+    const types = argTypes.split('|');
     if (!/^[1-9][0-9]*$/.test(arity)) {
       errors.push(`${row.$at}: arity "${arity}" is not a positive integer`);
     } else if (Number(arity) !== roles.length) {
@@ -207,7 +215,23 @@ for (const path of existsSync(DIR) ? tsvFiles(DIR) : []) {
     }
     if (new Set(roles).size !== roles.length) errors.push(`${row.$at}: arg_roles [${argRoles}] repeats a role — the order it fixes would be ambiguous`);
 
+    // arg_types is POSITIONAL and parallel to arg_roles: one token per argument,
+    // in the same order. It is what decides, per position, whether KGP §3.2 rule 3
+    // or rule 5 canonicalizes the argument — so a missing or wrong-length value is
+    // two producers hashing one observation two ways (INT-3).
+    if (types.length !== roles.length) {
+      errors.push(`${row.$at}: ${roles.length} arg_role(s) [${argRoles}] but ${types.length} arg_type(s) [${argTypes}] — arg_types is positional and parallel to arg_roles`);
+    }
+    for (const type of types) {
+      if (!ARG_TYPES.includes(type)) errors.push(`${row.$at}: arg_type "${type}" is not one of ${ARG_TYPES.join(' | ')}`);
+    }
+
     if (symmetric !== 'true' && symmetric !== 'false') errors.push(`${row.$at}: symmetric "${symmetric}" is not true|false`);
+    // Rule 2 sorts a symmetric relation's operands against each other, which is
+    // only meaningful where they are the same kind of thing.
+    if (symmetric === 'true' && new Set(types).size > 1) {
+      errors.push(`${row.$at}: symmetric relation "${relation}" mixes arg_types [${argTypes}] — KGP §3.2 rule 2 sorts its operands against each other, so they are one type`);
+    }
     if (!TIERS.includes(tier)) errors.push(`${row.$at}: tier "${tier}" is not one of ${TIERS.join(' | ')}`);
 
     if (inverse !== '') {
@@ -230,6 +254,11 @@ for (const [name, { row }] of relations) {
   const otherRoles = other.arg_roles.split('|');
   if (roles.join('|') !== [...otherRoles].reverse().join('|')) {
     errors.push(`${row.$at}: "${name}" [${row.arg_roles}] and its inverse "${inverse}" [${other.arg_roles}] do not reverse each other's roles`);
+  }
+  const types = row.arg_types.split('|');
+  const otherTypes = other.arg_types.split('|');
+  if (types.join('|') !== [...otherTypes].reverse().join('|')) {
+    errors.push(`${row.$at}: "${name}" [${row.arg_types}] and its inverse "${inverse}" [${other.arg_types}] do not reverse each other's arg_types`);
   }
 }
 
