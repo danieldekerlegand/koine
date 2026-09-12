@@ -1244,7 +1244,7 @@ vocabulary.
   fold**. **No version and no clause moved for the walk**: §1–§6, §8, §9 and every normative clause of
   §7 byte-unchanged, no `asset` id moves, no schema twin touched; the edit is §7.1's gate paragraph, a
   changelog entry and a scenario section.
-- `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
+- `specs/conformance-scenario.md` — KCS 0.4.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
   scenarios to assert stable structure/invariants rather than exact bytes/content; §7.1 and §7.3
@@ -1276,6 +1276,32 @@ vocabulary.
   console's vocabulary from this repo. When KCS does promote it is under the **ordinary,
   conformance-gated** rule, not 0.2.0's grandfathering — that clause does not survive a demotion, and
   the artefact debt it covered was paid 2026-08-19.
+  **0.4.0 (2026-09-12, minor) adds §9, the exchange record** — the emitted-telemetry shape a
+  participant in the console role has been shipping and this format had never specified, while §5's
+  `cost_within_ceiling` / `tier_resolved` / `refused` were being asserted downstream **over frames
+  carrying it**. Gated by a **dated prior-art sweep** (`docs/reference/kcs-telemetry-prior-art.md`,
+  2026-09-12, a *first* reading — no koine spec had cited this prior art) under ADR-0006/ADR-0010:
+  the verdict splits, **correlation profiled by reference** (W3C Trace Context **Level 1**,
+  Recommendation 2021-11-23, now a ✅ row in `docs/reference/upstream-standards.md`) and the other
+  eight of eleven facts **minted**, with **OpenTelemetry resembled, not adopted** (no pin) and
+  CloudEvents dismissed with a re-open trigger. **Emission is OPTIONAL in a NORMATIVE clause** — a
+  participant that emits nothing is fully conformant (KCB §4.3g's rule on this plane), measured
+  rather than polite, since OTel's SDK makes a `DROP` sampling decision conformant — so **an absent
+  record asserts nothing** (KCB §4.5(c), §4.2b, KMI §2, KMI §7.1's reading). Two reconciliations are
+  **answered rather than inherited** from the implementation: **spend denominates its unit** (an
+  amount with no unit is *not evidence* for `cost_within_ceiling`, reading *unstated* and never
+  *within* — KCB §5's refusal-for-want-of-a-unit, MA-6), and **`status` is a CLOSED enum**
+  (`ok`/`refused`/`failed`/`unknown`, detail only beside the two negative tokens — OTel's `Status`
+  rule; free-form documented and closed consumed is delta **R**'s defect on a field). The **carrier
+  is named**: a record is an entry in §4's observation log discriminated by `kind: "exchange"`, and
+  the one carrier KCS does not own is stated as *not specified here* (KCB §4.2d's single channel,
+  §7.3g's single vocabulary) — §9 declines to be the **ninth** finding on ADR-0014's axis. It mints
+  nothing a sibling defines and disambiguates the **three axes called *tier*** (`tier` is the
+  **provenance trust tier**, never KGP §5's dialect tier and never KCB's `free`/`paid` price tier).
+  Additive at every existing surface (§2/§2.1/§3/§4/§5 unchanged by this half, no step/field/binding,
+  **no schema twin** — KCS has none for §2 either), minor because §9 is new normative surface.
+  **KCS stays candidate and this closes nothing**: delta **R** untouched and unowned, **DR-10** still
+  downstream, and the downstream re-write against the folded text is the implementer's.
 - `specs/fine-tuning.md` — KFT 0.8.0, **candidate** (ratified 2026-07-23 on two pressure passes:
   `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L; a **third**
   pass, `scenarios/e2e-producer-exhaust-finetune.md`, then pressure-tested a *producing application's*

@@ -159,9 +159,10 @@ the `trace-id`/`parent-id` fields koine reads are unchanged between the two, and
 clause on a document that may still move buys nothing. Re-check when Level 2 reaches Recommendation.
 
 The row is added to [`upstream-standards.md`](upstream-standards.md) so the quarterly drift check
-sweeps it like every other upstream. It is entered **⬜ not yet pinned** until the citing clause
-exists, and moves to ✅ when KCS §9 cites it — a row claiming a spec pins something no spec cites
-would be the drift the table exists to surface.
+sweeps it like every other upstream. It was entered **⬜ not yet pinned** because the citing
+clause did not exist when this page was written — a row claiming a spec pins something no spec cites
+would be the drift the table exists to surface — and it **moved to ✅ the same day**, 2026-09-12,
+when [**KCS 0.4.0 §9**](../../specs/conformance-scenario.md) landed and cited it in (b) and (e).
 
 **Mint and record — everything else.** The eight uncovered fields of §3 are minted in KCS §9, and
 this page is the *record* half of *mint and record*: it states what was read, on what date, and what
