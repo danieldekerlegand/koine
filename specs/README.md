@@ -232,8 +232,8 @@ Two things this correction deliberately does **not** do:
     no assertion reaches — KGP's §4.1 projection round-trip (**DR-3**), KMI's **M-1** (**DR-4**),
     KFT's §3.3 and §8.1 (**DR-5**) — and the artifact records a per-scenario aggregate rather than
     pass/fail per assertion with its cited clause (**DR-2**), so the mapping from a green line to a
-    discharged clause is read off the encoding by hand. The index of all twelve findings is
-    [`../scenarios/README.md`](../scenarios/README.md#findings-from-the-run-dr-1dr-13).
+    discharged clause is read off the encoding by hand. The index of all fourteen findings is
+    [`../scenarios/README.md`](../scenarios/README.md#findings-from-the-run-dr-1dr-14).
 
 There is still no provisional status, no waiver, and no "ratified pending encoding": the rule has
 one exception, the grandfather clause above, and it is closed to new entrants.

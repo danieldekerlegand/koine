@@ -226,3 +226,55 @@ consumer of this enum can say it was not told*. Two of the three were told and a
 declining to read a sibling repo cost a week on DR-11. Where a page's findings are all downstream, a
 dated verification pass at named shas belongs *in the page*, once, when something forces the read
 anyway.
+
+---
+
+## 9. AUD-6, half-discharged — 2026-09-12: a pass now walks an audio job, and it is not clean
+
+**AUD-6 was two things and this section closes one of them.** It said the rows were *"unexercised
+vocabulary"* and that exercising them meant *"a new `scenarios/*.md` **and** its KCS encoding — the
+join neither side can author alone."* The scenario half is now written:
+[`../../scenarios/kft-audio-modalities.md`](../../scenarios/kft-audio-modalities.md) (2026-09-12),
+a focused KFT leg walking one job per row — a caption→audio `text-to-audio` LoRA and a paired,
+mixed-class `audio-to-audio` voice-conversion `full` finetune.
+
+**It came back not clean, and that is worth more to a re-ratification than a clean walk.** Six
+findings, **AU-1…AU-6** — a series deliberately distinct from this page's `AUD-n`, which are
+*adoption* findings in other repos:
+
+| # | What it is |
+|---|---|
+| **AU-1** (High, **blocking**) | `audio-to-audio` is minted on the property that its corpus is *paired asset↔asset with no caption side*, and KFT §4.1's FT-I bullet — the only pairing carrier the spec names — types a training-record row as *"a KMI `asset` id **and its text**"*. `dataset.media[]` is the corpora *"not the training samples"*, the job schema's `dataset` is `additionalProperties: false`, the header schema fixes no row layout, and a Croissant descriptor is never an admission input. **A published row has no expressible supervision**, so two conformant providers train two different models from one manifest |
+| **AU-2** (Med-High) | §3.1's *"neither row moves a clause of §4"* is true of §4.2/§4.3/§4.1.1 and **false of §4.1**, and the reason it gives is `audio-to-audio`'s reason offered for both rows — `text-to-audio`'s caption side is a `records[]` row, not a media entry |
+| **AU-3** (Med-High) | The audio pair is the **only** duplicate in §3.1's *Data-plane port* column (and in `registry/enums/modality.tsv`'s `data_planes`), so §2's *told apart by their ports* and §8.1's `route_to[]` cannot discriminate the two rows. **This is the finding that reaches the narrow provider**: the correct grade is still `out-of-envelope`, but the route out of it cannot be computed from ports |
+| **AU-4** (Med) | §7 resolves cardinality because *"the arrays enumerate their members"*; a paired corpus's N samples are 2N members, so the estimate doubles and refuses `over-budget` a job that fits |
+| **AU-5** (Med-High) | §3.3's four pinned conversion targets train no audio model, while §3.3.2's `modality` row asserts a mapping in all four columns and §3.3.1's gating set makes a refusal mandatory — two conformant readings of one matrix |
+| **AU-6** (Med) | §5.3's export matrix and `registry/media-types.tsv` have no row for a **`full`** finetune's weights. Pre-existing; first made the *typical* path by `audio-to-audio` |
+
+All six are **additive and KFT-only** — no KMI, KCB, KGP or KINP clause is read differently by that
+walk — and all six are **unowned**. None of them is a model break: §4.2's gate, §4.3's union,
+§5.4's inheritance and §8.1's grades were each attacked on an audio corpus and **all held**.
+
+**What remains of AUD-6, and it is the half this page has always said is downstream.** The leg has
+**no KCS encoding and no run** — recorded as **DR-14** in
+[`../../scenarios/README.md`](../../scenarios/README.md#findings-from-the-run-dr-1dr-14) and in that
+leg's own `## Downstream results`, on the day the file landed rather than a week later. So:
+
+- **The rows are still not citable in a re-ratification.** Under
+  [the ratification gate](../../specs/README.md#the-ratification-gate) a `candidate → ratified`
+  promotion needs the machine-replayable encoding, not only the hand-walk.
+- **The encoding is downstream work** under [ADR-0001](../../decisions/ADR-0001-control-plane-topology.md)
+  and is **unowned** — and per [`CLAUDE.md`](../../CLAUDE.md) the downstream encoding set is held to
+  **set-equality** with `scenarios/*.md`, so the new file **breaks that test on arrival**. When the
+  encoding is built it must assert the **folded** text: an encoding that predates its fold returns
+  `green` while asserting nothing (**DR-7**/**DR-8**), which is the one thing this leg's row states
+  in advance rather than discovering afterwards.
+- **AU-1…AU-6 are a third condition on KFT's promotion**, additional to its two open counts and
+  moving neither. AUD-6's own status therefore goes from *open* to **half-discharged**: exercised by
+  a pass, not by an encoding, and now carrying six open deltas of its own.
+
+**AUD-4 is unchanged by this, and one thing in it is sharpened.** The narrow provider's deferral
+still ends the way its own dated record says it does. But AU-3 says the re-route AUD-4 turns on is
+not computable from ports as §8.1 defines it, so *recognise the token so an unimplemented modality
+refuses `out-of-envelope` rather than `invalid`* remains exactly right on the grade and now has a
+known gap on the **route**. That gap is koine's to fold, not the provider's to work around.

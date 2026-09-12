@@ -1266,7 +1266,7 @@ configuration, not a dedicated wiring program.
 
 ## Pressure test
 
-**Exercised by three end-to-end passes and one focused leg** —
+**Exercised by three end-to-end passes and two focused legs** —
 [`../scenarios/e2e-finetune.md`](../scenarios/e2e-finetune.md) (text,
 found FT-A…FT-H → folded into 0.2.0),
 [`../scenarios/e2e-finetune-multimodal.md`](../scenarios/e2e-finetune-multimodal.md) (fully-multimodal
@@ -1274,10 +1274,13 @@ found FT-A…FT-H → folded into 0.2.0),
 [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md)
 (a producing application's **training exhaust** entering the fabric under
 [`../decisions/ADR-0008-fabric-producer-adapter.md`](../decisions/ADR-0008-fabric-producer-adapter.md),
-found FT-M…FT-Q → folded into 0.4.0). The focused leg is
+found FT-M…FT-Q → folded into 0.4.0). The focused legs are
 [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) — a single-accelerator
 run interrupted mid-training, attacking **§11.3 alone** and saying explicitly which sibling questions
-it leaves untouched, found FT-R…FT-V → folded into 0.6.0.
+it leaves untouched, found FT-R…FT-V → folded into 0.6.0 — and
+[`../scenarios/kft-audio-modalities.md`](../scenarios/kft-audio-modalities.md) (2026-09-12), which
+walks **§3.1's two audio rows** for the first time, one job per row, and found **AU-1…AU-6**,
+**unfolded**.
 
 The first two passes cleared with no redesign and KFT was **Ratified** on 2026-07-23 — the four-plane
 composition holds under both a text and a fully-multimodal, multi-provider pass. The third pass then
@@ -1304,6 +1307,11 @@ withdrawn or changed in meaning. The stressors exercised across the three passes
   generations, preference pairs, QA labels — offered as a training set through a thin adapter
   (ADR-0008), verifying that a corpus which is neither KGP claims nor image/video/audio bytes has a
   reference slot, an admission-time egress class, and a resolvable cardinality *before* any transfer.
+- **The two audio rows (§3.1, second focused leg):** a caption→audio `text-to-audio` LoRA and a
+  **paired** `audio-to-audio` voice-conversion `full` finetune whose source side is `personal` /
+  `local-only` — verifying that the media port already carries audio, that §4.2's aggregate and
+  §4.3's union reach both sides of a pair, and that a corpus with **no caption side** can say which
+  source goes with which target. The first three hold; the last does not (**AU-1**).
 
 **What re-ratification is still waiting on — restated at 0.5.0, not replaced.** The gate is the
 same one 0.4.0 opened and it has not moved: a re-run of the third pass's
@@ -1414,9 +1422,13 @@ is absent from the schema's top-level `required`, and §4.2's, §4.3's and §7's
 0.5.0. The one precision 0.6.0's own summary overstates: §3.4's *"every clause below is inert"* is true
 of the four rules below it, and §5.4's bind-at-publication deliberately binds a cold run too. That is
 an **output-side publication obligation**, downstream of admission, so gate (i) is unaffected. **KFT is
-not promotable**, and the reason is two open counts.
+not promotable**, and the reason was two open counts on that date; it is **three** since 2026-09-12,
+when the audio leg below was walked.
 
-**0.7.0 adds no third gate — it adds two rows of unexercised vocabulary.** The `text-to-audio` and
+**0.7.0 added no third gate on the day it published — it added two rows of unexercised vocabulary,
+and the pass that exercised them nine days later did add one.** The paragraph below is the reading of
+2026-08-27, left standing because its reasoning is intact and what changed is the world; the
+correction is the paragraph after it. The `text-to-audio` and
 `audio-to-audio` tokens (§3.1) are additive over the existing `media(audio)` plane: no clause of §4
 moves, FT-F's admission mechanism is byte-unchanged, and a cold pre-0.7.0 manifest is admitted and
 refused on exactly the inputs it was before — so **both gates above are restated and neither moves**.
@@ -1436,6 +1448,30 @@ a vocabulary lag produced a wrong answer. The fifth is **open and owned** under 
 deferral, and the sixth — *no pass walks an audio job* — is **koine's own and unowned**. So the rows
 are exercised by *implementations* and still not by a *pass*, and it is the pass a re-ratification
 would need.
+
+**That pass now exists, it is dated 2026-09-12, and it was not clean — so 0.7.0's two rows cost a
+third condition after all.** [`../scenarios/kft-audio-modalities.md`](../scenarios/kft-audio-modalities.md)
+walks one job per row and returns **AU-1…AU-6**, of which **AU-1 is blocking**: §3.1 mints
+`audio-to-audio` on the property that its corpus is *paired asset↔asset with no caption side*, and
+§4.1's FT-I bullet — the **only** pairing carrier this spec names — types a training-record row as
+*"a KMI `asset` id **and its text**"*, while `dataset.media[]` is the corpora *"not the training
+samples"*, the schema twin's `dataset` object is `additionalProperties: false`, the header schema
+fixes no row layout and §4.1.1 forbids the gate to read a Croissant descriptor. A published row has
+no expressible supervision, and two conformant providers train two different models from one
+manifest. The other five are **AU-2** (this section's own additivity claim over-reaches by one
+clause — §4.1 — and gives `audio-to-audio`'s reason for both rows), **AU-3** (the audio pair is the
+**only** duplicate in §3.1's *Data-plane port* column, so §2's *told apart by their ports* and
+§8.1's `route_to[]` cannot discriminate them), **AU-4** (§7 prices a paired corpus's 2N members as
+2N samples), **AU-5** (§3.3's four pinned targets train no audio model while §3.3.2's `modality` row
+asserts a mapping in all four columns), and **AU-6** (§5.3's export matrix has no row for a `full`
+finetune's weights — pre-existing, first made the *typical* path here). **Nothing this section
+claimed about §4.2, §4.3, §5.4 or §8.1 broke**: all four were attacked on an audio corpus and held,
+which is why every delta is additive and **KFT-only** and none is a model break. They are a **third**
+condition on promotion — a fold, then that leg again — additional to the two gates above, **neither
+of which moves** (no job in that leg carries `resume`, and no corpus in it is a producer's exhaust).
+The leg's own artefact objection is stated on the day it landed rather than a week later: it has
+**no KCS encoding and no run** (**DR-14**), so **AUD-6 is half-discharged** — exercised by a pass,
+not by an encoding — and the encoding is downstream and **unowned**.
 
 **Downstream evidence (2026-08-24) — the gate fired, and the suite is a version behind.** The KCS
 encodings of the three end-to-end passes were run over real MCP/A2A links and all three came back
@@ -1486,6 +1522,51 @@ re-ratification:
 ---
 
 ## Changelog
+
+- **Editorial** (2026-09-12) — **The two audio rows are exercised for the first time, and the pass is
+  not clean.** §3.1's `text-to-audio` and `audio-to-audio` have been published since 0.7.0 and
+  recorded in *Pressure test* as **unexercised vocabulary** ever since — *"neither may be cited in a
+  re-ratification until [a pass] does"* — which was also **AUD-6**, the one koine-owned finding of
+  [`../docs/reference/generative-audio-modalities-downstream.md`](../docs/reference/generative-audio-modalities-downstream.md).
+  The leg now exists: [`../scenarios/kft-audio-modalities.md`](../scenarios/kft-audio-modalities.md),
+  one job per row — a caption→audio `lora` over an all-`exportable` corpus, and a **paired**
+  voice-conversion `full` finetune whose source side is `personal` / `local-only`.
+
+  **Six findings, AU-1…AU-6, and zero model breaks.** What was attacked hardest **held**: §4.2's
+  effective-egress aggregate reaches every carrier an audio job has (both sides of a pair as
+  `dataset.media[]` entries, the caption file's header, the base's own class under FT-B), §4.3's
+  union license carries a non-commercial audio base into the model, §5.4 binds a `local-only`-
+  inheriting voice model and its checkpoints at publication, FT-J refuses an unsatisfiable in-tier
+  pin, and §8.1 needed **no new code** (an in-enum modality outside a provider's envelope is
+  `out-of-envelope`, re-routable; an unknown token is `invalid`). What broke were **four sentences
+  this spec writes about itself** plus two table gaps: **AU-1** (blocking) — §4.1's FT-I bullet, the
+  only pairing carrier KFT names, types a row as *"a KMI `asset` id **and its text**"*, so
+  `audio-to-audio`'s *paired asset↔asset with no caption side* corpus has **no expressible
+  supervision** and two conformant providers train two different models from one manifest; **AU-2** —
+  §3.1's *"neither row moves a clause of §4"* is true of §4.2/§4.3/§4.1.1, false of §4.1, and gives
+  `audio-to-audio`'s reason for both rows; **AU-3** — the audio pair is the **only** duplicate in
+  §3.1's *Data-plane port* column (`registry/enums/modality.tsv`'s `data_planes` agrees), so §2's
+  *told apart by their ports* and §8.1's `route_to[]` cannot discriminate them, while KCB §7.1's port
+  `shape` is the routing carrier nothing points at for this; **AU-4** — §7 reads cardinality from
+  arrays that *"enumerate their members"*, and a paired corpus's N samples are 2N members;
+  **AU-5** — §3.3's four pinned targets train no audio model while §3.3.2's `modality` row asserts a
+  mapping in all four columns against §3.3.1's mandatory refusal; **AU-6** — §5.3's export matrix and
+  [`../registry/media-types.tsv`](../registry/media-types.tsv) have no row for a **`full`**
+  finetune's weights, pre-existing across `text-generation`/`text-to-image` and first made the
+  *typical* path by the row whose method ordering leads with `full`.
+
+  **A third condition on promotion, and no version or clause moves.** All six are additive and
+  **KFT-only** — checked per step: no KMI, KCB, KGP or KINP clause is read differently by the walk —
+  and all six are **unowned**; AU-1 and AU-4 are one §4.1/§7 edit, AU-2 a sentence, AU-6 a row. They
+  are a **third** condition beside gates (i) and (ii), **neither of which moves**: no job in the leg
+  carries `resume` and no corpus in it is a producer's exhaust, so both counts are restated on
+  exactly the inputs they had. It is **not a re-run gate** — it is a fold, then that leg again.
+  **§1–§11, the schema twin and every `registry/` file are byte-unchanged**; the edit is two
+  *Pressure test* paragraphs, a stressor bullet, this entry and the scenario. KFT stays **0.7.1
+  Candidate** and is **not promotable**. The leg's own artefact objection is stated on the day it
+  landed rather than a week later — it has **no KCS encoding and no run** (**DR-14**), so **AUD-6 is
+  half-discharged**: exercised by a *pass*, still not by an *encoding*, and that encoding is
+  downstream under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and **unowned**.
 
 - **0.7.1** (2026-09-12) — **The run-activity spelling, corrected everywhere KFT mints or shows one
   (patch).** KINP 0.5.0 resolved **IMP-7** by admitting `activity` to §3.1's `<kind>` enum and
