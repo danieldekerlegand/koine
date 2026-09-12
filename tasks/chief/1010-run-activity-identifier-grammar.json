@@ -27,8 +27,8 @@
         "The audit's companion observation is answered rather than left standing: `src` is in the §3.1 enum and is used as a kind nowhere in this repo. Either it gets a stated use or the record says why an unused kind stays.",
         "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "KINP 0.5.0: §3.1 enum gains `activity`; run-activity spelling stated normatively as `<namespace>:activity:<local-id>`; `<local-id>` charset deliberately NOT widened (IRI path-segment invertibility), with the rejected route recorded. Immutability weighed: no prefix moves, no claim id moves, nothing conformant invalidated. `src` answered (stays; name collision with the `src(...)` annotation; re-open condition stated). §4-§11 byte-unchanged, proven by section-slice shasum diff. GATES all green: doc-integrity OK (60 md files, 1647 links, all 3 status tables match headers, identity 0.5.0 candidate); doc-links 0 dead vs 0 on main; schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures); registry OK (29 relations); tasklist-categories OK (11 tasklists); roadmap coverage/stale/park OK (51 completed, 41 merged). `chief verify` exit 0 RECORDED."
     },
     {
       "id": "US-2",
