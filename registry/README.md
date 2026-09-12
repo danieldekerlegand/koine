@@ -7,8 +7,8 @@ they agree on the exact same terms.
 ## Relation registry
 
 The vocabulary of relations that may appear in a claim (KINP §4 / KGP §3). Governs argument
-order, arity, symmetry, and dialect tier — the facts that make claim normalization
-(KGP §3.2) deterministic across producers.
+order, arity, **argument type**, symmetry, and dialect tier — the facts that make claim
+normalization (KGP §3.2) deterministic across producers.
 
 **Governance (ratified 2026-07-17 — closes KGP §9 Q1):** a **shared core** plus
 **namespaced domain extensions**.
@@ -22,8 +22,35 @@ order, arity, symmetry, and dialect tier — the facts that make claim normaliza
   residence, added for a world producer's social vocabulary).
 
 New relations are added by PR. A relation's signature is **immutable once published** —
-changing arity/arg-order/symmetry would silently change every dependent `claim` id (KGP §3),
-so a change means a **new** relation name, never an edit in place.
+changing arity, argument order, **argument type** (`arg_types`, since KGP 0.6.0) or symmetry would
+silently change every dependent `claim` id (KGP §3, §9 decision 1), so a change means a **new**
+relation name, never an edit in place.
+
+### The ordering rule for a signature-bearing column
+
+**A column that participates in the signature lands before the registry has wide production use, or
+it re-mints every claim that disagrees with it.** This is a standing rule, not a note about one
+column. It follows from immutability directly: every published row acquires a value for the new
+column at the moment it lands, so the column is an **addition to existing rows' meaning**, and any
+row whose producers had guessed differently has been silently re-minting `claim` ids all along. The
+later the column, the more of that traffic exists. The cost is therefore about **adoption, not
+effort** — the edit stays one column wide however long it waits, and only the debt grows.
+
+Two obligations fall out of it, and a reader adding to this registry meets both:
+
+- **A new relation is typed when it is minted, never after.** A row that lands untyped — or typed
+  wrongly — cannot be corrected in place: it needs a new relation name, and it strands every claim
+  already minted against it. The guard refuses an untyped row, which is what makes this
+  enforceable rather than advisory.
+- **A new signature-bearing column is proposed with its vocabulary at full width.** Refining a
+  published token later (`literal` → `string`) is an edit in place under another name and costs the
+  same re-mint. `arg_types` was widened past the two-token form INT-3 proposed for exactly this
+  reason; see below.
+
+[INT-3](../docs/reference/interop-trial.md#c3-is-an-argument-a-curie-or-a-literal-int-3-new-blocking)
+is the worked instance — found inside this tree, reproduced from outside it by a producer role, and
+closed on 2026-09-12 while the count of relations was still 29. It is the case the rule is drawn
+from, not the only case it governs.
 
 ### Columns (`*.tsv`)
 
@@ -73,9 +100,9 @@ INT-3.
 count against `arity` and the tokens against the vocabulary, and it rejects a symmetric relation that
 mixes types, since KGP §3.2 rule 2 sorts its operands against each other.
 
-**A new relation is typed when it is minted, never after.** The signature is immutable once
-published, so a row that lands untyped — or typed wrongly — cannot be corrected in place: it needs a
-new relation name and it strands every claim already minted against it.
+**A new relation is typed when it is minted, never after** — the first obligation of *The ordering
+rule for a signature-bearing column* above, and the reason this column had a deadline while the
+registry was still small.
 
 There is no `egress` column: a core or domain relation is `exportable` (the KGP §7.2 default) —
 egress is a property of *what a participant's own predicate carries*, so it is declared per entry

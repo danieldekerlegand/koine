@@ -1,6 +1,14 @@
 # Interop trial — a spec-only producer, and what the receiving side does with it
 
-> **Status:** Current · **Updated:** 2026-08-18 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-09-12 · **Owner:** koine · **Informative**
+
+> **2026-09-12 — one of the eleven is closed: INT-3.** The measurement below is unchanged and
+> stands as the record of the 2026-08-18 trial. What changed is the tree it measured: the relation
+> registry now publishes an [`arg_types`](../../registry/README.md) column and
+> [KGP 0.6.0](../../specs/grounding-pack.md) §3.2 rule 1 reads it, so C3's fork is decided and two
+> of its three renderings are **non-conformant** rather than defensible. See
+> [§ C3](#c3-is-an-argument-a-curie-or-a-literal-int-3-new-blocking) for what landed, and §8 for
+> what that does and does not do to the other ten. **The remaining ten are open.**
 
 **This document binds no clause.** It is the record of one trial, not a contract: where a finding
 and a spec disagree the spec wins and the finding is the thing to re-check. Nothing here adds a
@@ -230,6 +238,64 @@ same kind of fact.
 ordering cost — a relation's signature is immutable once published, so adding the column is an
 addition to existing rows' meaning and needs to happen before more relations land, not after.
 
+#### CLOSED — 2026-09-12
+
+**What landed, in two halves that are one mechanism.** The registry half:
+[`registry/relations.tsv`](../../registry/relations.tsv) and all three domain files publish an
+**`arg_types`** column, positional and parallel to `arg_roles`, and **all 29 published relations are
+typed at every position with none left blank** — 27 rows `id|id`, and `cine:says` and `cine:reads`
+`id|string`, which are exactly the two positions this section found. `scripts/check-registry.mjs`
+moved with the data: the column is required, its tokens are checked against a closed vocabulary and
+counted against `arity`, and a `symmetric` relation that mixes types is rejected. The spec half:
+**KGP 0.6.0** §3.2 **rule 1** now fixes an argument's canonical *type* by the registry beside its
+arity and order — `id` selects rule 3, and a literal token selects that branch of rule 5 — with a
+MUST NOT on inferring a type from the value's syntax or from a grammar's whitespace rule. Rules 3
+and 5 each name the positions they are the rule *for*, and §3.3 carries the settled worked case with
+all three renderings and their hashes. The fold narrows conformance in the section every `claim` id
+depends on, so it cost KGP the `ratified` status it had held since 2026-08-28 — the ordinary
+model-shape rule, recorded in that spec's changelog.
+
+**The two splits, both closed.** The first is the one measured above: R1 against R2, literal against
+identifier. The registry decides it, and for `cine:says` the answer is **R1** — so R2 and R3 are now
+**non-conformant renderings, not defensible ones**, and a producer that emits either has a defect
+rather than a reading. The second split is the one this section noted and did not measure: rule 5's
+trigger for the typed-literal form, *"when a bare literal is ambiguous"*, is a judgement, so R1 and
+R3 could still diverge between two producers who **both** chose *literal*. That is why the landed
+vocabulary is **wider than the `id|literal` proposed above** — `id | string | integer | decimal |
+boolean | datetime`, one token per branch of rule 5 — and why §3.2 closes rule 5's `^^` form off for
+a claim argument outright: once the registry names the branch, the trigger cannot arise. The width
+was not free to defer. `arg_types` is part of a relation's signature, so refining a published
+`literal` to `string` later would re-mint every dependent claim id, which is the same immutability
+cost this finding's *Remedy* stated.
+
+**The silence is answered too.** A producer reading a registry copy that predates the column — or a
+private extension whose row is untyped — no longer meets a gap it must fill by instinct. §3.2 states
+the rule: a position the registry does not type is **not canonicalizable**, so the producer
+**refuses**, with no default and no fallback, and a consumer never re-derives or merges such an id.
+Fail-closed is the only answer that does not re-create this finding at the next stale copy.
+
+**The independent reproduction, recorded as corroboration.** After this trial, a **producer role**
+implementing these contracts against a real export reproduced the same defect from the outside, on a
+relation this trial never touched and without being pointed at this finding: its adapter, finding nothing in the registry that typed the position, fell
+back to the [`csid`](implementability-audit.md) grammar's no-whitespace rule and emitted
+`cine:reads(frame-9, "EXIT")` with an **entity CURIE** in argument 2, where a peer typing the same
+role as a literal emitted a **string** — so two identical observations **did not merge**, and
+neither side had a signal, which is the silent failure mode §6 describes. It reported the
+divergence as a proposed koine change rather than forking the contract, the behaviour
+[ADR-0008](../../decisions/ADR-0008-fabric-producer-adapter.md) asks for. Two properties of that
+report are worth keeping. It **concentrates on single-token spans** — OCR text, sign text, short
+utterances — because that is where a no-whitespace fallback fires, and that is also where this
+vocabulary is densest, so the defect is worst exactly where the traffic is. And it is what raises
+INT-3 from a **reading to a measurement**: §0 is explicit that this trial cannot claim *"an outside
+implementer would have done X"*, and here one did. The producer is named by **role** and not by
+repository or product — the rule this tree holds to everywhere, and the reason this paragraph
+records a behaviour rather than a name.
+
+**What this closure does not do.** It closes one of the six forks of §6 and one of the eleven
+findings of §8. It moves no other finding, it does not re-run the trial, and it does not change the
+measurement below — **1 of 5 at the hash, 0 of 5 as identifiers** remains the reading of
+2026-08-18, and re-taking that number is a new trial, not an annotation.
+
 ### C4 · the claim with nothing wrong with it
 
 ```
@@ -452,12 +518,18 @@ Five claims. One pack. The number the trial exists to produce:
 |---|---|---|---|
 | C1 `cine:commands(renaud, army-of-ash)` | INT-1 relation name (and IMP-3 spacing) | no | no |
 | C2 `co_occurs(banner-9, banner-100)` | INT-2 collation | no | no |
-| C3 `cine:says(renaud, "Hold the line")` | INT-3 argument type | no | no |
+| C3 `cine:says(renaud, "Hold the line")` | INT-3 argument type — **closed 2026-09-12** | no | no |
 | C4 `located_in(renaud, alder-keep)` | none | **yes** | no — C6 |
 | C5 `based_on(npc-Élodie, napoleon-i)` | INT-4 percent case | no | no |
 
 > **Claim-id convergence between two spec-conformant producers: 1 of 5 at the hash, 0 of 5 as
 > identifiers.**
+
+**That number is the reading of 2026-08-18 and is not re-taken here.** One of its five forks has
+since been closed — C3 / INT-3, by the registry `arg_types` column and KGP 0.6.0 §3.2 — so a trial
+re-run against today's tree would converge C3 at the hash. It is left standing rather than edited,
+for the reason §0 gives: a computed measurement is evidence for the tree it was taken on, and
+quietly advancing it would be asserting a result nobody ran. The other four forks are open.
 
 The one that converged did so because nothing in it was under-specified, and then lost convergence
 at the identifier. That is the finding in one line: **§3's mechanism is sound and its perimeter is
@@ -520,7 +592,7 @@ visibly.
 |---|---|---|---|
 | **INT-1** | blocking | KGP §3.3, KINP §7.1, `registry/relations/cinematography.tsv` | The only worked normalization example hashes `commands`; the registry holds `cine:commands`. KINP's envelope example uses `fought`, registered nowhere. Two hashes computed |
 | **INT-2** | blocking | KGP §3.2 r2, §2.1 | Symmetric-operand collation diverges on plain ASCII inside KINP's local-id charset (`banner-9` vs `banner-100`). Sharpens IMP-4 with a computed pair |
-| **INT-3** | blocking | `registry/*.tsv`, KGP §3.2 r3/r5 | No `arg_types` column: an implementer cannot tell whether an argument position takes a CURIE or a literal. Three defensible renderings of one claim, three ids |
+| **INT-3** ✅ | blocking — **CLOSED 2026-09-12** | `registry/*.tsv`, KGP §3.2 r3/r5 | No `arg_types` column: an implementer cannot tell whether an argument position takes a CURIE or a literal. Three defensible renderings of one claim, three ids. **Closed** by the `arg_types` column on all four relation files (29 relations typed, no position blank) and KGP 0.6.0 §3.2 rule 1 reading it — two of the three renderings are now non-conformant. Reproduced independently by a producer role before it closed; see [§ C3](#c3-is-an-argument-a-curie-or-a-literal-int-3-new-blocking) |
 | **INT-4** | gap | KINP §3.1, KGP §3.2 r3 | Percent-triplet hex case unspecified and claim-identity-bearing; RFC 3986 normalizes the opposite way to §3.1's "lowercase" |
 | **INT-5** | blocking | KGP §2, KINP §7, `grounding-pack.schema.json` | The entity record shape is defined nowhere: KGP §2 defers to a KINP entity envelope that does not exist, and prose and twin give four different key names each. The pack's first required array is unimplementable without invention |
 | **INT-6** | blocking | KGP §2.1, §2 | `manifest.created` is inside the pack hash, so §2.1's stated reproducibility guarantee is refuted by §2.1's own formula. No ambiguity required |
@@ -545,10 +617,17 @@ visibly.
 | **IMP-15** (egress class has no registry column) | confirmed — A9 is conformant-by-vacuum |
 | **IMP-16** (no runnable conformance suite) | confirmed, and extended: the gap is not only the console. See INT-11 |
 
-**Nothing here is scheduled, and nothing here was fixed.** Every one of the eleven is normative — each
-moves a spec version, a registry column, or a policy file — and this document does not decide
-questions that belong to the spec owner. That is the same discipline the audit held to, and for the
-same reason: a trial that quietly edits the thing it is measuring has measured its own edit.
+**Nothing here was scheduled, and nothing here was fixed *by this trial*.** Every one of the eleven
+is normative — each moves a spec version, a registry column, or a policy file — and this document
+does not decide questions that belong to the spec owner. That is the same discipline the audit held
+to, and for the same reason: a trial that quietly edits the thing it is measuring has measured its
+own edit.
+
+**One has since been fixed elsewhere, which is the discipline working rather than an exception to
+it.** INT-3 was closed on 2026-09-12 by the spec and registry owner, in the registry and in KGP
+§3.2, and this document records the closure *after* the fact instead of performing it — the row
+above is annotated, the C3 measurement is untouched, and §6's number is left as taken. **Ten remain
+open**, and none of them is scheduled here either.
 
 ---
 
@@ -561,7 +640,8 @@ In order of how much they buy, cheapest first:
    table.
 2. **The six forks closed** — one clause each, and four of the six are already written down
    elsewhere in the fabric (KCB §7.1's collation and serialization discipline; the registry's own
-   qualification rule).
+   qualification rule). **One is done: C3 / INT-3**, closed 2026-09-12 by one registry column and
+   one clause, which is the size this item predicted. **Five remain.**
 3. **A static-artefact check in KCS** (INT-11), which is what turns "here is my pack" into a verdict
    without requiring a second party to exist.
 4. **A clean-room build (E2)** by an engineer with no access to this tree — which becomes worth
@@ -577,6 +657,19 @@ about other people, and this trial contains none.
 ---
 
 ## Changelog
+
+- **2026-09-12** — **INT-3 closed**, and nothing else about this trial changed. The relation
+  registry gained an `arg_types` column — positional, parallel to `arg_roles`, all 29 published
+  relations typed at every position — and **KGP 0.6.0** §3.2 rule 1 now reads it, so which of rule 3
+  and rule 5 applies to a claim argument is a registry fact rather than a producer's choice; rule
+  5's `^^` form is closed off for a claim argument, and a position the registry does not type is not
+  canonicalizable (refuse; no default, no fallback). The landed vocabulary is **wider** than the
+  `id|literal` this document proposed — `id | string | integer | decimal | boolean | datetime` —
+  because the narrow form leaves C3's *second* split open and a signature cannot be refined in
+  place. § C3 gains a `CLOSED` subsection with the independent outside reproduction recorded as
+  corroboration (a producer role, by role only); §6's C3 row and §8's findings row are annotated.
+  **The measurement is not re-taken**: 1 of 5 at the hash and 0 of 5 as identifiers stands as the
+  reading of 2026-08-18. Ten findings remain open.
 
 - **2026-08-18** — First trial. Re-scoped from E1 to E3 with the loss of evidential value stated in
   §0. Eleven new findings INT-1…INT-11, ten audit findings re-executed. Measurement: claim-id

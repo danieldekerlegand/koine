@@ -767,7 +767,19 @@ vocabulary.
   only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
   `relations/social.tsv` (soc:), plus `entity-types.tsv`, `media-types.tsv`, and `enums/`.
   A relation's signature is immutable once published (changing it changes every dependent claim
-  id), so a change means a NEW relation name, never an edit in place. Bridge/predicate mappings
+  id), so a change means a NEW relation name, never an edit in place — and since **KGP 0.6.0** the
+  signature includes each argument's **type**, published in the `arg_types` column (positional,
+  parallel to `arg_roles`, all 29 relations typed at every position; `id` → §3.2 rule 3, a literal
+  token → that branch of rule 5). That cost is now a **standing rule** in `registry/README.md`
+  § *The ordering rule for a signature-bearing column*, not a note about one column: a
+  signature-bearing column lands **before wide production use** or it re-mints every claim that
+  disagrees with it; a new relation is typed **when it is minted**; and a new such column is
+  proposed **at full width**, because refining a published token later is an edit in place under
+  another name. **INT-3 is CLOSED** (2026-09-12) in `docs/reference/interop-trial.md` § *C3*, with
+  the independent outside reproduction recorded there as corroboration — by **role**, never by
+  product — and that document's §6 measurement deliberately **not** re-taken (1 of 5 / 0 of 5 stands
+  as the reading of 2026-08-18; re-taking it is a new trial). Ten of its eleven findings remain
+  open. Bridge/predicate mappings
   and a deployment's own canonical node/edge ontology are **instance data** and were moved to the
   private integration repo — do not reintroduce them here.
 - **All four planes** validated by a pressure test (`scenarios/`); contract layer complete. Deltas
