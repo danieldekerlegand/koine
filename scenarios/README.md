@@ -142,7 +142,17 @@ close.** It breaks on the fold's own perimeter → **MT-2** (High, carrier: no c
 types a path **request** or a path **result**, and §4.4c types `planned_leg` *"as §3 returned it"*
 against that absence, so an unparseable plan is an absent plan — the seventh finding on ADR-0014's
 axis) and **MT-3** (Med-High, scope: the cross-check binds the party that cannot know a selection
-happened, and no response names the resolved major). **All six KCB counts stand.** None of these verdicts is a `green` line: three of the four
+happened, and no response names the resolved major). **BP-7 was then folded the same day at KCB 0.5.8
+— §4.2b owes a live adjustment on §4.2d's channel one of `applied` / `cannot-honour` / `unsupported`,
+and *silence is not one of them* — and count (iv) was re-run against it (`chief/970`): BP-7 does not
+reproduce, blocking BP-5 holds for a third consecutive walk, and the count still does not close.** It
+breaks on the fold's own perimeter, and on the sharpest instance of the axis yet → **BP-9** (High,
+carrier: the three answers, the request they answer and the subscriber-minted **id** that correlates
+them have **no frame name, field, key or envelope**, on a channel whose §7.3g rule — *an unnamed frame
+is one every conformant participant MUST ignore* — this very fold widened to run in **both**
+directions; the eighth finding on ADR-0014's axis) and **BP-10** (Med-High, collision: the answer is
+owed per **frame** while two of the three ways are written per **operand**, and `applied` does not fix
+which set it enumerates). **All six KCB counts stand.** None of these verdicts is a `green` line: three of the four
 encodings return green over open blocking deltas, which is what **DR-7** and **DR-8** are the record of.
 
 The **three federation §-edits** — [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
@@ -225,7 +235,9 @@ which closed either** (§4.2 → **BP-7**/**BP-8**, though blocking BP-5 does no
 **re-run again on 2026-09-12 (`chief/950`)** against the fold that answered BP-8 and AP-9, with the
 same result: §4.2's count is now held open by **BP-7** alone and returned no new delta, §4.3's by
 **AP-10** and by W3, and neither encoding was consulted for either verdict, both being green and both
-predating the fold. Two qualifications
+predating the fold. §4.2's count was **re-run a third time on 2026-09-12 (`chief/970`)**, against the
+fold that answered BP-7, and did not close then either — **BP-9** and **BP-10**, both on the fold's
+perimeter, with that encoding now predating **three** publications of the section it gates. Two qualifications
 survive intact and are the ones a promotion argument now has to answer: **DR-7** (count (ii)'s
 encoding **predates** its fold, so it must be *extended*, not re-run) and **DR-8** (the same for
 `kcs:multi-authority`). **This is the cleanest demonstration the register has of what the gate is

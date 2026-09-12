@@ -29,8 +29,8 @@
         "§4.2g is untouched and re-affirmed: this fixes the SHAPE of the answer, not a latency, a rate, or a liability. Scheduling, queue discipline, buffer sizing, admission policy and the retry curve stay in each participant's own infra.",
         "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "KCB 0.5.7 -> 0.5.8 (patch). §4.2b gains four new normative bullets + one amended tail bullet extending the registration-time honour-or-refuse rule to a live adjustment on §4.2d's channel (`applied` / `cannot-honour` / `unsupported`, silence is not one of them, in §4.2c's shape); §4.2d amended in three places; §4.2g untouched and re-affirmed in terms. Gates observed green: doc-integrity OK (61 markdown files, 1838 relative links, all 3 status tables match headers, capability-bus 0.5.8 candidate), doc-links 0 dead vs 0 on main, schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures), registry OK (31 relation names), tasklist-categories OK (3 tasklists), roadmap-truth OK (coverage 59/59, stale 49 checked none open, park OK). `chief verify` exit 0 RECORDED."
     },
     {
       "id": "US-2",
@@ -44,8 +44,8 @@
         "The KCB version move is decided under §7.2's own table and recorded with reasoning; if it moves, all three status mirrors (`README.md`, `specs/README.md`, `ECOSYSTEM.md`) move with it, and §2.3's legacy namespace-root removal declared at KCB 0.6.0 is checked rather than tripped.",
         "GATES: koine's six checks green, with observed output recorded."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Audit of the same 0.5.8 edit, taken against the text (slice-and-compare vs 0.5.7), not asserted — no version move. BYTE-IDENTICAL: §4.2a/§4.2c/§4.2e/§4.2f/§4.2g, §4's verb table (five entries), §4.1's audit (`subscribe` still the one session-shaped clause), §2.3, §7.1, §7.2 entire; inside §4.2b the registration MUST, the lossless-or-lossy bullet and *a retraction is never shed*. §4.2d's one-channel-not-two and host-not-on-the-path bullets unchanged, so no second mechanism and §3.1 federation composes (ADR-0001). Bump decided under §7.2's table -> it governs a published capability's bumps only; KCB's own version moves on §7.3b's axis; the two questions the table answers are both No; §2.3's 0.6.0 checked not tripped; all three mirrors carry 0.5.8. ONE CORRECTION: §4.2d's ignore rule was an unknown-frame rule for a producer and an absence rule for a subscriber, while §7.3g's four frames and these three answers all travel producer->subscriber — letter widened to either direction (substance unmoved; safe because (b) reads an unread answer as *not in force*), and the three 'holds unchanged' claims corrected. Gates observed green: doc-integrity OK (61 files, 1838 links, 3 tables, capability-bus 0.5.8 candidate), doc-links 0 dead vs 0 on main, schemas OK (9/278/80/3), registry OK (31 relations), tasklist-categories OK (3), roadmap-truth OK (coverage 59/59, stale 49, park OK). `chief verify` exit 0 RECORDED for tree 40c885e6."
     },
     {
       "id": "US-3",
@@ -59,8 +59,8 @@
         "`docs/reference/promotability.md` is updated to match, and states that closing count (iv) promotes nothing on its own while KCB's other counts stand.",
         "GATES: koine's six checks green, with observed output recorded."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Count (iv) re-run BY HAND against KCB 0.5.8 — the first text carrying BOTH its folds (BP-8's 0.5.4/0.5.5 and BP-7's 0.5.8), one walk not two. Steps 3/6/7/8 walked; Steps 1/2/4/5 restated unmoved on a VERIFIED byte-compare (sliced §4.2a/c/e/f/g out of 0.5.7 and HEAD: a=e398bf996d1d both, c=85a34198af76 both, e=9f1792973611 both, f=4671dcab39ed both, g=b2e933e6138a both; §7.2 bbd242a986b1 both, §7.3g 7ab3d199aa9c both, §4.1 c1bffe9c1742 both; verb table still 5 entries). Prose, never a replay (DR-7 — that encoding is green and now predates 3 publications of §4.2). VERDICT: does NOT close. BP-7 does not reproduce, BP-8 does not reproduce, blocking BP-5 does not reproduce for a 3rd consecutive walk, Step 8 four-of-four. Two new perimeter deltas: BP-9 (High, carrier — three outcome tokens, the request they answer and the echoed subscriber-minted id have no frame name/field/key/envelope, on a channel whose §7.3g unnamed-frame rule THIS fold widened to both directions; 3 MUSTs on §4.2's half, 0 named frames, vs §7.3g's 4) and BP-10 (Med-High, collision — answer per-frame, (ii)/(iii) written per-operand, and `applied` does not fix which set it enumerates). One additive KCB-only §4.2b/d edit, unowned. BP-7 disposition added to docs/reference/capability-versioning-fold-dispositions.md reasoning the extent, incl. the three properties that keep it off §4.2g's QoS side and the declined counter-proposal (state WHEN it takes effect = a latency commitment). promotability.md item (5) is now BP-9+BP-10 and states that closing count (iv) promotes nothing while the other five stand. No version and no clause moved. Gates observed green: doc-integrity OK (61 files, 1845 relative links, all 3 status tables match headers, capability-bus 0.5.8 candidate); doc-links 0 dead vs 0 on main; schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures); registry OK (31 relation names); tasklist-categories OK (3 tasklists); roadmap-truth OK (coverage 59/59, stale 49 none open, park OK)."
     }
   ]
 }

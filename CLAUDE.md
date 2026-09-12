@@ -220,7 +220,7 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
-- `specs/capability-bus.md` — KCB 0.5.7, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.5.8, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -461,16 +461,14 @@ vocabulary.
   `docs/reference/promotability.md` § *The eight things that stand between KCB and `ratified`*** —
   **eight** items since 2026-09-12, when count (vi)'s walk added (8) the **MA-17 + MA-18** fold
   (§4.5(a), one edit for two findings). Read the ownership column as of its date: item (6) found an
-  owner on 2026-09-11; items (2), (3) and (4) have each had a tasklist **run** (0.5.6/0.5.7,
-  0.5.3, 0.5.4/0.5.5) and each is **unowned again**, its fold having landed and its count having
-  changed shape rather than closed; and item (5) is **queued**, which is not *merged* and has not
-  run, so no count moves: (1) was ADR-0014's four-part clause, a
+  owner on 2026-09-11; items (2), (3), (4) **and (5)** have each had a tasklist **run** (0.5.6/0.5.7,
+  0.5.3, 0.5.4/0.5.5, 0.5.8) and each is **unowned again**, its fold having landed and its count having
+  changed shape rather than closed: (1) was ADR-0014's four-part clause, a
   precondition of counts **(ii) and (iii)**, not one — **written at 0.5.1 on 2026-09-12**, and item
   (1) is now the **MA-14 + MA-15 + MA-16** fold (§3/§3.1(d), one edit for three findings) that count
   (iii)'s re-run returned against it, gating count (iii) alone; (2) is now the **MT-2 + MT-3** fold (§3 and §4.4c, two edits for two findings) that
   count (i)'s re-run returned against **MT-1**, folded at 0.5.6/0.5.7 and not reproducing; (3) **V-9 +
-  V-11** (§7.1); (4) is now the **V-16 + AP-10** fold (§7.3g, one edit for two findings) that counts (ii) and (v) returned against **V-10 + BP-8 + AP-9**, folded at 0.5.4/0.5.5 and none of the three reproducing; (5) **BP-7**
-  (§4.2b/d); (6) **DR-7**, the encoding extension to the F1–F13 set — downstream under ADR-0001, and
+  V-11** (§7.1); (4) is now the **V-16 + AP-10** fold (§7.3g, one edit for two findings) that counts (ii) and (v) returned against **V-10 + BP-8 + AP-9**, folded at 0.5.4/0.5.5 and none of the three reproducing; (5) is now the **BP-9 + BP-10** fold (§4.2b/§4.2d, one edit for two findings) that count (iv)'s re-run returned against **BP-7**, folded at 0.5.8 and not reproducing; (6) **DR-7**, the encoding extension to the F1–F13 set — downstream under ADR-0001, and
   the **only** artefact objection KCB still carries, since **DR-12 and DR-13 are CLOSED** (encoded at
   `agora 378fd3c`, re-verified 2026-09-03 by **running** the gates at `agora c971fc2`: coverage 3
   passed, evidence 13 passed, both entries `green`/`partial-live` and naming §4.2 and §4.3 as what they
@@ -895,6 +893,102 @@ vocabulary.
   changelog entry and a scenario section. Count (i) is also **KMI's second promotion condition**, so a
   clean walk would have been worth more than one spec's count — it closes only KCB count (i) either
   way, and **KCB is not promoted and is not promotable**.
+  **0.5.8 (2026-09-12, patch) folds BP-7 — a producer owes a LIVE adjustment an answer, and silence is
+  not one of them.** The finding count **(iv)**'s 2026-09-03 walk returned at Step 3, restated unmoved
+  by the 0.5.5 walk, and the last thing that count stood on. §4.2b's honour-or-refuse rule was stated at
+  **one moment** (*"MUST refuse the subscription **at registration**"*) while §4.2b's own preamble makes
+  the operands *"set at registration **and adjustable in-band** (d)"* and §4.2d calls its
+  subscriber → producer direction *"the lever Step 3 of the leg went looking for and did not find"* — so
+  the section minted a lever and said nothing about what a producer **owes** when it is pulled, and a
+  subscriber that learned it was behind ninety seconds in (which is when a merge queue tells you, not
+  when a card does) could not tell *honoured* from *refused* from *not implemented*, returning it to the
+  one lever that always worked — **disconnect**, which is what §4.2b exists to replace. The fix was
+  **already written one paragraph away**: §4.2c governs the *other* in-band operand and gets it right
+  (*"A producer MUST answer a `resume` in exactly one of three ways, and **silence is not one of
+  them**"*). §4.2b gains that discipline over its own operands — `applied` (naming the operands now in
+  force), `cannot-honour` (naming, per operand, the value it *can* meet — `gap-unavailable`'s shape) or
+  `unsupported`, and **silence is not one of them**; a producer that cannot honour a live adjustment is
+  **conformant by refusing**, one that takes the frame and keeps delivering under the old envelope is
+  **not**. It is the registration-time rule **extended past the moment it was scoped to**, not a second
+  convention: fail closed, as §5 and §7.2 do. Four things are stated rather than left to be derived,
+  three of them findings this repo has already paid for: the answer **echoes the adjustment's
+  subscriber-minted id**, because named outcomes with nothing to attribute them to is **MA-17**'s
+  carrier failure one verb over and *which* answer arrived is the whole of the value (the id orders
+  nothing and is not a cursor); an **unanswered adjustment reads *not in force***, fail-closed on the
+  **reading** side as §4.5(c) reads an absent `fetch` outcome as *pending*, and fixed for the subscriber
+  rather than left to the conformance verdict **because** silence from a producer in breach and silence
+  from a participant that implements none of this section are the same signal on the wire — only one is
+  a defect and which it is changes nothing the subscriber may conclude; the three named answers are what
+  make the **outcome** assertable, closing §4.2d's own argument for preferring a frame over transport
+  flow control, which through 0.5.7 was true of the *request* and not of its *outcome*; and the answer
+  fixes a **shape, never a latency** — **§4.2g is untouched and re-affirmed**, `applied` committing to no
+  drain time, ramp, schedule or liability, with scheduling, queue discipline, buffer sizing and admission
+  policy staying in each participant's own infra. §4.2d is amended in three places to point at the rule
+  rather than past it, and its **ignore-what-you-do-not-understand rule holds in substance and is stated
+  in both directions for the first time** — its letter bound only a **producer** receiving an unknown
+  frame, true when the channel was minted and untrue since §7.3g, whose four frames travel
+  producer → subscriber and which cites this rule as though it already covered a subscriber; these three
+  answers travel the same way, so the letter is widened rather than the additivity claim left resting on
+  nothing, and it is safe on its own terms because (b) fixes an unread answer as an answer **not
+  received**, which reads *not in force* and is fail-closed. It still governs the frames a producer sends
+  **unasked** and is no licence for silence where (b) owes an answer. **Patch on §7.3b's
+  axis**, named rather than assumed (§7.2's table governs *a published capability's* bumps and is
+  consulted only for the two questions it answers, both **No**): additive at every surface, the answer
+  riding §4.2d's **existing** channel and minting no second mechanism (§4.2d's own MUST), **no verb,
+  plane, port kind, grant or authority role added** and §4's verb table still five entries, §4.1's audit
+  unchanged so `subscribe` remains the one session-shaped clause, the lossless/lossy rule and *a
+  retraction is never shed* byte-unchanged, a subscription declaring none of §4.2's operands served as a
+  0.4.6 subscription and **never owed an answer**, **§7.1 step 1 byte-unchanged so no published
+  `schema_id` or digest moves**, §7.2's table undisturbed, and **0.6.0 stays spoken for** by §2.3's
+  removal — checked, not tripped. It composes across §3.1 federation for §4.2d's stated reason: the
+  binding, and therefore its channel, runs between the two peers and never required a party with
+  jurisdiction over both ends (ADR-0001). **No count closes and none is added** — BP-7 was found inside
+  count (iv)'s own walk, so that count changes shape to *re-run Steps 1–8 against text carrying both
+  folds*, BP-8's (0.5.4/0.5.5) and this one — and **KCB is no more promotable than it was**.
+  **That walk was run by hand the same day (2026-09-12), against 0.5.8 — the first text carrying BOTH
+  of count (iv)'s folds — and count (iv) does NOT close.** One walk rather than two each re-reading the
+  other's absence, which is what the gate paragraph asked for. Steps **3, 6, 7 and 8** walked; Steps
+  **1, 2, 4 and 5** restated unmoved on the verified ground that §4.2a, §4.2c, §4.2e and §4.2f are
+  byte-identical to 0.5.7. Prose, never a replay — `kcs:subscription-firehose` is green and now
+  predates **three** publications of the section it gates (**DR-7**). **BP-7 does not reproduce**,
+  re-attacked on the ground it was filed on: the three answers hold, the conformant-by-refusing rule
+  holds, the fail-closed reading of silence holds, and §4.2g is untouched so the answer commits to no
+  latency. **BP-8 does not reproduce**, **blocking BP-5 does not reproduce for a third consecutive
+  walk** — §4.2d's host-not-on-the-path and one-channel-not-two bullets are byte-unchanged and the new
+  obligation names exactly the two peers — and Step 8's four holds survive re-probing in the corrected
+  *no live subscriber breaks* form. Two new **perimeter** deltas, both on the fold published hours
+  earlier and both **KCB's own**: **BP-9** (High, carrier) — (b) requires an answer to *"a subscriber →
+  producer adjustment frame (d)"*, names three outcome **tokens** and requires an echoed
+  subscriber-minted **id**, and fixes **no frame name, field, key or envelope** for the request, the
+  answer or the id, while §4.2d's *ignore what you do not understand* rule — **widened by this very
+  fold to run in both directions** — makes an unnamed frame one every conformant participant MUST
+  ignore. The criterion is **§7.3g's own**, folded at 0.5.5 to close **V-10** and quoted **inside the
+  bullet 0.5.8 widened**, so the MUST binds only a producer that already understood the frame, two
+  conformant implementations discard each other's, and (b)'s fail-closed reading makes the failure
+  **silent** — MA-17's defect one plane over, and worse in one respect, since §4.5's outcomes at least
+  sit in the table that types the verb while §4.2's frames are named in **no** table and §7.3g states
+  there is *"one place its vocabulary is named"*. It reproduces with **one producer and one
+  subscriber**, and §4.2e's approaching-the-ceiling MUST has been routed at the same absent carrier
+  since 0.4.7: **three** MUSTs on §4.2's half of the channel, **zero** named frames, against §7.3g's
+  four. And **BP-10** (Med-High, collision) — the answer is owed *"in exactly one of three ways"* per
+  **frame** while (ii) and (iii) are written per **operand**, so a multi-operand adjustment with one
+  meetable and one unmeetable operand has **no correct answer** and the fail-closed default does not
+  reach it (that frame *was* answered); and `applied`'s *"operands now in force"* does not fix whether
+  it enumerates the adjustment's operands or the subscription's whole effective set, which differ
+  whenever a registration-time operand is not restated. MA-15's and MA-19's rarer shape, a **collision
+  between two clauses of one fold**. Both are **one additive, KCB-only §4.2b/§4.2d edit** and
+  **unowned**; count (iv) now reads *fold BP-9 and BP-10, then re-run Steps 1–8 again*, and the five
+  other counts are restated and none moves. **BP-9 is the eighth finding in this repo on ADR-0014's
+  axis** (after MA-8, V-10, BP-7, the marking, MA-17, MA-20 and MT-2) and this is the **sixth
+  consecutive** walk here to break on a fold's perimeter rather than its model. One thing is
+  deliberately **not** swept in, with the reason: §4.2c's `resume` answers have no named carrier
+  either and BP-9 is not filed against them, because they ride the `subscribe` request/response
+  exchange the verb itself pairs and directs, where (b)'s answers ride an **unpaired** in-band frame
+  with nothing to correlate to — which is exactly why (b) had to mint an id and (c) did not. **No
+  version and no clause moved for the walk** — §1–§8 byte-unchanged, §4.2a–g included, no published
+  digest moves; the edit is §4.2's gate paragraph, a changelog entry, a scenario section and the
+  BP-7 disposition in `docs/reference/capability-versioning-fold-dispositions.md`. **KCB is not
+  promoted and is not promotable**, and closing count (iv) would promote nothing on its own.
 - `specs/media-interchange.md` — KMI 0.3.8, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the

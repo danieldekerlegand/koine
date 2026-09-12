@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.5.7
+**Spec version:** 0.5.8
 **Status:** Candidate
 **Last updated:** 2026-09-12
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -9,6 +9,84 @@ capability consumers (most participants are both provider and consumer).
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
+> **Status note (0.5.8):** stays **Candidate** on the same **six** counts, and **none of them
+> moves.** 0.5.8 folds **BP-7** — the finding count **(iv)**'s 2026-09-03 walk of
+> [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) returned at
+> Step 3, and the last thing that count stood on. §4.2b's honour-or-refuse rule was stated at **one
+> moment** — *"MUST refuse the subscription **at registration**"* — while §4.2b's own preamble makes the
+> operands *"set at registration **and adjustable in-band** (d)"* and §4.2d calls its
+> subscriber → producer direction *"the lever Step 3 of the leg went looking for and did not find."* So
+> the section minted a lever and said nothing about what a producer **owes** when it is pulled: a
+> saturated subscriber could ask for less and be unable to tell *honoured* from *refused* from *not
+> implemented*, which returns it to the one lever that always worked — disconnect — and a lever whose
+> effect is unobservable is the disconnect §4.2b was written to replace. **The fix was already written
+> one paragraph away**: §4.2c governs the *other* in-band operand and gets it exactly right — *"A
+> producer MUST answer a `resume` in exactly one of three ways, and **silence is not one of them**."*
+> §4.2b therefore gains that discipline over its own operands: an adjustment on (d)'s channel MUST be
+> answered **`applied`** (naming the operands now in force), **`cannot-honour`** (naming, per operand,
+> the value it *can* meet — `gap-unavailable`'s shape) or **`unsupported`**, and **silence is not one of
+> them**; a producer that cannot honour a live adjustment is **conformant by refusing**, one that takes
+> the frame and keeps delivering under the old envelope is **not**. Four things are stated rather than
+> left to be derived, three of them findings this repo has already paid for: the answer **echoes the
+> adjustment's subscriber-minted id**, because named outcomes with nothing to attribute them to is
+> **MA-17**'s carrier failure on the other verb and *which* answer arrived is the whole of the value;
+> an **unanswered adjustment reads *not in force***, fail-closed on the reading side as §4.5(c) reads an
+> absent `fetch` outcome as *pending*, and fixed for the subscriber rather than left to the conformance
+> verdict **because** silence from a producer in breach and silence from a participant that implements
+> none of this section are the same signal on the wire; the three named answers are what make the
+> outcome **assertable**, closing §4.2d's own argument for preferring a frame over transport flow
+> control, which through 0.5.7 was true of the request and not of its outcome; and the answer fixes a
+> **shape, never a latency** — §4.2g stands untouched and is re-affirmed, `applied` committing to no
+> drain time, no ramp, no schedule and no liability. **Patch, and the axis is named rather than
+> assumed** — §7.2's table governs **a published capability's** bumps and decides nothing about KCB's
+> own spec version, which moves on §7.3b's axis; the table is consulted for the two questions it *does*
+> answer and both are **No** (no published digest moves, no live subscriber breaks). Additive at every
+> surface: **no verb, plane, port kind, grant or authority role is added** and §4's verb table still has
+> five entries; the answer rides §4.2d's **existing** channel and mints no second mechanism, which is
+> §4.2d's own MUST; §4.1's audit is unchanged and `subscribe` remains the one session-shaped clause;
+> §4.2d's ignore-what-you-do-not-understand rule holds in **substance** and is stated in **both
+> directions** for the first time (see the paragraph below — its letter bound only a producer, and
+> every frame minted since, §7.3g's four and these three, travels the other way); the lossless/lossy
+> rule and *a retraction is never shed* are byte-unchanged; a
+> subscription that declares none of §4.2's operands and never adjusts is a 0.4.6 subscription served as
+> one and is never owed an answer; **§7.1 step 1's kept and dropped sets are byte-unchanged so no
+> published `schema_id` or digest moves**; §7.2's table is undisturbed; and **0.6.0 stays spoken for**
+> by §2.3's legacy-extension-URI-root removal — checked, not tripped. It composes across §3.1
+> federation for §4.2d's stated reason: the binding, and therefore its channel, runs directly between
+> the two peers, and no party with jurisdiction over both ends was ever required (ADR-0001). **No count
+> closes and none is added** — BP-7 was found inside count (iv)'s own walk, so that count changes shape
+> rather than gaining a sibling, and a fold does not close its own gate. What remains of count (iv) is
+> the **re-run** of Steps 1–8 against text carrying both its findings' folds, BP-8's (0.5.4/0.5.5) and
+> this one.
+>
+> **The additivity claims above are checked against the text, not asserted — and the check returned
+> one correction.** Every *byte-unchanged* claim in the paragraph above was taken by slicing §4.2's
+> lettered sub-clauses out of 0.5.7 and out of this text and comparing them: §4.2a, §4.2c, §4.2e,
+> §4.2f and **§4.2g** are byte-identical, as are §4's verb table (still **five** entries), §4.1's
+> audit (`subscribe` still the one session-shaped clause), §2.3, §7.1 and §7.2 **in their entirety**;
+> inside §4.2b the *lossless-or-lossy* bullet and *a retraction is never shed* are byte-identical, so
+> a producer MAY still apply a lossless adaptation unasked, MUST NOT apply a lossy one that was not
+> asked for, and a retraction is still never shed — the fold adds an **answer**, and moves nothing
+> about **what may be done**; and §4.2b's registration-time MUST is byte-identical, which is what
+> makes the new bullet the same rule extended rather than a replacement of it. The **version move**
+> is decided the same way: §7.2's table governs *a published capability's* bumps and settles nothing
+> about KCB's own spec version, which moves on §7.3b's axis, so the table is consulted only for the
+> two questions it does answer — **no published digest moves** (§7.1 step 1's kept and dropped sets
+> are byte-unchanged, so no `schema_id` is recomputed) and **no live subscriber breaks** (the frames
+> are additive and ignorable) — and, the bump being a patch, **§2.3's legacy-extension-URI-root
+> removal keeps 0.6.0** and is checked rather than tripped. The **correction**: §4.2d's
+> *ignore-what-you-do-not-understand* rule read *"a **producer** that receives an unknown frame MUST
+> ignore it; a **subscriber** MUST tolerate a producer that never sends one"* — an *unknown-frame*
+> rule in one direction and an *absence* rule in the other. That was the whole truth when the channel
+> was minted and stopped being it at §7.3g, whose four frames travel producer → subscriber and which
+> **cites this rule as though it covered a subscriber**; these three answers travel the same way. So
+> the letter is widened to *either direction* rather than the claim being left resting on nothing —
+> the class of break this repo has filed six times, one clause further out each time — and widening
+> it is safe on its own terms, because (b) already fixes what an answer a subscriber could not read
+> is worth: an unread answer is an answer not received, which reads *not in force*, which is
+> fail-closed. The rest of §4.2d is byte-unchanged, **one channel and not two** included, so no
+> second signalling path is minted here or anywhere in this fold.
+>
 > **Status note (0.5.7):** stays **Candidate** on the same **six** counts, and **none of them
 > moves.** 0.5.7 is the second half of the **MT-1** fold, and it is the half that **refuses**. 0.5.6
 > made the disagreement sayable — §3's path result now names the **`(name, version)` each leg was
@@ -1379,8 +1457,51 @@ Normative:
 - **A producer that cannot honour a declared limit MUST refuse the subscription at registration**,
   with a stated reason, rather than accept it and exceed it. Fail closed, as everywhere else on this
   bus (§5, §7.2).
+- **The same rule past registration: a live adjustment is owed an answer, and silence is not one of
+  them (BP-7).** These operands are *"set at registration **and adjustable in-band** (d)"*, and the
+  bullet above governs one of those two moments. Nothing governed the other: a subscriber that learned
+  it was behind ninety seconds in — which is when a merge queue tells you, not when a card does — could
+  pull the lever (d) mints and not learn whether anything happened. A producer receiving a
+  subscriber → producer adjustment frame (d) MUST therefore answer it in exactly one of three ways, and
+  **silence is not one of them**: (i) **`applied`**, naming the operands now in force; (ii) refuse
+  **`cannot-honour`**, naming for each operand it cannot meet the value it *can* — the same *state the
+  limit you can meet* shape (c) gives `gap-unavailable`; or (iii) refuse **`unsupported`**, where it
+  does not adjust that operand on a live subscription at all. A producer that cannot honour a live
+  adjustment is **conformant by refusing**; a producer that accepts the frame and keeps delivering under
+  the old envelope is **not**. This is the registration-time rule above **extended past the moment it
+  was scoped to**, not a second convention — fail closed, as §5 and §7.2 do — and it is (c)'s discipline
+  for `resume` applied to (b)'s own operands, which is where it was already written one paragraph away.
+- **The answer names which adjustment it answers.** An adjustment frame carries an **id** minted by the
+  subscriber and opaque to the producer; the answer **echoes it**, and an `applied` answer additionally
+  carries the operands and the values now in force. Without the echo an answer is unattributable wherever
+  more than one adjustment is outstanding — the carrier failure §4.5(a) exists to close on the other verb
+  — and *which* answer arrived is the whole of what this bullet set is worth. The id identifies one frame
+  and nothing else: it orders nothing, and a producer MUST NOT read it as a cursor, a sequence number or
+  an acknowledgement of delivery (`resume.after` (c) is this section's only content-addressed point).
+- **Three named answers are assertable; a stalled window is not.** (d)'s last bullet argues that a frame
+  is preferable to transport-level flow control because KCS §5's cross-plane vocabulary can range over an
+  interaction between participants, where a stalled transport window is one signal for *saturated*,
+  *slow* and *dead*. That argument was true of the adjustment and not of its outcome: a scenario, and
+  equally a subscriber, could state that backpressure was **asked for** and not that it was **applied**.
+  Naming the three answers is what makes *honoured*, *refused* and *not implemented* three
+  distinguishable facts — for the subscriber first, and for a KCS scenario because they are frames.
+- **An unanswered adjustment is *not in force*.** A subscriber MUST NOT read silence, a delivery that
+  arrives after it sent the frame, or a slowed stream as `applied`; absence reads **not in force**, which
+  is fail-closed on the reading side as §4.5(c) reads an absent `fetch` outcome as *pending*. The reading
+  is fixed for the subscriber rather than left to the conformance verdict because silence from a producer
+  in breach of the bullet above and silence from a participant that implements none of this section and
+  ignores an unknown frame (d) are **the same signal on the wire** — only one is a defect, and which it is
+  does not change what the subscriber may conclude or which levers it has left.
+- **The answer fixes a shape, never a latency (g).** `applied` states which operands are in force. It
+  commits to no time by which deliveries already in flight drain, no ramp, no schedule and no liability,
+  and a subscriber MUST NOT read one into it. Whether an adaptation is **lossless** remains the contract's
+  only question about it: this clause moves no part of the *lossless-or-lossy* bullet above — a producer MAY still apply
+  a lossless adaptation unasked, MUST NOT apply a lossy one that was not asked for, and a retraction is
+  never shed — and scheduling, queue discipline, buffer sizing and admission policy stay exactly where (g)
+  leaves them, in each participant's own infra.
 - A subscription carrying **none** of these operands is a 0.4.6 subscription and MUST be served as
-  one.
+  one; a subscriber that never adjusts is never owed an answer, and the bullets above oblige a producer
+  only in respect of a frame it was actually sent.
 
 **c. A subscription is resumable (BP-3, the gap).** `subscribe` registered for deltas *"as they
 occur"* with no `since`, cursor, or sequence a consumer could name, and KCB publishes no range-pull
@@ -1414,9 +1535,13 @@ directions:
 
 - **subscriber → producer** — set or adjust the (b) operands on a live subscription: slow down, pause,
   resume, change `on_overflow`. This is what makes the subscription adjustable without a teardown, and
-  it is the lever Step 3 of the leg went looking for and did not find.
-- **producer → subscriber** — the reverse: *I am coalescing*, *I am deferring*, *I am shedding*, *I am
-  approaching your ceiling* (e), *I am ending this subscription*. This is the **push channel** §7's
+  it is the lever Step 3 of the leg went looking for and did not find. What the producer **owes** such a
+  frame is (b)'s own rule, since 0.5.8: `applied`, `cannot-honour` or `unsupported`, echoing the
+  adjustment's id — **and silence is not one of them**.
+- **producer → subscriber** — the reverse: *I have applied your adjustment*, *I cannot honour it and
+  here is what I can*, *I do not adjust that on a live subscription* — the three answers (b) requires —
+  and, unasked, *I am coalescing*, *I am deferring*, *I am shedding*, *I am approaching your ceiling*
+  (e), *I am ending this subscription*. This is the **push channel** §7's
   preamble concedes is missing, and it is the same channel the §7 signals need: **V-7** of
   [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) found that
   no §7 deprecation or removal signal reaches a live `subscribe`, and asked for an in-band control
@@ -1430,10 +1555,25 @@ Normative:
 - Frames ride the **same stream as the deliveries** — A2A streaming under the pinned revision, or
   MCP notifications on the pre-2026-07-28 wire (§4.1). No new transport, no new verb, no second
   connection, and §4.1's audit is unchanged: `subscribe` remains the one session-shaped clause.
-- **Ignore what you do not understand.** A producer that receives an unknown frame MUST ignore it; a
-  subscriber MUST tolerate a producer that never sends one. This is §7.2's ignore-unknown-fields rule
-  applied at frame level, and it is what makes the channel additive: a participant that implements
-  none of this section still interoperates.
+- **Ignore what you do not understand — in either direction.** A participant that receives a frame it
+  does not understand MUST ignore it: a **producer** sent one, and equally a **subscriber** sent one.
+  A subscriber MUST tolerate a producer that never sends one. This is §7.2's ignore-unknown-fields
+  rule applied at frame level, and it is what makes the channel additive: a participant that
+  implements none of this section still interoperates. **The direction is stated at 0.5.8. Through
+  0.5.7 the letter bound only a producer** — the party being sent frames when this channel was minted
+  — while every frame added since travels the other way: §7.3g's four, and (b)'s three answers. What
+  moved is the **letter, not the rule anything was written against**: §7.3g already reads it as
+  covering a subscriber (*"a subscriber that understands none of the four ignores them … an unnamed
+  frame is one §4.2d's own ignore-what-you-do-not-understand rule lets every conformant subscriber
+  discard"*), and §7.2's own rule is stated in both directions. It costs a subscriber nothing,
+  because (b) fixes what an answer it could not read is worth: an unread answer is an answer not
+  received, which reads ***not in force*** and is fail-closed. **It is not a licence for silence.**
+  The rule governs an **unknown** frame, and the frames a producer sends **unasked**; it does not
+  reach the case where (b) owes an answer to a frame the subscriber sent, and it does not need to,
+  because (b) fixes what the subscriber concludes from silence rather than leaving it to tell a
+  producer in breach from a participant that never implemented the channel. The two are the same
+  signal on the wire, so a 0.4.6 participant stays interoperable and a subscriber is never left
+  hanging on either.
 - **The host is not on this path, and does not need to be.** Flow control is negotiated between the
   two peers because the topology admits nobody else (ADR-0001, §3). This composes across §3.1
   federation unchanged, precisely because it never required a party with jurisdiction over both ends:
@@ -1443,7 +1583,10 @@ Normative:
   range over it. That is a reason to prefer a frame over transport-level flow control and not merely a
   side effect: a stalled A2A window is unattributable (*saturated*, *slow*, and *dead* are one signal)
   and unassertable, so a scenario cannot state that backpressure was applied and honoured — and a
-  clause nothing can test is not a clause.
+  clause nothing can test is not a clause. Through 0.5.7 that held of the **request** and not of the
+  **outcome**, which is what **BP-7** found: a scenario could assert the adjustment and not its effect.
+  (b)'s three named answers are what close the argument, and the subscriber reads the same three
+  frames a scenario asserts over.
 
 **e. A metered subscription, and a brake before the cliff (BP-2).** §2.1 puts `cost` on
 `params.capabilities[]` — a named, invocable unit — while a subscription scopes to a **world**, which
@@ -1500,7 +1643,7 @@ limit must survive the hop, and Step 6 must name a party that is actually on the
 **fourth** count on this spec's status, gating §4.2 alone; the three existing counts in the status
 note are restated and none of them moves.
 
-**Walked twice, and it does not close.** The first walk (2026-09-03) met five of those six
+**Walked three times, and it does not close.** The first walk (2026-09-03) met five of those six
 conditions and returned **BP-7** (Med-High — §4.2b's honour-or-refuse is stated at **registration**
 only, and no clause says what a producer owes a **live** adjustment on (d)'s channel) and **BP-8**
 (Med — (a) declares a `volume` change a **minor** bump *"(§7.2)"* against a table with no row for it).
@@ -1510,12 +1653,50 @@ Step 1 holds with (a) unmoved, and the three other holds of that leg's Step 8 su
 one correction recorded there — the hold as phrased (*"§7.2's table is not disturbed"*) is now
 literally false and the property it asserted, *no live subscriber breaks*, is what holds. The frame's
 missing **new value** (**V-16**, **AP-10**) was put to `volume` directly and does **not** bite, for
-reasons recorded at that Step 8, so **no new delta is filed on this count**. It does not close because
-**BP-7 stands, unfolded**, and this count now reads: **fold BP-7 (§4.2b/d), then re-run Steps 1–8
-again** — additive, KCB-only, and **unowned**. Record:
+reasons recorded at that Step 8, so **no new delta is filed on this count**. It did not close because
+**BP-7 stood unfolded** — and **BP-7 is folded at 0.5.8**: (b) now states what a producer owes an
+adjustment arriving on (d)'s channel, in (c)'s own answer-or-be-non-conformant shape, so Step 3's lever
+answers on a live subscription and not only at registration. A fold does not close its own gate, so this
+count now reads: **re-run Steps 1–8 against text carrying both folds** — BP-8's (0.5.4/0.5.5) and
+BP-7's (0.5.8), one walk rather than two each re-reading the other's absence, since these two findings
+are the whole of what this count still stood on. Record:
 [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) § *Re-run —
 Steps 1–8 walked by hand against §4.2 (2026-09-03)* and § *Re-run — Step 8 walked by hand against
 KCB 0.5.5 (2026-09-12)*.
+
+**That re-run was walked by hand the same day (2026-09-12), against 0.5.8 — the first text carrying
+both folds — and count (iv) still does NOT close.** Steps **3, 6, 7 and 8** walked, Steps **1, 2, 4
+and 5** restated unmoved on the verified ground that §4.2a, §4.2c, §4.2e and §4.2f are byte-identical
+to 0.5.7. Prose, never a replay: that encoding now predates **three** publications of this section
+(**DR-7**). **BP-7 does not reproduce** — re-attacked on the ground it was filed on, the three answers,
+the fail-closed reading of silence, the conformant-by-refusing rule and the unmoved §4.2g all hold —
+and **BP-8 does not reproduce**, **blocking BP-5 does not reproduce for a third consecutive walk**, and
+Step 8's four holds survive re-probing in the corrected form (*no live subscriber breaks*). The section
+breaks on its **perimeter**, in the class it has now returned six walks running: **BP-9** (High,
+carrier) — (b) requires an answer to *"a subscriber → producer adjustment frame (d)"*, names three
+outcome tokens and requires an echoed subscriber-minted id, and fixes **no frame name, field, key or
+envelope** for the request, the answer or the id, while (d)'s *ignore what you do not understand* rule —
+**widened at 0.5.8 to either direction** — makes an unnamed frame one every conformant participant MUST
+ignore; the criterion is **§7.3g's own**, folded at 0.5.5 to close **V-10** and quoted inside the very
+bullet this fold widened, so the MUST binds only a producer that already understood the frame, two
+conformant implementations discard each other's, and (b)'s fail-closed reading makes the failure
+**silent**. It reproduces with **one producer and one subscriber**, and (e)'s approaching-the-ceiling
+MUST has been routed at the same absent carrier since 0.4.7 — three MUSTs on this half of the channel,
+zero named frames, against §7.3g's four. And **BP-10** (Med-High, collision) — the answer is owed *"in
+exactly one of three ways"* per **frame** while (ii) and (iii) are written per **operand**, so a
+multi-operand adjustment with one meetable and one unmeetable operand has no correct answer and the
+fail-closed default does not reach it (that frame **was** answered); and `applied`'s *"operands now in
+force"* does not fix whether it enumerates the adjustment's operands or the subscription's whole
+effective set. **No model is in question**: §4.2's placement, its lossless-vs-lossy governing question
+and BP-7's own extension of the registration rule were each attacked directly and none yielded. Both
+findings are **one additive, KCB-only §4.2b/§4.2d edit** — name the two frames, their fields and the
+id's slot where §7.3g's own argument says the channel's vocabulary belongs, and settle atomicity in the
+same bullet set — and both are **unowned**. Count (iv) now reads: **fold BP-9 and BP-10, then re-run
+Steps 1–8 again**; the five other counts are restated and none moves. **No version and no clause moved
+for the walk** — every normative clause of §1–§8 byte-unchanged, §4.2a–g included, and no published
+digest moves; the edit is this paragraph, a changelog entry and a scenario section. Record:
+[`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) § *Re-run —
+Steps 1–8 walked by hand against KCB 0.5.8 (2026-09-12)*.
 
 ---
 
@@ -3053,6 +3234,76 @@ most important thing an owner citing this run must understand:
 
 ## Changelog
 
+- **Editorial** (2026-09-12) — **count (iv) re-run by hand against 0.5.8 and it does NOT close; no
+  version and no clause moves.** The first text carrying both of that count's folds — BP-8's
+  (0.5.4/0.5.5) and BP-7's (0.5.8) — walked as one pass rather than two, which is what the gate
+  paragraph asked for. Steps **3, 6, 7 and 8** walked; Steps **1, 2, 4 and 5** restated unmoved on the
+  verified ground that §4.2a, §4.2c, §4.2e and §4.2f are byte-identical to 0.5.7. Prose, never a replay
+  (**DR-7**: `kcs:subscription-firehose` is green and now predates **three** publications of the
+  section it gates). **BP-7 does not reproduce**, **BP-8 does not reproduce**, **blocking BP-5 does not
+  reproduce for a third consecutive walk**, and Step 8's four holds survive re-probing in the corrected
+  *no live subscriber breaks* form. Two new **perimeter** findings, both on the fold published hours
+  earlier: **BP-9** (High, carrier — three named outcome tokens and an echoed id, and **no frame name,
+  field, key or envelope** for the request, the answer or the id, on a channel whose §7.3g rule makes an
+  unnamed frame one every conformant participant MUST ignore, now in **both** directions after this
+  fold's own widening; it reproduces with one producer and one subscriber, and §4.2e's
+  approaching-the-ceiling MUST has been routed at the same absent carrier since 0.4.7) and **BP-10**
+  (Med-High, collision — the answer is per-**frame** and (ii)/(iii) are written per-**operand**, so a
+  multi-operand adjustment has no correct answer and the fail-closed default does not reach an answered
+  frame; and `applied`'s *"operands now in force"* does not fix which set it enumerates). Both are **one
+  additive, KCB-only §4.2b/§4.2d edit** and **unowned**; count (iv) now reads *fold BP-9 and BP-10, then
+  re-run Steps 1–8 again*, and the five other counts are restated unmoved. **BP-9 is the eighth finding
+  in this repo on ADR-0014's axis** (after MA-8, V-10, BP-7, the marking, MA-17, MA-20 and MT-2) and
+  this is the **sixth consecutive** walk here to break on a fold's perimeter rather than its model.
+  Every normative clause of §1–§8 is byte-unchanged, §4.2a–g included, and no published digest moves;
+  the edit is §4.2's gate paragraph, this entry and
+  [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) § *Re-run —
+  Steps 1–8 walked by hand against KCB 0.5.8 (2026-09-12)*. **KCB is not promoted and is not
+  promotable.**
+
+- **0.5.8** (2026-09-12, patch) — **BP-7 folded: a producer owes a live adjustment an answer, and
+  silence is not one of them.** §4.2b's honour-or-refuse rule was stated **at registration** only,
+  while §4.2b's preamble makes its operands *"adjustable in-band (d)"* and §4.2d calls that direction
+  the lever Step 3 of
+  [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) *"went
+  looking for and did not find"* — so the section minted a lever and left its effect unobservable, and
+  a subscriber that pulled it was back to disconnect. §4.2b gains **§4.2c's own discipline over (b)'s
+  operands**: an adjustment on (d)'s channel MUST be answered `applied` (naming the operands in force),
+  `cannot-honour` (naming, per operand, the value it can meet) or `unsupported`, and **silence is not
+  one of them** — the registration-time rule extended past the moment it was scoped to, not a second
+  convention, fail closed as §5 and §7.2 do. Four further bullets state what would otherwise be
+  re-derived: the answer **echoes the adjustment's subscriber-minted id** (MA-17's carrier failure, not
+  repeated — and the id orders nothing and is not a cursor); an **unanswered adjustment reads *not in
+  force***, fail-closed on the reading side as §4.5(c) reads an absent `fetch` outcome as *pending*, and
+  fixed for the subscriber because a producer in breach and a participant that implements none of this
+  section are the same silence on the wire; the three named answers are what make the **outcome**
+  assertable, which §4.2d's last bullet argued for and had only of the request; and the answer fixes a
+  **shape, never a latency** — **§4.2g is untouched and re-affirmed**, `applied` committing to no drain
+  time, ramp, schedule or liability, and scheduling, queue discipline, buffer sizing and admission
+  policy staying in each participant's own infra. §4.2d is amended in three places to point at the rule
+  rather than past it, and its **ignore-what-you-do-not-understand rule holds in substance and is
+  stated in both directions for the first time** — its letter bound only a **producer** receiving an
+  unknown frame, which was the whole truth when the channel was minted and stopped being it at
+  §7.3g, whose four frames travel producer → subscriber and which cites this rule as though it
+  already covered a subscriber; these three answers travel the same way, so the letter is widened to
+  *either direction* rather than the additivity claim being left resting on nothing, and widening it
+  is safe on its own terms because (b) fixes an unread answer as an answer not received, which reads
+  *not in force* and is fail-closed. **Patch**: additive at every surface, the answer riding §4.2d's
+  existing channel (§4.2d's own MUST against a second mechanism), no verb/plane/port kind/grant/
+  authority role added and §4's verb table still five entries, §4.1's audit unchanged, the
+  lossless/lossy rule and *a retraction is never shed* byte-unchanged, a 0.4.6 subscription served as
+  one and never owed an answer, **§7.1 step 1 byte-unchanged so no published `schema_id` or digest
+  moves**, §7.2's table undisturbed, and **0.6.0 stays spoken for** by §2.3's removal — checked, not
+  tripped. The bump is on **§7.3b's axis**; §7.2's table governs a *published capability's* bumps and is
+  consulted only for the two questions it answers, both **No**. **No count closes and none is added**:
+  BP-7 was found inside count **(iv)**'s own walk, so that count changes shape to *re-run Steps 1–8
+  against text carrying both folds* — BP-8's (0.5.4/0.5.5) and this one — and the other five counts are
+  restated and none moves. **KCB is no more promotable than it was.** Every *byte-unchanged* claim
+  above is a slice-and-compare against 0.5.7 rather than a reading of `git diff --stat`: §4.2a,
+  §4.2c, §4.2e, §4.2f, **§4.2g**, §4's verb table, §4.1, §2.3, §7.1 and §7.2 are byte-identical
+  entire, and inside §4.2b so are the registration-time MUST, the *lossless-or-lossy* bullet and *a
+  retraction is never shed* — the fold adds an **answer** and moves nothing about **what may be
+  done**.
 - **Editorial** (2026-09-12, fourth entry this day) — **count (i) was re-run against 0.5.7, and it
   does not close.** Steps 1, 3, 4 and 8 of
   [`../scenarios/e2e-media-transform.md`](../scenarios/e2e-media-transform.md) walked by hand against
