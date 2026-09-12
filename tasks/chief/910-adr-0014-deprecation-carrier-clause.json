@@ -29,8 +29,8 @@
         "A single-registry deployment that carries neither field is conformant unchanged, and the §7.2 ignore-unknown-fields rule is cited as what makes that true.",
         "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Carrier landed in KCB §2 (bullet + example entry), §3 (ranking bullet names the two fields; new bullet: entry data, never a second envelope, MA-8's three registry-generated fields untouched), §7.1 step 1 (drop list + checked statement) and §7.3a/§7.3d (the four clauses now name `deprecated` / `removal_version`). Checked, not assumed: §7.1 step 1's KEPT set is unchanged, so no published `schema_id` moves and no new rule id is minted (kcb1/kcb2 both unchanged). All six gates green as observed: doc-integrity OK (61 files, 1704 relative links, 3 status tables match); doc-links 0 dead references; schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures); registry OK (31 relation names); tasklist-categories OK (9 categorized); roadmap coverage/stale/park OK (53 completed, 43 merged checked). Inherited red fixed first: ROADMAP.md's 1020-eval-relation-domain row was still ⬜ though merged at 21f8758 — flipped to ✅ so check-roadmap-truth.sh goes green."
     },
     {
       "id": "US-2",

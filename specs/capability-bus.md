@@ -302,7 +302,9 @@ extension (§2.3):
                              "schema_id": "sha256/kcb2-…" } ],                     // knowledge IN — rule-id'd digest (§7.1 step 5)
               "outputs": [ { "plane": "media", "media_types": ["audio/midi"],
                              "schema_id": "sha256-…" } ],                          // media OUT (delta F)
-              "cost":    { "tier": "paid", "est_units": 1200 } },                  // path cost (delta K); outside the digest (§7.1)
+              "cost":    { "tier": "paid", "est_units": 1200 },                    // path cost (delta K); outside the digest (§7.1)
+              "deprecated":      true,                                             // OPTIONAL marking (§7.3a); absent = NOT deprecated
+              "removal_version": "3.0.0" },                                        // OPTIONAL (§7.3a); the successor's next major (§7.3c)
             { "name":    "compose",                                                // the SAME name at the next major (§7.2)
               "version": "2.0.0",
               "binding": { "tool": "compose_2" },                                  // a different transport id; discovery still matches "compose"
@@ -349,6 +351,32 @@ extension (§2.3):
   exactly like `version` and `schema_id`: absent, a provider serves one major at the single
   `params.mcp` address exactly as it did at 0.4.9. Its rules — and why it does not breach §7.1's ban
   on version-in-the-name — are **§2.4's**.
+- **A capability entry MAY carry its own `deprecated` marking and `removal_version` (optional;
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)).** §7.3a requires a
+  deprecation to publish *"an explicit deprecated marking on the predecessor"* and a **removal
+  version**, and §3 and §7.3d require discovery to keep returning that entry *"marked, and carrying
+  its removal version"* — four normative clauses that, through 0.5.0, named **no field to read**.
+  Each entry in `params.capabilities[]` MAY therefore carry:
+  - **`deprecated`** — a boolean marking. **Absent means *not deprecated*.** This is the one
+    absence default that is safe to read permissively, and it is safe for a stated reason: a
+    deprecation is a **declaration** (§7.3a) and an undeclared one does not exist, so absence here
+    is not missing information but the ordinary state. What is *not* safe is a registry **inventing**
+    the value, which §3.1(d) forbids.
+  - **`removal_version`** — the version at which the obligation to serve this major ends, on the axis
+    §7.3b fixes (for a capability, §7.1's semver). A `deprecated` entry SHOULD carry it; one that
+    does not is §7.3a's *"unbounded promise a subscriber cannot plan against"* and a consumer MUST
+    read it as a deprecation with **no planned end**, never as a removal that is imminent.
+
+  Additive and optional on read exactly like `version`, `schema_id`, `binding` and
+  `auth.accepted_issuers[]`: a card carrying neither field is a conformant manifest advertising no
+  deprecation, and a consumer MUST ignore fields it does not understand (§7.2), so a 0.5.0 reader and
+  a card carrying these interoperate in both directions. Neither field is **shape** — both are dropped
+  before hashing by §7.1 step 1, so **no published `schema_id` moves** for this addition and the
+  canonicalization rule id (§7.1 step 5) does not move either. Their *meaning* is **§7.3's**, not this
+  section's; what a **federating** registry does when two attributions of one entry disagree on them is
+  **§3.1(d)'s**. Marking a capability deprecated does **not** move its `version` — the predecessor is
+  marked in place, and §7.2's table has no bump row for it — which is the fact §3.1(d) has to be
+  written against.
 - **`auth.accepted_issuers[]` (optional; MA-6).** Where a deployment federates registries (§3.1), a
   provider states which **grant issuers** it honours, by KINP id, beside the existing
   `auth.scheme` / `auth.grants_required`. Additive and optional on read exactly like `version` and
@@ -603,7 +631,11 @@ deployment needs more than one, they **peer** (§3.1).
 - **Ranking across versions (§7).** Among entries satisfying the same query the registry MUST rank
   the **highest satisfying version** first, and MUST rank a **deprecated** entry below any
   non-deprecated entry that satisfies the same query — while still returning it, marked and carrying
-  its removal version (§7.3d). This is what makes a successor discoverable *beside* its predecessor:
+  its removal version (§7.3d). *Marked* and *carrying* name two fields, and since
+  [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md) they are the ones §2
+  defines: **`deprecated`** and **`removal_version`** on the capability entry. The registry reads
+  them off the provider's card like every other entry field and MUST NOT derive, infer, or
+  synthesize either. This is what makes a successor discoverable *beside* its predecessor:
   an unpinned consumer migrates by re-discovering, a consumer pinned to `^1` keeps finding 1.x, and
   either way a subscriber meets a break or a deprecation at **discovery or `describe`** time rather
   than at `invoke` (§7.2).
@@ -619,6 +651,18 @@ deployment needs more than one, they **peer** (§3.1).
   single-registry deployment emits none of it and is conformant unchanged, and a consumer MUST
   ignore fields it does not understand (§7.2). It is deliberately **not** a ranking or a trust
   weighting over `served_by`, which §3.1(d) refuses.
+- **The deprecation marking is entry data, not a second envelope
+  ([ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)).** §2's `deprecated` and
+  `removal_version` reach a consumer the way `version`, `schema_id`, `binding` and `cost` do: as part
+  of *"the manifest data above"* on each entry, in **every** `find` response and not only a federated
+  one. Nothing is added to the result-level shape for them, and the three registry-generated fields
+  above (`served_by`, `observed_at`, `incomplete[]`) are untouched — those exist because no provider
+  card can carry them, which is exactly not the case here. So a **single-registry** deployment gains
+  no new obligation at all: it returns what the provider published, and if the provider published
+  neither field the entry carries neither and is conformant unchanged (§7.2's ignore-unknown-fields
+  rule is what makes that true in both directions). Where a deployment **federates**, one entry may
+  be reached through more than one peer and the two attributions may disagree about these fields —
+  that case, and only that case, is **§3.1(d)'s**.
 - **Composition:** because the extension's ports are plane-typed (§2.1), the registry computes a
   *path* from a start port to a goal port **across planes and providers** — e.g. `text →
   narration:audio`, `mood(knowledge) → score:audio`, `assets → edl → CMX3600` — the bounded,
@@ -1529,7 +1573,14 @@ provider re-serializing produces no drift:
    `dialect`, `worlds`, `shape`, `payload_schema_id` (knowledge); `media_types`, `world_pattern`
    (media); `types` (entity). Every other key is dropped before hashing, explicitly including
    `description`, `cost`, `volume` (§4.2a), `effect` (§4.3a), the capability's own `version`, its
-   `binding` (§2.4), and `schema_id` itself. `payload_schema_id` is the one 0.5.0 addition and it is
+   `binding` (§2.4), its `deprecated` marking and `removal_version` (§2, §7.3a), and `schema_id`
+   itself. **Naming the last two changes nothing and is stated because it was checked**: a
+   deprecation marking is not shape by any reading — it says *when this port stops being served*,
+   never *what it carries* — so it already fell outside the kept set this step defines by
+   enumeration, and adding it to the drop list is clarifying rather than normative. Therefore
+   **no published `schema_id` moves** for ADR-0014's carrier, the kept sets of `kcb1` and `kcb2` are
+   both unchanged, and no **next** rule id is minted by it (step 5 mints one only when §2.1's *shape*
+   vocabulary grows, which this does not). `payload_schema_id` is the one 0.5.0 addition and it is
    kept, because it **is** shape (§2.1): a port that starts declaring one has declared a different
    contract, and the digest must move. `cost` is priced, not typed (§5), so a
    re-price must not re-digest; and folding the `version` in would make every digest trivially
@@ -1657,6 +1708,19 @@ media type, a manifest location (§2.2), an extension URI.
   predecessor, and (iii) a **removal version** — the version at which the obligation to emit or
   accept the predecessor ends. A deprecation that names no removal is not a deprecation; it is an
   unbounded promise a subscriber cannot plan against.
+
+  **(ii) and (iii) are fields, and §2 names them
+  ([ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)).** For a retiring
+  **capability major** — the one surface here that a manifest carries — the marking is §2's
+  `deprecated` on the `params.capabilities[]` entry and the removal version is its
+  `removal_version`. Both are optional on read and write and **absent `deprecated` means *not
+  deprecated***. A provider that declares a deprecation in prose, a release note, or a
+  `description` string and not in these fields has **not** deprecated anything under this section:
+  discovery (d) has nothing to rank on, §7.3g's `deprecated` frame has nothing to carry, and the
+  subscriber this window exists for never learns. The other three surfaces (b) names — a media type,
+  a manifest location, an extension URI — have **no manifest entry of their own** and are declared
+  where they are defined, in the prose of the spec that defines them, on that spec's own minor axis;
+  this clause adds no field for them and none is implied.
 - **b. The window is measured in the retiring surface's own versions, never in wall-clock dates.**
   For a capability that axis is §7.1's semver. For a surface with no version of its own — a media
   type, a manifest location, an extension URI — it is the **minor version of the spec that defines
@@ -1682,7 +1746,11 @@ media type, a manifest location (§2.2), an extension URI.
   Deprecated means *superseded*, not *degraded*. Where both are offered for the same thing the
   **successor is authoritative**. Discovery (§3) MUST keep returning a deprecated entry — marked,
   and carrying its removal version — while ranking it below any non-deprecated entry that satisfies
-  the same query, so a subscriber meets the deprecation at discovery or `describe` time.
+  the same query, so a subscriber meets the deprecation at discovery or `describe` time. *Marked*
+  means the entry the registry returns carries §2's `deprecated`, and *carrying its removal version*
+  means it carries §2's `removal_version`; a registry MUST pass both through as the provider
+  published them and MUST NOT drop, rewrite, or invent either (§3, and §3.1(d) where a federating
+  registry merges two attributions of one entry).
 - **e. A declared removal moves later, never earlier.** Extending a window is a fresh declaration
   and is compatible with everyone. **Shortening** one breaks every subscriber that planned against
   it and MUST NOT be done; a predecessor that must go sooner than declared goes as a new major under
