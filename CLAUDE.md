@@ -220,7 +220,7 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
-- `specs/capability-bus.md` — KCB 0.5.7, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.5.8, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -895,6 +895,52 @@ vocabulary.
   changelog entry and a scenario section. Count (i) is also **KMI's second promotion condition**, so a
   clean walk would have been worth more than one spec's count — it closes only KCB count (i) either
   way, and **KCB is not promoted and is not promotable**.
+  **0.5.8 (2026-09-12, patch) folds BP-7 — a producer owes a LIVE adjustment an answer, and silence is
+  not one of them.** The finding count **(iv)**'s 2026-09-03 walk returned at Step 3, restated unmoved
+  by the 0.5.5 walk, and the last thing that count stood on. §4.2b's honour-or-refuse rule was stated at
+  **one moment** (*"MUST refuse the subscription **at registration**"*) while §4.2b's own preamble makes
+  the operands *"set at registration **and adjustable in-band** (d)"* and §4.2d calls its
+  subscriber → producer direction *"the lever Step 3 of the leg went looking for and did not find"* — so
+  the section minted a lever and said nothing about what a producer **owes** when it is pulled, and a
+  subscriber that learned it was behind ninety seconds in (which is when a merge queue tells you, not
+  when a card does) could not tell *honoured* from *refused* from *not implemented*, returning it to the
+  one lever that always worked — **disconnect**, which is what §4.2b exists to replace. The fix was
+  **already written one paragraph away**: §4.2c governs the *other* in-band operand and gets it right
+  (*"A producer MUST answer a `resume` in exactly one of three ways, and **silence is not one of
+  them**"*). §4.2b gains that discipline over its own operands — `applied` (naming the operands now in
+  force), `cannot-honour` (naming, per operand, the value it *can* meet — `gap-unavailable`'s shape) or
+  `unsupported`, and **silence is not one of them**; a producer that cannot honour a live adjustment is
+  **conformant by refusing**, one that takes the frame and keeps delivering under the old envelope is
+  **not**. It is the registration-time rule **extended past the moment it was scoped to**, not a second
+  convention: fail closed, as §5 and §7.2 do. Four things are stated rather than left to be derived,
+  three of them findings this repo has already paid for: the answer **echoes the adjustment's
+  subscriber-minted id**, because named outcomes with nothing to attribute them to is **MA-17**'s
+  carrier failure one verb over and *which* answer arrived is the whole of the value (the id orders
+  nothing and is not a cursor); an **unanswered adjustment reads *not in force***, fail-closed on the
+  **reading** side as §4.5(c) reads an absent `fetch` outcome as *pending*, and fixed for the subscriber
+  rather than left to the conformance verdict **because** silence from a producer in breach and silence
+  from a participant that implements none of this section are the same signal on the wire — only one is
+  a defect and which it is changes nothing the subscriber may conclude; the three named answers are what
+  make the **outcome** assertable, closing §4.2d's own argument for preferring a frame over transport
+  flow control, which through 0.5.7 was true of the *request* and not of its *outcome*; and the answer
+  fixes a **shape, never a latency** — **§4.2g is untouched and re-affirmed**, `applied` committing to no
+  drain time, ramp, schedule or liability, with scheduling, queue discipline, buffer sizing and admission
+  policy staying in each participant's own infra. §4.2d is amended in three places to point at the rule
+  rather than past it, and its **ignore-what-you-do-not-understand rule holds unchanged**, scoped to the
+  frames a producer sends **unasked** — which is what keeps the channel additive. **Patch on §7.3b's
+  axis**, named rather than assumed (§7.2's table governs *a published capability's* bumps and is
+  consulted only for the two questions it answers, both **No**): additive at every surface, the answer
+  riding §4.2d's **existing** channel and minting no second mechanism (§4.2d's own MUST), **no verb,
+  plane, port kind, grant or authority role added** and §4's verb table still five entries, §4.1's audit
+  unchanged so `subscribe` remains the one session-shaped clause, the lossless/lossy rule and *a
+  retraction is never shed* byte-unchanged, a subscription declaring none of §4.2's operands served as a
+  0.4.6 subscription and **never owed an answer**, **§7.1 step 1 byte-unchanged so no published
+  `schema_id` or digest moves**, §7.2's table undisturbed, and **0.6.0 stays spoken for** by §2.3's
+  removal — checked, not tripped. It composes across §3.1 federation for §4.2d's stated reason: the
+  binding, and therefore its channel, runs between the two peers and never required a party with
+  jurisdiction over both ends (ADR-0001). **No count closes and none is added** — BP-7 was found inside
+  count (iv)'s own walk, so that count changes shape to *re-run Steps 1–8 against text carrying both
+  folds*, BP-8's (0.5.4/0.5.5) and this one — and **KCB is no more promotable than it was**.
 - `specs/media-interchange.md` — KMI 0.3.8, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
