@@ -220,7 +220,7 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
-- `specs/capability-bus.md` — KCB 0.5.0, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.5.1, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -479,6 +479,49 @@ vocabulary.
   0.5.0 lag with a reason — a pre-1.0 minor is breaking under that build's own compatibility rule, so
   advancing would make every 0.4.x peer unreadable. That is §7.2's new reader obligation met by
   declining to move, not neglect.
+  **0.5.1 (2026-09-12, patch) writes ADR-0014's clause — item (1) of the seven, and the only one of
+  the seven that was a precondition of *two* counts.** The ADR was Accepted 2026-08-26 and
+  decided-but-unwritten ever since; count (iii)'s 2026-09-03 walk returned it as Step 5's blocker, and
+  count (ii)'s walk established it reproduces with a **single registry and no peering**. Part 1, the
+  **carrier**: a `params.capabilities[]` entry MAY carry **`deprecated`** (boolean; **absent means
+  *not deprecated***, safe because a deprecation is a declaration and an undeclared one does not
+  exist) and **`removal_version`** (§7.3b's axis; absent on a deprecated entry reads *no planned end*,
+  never *imminent*), carried through §3's `find` response as **entry data** in every response and not
+  only a federated one — so MA-8's three registry-generated fields are untouched and it is **never a
+  second envelope**, and the four clauses of §3/§7.3a/§7.3d that said *"marked, and carrying its
+  removal version"* finally name a field. Parts 2–4, the **merge rule**, land on §3.1(d)'s converse,
+  which keys on `(provider KINP id, (name, version), schema_id)` — none of which a marking moves: (i)
+  a registry **MUST NOT synthesize** a value for a field outside the merge key, and on disagreement
+  the merged entry carries **each attribution's own copy** bound to its `served_by`/`observed_at`,
+  the per-attribution form *being* the machine-readable mark of disagreement, which is what §3.1(e)
+  needs to fire and what keeps §3.1(a) intact; (ii) where the field is a **gate** the **restriction
+  wins**, so any attribution marking the capability deprecated makes the merged entry deprecated for
+  §7.3d's ranking — ADR-0013's monotone-restrictive discipline **reused**, on the measured asymmetry
+  that a false deprecation costs a ranking demotion on an entry that keeps working while a missed one
+  is §7.2's **non-recoverable** case — and the same reading governs `effect` and `volume` but
+  deliberately **not** `removal_version`, a planning datum, because §7.3e forbids shortening a window
+  and taking the earliest of two reads would be a registry doing exactly that; (iii) **no
+  reconciliation is licensed** — two **authorities** are still both returned and never silently
+  picked between, and (i)/(ii) apply **only within** the converse. **Patch, and the bump is decided
+  rather than assumed**: every field optional on read and write, a card carrying neither behaves
+  exactly as at 0.5.0 (§7.2's ignore-unknown-fields, both directions), no verb/plane/port
+  kind/authority role added, §7.2's table **undisturbed**, a single-registry deployment gains no
+  obligation, and **no published `schema_id` moves** — §7.1 step 1's *kept* set is unchanged, both
+  keys landing on its drop list as a clarification, so `kcb1`/`kcb2` are unchanged and no next rule id
+  is minted. The bump is deliberately **not** declared under §7.2's table: that table governs *a
+  published capability*, has **no row** for a manifest field outside the digest, and declaring a spec
+  bump under it is the defect **BP-8/AP-9** found in §4.2a/§4.3a — not repeated here and **not fixed
+  here** either. **The minor axis is checked, not tripped**: **0.6.0 stays spoken for** by §2.3's
+  legacy-extension-URI-root removal (the dual-accept window runs *to* 0.6.0, so publishing one would
+  discharge a removal this fold has no mandate to discharge), and KMI's EDL removal rides **KMI
+  0.4.0**, a different spec's axis. What the ADR left undecided stays undecided and §3.1(d) says so:
+  no wall-clock timestamp (**DEFER-E** unmoved), no cadence or TTL on a discovery binding (**DEFER-D**
+  unmoved), no §7.2 bump row for `volume`/`effect` (BP-8/AP-9 **stay open**), no peering topology or
+  trust weighting. **Stays candidate and closes nothing**: a fold does not close its own gate, so
+  count (iii) now reads *re-run Steps 5–7 against the folded text* and count (ii) loses one of its
+  preconditions without closing; the other four counts are restated, none moves, and **KCB is no more
+  promotable than it was** — items (2)–(5) of the seven are still unowned KCB-only folds, (6) is
+  downstream and (7) is external.
 - `specs/media-interchange.md` — KMI 0.3.6, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
