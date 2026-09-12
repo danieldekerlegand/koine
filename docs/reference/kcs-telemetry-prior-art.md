@@ -116,6 +116,16 @@ That finding is an input to the **evidence-precedence rule**, which is the half 
 cannot stay informative. It is recorded here because it came from the sweep, and a sweep whose only
 output is a pin table has under-read its sources.
 
+**Where it landed (2026-09-12).** [KCS §5.1](../../specs/conformance-scenario.md) takes both
+consequences as written: emission stays OPTIONAL in §9(a), and §5.1(a) makes a **direct observation
+outrank an attributed record, always**, with the reverse ordering forbidden and the droppability
+argument above given as the reason rather than a preference. The two points this sweep could not
+settle were settled in the clause and are noted here so the sweep is not read as having decided
+them — that a **disagreement fails the assertion and is reported with both readings** rather than
+being broken by the ordering (§5.1d), and that a predicate with **neither** kind of evidence
+**fails** rather than passing by default (§5.1c), which is the change that makes the publication a
+minor.
+
 ## 4. CloudEvents — read and dismissed, with the reason
 
 CloudEvents is the mature answer to *how do I put a typed event on a wire such that a consumer can

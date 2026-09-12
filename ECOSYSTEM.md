@@ -46,7 +46,7 @@ Six specs, versioned independently; each spec's own header is authoritative for 
 | [`specs/grounding-pack.md`](specs/grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / provenance / graph) | 0.6.0 · 🚧 candidate |
 | [`specs/media-interchange.md`](specs/media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.8 · 🚧 candidate |
 | [`specs/capability-bus.md`](specs/capability-bus.md) | **KCB** — Capability-Bus | control — discover / invoke / subscribe / fetch over MCP + A2A | 0.5.8 · 🚧 candidate |
-| [`specs/conformance-scenario.md`](specs/conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data over **N real** participants' own connections, with cross-plane assertions and the optional emitted **exchange record** (§9) | 0.4.0 · 🚧 candidate |
+| [`specs/conformance-scenario.md`](specs/conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data over **N real** participants' own connections, with cross-plane assertions, §5.1's evidence precedence, and the optional emitted **exchange record** (§9) | 0.4.0 · 🚧 candidate |
 | [`specs/fine-tuning.md`](specs/fine-tuning.md) | **KFT** — Fine-Tuning | *profile* — composes the four planes into a `finetune` capability (not a fifth plane) | 0.8.0 · 🚧 candidate |
 
 ## 3. Who plays which role — known implementations (informative)
