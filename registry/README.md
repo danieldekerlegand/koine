@@ -19,7 +19,11 @@ normalization (KGP §3.2) deterministic across producers.
   it speaks: [`relations/cinematography.tsv`](relations/cinematography.tsv) (`cine:`),
   [`relations/media.tsv`](relations/media.tsv) (`media:`),
   [`relations/social.tsv`](relations/social.tsv) (`soc:` — person-level kinship, employment and
-  residence, added for a world producer's social vocabulary).
+  residence, added for a world producer's social vocabulary),
+  [`relations/eval.tsv`](relations/eval.tsv) (`eval:` — the fact that an artifact was evaluated and
+  what a verdict is about, added for an evaluation producer's reading; **no score relation**, and
+  the reason is recorded in
+  [`../docs/reference/eval-relation-domain.md`](../docs/reference/eval-relation-domain.md)).
 
 New relations are added by PR. A relation's signature is **immutable once published** —
 changing arity, argument order, **argument type** (`arg_types`, since KGP 0.6.0) or symmetry would

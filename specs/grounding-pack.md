@@ -159,8 +159,8 @@ the *same* `claim` id and therefore **merges**, while their provenance records b
 
 **A position the registry does not type (NORMATIVE).** Rule 1 reads a fact out of the registry, so
 it has to say what happens when the fact is not there. Every relation published in
-[`../registry/`](../registry/) is typed at every position — 29 of 29 relation names across the core
-file and the three domain files as of this version — so this rule does not bite on a current copy.
+[`../registry/`](../registry/) is typed at every position — 31 of 31 relation names across the core
+file and the four domain files as of 2026-09-12 — so this rule does not bite on a current copy.
 It bites on the two cases that exist anyway: a **stale registry copy** taken before the `arg_types`
 column, and a relation a participant minted in an extension of its own that did not type it.
 
@@ -671,6 +671,23 @@ Ratified 2026-07-17.
    attributable. Token issuance/rotation lives in the control-plane host's infra, not here.
 
 ## Changelog
+
+- **Editorial** (2026-09-12) — **the registry widened; §3.2's count follows it, and nothing else
+  moves.** The registry gained a fourth domain file, `eval:`, carrying two `grounding-only`
+  relations ([`../registry/relations/eval.tsv`](../registry/relations/eval.tsv); the record and the
+  verdict are [`../docs/reference/eval-relation-domain.md`](../docs/reference/eval-relation-domain.md)).
+  §3.2's *a position the registry does not type* paragraph states the registry's width as evidence
+  that the rule does not bite on a current copy, so that sentence now reads **31 of 31 across the
+  core file and the four domain files**, dated rather than pinned to a version — 0.6.0 published at
+  29, and the count is a registry fact that moves without this spec.
+  **Value only.** No clause of §3.2 moves, §3.1's hashed set is byte-unchanged, the byte discipline
+  of every rule is byte-unchanged, and **no `claim` id moves**: no published signature was edited,
+  and a new relation name mints no id that previously existed. Both new rows are typed `id|id` at
+  mint, so §3.2 rule 1 reads them exactly as it reads the other 29 and neither reaches the untyped
+  branch. Adding vocabulary the registry's own governance already admits by PR is the mechanism
+  working, not a mechanism changing — hence no version, and hence no gate: KGP's re-ratification
+  count is restated unmoved (extend `kcs:worlds-to-fabric` for the 0.6.0 fold, **DR-7**'s shape,
+  unowned).
 
 - **0.6.0 — the argument-type fold: which canonicalization rule an argument is emitted under is
   read from the registry, not chosen by the producer** (2026-09-12). Folds
