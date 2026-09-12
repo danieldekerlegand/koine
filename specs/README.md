@@ -11,12 +11,12 @@ reference by name. No runtime code lives here — *koine specifies, implementers
 
 | Spec | Protocol | Plane | Version · status |
 |---|---|---|---|
-| [`identity.md`](identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.4.0 · 🟡 candidate |
+| [`identity.md`](identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.5.0 · 🟡 candidate |
 | [`grounding-pack.md`](grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / predicates / graph) | 0.6.0 · 🚧 candidate |
-| [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.5 · 🚧 candidate |
+| [`media-interchange.md`](media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.6 · 🚧 candidate |
 | [`capability-bus.md`](capability-bus.md) | **KCB** — Capability-Bus | control — discovery / invoke / subscribe over MCP + A2A | 0.5.0 · 🚧 candidate |
 | [`conformance-scenario.md`](conformance-scenario.md) | **KCS** — Conformance-Scenario | test — declarative scenario data that drives **N real** participants over their actual MCP/A2A connections, asserting cross-plane properties, each cited to the clause it checks | 0.3.0 · 🚧 candidate |
-| [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.7.0 · 🚧 candidate |
+| [`fine-tuning.md`](fine-tuning.md) | **KFT** — Fine-Tuning | profile — composes the four planes into a `finetune` capability | 0.7.1 · 🚧 candidate |
 
 **The table is a convenience mirror.** Each spec's own version + status header is the source of
 truth. This table — and the ones in [`../README.md`](../README.md) and
@@ -285,7 +285,7 @@ that no SPDX release has ever defined — which no amount of careful reading wou
 - **Status is a lifecycle:** `draft → candidate → ratified`, and the two promotions are gated
   differently — the second is **conformance-gated** ([The ratification gate](#the-ratification-gate)
   above). A spec is also demoted back to **candidate** when a later change touches its model shape.
-  **All six sit there now** — KINP 0.4.0, KMI 0.3.5, KCB 0.5.0, KCS 0.3.0, KFT 0.7.0 and, since
+  **All six sit there now** — KINP 0.5.0, KMI 0.3.6, KCB 0.5.0, KCS 0.3.0, KFT 0.7.1 and, since
   2026-09-12, KGP 0.6.0 — each for its own reason; which re-validation is outstanding for which spec
   is tracked in [`../ROADMAP.md`](../ROADMAP.md). KGP **was** `ratified` from 2026-08-28, the first
   promotion under the conformance gate, and its 0.6.0 argument-type fold demoted it the ordinary

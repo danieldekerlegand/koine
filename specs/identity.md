@@ -1,8 +1,8 @@
 # Koine Identity & Namespace Protocol (KINP)
 
-**Spec version:** 0.4.0
+**Spec version:** 0.5.0
 **Status:** Candidate
-**Last updated:** 2026-09-03
+**Last updated:** 2026-09-12
 **Applies to:** every participant that mints, publishes, or resolves identifiers — producers,
 consumers, identity authorities, control-plane hosts.
 
@@ -78,13 +78,76 @@ https://id.<root>/<kind>/<namespace>/<local-id>
 
 - `<root>` — the ecosystem's identity domain. **Placeholder:** `id.koine.example`
   (production root TBD).
-- `<kind>` — one of: `ent` | `claim` | `asset` | `world` | `agent` | `src`.
+- `<kind>` — one of: `ent` | `claim` | `asset` | `world` | `agent` | `activity` | `src`.
 - `<namespace>` — the minting authority (§3.4).
 - `<local-id>` — opaque within the namespace; `[a-z0-9][a-z0-9._-]*` (lowercase,
   percent-encode anything else).
 
 Canonical IRIs SHOULD be dereferenceable (§8): dereferencing returns the thing plus its
 known equivalences and provenance.
+
+**A run is an `activity`, and it has exactly one spelling (NORMATIVE — IMP-7).** A *run* — one
+execution of an extraction pipeline, a media transform, or a training job — is an identifier
+every participant has to mint, because every assertion envelope carries `prov.activity` (§7.1),
+every asset envelope carries `produced_by` (KMI §2), and a training leg is attributable only by
+its job id (KFT §3, §5.2, §6). It is minted under kind **`activity`** and under no other:
+
+```
+<namespace>:activity:<local-id>   →   https://id.<root>/activity/<namespace>/<local-id>
+```
+
+A consumer MAY therefore recognise a run activity **by its kind segment alone**, across
+participants and without knowing the minting namespace's local conventions. That is the point of
+fixing it here rather than leaving it to each producer: a `prov` record is only comparable across
+participants if the activity id is.
+
+Two spellings this protocol previously showed in worked examples are **not** admitted and never
+were: a bare `<namespace>:run/<runid>` with no kind segment at all (§3.4's `analyzer` row, §7.1's
+envelope, KMI §2), and `<namespace>:activity:ft-run/<runid>` with a solidus inside the local id
+(KFT §3, §5.2, §6). Both are corrected to the form above; see the changelog.
+
+**The `<local-id>` charset is NOT widened to admit the solidus, and the reason is the IRI
+(NORMATIVE).** `<local-id>` is the final **path segment** of the canonical form, so a `/` inside
+it makes the expansion non-invertible: `https://id.<root>/activity/orchestrator/ft-run/9f2a` no
+longer parses back to one `(kind, namespace, local-id)` triple, and §3.2's CURIE↔IRI mapping
+stops being a function — the same class of defect as an unparseable multi-segment id. A namespace
+that wants internal structure in a run id MUST express it with a separator the charset already
+admits — `.`, `-` or `_` — which is what `orchestrator:activity:ft-run.9f2a` does. `<local-id>`
+remains **opaque within the namespace**: no participant may read another's local structure, so
+`ft-run.` is the orchestrator's own convention and **not** a protocol-level segment.
+
+**What this move can and cannot invalidate.** §3.4's immutability rule binds a **prefix**: once
+published it names one minting authority forever, because changing it changes every identifier
+under it. This fold moves **no prefix** — `analyzer`, `orchestrator` and `mediastore` are
+untouched and every identifier under them keeps resolving. Nor does it narrow the grammar:
+`activity` is **added** to a closed enum and the `<local-id>` charset is unchanged, so nothing
+§3.1 admitted before stops being admitted and **no conformant identifier is invalidated**. What
+it does do is bring two previously *non*-conformant spellings inside a rule. An id already minted
+under either of them was never admitted by §3.1, so this protocol cannot promise it resolves on
+its own terms — but the transition is stated rather than left to be guessed: a resolver (§8) MAY
+accept either legacy form on **read** and, where it does, MUST return the `activity` form as the
+canonical id; a minting participant MUST NOT emit either legacy form. **No claim id moves** —
+all of `prov` is excluded from KGP §3.1's hashed set, and `src(…)` is an annotation beside
+`confidence(…)`, never an argument of the relation (§4.2), so no activity id has ever been inside
+`HASH_INPUT`.
+
+**Why `src` stays in the enum, unused.** `src` is in the list above and is used as a kind
+**nowhere** in these specs — the audit's companion observation to IMP-7, and it is answered here
+rather than left standing. It stays, for two reasons and with one clarification:
+
+- **Removing it would narrow a published closed enum.** Nothing in this repo mints a
+  `<ns>:src:<local>`, but §3.1's enum is normative surface a producer implements against, and a
+  participant that did mint one would have its identifiers stop conforming. Adding `activity`
+  widens; removing `src` would narrow, and this fold does not do both directions at once.
+- **The clarification matters more than the token.** `src` in this enum is a **name collision**
+  with the `src(…)` provenance annotation of §4.2 and §7.1, not evidence of a use. A reader MUST
+  NOT infer that the argument of `src(…)` carries kind `src`: in every example here that argument
+  is an `activity` id or an `agent` id, and after this fold it is one of those two and never a
+  third thing.
+- **The re-open condition is stated.** If a participant needs a kind for a *source document*
+  distinct from the `activity` that read it and the `agent` that ran it, it proposes a use for
+  `src` — with the shape of its local ids — rather than minting under an unclaimed token. Until
+  then `src` is reserved, not retired.
 
 ### 3.2 Compact form (CURIE)
 
@@ -103,6 +166,7 @@ analyzer:claim:sha256-9f3c1a…  → https://id.koine.example/claim/analyzer/sha
 mediastore:asset:blake3-a1b2…  → https://id.koine.example/asset/mediastore/blake3-a1b2…
 worldsim:world:alderforest     → https://id.koine.example/world/worldsim/alderforest
 orchestrator:agent:dsp-engineer → https://id.koine.example/agent/orchestrator/dsp-engineer
+orchestrator:activity:ft-run.9f2a → https://id.koine.example/activity/orchestrator/ft-run.9f2a
 ```
 
 ### 3.3 Prolog term form
@@ -168,7 +232,7 @@ a reserved set. Substitute your own.
 |---|---|---|
 | `refkb` | identity / knowledge **authority** | Canonical authority for real-world entities, anchored to external authorities (§6, §4.4). |
 | `worldsim` | **world producer** (simulation / generative) | World/context IDs are namespaced further: `worldsim:world:<w>`; entities within a world use that world as their namespace — see §5. |
-| `analyzer` | **knowledge producer** (extraction pipeline) | Run-scoped locals: `analyzer:run/<runid>`. |
+| `analyzer` | **knowledge producer** (extraction pipeline) | Run-scoped locals: `analyzer:activity:<runid>` (§3.1). |
 | `mediastore` | **media producer** | Assets, devices, instruments, plugins, hardware models. |
 | `orchestrator` | control-plane **host** | Agents, roles, orgs (control plane). |
 | `provider` | capability **provider** | Orgs/agents that execute capabilities on the bus (transforms, trainers, model providers). |
@@ -236,7 +300,7 @@ Links are themselves assertions (§7), so they carry confidence, provenance, and
 
 ```prolog
 same_as(id(ent, analyzer, 'e-8842'), id(ent, refkb, 'napoleon-i'),
-        confidence(0.97), src('analyzer:run/1a2b')).
+        confidence(0.97), src('analyzer:activity:1a2b')).
 ```
 
 Relations in the equivalence layer:
@@ -508,7 +572,7 @@ splits the two times.
   "valid_time": { "start": "…", "end": null },   // when true IN ITS WORLD
   "prov": {                                        // W3C PROV shape
     "agent":    "orchestrator:agent:continuity-critic",
-    "activity": "analyzer:run/1a2b",
+    "activity": "analyzer:activity:1a2b",
     "asserted": "2026-07-17T12:00:00Z",            // transaction time
     "method":   "vision-analysis@2.3"
   }
@@ -536,7 +600,7 @@ splits the two times.
                                                 //   depict; claims extracted from this asset
                                                 //   default to this world (delta A)
   "attaches_to": ["refkb:ent:tr-808"],         // entities this asset depicts/realizes
-  "produced_by": "mediastore:run/…",
+  "produced_by": "mediastore:activity:…",
   "prov": { /* as above */ }
 }
 ```
@@ -793,6 +857,62 @@ rather than a re-run of it.
 ---
 
 ## Changelog
+
+- **0.5.0** (2026-09-12) — **The run-activity fold (IMP-7).** §3.1 fixed `<kind>` at a closed six
+  and `<local-id>` at `[a-z0-9][a-z0-9._-]*`, and **this protocol's own worked examples broke both
+  and did not agree with each other**: §7.1's assertion envelope and §3.4's `analyzer` row spelled a
+  run `analyzer:run/1a2b` (no kind segment, and a solidus outside the charset), while KFT §3/§5.2/§6
+  spelled the same thing `orchestrator:activity:ft-run/9f2a` (kind `activity`, absent from the enum,
+  and the solidus again), and KMI §2's `produced_by` carried the first form, making it load-bearing
+  on a third spec. A consumer could not pattern-match a run activity across participants and an
+  implementer minting one met a contradiction rather than a rule — already
+  [**IMP-7**](../docs/reference/implementability-audit.md) and since reproduced from the outside by
+  a producer that had to mint one and found no spelling satisfying §3.1 and §5.2 at once.
+
+  **Decided: widen the kind enum, not the charset.** `activity` joins `ent | claim | asset | world
+  | agent | src`, and §3.1 now states the run-activity spelling **normatively** —
+  `<namespace>:activity:<local-id>`, recognisable by its kind segment alone. The `<local-id>`
+  charset is deliberately **left alone**: `<local-id>` is the canonical IRI's final *path segment*,
+  so admitting `/` would make `https://id.<root>/activity/orchestrator/ft-run/9f2a` non-invertible
+  and §3.2's CURIE↔IRI mapping would stop being a function. A namespace wanting structure in a run
+  id uses a separator the charset already admits (`orchestrator:activity:ft-run.9f2a`), and that
+  structure stays **opaque within the namespace** — it is the orchestrator's convention, not a
+  protocol segment. The rejected route — stating the bare `<ns>:run/<runid>` form normatively and
+  correcting §3.4 to match — is recorded as rejected because it would have made the kind segment
+  optional for exactly one kind, which is the thing that made the two spellings unmatchable.
+
+  **Minor, and the status does not move.** §3.1's enum is surface a reader implements against and a
+  new admissible kind widens what a conformant participant must recognise — the same reading KFT
+  0.7.0 gave two new `modality` tokens. It is **additive**: nothing §3.1 admitted at 0.4.0 stops
+  being admitted, **no prefix moves** (§3.4's immutability rule binds the prefix, and `analyzer`,
+  `orchestrator` and `mediastore` are untouched), and **no claim id moves** — all of `prov` is
+  excluded from KGP §3.1's hashed set and `src(…)` is an annotation beside `confidence(…)`, never a
+  relation argument, so no activity id was ever inside `HASH_INPUT`. The two legacy spellings were
+  never conformant, so nothing conformant is invalidated; §3.1 states the transition rather than
+  leaving it to be guessed — a resolver MAY accept either on **read** and MUST return the
+  `activity` form as canonical, and a minting participant MUST NOT emit either.
+
+  **`src` is answered, not left standing.** The audit's companion observation — `src` is in the
+  enum and used as a kind nowhere — is recorded in §3.1 with its reasoning: it **stays**, because
+  removing it would narrow a published closed enum while this fold widens one, and because the
+  thing worth writing down is that `src` here is a **name collision** with the `src(…)` provenance
+  annotation of §4.2/§7.1 and not evidence of a use — the argument of `src(…)` is an `activity` id
+  or an `agent` id, never a `src`. A re-open condition is stated.
+
+  **Status stays `candidate`** and this fold adds **no new gate**: KINP's single re-ratification
+  count is unchanged — the KCS-encoding condition of
+  [the ratification gate](README.md#the-ratification-gate), which `kcs:multi-authority` predates
+  (**DR-8**) and must be **extended** rather than re-run. Nothing here touches the federation
+  surface: **§5, §6, §8, §9, §10 and §11 are byte-unchanged**, no relation, envelope field or
+  resolution rule moves, and `registry/` is untouched. The reconciliation of this protocol's own
+  worked examples to the one decided spelling lands in **this same version**, which is why §4 is
+  not on that list: §4.2's worked `same_as` link, §7.1's assertion envelope and §7.2's asset
+  envelope each carried a legacy spelling in an *example*, and each now carries
+  `<namespace>:activity:<local-id>`. **No clause of §4.2, §7.1 or §7.2 moves** — the equivalence
+  relations, the envelope fields and their requiredness are untouched — and §3.4's `analyzer` row
+  moves only its *Notes* cell, never the prefix it registers. KFT's and KMI's copies of the same
+  two spellings are corrected in their own patch releases (KFT 0.7.1, KMI 0.3.6), each recorded
+  there under its own rules.
 
 - **Editorial** (2026-09-03) — **The federation re-run walked, and what it does not license.**
   0.4.0's fold was gated on a **re-run of

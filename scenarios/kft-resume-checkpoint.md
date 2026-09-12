@@ -35,7 +35,7 @@ walked:
 
 ```jsonc
 { "kft_version": "0.5.0",
-  "job":        "orchestrator:activity:ft-run/7c3d",
+  "job":        "orchestrator:activity:ft-run.7c3d",
   "base_model": "refkb:model:base-slm-3b-instruct",
   "modality":   "text-generation",
   "method":     "qlora",
@@ -84,7 +84,7 @@ base only by whether it carries an `ext:hf:…` anchor. So the second job names
 The in-tier host is preempted. The stream's last event was:
 
 ```jsonc
-{ "job": "orchestrator:activity:ft-run/7c3d", "step": 4000,
+{ "job": "orchestrator:activity:ft-run.7c3d", "step": 4000,
   "metrics": { "train_loss": 0.91, "lr": 1.9e-4 },
   "checkpoint": "orchestrator:asset:blake3-ck40…" }
 ```
@@ -153,7 +153,7 @@ The hole §5.4 closes for the finished model is open for the whole duration of t
 
 Leg 2 has to be a PROV activity. Both available answers break something.
 
-**(a) Reuse `orchestrator:activity:ft-run/7c3d`.** A KINP PROV activity is one occurrence with one
+**(a) Reuse `orchestrator:activity:ft-run.7c3d`.** A KINP PROV activity is one occurrence with one
 `agent`, one `used[]`, one `budget_units` / `spent_units` pair (§5.2). Leg 2 has a different
 `used[]` (it gains the checkpoint), different spend, and — after a §4.2 re-check — possibly a
 different placement. Reusing the id means **rewriting a closed provenance record**, and §6's
@@ -161,7 +161,7 @@ lifecycle is explicit that `failed` is terminal: `pending → running → succee
 canceled`. There is no transition back into `running`, and KCB §4 has no verb that reopens a
 completed A2A task.
 
-**(b) Mint `orchestrator:activity:ft-run/7c3d-r1`.** Now one logical training is two activities, and
+**(b) Mint `orchestrator:activity:ft-run.7c3d-r1`.** Now one logical training is two activities, and
 nothing links them. The lifecycle relations §5.2 names are `retrains` and `supersedes`, and
 [`../registry/relations.tsv`](../registry/relations.tsv) defines `retrains` as *"a re-train over the
 same pinned inputs mints a NEW model entity that retrains an earlier one"* — a **re-train from

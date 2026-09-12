@@ -8,7 +8,7 @@
     "kinpId": {
       "type": "string",
       "pattern": "^[a-z0-9-]+:[a-z0-9-]+:[^\\s]+$",
-      "description": "A KINP CURIE — namespace:kind:local (e.g. orchestrator:activity:ft-run/9f2a, refkb:model:qwen2.5-3b-instruct, kgp:pack:sha256-7b1e…, analyzer:asset:blake3-a1b2…)."
+      "description": "A KINP CURIE — namespace:kind:local (e.g. orchestrator:activity:ft-run.9f2a, refkb:model:qwen2.5-3b-instruct, kgp:pack:sha256-7b1e…, analyzer:asset:blake3-a1b2…)."
     }
   },
   "properties": {

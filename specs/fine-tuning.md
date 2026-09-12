@@ -1,8 +1,8 @@
 # Koine Fine-Tuning Protocol (KFT)
 
-**Spec version:** 0.7.0
+**Spec version:** 0.7.1
 **Status:** Candidate
-**Last updated:** 2026-08-26
+**Last updated:** 2026-09-12
 **Applies to:** `finetune` capability providers (general and specialized), the control-plane host
 (registry, grants, orgs), training-data producers, and finetuned-model consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for model/entity ids, lineage
@@ -219,14 +219,14 @@ that the job picks up from.
 ```jsonc
 {
   "kft_version": "0.1.0",
-  "job":        "orchestrator:activity:ft-run/9f2a",       // KINP activity id — this run (PROV, §5)
+  "job":        "orchestrator:activity:ft-run.9f2a",       // KINP activity id — this run (PROV, §5)
   "base_model": "refkb:model:qwen2.5-3b-instruct",         // intake 1 — KINP model-entity ref, externally anchored (§5.1)
   "base_model_descriptor": ["refkb:asset:blake3-mk1f…"],   // the base's published card / ModelKit, by reference (§3.2)
   "modality":   "text-generation",                         // §3.1
   "method":     "qlora",                                   // sft | lora | qlora | full | dpo
   "resume": {                                              // OPTIONAL — a continuation leg (§3.4); absent = a cold run
     "checkpoint": "orchestrator:asset:blake3-ck40…",       // the KMI checkpoint asset to resume from (§6)
-    "of_job":     "orchestrator:activity:ft-run/7c3d",     // the leg that published it — the `continues` target (§5.2)
+    "of_job":     "orchestrator:activity:ft-run.7c3d",     // the leg that published it — the `continues` target (§5.2)
     "at_step":    4000                                     // the §6 step it was published at (§7 nets the estimate from here)
   },
   "dataset": {                                             // intake 2 — data-plane refs (§4), never inline
@@ -838,7 +838,7 @@ fully attributable and the lineage bidirectionally queryable ("what trained this
 derives from this base?"):
 
 ```jsonc
-{ "activity": "orchestrator:activity:ft-run/9f2a",
+{ "activity": "orchestrator:activity:ft-run.9f2a",
   "agent":    "provider:org:trainer",              // signed (§7); the training provider
   "used":     ["kgp:pack:sha256-7b1e…", "analyzer:asset:blake3-a1b2…",
                "refkb:model:qwen2.5-3b-instruct"],        // the base entity, not a raw hf:… string (FT-G)
@@ -982,7 +982,7 @@ published model would exfiltrate exactly what §4.2 protected).
   training-record convention that already owns that term — FT-H.):
 
   ```jsonc
-  { "job": "orchestrator:activity:ft-run/9f2a", "step": 120, "attempt": 1,
+  { "job": "orchestrator:activity:ft-run.9f2a", "step": 120, "attempt": 1,
     "metrics": { "train_loss": 0.83, "eval_loss": 1.02, "lr": 1.7e-4, "grad_norm": 0.4 },
     "checkpoint": "orchestrator:asset:blake3-ck12…", // optional KMI asset (resumable)
     "samples":    ["analyzer:asset:blake3-pv3…"],     // optional preview assets — grids/clips (FT-L)
@@ -1486,6 +1486,55 @@ re-ratification:
 ---
 
 ## Changelog
+
+- **0.7.1** (2026-09-12) — **The run-activity spelling, corrected everywhere KFT mints or shows one
+  (patch).** KINP 0.5.0 resolved **IMP-7** by admitting `activity` to §3.1's `<kind>` enum and
+  stating the run-activity spelling normatively as `<namespace>:activity:<local-id>`, recognisable
+  by its kind segment alone. This spec carried the **other** of the two non-conformant spellings —
+  `orchestrator:activity:ft-run/9f2a`, whose kind segment was right and whose solidus sits outside
+  `<local-id>`'s `[a-z0-9][a-z0-9._-]*` charset — in §3's `job`, §3.4's `resume.of_job`, §5.2's
+  worked PROV activity and §6's telemetry event, and in the schema twin's `kinpId` example. All
+  five now read `orchestrator:activity:ft-run.9f2a` (and `…ft-run.7c3d`), using the separator the
+  charset already admits. That is not cosmetic here: §5.2 makes the `job` id the run's PROV
+  activity and **FT-C**'s reproducibility anchor, §6's `of_job` is what makes a continuation leg
+  attributable, and §3.4's `resume` names a prior leg **by that id** — so the id an implementer
+  copies out of these examples is the one every `used[]`, `continues` edge and `spent_units` sum
+  is keyed on.
+
+  **Patch, and the schema pattern is deliberately not touched.**
+  [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json)'s `kinpId` matches
+  `^[a-z0-9-]+:[a-z0-9-]+:[^\s]+$`, which **already admits** the corrected form; only the
+  `description`'s worked example moved, and the golden fixture
+  [`../schemas/fixtures/finetune-job.json`](../schemas/fixtures/finetune-job.json) moved with it
+  (`job`, `resume.of_job`, and the `dataset.knowledge` provenance `run`). The pattern is **not**
+  tightened to KINP §3.1's `<local-id>` charset, and the reason is recorded rather than left as an
+  omission: a KINP id may be world-scoped (`worldsim:world:alderforest:ent:npc-renaud`), so the
+  third group must stay permissive or the schema would reject ids §3.1 admits. A schema that
+  enforced the full grammar would have to model §3.1's kind enum and world scoping together; that
+  is a KINP-side artifact, not a KFT one, and it is **not** opened here.
+
+  **No clause moves.** §3's manifest fields and their requiredness, §3.1's `modality` table, §3.2's
+  descriptor rules, §3.3's conversion mapping, §3.4's `resume` trio, §4's admission inputs and
+  outcomes, §5's lineage relations, §6's idempotency and join rule, §7's estimate and §8.1's
+  refusal grades are all untouched — the change is the *value* shown in four examples and one
+  schema description. Nothing that conformed at 0.7.0 stops conforming, because the corrected
+  spelling was never conformant under KINP §3.1; a job manifest already carrying the legacy form
+  gets KINP §3.1's stated transition (a resolver MAY accept it on **read** and MUST return the
+  `activity` form as canonical; a minter MUST NOT emit it). `registry/enums/modality.tsv` and
+  `registry/relations.tsv` are byte-unchanged.
+
+  **Both gates are restated and neither moves**, and no third is added: gate (i) is open on
+  **FT-W**, gate (ii) on **FT-X** and **FT-Y**, all three additive and KFT-only, all unowned.
+  The header's **re-check trigger** has fired again and is again recorded rather than pulled: the
+  KINP pin reads `0.2.x` and KINP is now **0.5.0** (the 2026-09-03 walk recorded it at 0.4.0), and
+  KGP is now **0.6.0** against a `0.5.x` pin. Re-pinning obliges re-reading every in-body
+  cross-plane citation and is a **precondition on this spec's next status transition**, not on this
+  patch; doing it silently inside an example correction is exactly the drift the trigger exists to
+  surface. **KFT stays Candidate and is not promotable.** One cross-repo consequence, stated here
+  rather than left to be found: the downstream KCS encodings replay scenario documents, and
+  [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) carries this same
+  example id, so an encoding pinning the literal `ft-run/7c3d` needs the one-token update
+  (ADR-0001, downstream, **unowned**).
 
 - **Editorial** (2026-09-03, third entry this day) — **the artefact gate is met, and KFT is still not
   promotable.** **DR-11 is closed**: the second gate's leg was encoded downstream at `agora`

@@ -41,7 +41,7 @@ The asset is bytes; it attaches to entities. **Critical:** the asset must carry 
 ```jsonc
 { "id": "analyzer:asset:blake3-a1b2…", "media_type": "video/mp4",
   "attaches_to": ["worldsim:world:alderforest"],          // source world travels WITH the asset
-  "prov": { "activity": "analyzer:run/1a2b", "asserted": "2026-07-17T…" } }
+  "prov": { "activity": "analyzer:activity:1a2b", "asserted": "2026-07-17T…" } }
 ```
 
 🔴 **BROKE (found gap #1).** KINP §7.2 defines `attaches_to` as *entities*, and asset
@@ -84,7 +84,7 @@ Renaud.
 ```prolog
 % Cross-world, differing ontological status → based_on, NOT same_as (§4.3)
 based_on(id(ent,'analyzer:local','e-8842'),
-         id(ent, refkb, 'napoleon-i'), confidence(0.83), src('analyzer:run/1a2b')).
+         id(ent, refkb, 'napoleon-i'), confidence(0.83), src('analyzer:activity:1a2b')).
 % Same world, same ontological status → same_as
 same_as(id(ent,'analyzer:local','e-8842'),
         id(ent,'worldsim:world:alderforest','npc-renaud'), confidence(0.9)).
@@ -217,7 +217,7 @@ knowledge producer (Step 3), re-expressed via the resolver's same_as (Step 4)
   → the identical byte string
 
   ⇒ one claim id   C := "sha256-" · lowerhex(SHA-256(UTF8(HASH_INPUT)))
-  ⇒ MERGE — prov(worldsim, conf 1.0) and prov(analyzer:run/1a2b, conf 0.55) both retained
+  ⇒ MERGE — prov(worldsim, conf 1.0) and prov(analyzer:activity:1a2b, conf 0.55) both retained
 ```
 
 ✅ **Held, byte for byte.** The merge of Step 4 is unchanged, and because the hash input is
@@ -306,7 +306,7 @@ GRAPH <world IRI of worldsim:world:alderforest> {
   << <npc-renaud IRI> <commands IRI> <army-of-ash IRI> >>
       claim-id     "C" ;                       # annotation — NOT recomputed from the graph
       confidence   0.55 ;                      # per prov record; 1.0 for the worldsim record
-      prov         <PROV activity analyzer:run/1a2b> ;   # W3C PROV terms
+      prov         <PROV activity analyzer:activity:1a2b> ;   # W3C PROV terms
       license      "CC-BY-4.0" ;
       egress       "exportable" ;
       dialect      "grounding-only" .

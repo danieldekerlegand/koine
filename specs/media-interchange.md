@@ -1,8 +1,8 @@
 # Koine Media-Interchange Protocol (KMI)
 
-**Spec version:** 0.3.5
+**Spec version:** 0.3.6
 **Status:** Candidate
-**Last updated:** 2026-09-03
+**Last updated:** 2026-09-12
 **Applies to:** media authorities (producer/authority for assets + timelines), media producers of
 any modality, and media consumers.
 **Depends on:** [`identity.md`](identity.md) (KINP) for the `asset` id, `source_world`, and
@@ -124,7 +124,7 @@ those bytes and is **excluded from the id** (a re-encode is a different asset �
   "bytes":      104857600,
   "source_world": "worldsim:world:alderforest",// REQUIRED for INGESTED world-depicting assets; null if generated (delta H)
   "attaches_to":  ["worldsim:world:alderforest:ent:npc-renaud"], // KINP entities depicted
-  "produced_by":  "analyzer:run/1a2b",
+  "produced_by":  "analyzer:activity:1a2b",
   "probe": {                                   // technical metadata (ffprobe-shaped)
     "duration_ms": 42000,
     "streams": [
@@ -612,7 +612,7 @@ This is where the media plane **feeds** the knowledge plane. Media analysis
 ```prolog
 % From vision-analysis of clip c3d4, in the asset's source_world:
 cine:shows(analyzer:asset:blake3-c3d4…, worldsim:world:alderforest:ent:npc-renaud)
-    @ world(alderforest) :- confidence(0.88), src('analyzer:run/1a2b').
+    @ world(alderforest) :- confidence(0.88), src('analyzer:activity:1a2b').
 ```
 
 Consequences that fall out of the earlier planes for free:
@@ -1009,6 +1009,43 @@ Neither closes a count, and one carries a caveat an owner must read before citin
   §7.1.
 
 ## Changelog
+
+- **0.3.6** (2026-09-12) — **The run-activity spelling, corrected in the two places KMI shows it
+  (patch).** KINP 0.5.0 resolved **IMP-7** by admitting `activity` to §3.1's `<kind>` enum and
+  stating the run-activity spelling normatively as `<namespace>:activity:<local-id>`, recognisable
+  by its kind segment alone. Two worked examples here carried one of the two spellings that fold
+  found **non-conformant** — §2's asset envelope wrote `"produced_by": "analyzer:run/1a2b"` (no
+  kind segment, and a solidus outside `<local-id>`'s charset) and §6's analysis→knowledge bridge
+  wrote the same id inside a `src(…)` annotation. KMI's `produced_by` was the load-bearing one: it
+  is why a spelling KINP's own grammar never admitted reached a **third** spec, and why a consumer
+  reading an asset envelope could not pattern-match a run activity against a KFT job id. Both now
+  read `analyzer:activity:1a2b`.
+
+  **Patch, and deliberately nothing more.** No clause moves: §2's envelope fields, their
+  requiredness and the `license`/`egress` pair added at 0.3.5 are untouched, §3's lineage relations
+  and §3.1–§3.4's projections are untouched, §4's OTIO adoption and §4.4's deprecation are
+  untouched, and §6 keeps its port typing and its bridge rule — the change is the *value* shown in
+  two examples. **No `asset` id moves** (the id hashes the bytes, and `produced_by` is envelope
+  metadata outside it) and **no claim id moves** (all of `prov` is excluded from KGP §3.1's hashed
+  set, and `src(…)` is an annotation beside `confidence(…)`, never a relation argument). **No
+  schema twin is touched** — [`../schemas/media-timeline.schema.json`](../schemas/media-timeline.schema.json)
+  profiles an OTIO document and models neither the §2 envelope nor a `prov` record. Nothing that
+  conformed at 0.3.5 stops conforming, because the corrected spelling was never conformant under
+  KINP §3.1 in the first place; a holder of an id minted under the legacy form gets KINP §3.1's
+  stated transition (a resolver MAY accept it on **read** and MUST return the `activity` form as
+  canonical; a minter MUST NOT emit it). **0.4.0 stays spent** on §4.4's EDL removal, which is the
+  other reason this is a patch rather than a minor.
+
+  **No gate moves and none is added.** Both outstanding counts are restated unchanged — count (i)
+  (fold **MA-12** and **MA-13**, then re-run Steps 8–10 of
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md)) and count (ii)
+  (`e2e-media-transform.md`, not clean → **MT-1**, and KCB's work either way) — as is the
+  fabric-wide conformance gate with **DR-4** and **DR-8**/**DR-7** open against it. **KMI stays
+  Candidate and is not promotable.** One cross-repo consequence, stated here rather than left to be
+  found: the downstream KCS encodings replay scenario documents, and
+  [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) carries this same
+  example id, so an encoding that pins the literal `analyzer:run/1a2b` will need the one-token
+  update (ADR-0001, downstream, **unowned**).
 
 - **Editorial** (2026-09-03, second entry) — **Steps 8–10 were re-attacked after KCB's four counts
   were walked, and Step 9 reverses: new delta MA-13 (High, structural).** The re-attack was not

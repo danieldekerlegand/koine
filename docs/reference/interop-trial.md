@@ -610,7 +610,7 @@ visibly.
 | **IMP-3** (`HASH_INPUT` spacing) | confirmed, and the audit's hash reproduced independently (`sha256-b0b7f449…`) |
 | **IMP-4** (no collation named) | confirmed and sharpened → INT-2 |
 | **IMP-5** (bare vs namespaced claim id) | confirmed at the point it bites: it is what cost C4 its convergence |
-| **IMP-7** (no activity-id minting rule) | confirmed — `analyzer:run/1a2b` was copied from an example because there is no rule |
+| **IMP-7** (no activity-id minting rule) — **closed 2026-09-12** by KINP 0.5.0 §3.1 | confirmed — `analyzer:run/1a2b` was copied from an example because there is no rule |
 | **IMP-8** (`csid`'s literal `cs:`) | confirmed — 0 of 3 spec-faithful entity ids admitted |
 | **IMP-9** (two provenance envelopes) | confirmed — key intersection 0 |
 | **IMP-11** (no knowledge-plane fixture) | confirmed, and this trial did not close it: the pack above **cannot** be checked in under `schemas/fixtures/` because it fails `grounding-pack.schema.json`, which is IMP-8 and IMP-9 restated as a build error |

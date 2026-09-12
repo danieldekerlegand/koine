@@ -74,7 +74,7 @@ vocabulary.
   as clearly-marked illustrative examples or in informative "known implementations" pointers.
 
 ## Current state
-- `specs/identity.md` — KINP 0.4.0, **candidate**. ADR-0012 makes the canonical
+- `specs/identity.md` — KINP 0.5.0, **candidate**. ADR-0012 makes the canonical
   identity-authority role federable: a single designated holder remains conformant, while
   multiple independently operated holders reconcile through KINP's existing namespace,
   provenance, and §4 safeguards; local offline-first minting remains unchanged. Candidate pending
@@ -117,6 +117,42 @@ vocabulary.
   Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
+  **0.5.0 (2026-09-12) is the run-activity fold (IMP-7), and the status does not move.** §3.1 fixed
+  `<kind>` at a closed six and `<local-id>` at `[a-z0-9][a-z0-9._-]*`, and koine's own examples broke
+  both **and did not agree with each other**: §7.1's envelope and §3.4's `analyzer` row spelled a run
+  `analyzer:run/1a2b` (no kind segment, solidus outside the charset) while KFT §3/§5.2/§6 spelled it
+  `orchestrator:activity:ft-run/9f2a` (kind `activity`, absent from the enum, solidus again), with
+  KMI §2's `produced_by` carrying the first form — so a consumer could not pattern-match a run
+  activity across participants. Decided: **widen the kind enum, not the charset.** `activity` joins
+  the enum and §3.1 states the spelling normatively as `<namespace>:activity:<local-id>`, recognisable
+  **by its kind segment alone**; the charset is deliberately left alone because `<local-id>` is the
+  canonical IRI's final *path segment*, so admitting `/` would make the expansion non-invertible and
+  §3.2's CURIE↔IRI mapping stop being a function — a namespace wanting structure uses a separator
+  already admitted (`orchestrator:activity:ft-run.9f2a`), and that structure stays **opaque within the
+  namespace**. The rejected route — state the bare `<ns>:run/<runid>` normatively and correct §3.4 —
+  is on the record: it makes the kind segment optional for exactly one kind, which is what made the
+  two spellings unmatchable. **Minor** because §3.1's enum is surface a reader implements against and
+  a new admissible kind widens what a conformant participant must recognise (the reading KFT 0.7.0
+  gave two new `modality` tokens), and **additive**: nothing §3.1 admitted at 0.4.0 stops being
+  admitted, **no prefix moves** (§3.4's immutability rule binds the prefix), and **no claim id moves**
+  — all of `prov` is outside KGP §3.1's hashed set and `src(…)` is an annotation beside
+  `confidence(…)`, never a relation argument. The two legacy spellings were never conformant, so
+  nothing conformant is invalidated; the transition is stated rather than guessed (a resolver MAY
+  accept either on **read** and MUST return the `activity` form as canonical; a minter MUST NOT emit
+  either). `src` is **answered, not left standing** — it stays, because removing it would narrow a
+  published closed enum while this fold widens one, and because the useful fact is that it is a **name
+  collision** with the `src(…)` annotation of §4.2/§7.1 and not evidence of a use; a re-open condition
+  is stated. **No new gate**: KINP's single count is unchanged — the KCS-encoding condition, which
+  `kcs:multi-authority` predates (**DR-8**) and must be **extended**, downstream and unowned — and
+  **§5, §6 and §8–§11 are byte-unchanged**. §4 is deliberately **not** on that list: the
+  reconciliation of every worked example to the one spelling lands in the same version, so §4.2's
+  `same_as` link, §7.1's assertion envelope, §7.2's asset envelope and §3.4's `analyzer` *Notes*
+  cell each carry the corrected *value* while **no clause of any of them moves**. KFT and KMI carry
+  their own copies of the two spellings and are corrected in their own patch releases — **KFT
+  0.7.1** and **KMI 0.3.6** (2026-09-12), each a value-only change under its own rules, with the
+  schema twin and golden fixture moved with KFT and `finetune-job.schema.json`'s `kinpId` **pattern
+  deliberately not tightened** to §3.1's charset (a KINP id may be world-scoped, so the third group
+  must stay permissive; enforcing the full grammar is a KINP-side artifact, not opened here).
 - `specs/grounding-pack.md` — KGP 0.6.0, **candidate** (ratified 2026-08-28 at 0.5.2; demoted again 2026-09-12 by the `arg_types` fold at the end of this bullet). Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
   **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
@@ -443,7 +479,7 @@ vocabulary.
   0.5.0 lag with a reason — a pre-1.0 minor is breaking under that build's own compatibility rule, so
   advancing would make every 0.4.x peer unreadable. That is §7.2's new reader obligation met by
   declining to move, not neglect.
-- `specs/media-interchange.md` — KMI 0.3.5, **candidate**. Media data plane; asset envelope +
+- `specs/media-interchange.md` — KMI 0.3.6, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
@@ -553,6 +589,20 @@ vocabulary.
   §7.1(d)(e)(f), so it must be **extended**), both downstream and unowned. This walk too moved **no
   version and no clause** — a §7.1 gate paragraph, two *Pressure test* sentences and an Editorial
   changelog entry.
+  **0.3.6 (2026-09-12, patch) is the run-activity spelling arriving here**, the media half of KINP
+  0.5.0's IMP-7 fold. §2's asset envelope wrote `"produced_by": "analyzer:run/1a2b"` and §6's bridge
+  wrote the same id inside `src(…)`; KMI's was the **load-bearing** copy — it is why a spelling
+  KINP's grammar never admitted reached a *third* spec, and why a consumer reading an asset envelope
+  could not pattern-match a run activity against a KFT job id. Both now read
+  `analyzer:activity:1a2b`. **Value-only**: no clause moves in §2, §3, §4 or §6, **no `asset` id
+  moves** (the id hashes the bytes; `produced_by` is envelope metadata outside it), **no claim id
+  moves**, and **no schema twin is touched** — `media-timeline.schema.json` profiles an OTIO
+  document and models neither the §2 envelope nor a `prov` record. Nothing conformant is invalidated
+  (the old spelling never was), **0.4.0 stays spent** on the EDL removal, and **all three counts are
+  restated and none moves** — KMI is still not promotable. One cross-repo consequence stated rather
+  than left to be found: `scenarios/e2e-worlds-to-fabric.md` carries the same example id, so a
+  downstream encoding pinning the literal `analyzer:run/1a2b` needs the one-token update (ADR-0001,
+  **unowned**).
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
@@ -585,7 +635,7 @@ vocabulary.
   console's vocabulary from this repo. When KCS does promote it is under the **ordinary,
   conformance-gated** rule, not 0.2.0's grandfathering — that clause does not survive a demotion, and
   the artefact debt it covered was paid 2026-08-19.
-- `specs/fine-tuning.md` — KFT 0.7.0, **candidate** (ratified 2026-07-23 on two pressure passes:
+- `specs/fine-tuning.md` — KFT 0.7.1, **candidate** (ratified 2026-07-23 on two pressure passes:
   `scenarios/e2e-finetune.md` → FT-A…H, `scenarios/e2e-finetune-multimodal.md` → FT-I…L; a **third**
   pass, `scenarios/e2e-producer-exhaust-finetune.md`, then pressure-tested a *producing application's*
   training exhaust arriving via ADR-0008 and found the §4 **intake** incomplete — FT-M `dataset.records[]`
@@ -763,6 +813,29 @@ vocabulary.
   `docs/reference/generative-audio-modalities-downstream.md` §8.
   Record: `scenarios/kft-resume-checkpoint.md` § *Re-run — the FT-R…FT-V resumption
   fold walked against KFT 0.7.0 (2026-09-03)*.
+  **0.7.1 (2026-09-12, patch) is the run-activity spelling arriving here**, the other half of KINP
+  0.5.0's IMP-7 fold. KFT carried the *second* non-conformant spelling —
+  `orchestrator:activity:ft-run/9f2a`, kind segment right and solidus outside `<local-id>`'s charset
+  — in §3's `job`, §3.4's `resume.of_job`, §5.2's worked PROV activity, §6's telemetry event and
+  `schemas/finetune-job.schema.json`'s `kinpId` description; all five now read
+  `orchestrator:activity:ft-run.9f2a`, with the golden fixture moved too (`job`, `resume.of_job`,
+  and a third occurrence the obvious grep misses — `dataset.knowledge[].provenance.run`,
+  `analyzer:activity:gen-run.7c1a`). Not cosmetic: §5.2 makes `job` the run's PROV activity and
+  **FT-C**'s reproducibility anchor, §6's `of_job` is what makes a continuation leg attributable,
+  and §3.4's `resume` names a prior leg **by that id**. The `kinpId` **pattern is deliberately not
+  tightened** to §3.1's charset and the reason is on the record: a KINP id may be world-scoped
+  (`worldsim:world:alderforest:ent:npc-renaud`), so the third group must stay permissive or the
+  schema would reject ids §3.1 admits; enforcing the full grammar would have to model the kind enum
+  and world scoping together, which is a **KINP-side** artifact and is not opened. **Value-only** —
+  no clause of §3–§8 moves, `registry/enums/modality.tsv` and `registry/relations.tsv` are
+  byte-unchanged, nothing conformant is invalidated — **both gates are restated and neither moves**
+  (FT-W; FT-X/FT-Y), and no third is added. The header's **re-check trigger has fired again and is
+  again recorded rather than pulled**: the KINP pin reads `0.2.x` and KINP is now **0.5.0** (the
+  2026-09-03 walk recorded 0.4.0), alongside KGP's `0.5.x`→**0.6.0**; re-pinning obliges re-reading
+  every in-body cross-plane citation and is a **precondition on the status transition**, so doing it
+  silently inside an example correction would be the drift the trigger exists to surface. Same
+  cross-repo consequence as KMI's: `scenarios/kft-resume-checkpoint.md` carries the literal
+  `ft-run/7c3d`, and a downstream encoding pinning it needs the one-token update (**unowned**).
 - `registry/` — shared **agnostic** vocabularies only: `relations.tsv` (core, **binary** relations
   only) + `relations/cinematography.tsv` (cine:) + `relations/media.tsv` (media:) +
   `relations/social.tsv` (soc:), plus `entity-types.tsv`, `media-types.tsv`, and `enums/`.
