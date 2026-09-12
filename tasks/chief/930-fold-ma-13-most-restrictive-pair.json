@@ -29,8 +29,8 @@
         "No field is minted and no `asset` id moves. Verified against §2's field list and §7.1(a), not assumed.",
         "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "§7.1(d)'s travels-with-the-bytes carve-out now names the SERVING participant's pair as evaluated under (e) as the one that travels, replacing the sourcing from the requesting participant's copy, with the reason in the text (the server must evaluate before serving, so the value exists at the serve; the requester may hold no envelope at all). Narrow-exception framing preserved verbatim in substance — still the single thing permitted alongside the bytes, still a carry and not a synthesis, no envelope fabricated / no lineage edge / no `prov` minted. No field minted and no `asset` id moves, VERIFIED by diff not assumption: §2 byte-unchanged, §7.1(a)–(c) byte-unchanged, §7.1(e)–(f) and the tail byte-unchanged. Also fixed a pre-existing doc-integrity break inherited from 920's retire (promotability.md pointed at tasks/chief/920-….json, moved to completed/). GATES all six green: doc-integrity OK (61 files, 1741 links, 3 status tables match headers); doc-links 0 dead vs 1 on main, retired 1; schemas OK (9 schemas, 278 positions, 80 $refs, 3 fixtures); registry OK (31 relation names unique); tasklist-categories OK (7 categorized); roadmap-truth OK (55 completed named, 45 merged none stale). `chief verify` exit 0 RECORDED."
     },
     {
       "id": "US-2",
