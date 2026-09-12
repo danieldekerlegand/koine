@@ -27,8 +27,8 @@
         "The projected cost §3 already returns is reconciled with the named version, so a caller that gates spend on the plan is gating against the same leg it planned over.",
         "GATES: `node scripts/check-doc-integrity.mjs`, `node scripts/check-doc-links.mjs`, `node scripts/check-schemas.mjs`, `node scripts/check-registry.mjs`, `node scripts/check-tasklist-categories.mjs` and `bash scripts/check-roadmap-truth.sh` all green, with the observed output recorded."
       ],
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "KCB 0.5.6 (patch). §3 gains a NORMATIVE bullet: each returned path leg names the `(name, version)` it was matched over (exact version, never a range, §7.1's `0.0.0`-unknown as a value), the projected cost is the cost of exactly those legs, and a plan leg is the registry's account of what it matched — ADR-0001's addresses-not-proxy rule untouched, ranking unchanged, single-registry deployments conformant unchanged, §7.2's ignore-unknown-fields covering older consumers. Three status mirrors moved with the header (README.md, specs/README.md incl. its prose line, ECOSYSTEM.md). GATES observed: check-doc-integrity green (61 markdown files, 1823 relative links, all 3 status tables match headers, exit 0); check-doc-links --ratchet --base main green (0 dead vs 0 on main, exit 0); check-schemas green (9 schemas, 278 positions, 80 $refs, 3 fixtures, exit 0); check-registry green (31 relation names unique, exit 0); check-tasklist-categories green (4 tasklists, exit 0); check-roadmap-truth green (coverage 58 completed named, stale 48 checked none open, park OK, exit 0). Six of six green."
     },
     {
       "id": "US-2",
