@@ -666,6 +666,147 @@ promoted.**
 
 ---
 
+## Re-run — Step 6 walked by hand against KCB 0.5.5 (2026-09-12)
+
+> **What this section is.** A hand-walk of count (v) against the first text carrying the **V-10 /
+> BP-8 / AP-9** fold — KCB **0.5.4** (§7.2's two missing rows) and **0.5.5** (§7.3g's fourth frame).
+> It is scoped to **Step 6**, the only step AP-9 was filed on and the only step whose clauses moved:
+> §4.3a's class bullet now names a frame, and §7.2's table now has an `effect` row. Steps **1–5, 7
+> and 8** are restated unmoved — §4.3b–i are byte-unchanged, checked against the section — so
+> **AP-1…AP-8 stand flipped** exactly as the 2026-09-03 walk recorded them.
+>
+> **Prose, never a replay.** `kcs:cross-owner-posture` is encoded downstream and green (**DR-13**,
+> closed), and that green predates this fold: the encoding asserts nothing about an `effect` row or a
+> frame minted after it was written. **DR-7's shape**, on a third count.
+
+### Per-step verdicts
+
+| Step | Reads | Verdict |
+|---|---|---|
+| **6** — the live binding, and the fetch | §4.3a, §4.3f, §7.2, §7.3g, KMI §7.1 | 🟡 *half-flips — **AP-9 does not reproduce**, and the signal breaks on its **payload*** |
+| 1–5, 7, 8 | §4.3b–i, §5, §4's verb table | *restated unmoved — AP-1…AP-8 stand flipped* |
+
+### Step 6 — the live binding, and the fetch 🟡 *half-flips*
+
+**The `fetch` half holds a third time**, on the same ground and now against KMI **0.3.8**. §4.3a still
+gives `fetch` **no** effect class because KMI §7.1 over KGP §7 already gates it fail-closed in the
+right domain, and MA-13's fold made that gate *stronger* again — where a holder has more than one
+conformant `license`/`egress` pair for one `asset` id the **most restrictive governs**, so the
+carve-out's premise (the gate is adequate and correctly placed) is more clearly true than when it was
+written. §4.3f restates the exclusion at the evaluation point, byte-unchanged. ✅
+
+**AP-9 does not reproduce, on both of the legs it was filed on.**
+
+*Leg (ii) — the bump row — flips outright.* §7.2's normative table now carries *Change a capability's
+or a port's **`effect`** class (§4.3a) → **minor** → No — the class is not shape; the version moves
+with it, so a pinned consumer can see it, and a live `subscribe` is told on §4.2d's channel in
+§7.3g's `entry_changed` frame (§4.3a). A class the caller's posture does not admit is a **refusal** at
+the next dispatch (§4.3c–d), never a silent proceed*. The row agrees with §4.3a's own sentence, the
+nearest-row trap is gone, and §7.1 step 1's drop list still names `effect` (§4.3a) explicitly, so **no
+published `schema_id` or digest moves**. The third column's **No** was probed and is correct in
+§7.2's own sense: a moved class does not stop the binding delivering, which is what that column
+measures. It is not a statement that the *posture* survives — that is this step's question, below, and
+a different axis.
+
+*Leg (i) — the signal — has a carrier.* §7.3g's table has a fourth row, `entry_changed`, and §4.3a now
+names it (*"which since 0.5.5 is the name that signal is read by"*). The equivalence the finding
+turned on is broken: §4.2d's *tolerate a producer that never sends one* made an **unnamed** frame
+indistinguishable from an absent one, and the frame is now **named**, so its absence is assertable
+(KCS §5) and a producer that emits none is detectable. The property §7.3g claims for its own three
+frames now covers this fact too. Re-probed and holds: **no second signalling path is minted**, which
+is what this step asked for at the last walk and what §4.3a promised.
+
+**🔴 BROKE (AP-10, Med-High — payload). The frame announces that the class moved and never says to
+what, and on a live `subscribe` there is no evaluation point behind it.** `entry_changed` is normative
+in exactly two things — carry the capability's **new `version`**, and **name which operand moved** —
+so what reaches a live subscriber is *`effect` moved, at version `1.5.0`*. The new class is not on the
+wire. Three clauses then fail to compose:
+
+- **§4.3f** evaluates a `subscribe` posture **once, at registration** — *"a stream is registered once,
+  so a posture is evaluated once"* — and puts the whole weight of a live binding on this signal:
+  *"where the classes of what a stream delivers change, (a)'s control-channel signal is what reaches a
+  live binding."* That sentence is now true of the signal's **existence** and still false of its
+  **content**: the one clause a live binding is pointed at delivers a notification the posture rule
+  cannot consume.
+- **§4.3c** computes the effective posture as the **intersection** of admitted classes. An
+  intersection needs a class. A subscriber holding *`effect` moved* has the fact that its computation
+  is stale and not the operand to redo it with.
+- **§4.3d's floor** — *"an effect the effective posture does not admit is a REFUSAL, never a silent
+  proceed"* — has **no evaluation point** on a live stream. The producer evaluated at registration and
+  §4.3f does not ask it to re-evaluate; the subscriber's only available move is a teardown, which is
+  not a refusal in §4.3h's shape and which it cannot know to make. §7.2's `effect` row says the refusal
+  comes *"at the next dispatch"*, which is exactly right for `invoke` and is the thing a live
+  `subscribe` does not have.
+
+**Why this is worse here than where it was found.** On `binding` the same omission is recoverable by a
+re-`describe`: the subscriber learns an address it can also pull (**V-16**,
+[`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md)). Here the missing operand is a **class
+narrowing**, which is the case §4.3a's fail-safe default was written for — *an absent `effect` reads as
+`unknown`, never as harmless* — and a subscriber that does not pull keeps receiving deliveries under a
+class its posture no longer admits, with every party having behaved conformantly. The direction of the
+failure is the one §4.3 exists to prevent.
+
+*Severity, stated honestly.* Med-High, not blocking. A subscriber that treats the frame as a re-read
+trigger and re-`describe`s recovers completely, and nothing here relaxes §4.3d's floor for an
+`invoke`, breaches a grant, or lets an unadmitted class through a gate that is actually evaluated. It
+is not a security failure; it is the fold's **claim** about its own mechanism being wider than the
+mechanism. It is **AP-9's own shape one clause further out** — a consequence asserted in §4.3a with
+nothing carrying it — which makes it the **second consecutive** finding on this step at that seam, and
+it is **V-14's shape** in general (a MUST that binds the producer, with no clause giving the consumer
+the reading).
+
+*The fold is one §7.3g edit and it is shared.* The frame MUST carry the **new value** of each operand
+it names — for `effect`, the new class object; for `binding`, the new address, which is what
+`successor_published` already does for a successor — scoped to the port where the operand is
+port-level. That single edit closes **V-16** and **AP-10** together, and §4.3 itself needs no change:
+(c)'s intersection, (d)'s floor and (f)'s evaluation points are all correct once the operand they need
+is on the wire. → KCB §7.3g (this count reads it through §4.3a/§4.3f).
+
+### Steps 1–5, 7 and 8 — restated unmoved
+
+§4.3b's posture-as-a-set, §4.3c's monotone-restrictive intersection, §4.3d's floor, §4.3e's chain
+rule, §4.3g's no-console conformance requirement, §4.3h's refusal shape and §4.3i's statement of what a
+declaration is worth are all byte-unchanged, as are §4's verb table (five entries) and §2.1's port table (three
+planes). Their verdicts stand as recorded on 2026-09-03: **eight of eight flip**, including blocking
+**AP-5**, and §4.3's *model* is not in question. Re-attacking them against text that did not move
+would be a replay, not a verdict.
+
+### Findings — from the re-run
+
+| # | Severity | Gap | Fold | Spec |
+|---|---|---|---|---|
+| **AP-10** | Med-High (payload) | §7.3g's `entry_changed` names **which** operand moved and carries **no new value**, so a live subscriber is told *`effect` moved, at version X* and never the new class. §4.3f evaluates a `subscribe` posture **once at registration** and points a live binding at this signal alone; §4.3c's intersection has no class to intersect; and §4.3d's floor has **no evaluation point** on a live stream — §7.2's `effect` row's *refusal at the next dispatch* is right for `invoke` and is the thing a stream does not have. The direction of failure is a **class narrowing** a conformant subscriber keeps delivering under. | The shared **V-16** edit: §7.3g's frame MUST carry the **new value** of each operand it names — the new class object here, the new address for `binding`, as `successor_published` already carries a successor's — scoped to the port where the operand is port-level. **§4.3 needs no change**; (c), (d) and (f) are correct once the operand is on the wire. | KCB §7.3g (read through §4.3a/§4.3f) |
+
+### What this re-run does and does not close
+
+**Count (v) does NOT close.** It has two conditions and neither is met. The re-run condition fails on
+**AP-10** at Step 6. And ADR-0013's retained **second-independent-implementation** condition (**W3**)
+is untouched, unowned, and external to this repo — a clean walk would not have promoted §4.3 on its
+own, which is the same sentence the last walk ended on and is worth repeating because it is the one a
+reader is most likely to lose.
+
+**What went right.** **AP-9 does not reproduce on either leg**: the bump row exists and agrees with
+§4.3a, and the signal has a named frame that mints no second path — the two things this step asked for
+by name. **AP-1…AP-8 all continue to hold**, including blocking AP-5, so **eight of eight** stand
+flipped across two walks, and the `fetch` carve-out is right for a third time and for a stronger
+reason than when it was written. §4.3's model — the intersection, the floor, the chain rule, the
+no-console requirement — has not been in question across two walks, and every finding this leg has
+returned since the original pass is a **carrier or payload** break at its perimeter.
+
+So the count **changes shape** rather than closing: from *fold AP-9 (one frame in §7.3g plus one row
+in §7.2 — the same edit that closes BP-8 and V-10), then re-run Steps 1–8 again* to **fold AP-10 (one
+§7.3g edit, shared with V-16), then re-run Steps 1–8 again** — beside **W3**, unmoved. The fold is
+additive, KCB-only, and **unowned**.
+
+**What this walk does not touch.** KFT, KGP, KMI and KINP are unmoved, and Step 6's `fetch` half is
+the record of testing for it a third time. GOV-2 is unchanged and still this clause's companion rather
+than part of it. **No version moves and no clause moves** — every normative clause of §4.3 is
+byte-unchanged and no published digest moves; the edit is this section, a gate paragraph in
+[`../specs/capability-bus.md`](../specs/capability-bus.md) and a changelog entry. **KCB is not
+promoted.**
+
+---
+
 ## Downstream results
 
 > **What this section is.** The recorded result of a **downstream run** of this pressure test's

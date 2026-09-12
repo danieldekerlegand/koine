@@ -1377,6 +1377,23 @@ limit must survive the hop, and Step 6 must name a party that is actually on the
 **fourth** count on this spec's status, gating §4.2 alone; the three existing counts in the status
 note are restated and none of them moves.
 
+**Walked twice, and it does not close.** The first walk (2026-09-03) met five of those six
+conditions and returned **BP-7** (Med-High — §4.2b's honour-or-refuse is stated at **registration**
+only, and no clause says what a producer owes a **live** adjustment on (d)'s channel) and **BP-8**
+(Med — (a) declares a `volume` change a **minor** bump *"(§7.2)"* against a table with no row for it).
+**BP-8 is folded at 0.5.4 and 0.5.5** — §7.2 now carries the row, and §7.3g's `entry_changed` carries
+the signal — and the second walk (2026-09-12, against 0.5.5) confirms it: **BP-8 does not reproduce**,
+Step 1 holds with (a) unmoved, and the three other holds of that leg's Step 8 survive re-probing, with
+one correction recorded there — the hold as phrased (*"§7.2's table is not disturbed"*) is now
+literally false and the property it asserted, *no live subscriber breaks*, is what holds. The frame's
+missing **new value** (**V-16**, **AP-10**) was put to `volume` directly and does **not** bite, for
+reasons recorded at that Step 8, so **no new delta is filed on this count**. It does not close because
+**BP-7 stands, unfolded**, and this count now reads: **fold BP-7 (§4.2b/d), then re-run Steps 1–8
+again** — additive, KCB-only, and **unowned**. Record:
+[`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) § *Re-run —
+Steps 1–8 walked by hand against §4.2 (2026-09-03)* and § *Re-run — Step 8 walked by hand against
+KCB 0.5.5 (2026-09-12)*.
+
 ---
 
 ### 4.3 Autonomy posture across an ownership boundary (0.4.8)
@@ -1593,6 +1610,25 @@ console anywhere. That is a **fifth** count on this spec's status, gating §4.3 
 counts in the status note are restated and none of them moves. ADR-0013 additionally carries a
 **second-independent-implementation** condition on ratification (its **W3**), which is a condition of
 that record rather than a finding of this leg.
+
+**Walked twice, and neither condition is met.** The first walk (2026-09-03) met all five conditions
+and flipped **eight of eight** deltas, including blocking **AP-5**, returning one new delta —
+**AP-9** (Med, carrier): (a) asserted a signal on §4.2d's channel that no section named a frame for,
+and a **minor** bump under §7.2 for a field the table had no row for. **AP-9 is folded at 0.5.4 and
+0.5.5** and the second walk (2026-09-12, against 0.5.5) confirms both legs: the `effect` row exists
+and agrees with (a), the frame is named and mints no second path, AP-1…AP-8 all still flip, and the
+`fetch` carve-out is right a third time and for a stronger reason (KMI 0.3.8's most-restrictive-governs
+rule). It does not close on new delta **AP-10** (Med-High, payload): `entry_changed` names **which**
+operand moved and carries **no new class**, while (f) evaluates a `subscribe` posture **once at
+registration** and points a live binding at that signal alone — so (c)'s intersection has nothing to
+intersect and (d)'s floor has **no evaluation point** on a live stream, §7.2's *refusal at the next
+dispatch* being right for `invoke` and being the thing a stream does not have. **§4.3 needs no
+change**: the fold is the one §7.3g edit shared with **V-16**, and it is **unowned**. **W3** is
+unmoved, unowned and external to this repo; a clean walk would not have promoted this section on its
+own. Record:
+[`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md) § *Re-run —
+Steps 1–8 walked by hand against §4.3 (2026-09-03)* and § *Re-run — Step 6 walked by hand against
+KCB 0.5.5 (2026-09-12)*.
 
 
 ---
@@ -2480,6 +2516,26 @@ that scenario's *Re-run — Steps 3, 5, 6, 7, 8, 9 and 10 walked by hand against
 (2026-09-03)* and *Re-run — Steps 5, 6, 9 and 11 walked by hand against KCB 0.5.3 (2026-09-12)*
 sections.
 
+**A third walk, against 0.5.5, and it does not close either.** Steps **2**, **3**, **7** and **10**
+were re-read by hand the same day against the first text carrying the **V-10 / BP-8 / AP-9** fold —
+Steps 2 and 3 because §7.2's table gained two rows beside the rows they read, Step 7 because §2.4's
+`binding` bullet moved, Step 10 because it is where V-10 was filed — with Steps 5, 6, 9 and 11
+restated unmoved on the verified ground that §7.1, §2's `removal_version` bullet and §7.3a are
+byte-unchanged, so **V-12, V-13, V-14 and V-15 stand exactly as filed**. **V-10 does not reproduce**,
+on both legs: §7.3g's `entry_changed` is the carrier every routed MUST was missing, minting no second
+mechanism and preceding the fact it announces, and *"never left to a failed dial"* is **qualified**
+rather than deleted. Step 7 holds with V-4 intact, and Steps 2 and 3 hold with the two new rows
+reading **No** in the column that carries their property. **Step 10 half-flips** on one new delta:
+**V-16** (Med-High, payload) — `entry_changed` MUST carry the new `version` and MUST **name** which
+operand moved, and it carries **no new value**, so §7.3g's *puts the new address in its hands* and
+§2.4's *dials the new address* are both wider than the mechanism, following only from a re-`describe`
+no clause requires and §7.2's pull-side invariant says is not owed; `successor_published` carries a
+`binding` and this frame does not. The fold is one §7.3g edit shared with **AP-10** (count (v)) and
+it is **unowned**. The count now reads: **fold V-12 + V-13 (one §7.1(d) edit), V-14 (one §7.1 step 5
+/ §7.2 edit), V-15 (one §2/§7.3a edit) and V-16 (one §7.3g edit, with AP-10), then re-run Steps 5, 6,
+9 and 10.** **DR-7** is untouched. Record: that scenario's *Re-run — Steps 2, 3, 7 and 10 walked by
+hand against KCB 0.5.5 (2026-09-12)* section.
+
 ---
 
 ## 8. Open questions
@@ -2686,6 +2742,32 @@ break on its own perimeter, after §4.5 (MA-17) and KMI §7.1(d) (MA-19/MA-20) �
 consistent: the mechanism is checked and the **claim the prose makes about it** is not. **No version
 and no clause moved for the walk.**
 
+**2026-09-12 (second entry this day) — counts (ii), (iv) and (v) were each walked against 0.5.5, and
+none of the three closes.** One edit, three pressure legs, and **three separate verdicts, one per
+count** — deliberately, because a combined verdict destroys the structure the six counts exist to
+keep. All three walks are against the **prose**: the encodings of all three legs are green and now
+predate this fold, so an exit code is not a verdict here (**DR-7**'s shape, on three counts at once).
+**V-10, BP-8 and AP-9 all fail to reproduce**, which is the headline — §7.2's two rows authorize the
+bump the frame's payload depends on, and §7.3g's `entry_changed` is the carrier every routed MUST was
+missing, minting no second mechanism and preceding the fact it announces. **(ii)** → **V-16**
+(Med-High, payload): the frame MUST carry the new `version` and MUST **name** which operand moved, and
+carries **no new value**, so §7.3g's *puts the new address in its hands* and §2.4's *dials the new
+address* are wider than the mechanism — `successor_published` carries a `binding` and this frame does
+not. **(v)** → **AP-10** (Med-High), the same defect on the `effect` axis and sharper: §4.3f evaluates
+a `subscribe` posture **once at registration**, so §4.3c's intersection has no class to intersect and
+§4.3d's floor has no evaluation point on a live stream. **(iv)** → **nothing**; the same omission was
+put to `volume` and does not bite, because `volume`'s purpose is discrimination *before* binding,
+§4.2b's subscriber-declared limits still bind, and a moved `volume.cost` fails closed at §5's ceiling.
+Count (iv) is held open by **BP-7** alone, which no part of this fold touched. V-16 and AP-10 are
+**one additive, KCB-only §7.3g edit** and **unowned**. The axis tally is unchanged at **five** — MA-8,
+V-10, BP-7, ADR-0014's marking, MA-17 — because V-16 and AP-10 are not *nothing carries it* but *the
+carrier carries too little*; they are the **fourth consecutive** fold in this repo to break on its own
+perimeter rather than its model, after §4.5's MA-17, KMI §7.1(d)'s MA-19/MA-20 and §7.1's V-12/V-14.
+**No version and no clause moved for the three walks** — every normative clause of §1–§8 is
+byte-unchanged, §7.3g's four rows and §7.2's table included, and no published digest moves; the edit
+is three scenario sections, three gate paragraphs and a changelog entry. **KCB is not promoted and is
+not promotable.**
+
 **Downstream evidence (2026-08-24) — and this spec is where reading it wrong costs the most.** The
 KCS encodings of three of the five gating scenarios were run over real MCP/A2A links and all three
 came back `green` (`kcs:media-transform`, `kcs:live-schema-mutation`, `kcs:multi-authority`; recorded
@@ -2731,6 +2813,51 @@ most important thing an owner citing this run must understand:
   DR-13 adds no count, removes no count, and promotes nothing — all five stand.
 
 ## Changelog
+
+- **Editorial** (2026-09-12, third entry this day) — **counts (ii), (iv) and (v) were each re-run
+  against 0.5.5, and none of the three closes.** One edit, three pressure legs, **three separate
+  verdicts** — one per count, against the section that count gates, because a combined verdict would
+  destroy the structure the six counts exist to keep. Every walk is against the **prose**: the KCS
+  encodings of all three legs are green and now predate this fold, so an exit code is not a verdict
+  here (**DR-7**'s shape, on three counts at once). **V-10, BP-8 and AP-9 all fail to reproduce.**
+  §7.2's two rows agree with §4.2a and §4.3a and authorize the bump `entry_changed`'s payload depends
+  on — a dependency confirmed by walking rather than by reading either changelog — and §7.3g's fourth
+  frame is the carrier every routed MUST was missing, minting no second mechanism (§4.2d's own MUST),
+  preceding the fact it announces, and bounded away from a shape change and from `deprecated`. §2.4's
+  *"never left to a failed dial"* qualification reads correctly against §7.3g's closing bullet, and
+  **DEFER-D is byte-unchanged with its trigger intact**. **Count (ii)**
+  ([`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md), Steps 2, 3,
+  7 and 10; Steps 5, 6, 9 and 11 restated unmoved on byte-unchanged clauses, so **V-12, V-13, V-14 and
+  V-15 stand as filed**) returns **V-16** (Med-High, payload): `entry_changed` MUST carry the new
+  `version` and MUST **name** which operand moved, and carries **no new value**, so §7.3g's *puts the
+  new address in its hands* and §2.4's *dials the new address* both follow only from a re-`describe`
+  **no clause requires** and §7.2's pull-side invariant says is not owed — and `successor_published`
+  carries a `binding` where this frame does not. **Count (v)**
+  ([`../scenarios/kcb-cross-owner-posture.md`](../scenarios/kcb-cross-owner-posture.md), Step 6)
+  returns **AP-10** (Med-High), the same defect on the `effect` axis and sharper: §4.3f evaluates a
+  `subscribe` posture **once at registration** and points a live binding at this signal alone, so
+  §4.3c's intersection has no class to intersect and §4.3d's floor has **no evaluation point** on a
+  live stream — §7.2's *refusal at the next dispatch* being right for `invoke` and being exactly what a
+  stream does not have. **§4.3 needs no change.** **Count (iv)**
+  ([`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md), Step 8,
+  Step 1 re-checked) returns **no new delta**: the same omission was put to `volume` and does not bite,
+  because §4.2a's purpose for `volume` is discrimination *before* binding, §4.2b's subscriber-declared
+  limits still bind on a live subscription, and a moved `volume.cost` fails closed at §5's ceiling
+  under §4.2e's delivery-time evaluation — a **decision recorded**, not an omission. That leg's Step 8
+  also corrects its own wording: the hold *"§7.2's table is not disturbed"* is now literally false
+  (two rows), and the property it asserted — **no live subscriber breaks** — is what holds, both new
+  rows reading *No*. **BP-7 stands unfolded** and is the whole of why count (iv) does not close.
+  **V-16 and AP-10 are one additive, KCB-only §7.3g edit** (carry the new **value** of each operand the
+  frame names, scoped to its port where the operand is port-level, as `successor_published` already
+  carries a successor's `binding`) and are **unowned**. Dispositions for **V-10, BP-8 and AP-9** —
+  including why one generic frame beat three specific ones, and why the two table rows are not a new
+  bump tier — are in
+  [`../docs/reference/capability-versioning-fold-dispositions.md`](../docs/reference/capability-versioning-fold-dispositions.md)
+  § *V-10, BP-8 and AP-9 — three findings, three legs, one hole*. **No version moves and no clause
+  moves**: every normative clause of §1–§8 is byte-unchanged — §7.3g's four rows and six bullets,
+  §7.2's table, §2.4, §4.2, §4.3 and §7.1 included — no canonicalization changes and **no published
+  `schema_id` or digest moves**; the edit is three scenario sections, three gate paragraphs, a
+  *Pressure test* paragraph and this entry. **All six counts stay open and KCB is not promotable.**
 
 - **0.5.5** (2026-09-12) — **the other half of V-10 / BP-8 / AP-9: the MUST three sections state now
   points at a frame that exists.** 0.5.4 gave §7.2's table its `volume` and `effect` rows; this
