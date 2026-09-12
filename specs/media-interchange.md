@@ -742,16 +742,35 @@ a `derived_from` / `variant_of` / `excerpt_of` edge (§3) — a copy is the same
 envelope's `prov`, never off the store the bytes came from; the §3.2/§3.3 projections are likewise
 unaffected, since a C2PA hard binding and an OMC derivation both bind to content, not to a holder.
 
-**The one exception, and it is narrow: the governing policy travels with the bytes (MA-5).** The
-`license` / `egress` pair on the §2 envelope is the **single** thing this clause permits to
+**The one exception, and it is narrow: the governing policy travels with the bytes (MA-5, MA-13).**
+The `license` / `egress` pair on the §2 envelope is the **single** thing this clause permits to
 accompany a replication besides the bytes themselves, and it travels precisely because it is
-**not** synthesized: it is the asset's own governing policy, carried from the envelope the
-requesting participant already holds, not a fact the receiving store invents about bytes it just
-received. Everything else here stands unchanged — no envelope is fabricated, no lineage edge is
-written, no `prov` record is minted, and the pair is **not** authorship or provenance: who asserted
-an envelope is still read off that envelope's `prov`, never off the store the bytes came from. A
-store that receives bytes and no policy has received bytes and no policy; (e) says what it may then
-do with them.
+**not** synthesized: it is the asset's own governing policy, read off an envelope a participant
+asserted, not a fact the receiving store invents about bytes it just received.
+
+**Which** copy of it travels is fixed here rather than left to the topology, and that is the
+**MA-13** correction. The pair is an ordinary §2 envelope field — **per-asserter**, unsigned, read
+off its own `prov` — while the `asset` id binds **bytes**, so two participants holding the same id
+may each assert a conformant envelope with a **different** pair. What travels with a replicated copy
+is therefore the **serving** participant's pair **as it evaluated it under (e)**, never — as this
+clause said through 0.3.7 — the pair carried by the envelope the *requesting* participant already
+holds. The reason is measured, not a preference between two equally good sources: the serving
+participant is the party that MUST evaluate the pair before it serves at all (e), so the value
+already exists at the instant of the serve and carrying it forward invents nothing; whereas the
+requester may hold **no** envelope whatever — it is asking for bytes it does not have — and where it
+holds one it may hold the permissive copy of a divergent pair, which is precisely how a copy
+governed by `local-only` somewhere else was replicated under an `exportable` reading with **no
+misbehaviour at any hop**.
+
+Everything else here stands unchanged, and the narrowness of the exception is unchanged with it — no
+envelope is fabricated, no lineage edge is written, no `prov` record is minted, **no field is added
+to §2** and **no `asset` id moves** (the pair is outside the id by §2's own rule, and (a)'s byte
+hash is untouched). The pair is still **not** authorship or provenance: who asserted an envelope is
+read off that envelope's `prov`, never off the store the bytes came from, and a serving participant
+that passes on the pair it evaluated is **passing on an assertion, not making one** — which is why
+this remains a carry and not a synthesis, and why (d)'s prohibition on synthesizing an envelope for
+replicated bytes is undisturbed. A store that receives bytes and no policy has received bytes and no
+policy; (e) says what it may then do with them.
 
 **e. The authority boundary is observable, and egress is evaluated at it.** A participant that
 serves an asset is a participant (§8) and MUST be identifiable by its **KINP id**, so a consumer
