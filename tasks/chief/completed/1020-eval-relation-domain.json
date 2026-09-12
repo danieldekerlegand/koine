@@ -48,5 +48,13 @@
       "passes": true,
       "notes": "Landed exactly as US-1's §6 settled it, byte-for-byte: registry/relations/eval.tsv (NEW, fourth domain file) carries the header every relation file carries including arg_types — eval:evaluated_by 2 artifact|evaluator id|id false grounding-only eval <no inverse> and eval:verdict_of 2 verdict|artifact id|id false grounding-only eval <no inverse>, one-line description each. Immutability applied BEFORE the rows landed: arity, argument order, symmetry and type were settled in US-1 and were not re-opened here. registry/README.md now names eval: alongside cine:, media: and soc: in the same one-line domain framing, with the no-score boundary and its record linked. Value-only count follow-through: KGP §3.2's registry-width sentence 29→31 / three→four domain files (dated 2026-09-12 rather than 'as of this version', since 0.6.0 published at 29) carried by a dated Editorial changelog entry — no clause, no version, no claim id moves; CLAUDE.md's registry bullet; ROADMAP.md row 412 now records the ANSWER (ACCEPT, with the no-score boundary and its reconsideration trigger). Dated history deliberately NOT refreshed: ROADMAP.md:410, docs/reference/interop-trial.md:244 and :595, and KGP's 0.6.0 changelog all say 29/'three domain files' as statements about the day arg_types landed. GATES, observed: check-registry OK — 31 relation names, unique across the core file and every domain file; 8 files, column shape holds, every cross-file reference resolves (eval.tsv 2 rows). check-doc-integrity OK — 61 markdown files, 1700 relative links checked, all 3 status tables match their headers. check-doc-links 0 dead references; ratchet 0 dead vs 0 on main. check-schemas OK — 9 schemas, 278 schema positions, 80 $refs, 3 fixtures (unchanged; no schema models the relation registry). check-tasklist-categories OK — 10 tasklists categorized. check-roadmap-truth coverage OK (52 completed named), stale OK (42 merged checked, none shown as open), park OK. All six green."
     }
-  ]
+  ],
+  "mergedToMain": "21f8758",
+  "gates": {
+    "local": {
+      "state": "passed",
+      "detail": "the project verify hook (verify.sh) ran and exited 0"
+    },
+    "ci": []
+  }
 }
