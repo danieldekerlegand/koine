@@ -220,7 +220,7 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
-- `specs/capability-bus.md` — KCB 0.5.2, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.5.3, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -610,6 +610,49 @@ vocabulary.
   paragraph, a changelog entry and a scenario section. The axis tally is now
   **five** — MA-8, V-10, BP-7, ADR-0014's marking, MA-17 — every one *a rule with a declared normative
   consequence and nothing that carries it*.
+  **0.5.3 (2026-09-12, patch) folds V-9 — the payload cross-check gets a canonicalization, and its
+  reach is stated instead of implied.** The structural finding count **(ii)**'s 2026-09-03 re-run left
+  on Step 5. V-2's fold (0.5.0) minted `payload_schema_id` as *the* cross-check a knowledge port's
+  free-form `shape` could not be, and then left it unverifiable in **both** of the two ways §7.1 opens
+  by naming: the **rule was unstated** (five steps for `schema_id`, none for this) and the **bytes were
+  unreachable** — `discover` returns addresses, `describe` returns the card plus `tools/list` **tool**
+  schemas, `invoke` and `subscribe` carry payloads and never declarations of payloads — so §7.1's own
+  *falsifiability* argument was true of one digest and false of the other while the section called both
+  *the cross-check*. New NORMATIVE §7.1 paragraphs **(a)–(e)**: the digest is `sha256` over the
+  declaration's bytes **as published** — a **content address of a document**, the form KINP §3 gives an
+  `asset` id, with no key set and no value normalization because there is **no KCB-defined object to
+  reduce** (a SHOULD applies step 3's byte discipline where the declaration is itself JSON, so
+  re-serializing does not drift); what that determinism **is and is not** — same bytes always the same
+  value, but **no cross-provider convergence**, so a consumer MUST NOT read two differing values as
+  evidence of two different **payloads** (minting convergence would mean KCB fixing the declaration's
+  *format*, which is the shape registry, already rejected); retrievability **checked verb by verb
+  rather than assumed**, `fetch` being the one that can carry it because by (a) the digest already *is*
+  an `asset` address, self-verifying on arrival (delta G); and the consequence — **two branches**,
+  with which one a consumer is on a **fact it discovers, never one the card asserts**: retrievable is a
+  **fact** (fetch, verify, read, compare), unretrievable is **provider-attested**, carrying a
+  `version`'s evidentiary weight and not a digest's, taking the *no cross-check available* default with
+  **failure mode 2 declared open** — V-2's move (silent break → declared absence) performed on the
+  branch that **declares** one, as V-2 performed it on the branch that declares none. **No provider
+  obligation is added**: a declared `payload_schema_id` with nothing retrievable behind it is
+  **conformant**; what is forbidden is the consumer-side error V-2 named. The *falsifiability*
+  paragraph is **scoped** rather than left to be over-read, and §2.1's closing pointer now covers a
+  port carrying **one** as well as one carrying **none**. **Deliberately not done**: a sixth verb, and
+  a reserved capability name every declaring provider must publish — both would make the cross-check
+  unconditional and both are refused on the record (a verb is a plane-wide addition with no mandate
+  here; a reserved name is a commons two authority domains must agree on, the shape registry's own
+  ground, against KINP §3.4's one non-federated commons), with the re-open condition stated. **Patch,
+  not minor**: the operand stays OPTIONAL on read and write, no verb/field/plane/port kind/grant/
+  authority role is added, §7.2's table is undisturbed, **step 1's kept set and both rule ids are
+  byte-unchanged so no published `schema_id` or digest moves and no next rule id is minted**, and a
+  card carrying no `payload_schema_id` behaves exactly as at 0.5.2. The one narrowing is stated
+  plainly — a provider that digested a *reduced* form of its own declaration must now digest the
+  published bytes, which is the narrowest reading of 0.5.0's *"over the participant's own canonical
+  declaration"* rather than a replacement of it. **0.6.0 stays spoken for** by §2.3's removal and the
+  bump is deliberately **not** declared under §7.2's table (BP-8/AP-9's defect, not repeated). **No
+  count closes and none is added** — V-9 was found *inside* count (ii)'s own re-run, so that count
+  changes shape rather than gaining a sibling — the other five are restated unmoved, and **V-10**, the
+  third finding of the same re-run, is **not** folded here, so **KCB is no more promotable than it
+  was**.
 - `specs/media-interchange.md` — KMI 0.3.8, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the

@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.5.2
+**Spec version:** 0.5.3
 **Status:** Candidate
 **Last updated:** 2026-09-12
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -9,6 +9,35 @@ capability consumers (most participants are both provider and consumer).
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
+> **Status note (0.5.3):** stays **Candidate** on the same **six** counts, and **none of them
+> moves.** 0.5.3 folds **V-9** of
+> [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) — the
+> structural finding count **(ii)**'s 2026-09-03 re-run left on Step 5. 0.5.0 minted
+> `payload_schema_id` as *the* cross-check a knowledge port's bare `shape` could not be, and the
+> operand was **not consumer-verifiable**: §7.1 stated a five-step canonicalization for `schema_id`
+> and **none** for it, and **no verb retrieved the declaration it digests**, so §7.1's own
+> *falsifiability* argument was true of one digest and false of the other while the section called
+> both a cross-check. §7.1 now states the canonicalization — `sha256` over the declaration's
+> **published bytes**, a **content address of a document** in the same form KINP §3 gives an `asset`
+> id, with the cross-provider convergence `schema_id` has **explicitly not claimed** — and settles
+> retrievability by **checking §4's five verbs rather than assuming**: `fetch` can carry it and is
+> the only one that can, since by construction the digest already *is* an `asset` address. So the
+> cross-check has **two branches**: retrievable (a **fact** — fetch, verify, compare) and
+> unretrievable (**provider-attested**, carrying a `version`'s evidentiary weight and not a
+> digest's, with failure mode 2 **declared open** rather than silently open). **No sixth verb and no
+> reserved capability name** — both are refused on the record with a re-open condition, on the
+> ground the shape registry was refused on. **Patch, not minor**: `payload_schema_id` stays optional
+> on read and on write, no verb/field/plane/port kind is added, §7.2's table is undisturbed, step
+> 1's kept set and the `kcb1`/`kcb2` rules are byte-unchanged so **no published `schema_id` or
+> digest moves and no next rule id is minted**, and a card carrying no `payload_schema_id` behaves
+> exactly as at 0.5.2. **0.6.0 stays spoken for** by §2.3's legacy-extension-URI-root removal, which
+> this fold has no mandate to discharge; the bump is deliberately **not** declared under §7.2's
+> table, which governs *a published capability* and whose absence of a row for a spec-axis bump is
+> the defect **BP-8/AP-9** found in §4.2a/§4.3a — not repeated here and not fixed here. **No seventh
+> count**: V-9 was found *inside* count (ii)'s own re-run, so the fold changes that count's shape
+> rather than adding one, and the other five are restated unmoved. **KCB is no more promotable than
+> it was** — **V-10** is the third finding of the same re-run and is not folded here.
+>
 > **Status note (0.5.2):** stays **Candidate**, now on **six** counts. 0.5.2 folds **MA-12** of
 > [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the blocker that
 > scenario's Steps 8–10 left on **KMI count (i)**, and the half of it whose carrier belongs here.
@@ -478,7 +507,10 @@ leg (delta F) the fabric is for (**V-2**). Media ports are protected without thi
 registry-controlled; knowledge ports have neither property. Unlike `cost`, `volume` and `effect`,
 `payload_schema_id` **is** shape: it sits **inside** the §7.1 canonicalization as a knowledge-plane
 shape key. It is optional on read and on write — and what a consumer must conclude from a knowledge
-port that carries **none** is fixed in §7.1, not here.
+port that carries **none** is fixed in §7.1, not here. So is what one that carries **one** is
+*worth*: §7.1 fixes the canonicalization, and fixes that the cross-check is performable only where
+the declaration the digest covers can be obtained, and **provider-attested** where it cannot
+(**V-9**).
 
 A port MAY additionally carry an OPTIONAL **`volume`** — the delivery envelope a subscriber to that
 port would be accepting (rate, payload size, asset references per delivery, resume horizon). Volume
@@ -1826,7 +1858,8 @@ as evidence that the payload is unchanged. This converts a **silent** break into
 absence**, which is the whole of what the break-test demanded: the consumer that failed did not fail
 for want of a digest, it failed because it believed the digest it held covered the payload. A provider
 that wants the cross-check publishes a `payload_schema_id` over its own canonical declaration of that
-payload — optional, and no provider is obliged to. Media ports (`media_types` names an externally
+payload — optional, no provider is obliged to, and **how far that cross-check reaches is fixed below**
+rather than assumed (**V-9**). Media ports (`media_types` names an externally
 standardized format) and entity ports (`types` are registry-controlled) are unaffected: their shape
 keys carry structure that a third party fixes, which is exactly the property `shape` lacks.
 
@@ -1898,12 +1931,84 @@ provider re-serializing produces no drift:
    recorded decades out is comparable only if the rule that produced it can be named. §7.4 needs no
    clause of its own — it is where the cost of not stating the rule would have come due.
 
-**Falsifiability is the point.** A consumer recomputes the digest from the card it fetched itself
-(`describe`, §4) and compares it against the published value. The digest is a **fact** the consumer
-can check from bytes in hand; the `version` is a **claim** the provider makes. Digests catch a
-forgotten bump and are silent on meaning; versions carry meaning and cannot be verified. Neither
-replaces the other, and a missing `schema_id` means *no cross-check is available* — never *invalid
-manifest*.
+**The `payload_schema_id` canonicalization, and how far the cross-check it mints reaches (V-9).**
+NORMATIVE. The five steps above construct their own bytes: §7.1 defines the port object, so it can
+reduce that object to shape and normalize it. `payload_schema_id` digests a document KCB does **not**
+define — the participant's own declaration of the payload, authored by the participant that implements
+the capability ([ADR-0007](../decisions/ADR-0007-self-describing-participant.md)). KCB therefore cannot
+reduce it, and must not be read as having done so.
+
+a. **What is hashed.** A `payload_schema_id` is `sha256` over the bytes of that declaration **exactly
+   as the participant publishes them**, lowercase hex, algorithm-prefixed — the same form
+   [KINP §3](identity.md) gives an `asset` id (*the hash of the bytes*), and for the same reason: it is
+   a **content address of a document**, not a canonicalization of an object. There is no key set, no
+   value normalization and no serialization rule, because there is no KCB-defined object to apply one
+   to. Where the declaration is itself a JSON document a provider SHOULD apply **step 3's** byte
+   discipline to it before publishing, so that re-serializing its own declaration produces no drift.
+   **Step 5's rule id does not apply to this digest and MUST NOT appear in its prefix**: a rule id
+   names a **key set**, and this canonicalization has none to name.
+
+b. **What that determinism is, and what it is not.** The digest is a deterministic function of the
+   published bytes — the same bytes always produce the same value, so a provider re-publishing
+   byte-identical bytes never drifts, which is the second of the two properties the five steps open by
+   naming. The **first** is not claimed, and saying so is the point of this paragraph: two participants
+   declaring the same payload in two **different documents** produce **different** `payload_schema_id`
+   values, and so do two serializations of one document where (a)'s SHOULD was not applied — the SHOULD
+   removes the drift a single provider causes itself, and reaches no further. A consumer MUST NOT read
+   a difference between two ports' `payload_schema_id` values as evidence that those ports carry
+   **different payloads**; it is evidence
+   of different **bytes**, which is all a content address ever asserts. The convergence `schema_id`
+   gets from step 1's key set has no counterpart here, and minting one would require KCB to fix the
+   declaration's *format* — which is the shape registry, rejected above on its federation grounds.
+
+c. **Obtaining the declaration — checked against §4's five verbs, not assumed.** `discover` returns
+   registry entries and addresses (§3). `describe` returns the AgentCard and, over `tools/list`, *tool*
+   schemas (§4.1) — neither is the declaration, and a `produces` port on a subscription is not a tool at
+   all. `invoke` and `subscribe` carry **payloads**, never the declaration of one. **`fetch` can carry
+   it, and it is the only one that can**: by (a) the digest already *is* an address in the `asset` form,
+   so where the participant has published that declaration into a CAS the consumer can reach, and the
+   consumer holds the `fetch:asset` grant (§5), `fetch` returns the bytes and self-verifies them against
+   that address (delta G, §4).
+
+d. **The cross-check therefore has two branches, and which one a consumer is on is a fact it
+   discovers, never one the card asserts.** Where the declaration is retrievable the cross-check is
+   performable end to end and the digest is a **fact**: fetch the bytes, verify them against the
+   address, read the declaration, compare it against what the port delivers. Where it is not — no
+   holder, no grant, or a `not-held-not-expected` / `not-held-pending` answer (§4.5) — the consumer MUST
+   read that `payload_schema_id` as **provider-attested**, carrying the evidentiary weight of a
+   `version` (a **claim the provider makes**) and not that of a `schema_id` (a **fact the consumer
+   checks**). On that branch this section's ***no cross-check available*** default applies unchanged and
+   §7's **failure mode 2** — a payload edited without a re-digest — **stays open and is declared open**,
+   which is the whole of what this paragraph fixes: V-2 converted a silent break into a declared absence
+   on the branch that declares **no** `payload_schema_id`, and this does the same on the branch that
+   declares one. A consumer MUST NOT read an unretrievable declaration as a defect, and MUST NOT read it
+   as a mutation (§7.2) — the same reading step 5 gives an unknown rule id.
+
+e. **No obligation is added to a provider.** Publishing the declaration into a CAS is a provider's
+   choice, exactly as declaring a `payload_schema_id` at all is. A provider that declares one and
+   publishes nothing retrievable is **conformant**, and has made an attestation rather than a false
+   claim. What is forbidden is the consumer-side error V-2 named in the first place: believing a digest
+   covers something it has not checked.
+
+*Deliberately not done: a declaration-retrieval verb.* A **sixth verb**, or a reserved capability name
+every provider declaring a `payload_schema_id` must publish, would make the cross-check unconditional,
+and both are refused here. A verb is a plane-wide addition this fold has no mandate for; a reserved
+capability name is a commons two authority domains must agree on before they can exchange a knowledge
+port, which is the ground the shape registry was rejected on one paragraph up, and
+[KINP §3.4](identity.md) keeps the prefix registry as the fabric's *one* non-federated commons. The
+re-open condition is stated so it is not re-argued: a measured case in which the **attested** branch is
+where the break lands — a participant whose declaration is retrievable by no route, on a leg where the
+consumer's refusal to trust it cost more than the unverified bind would have.
+
+**Falsifiability is the point — and it is true of one of these two digests without qualification.**
+A consumer recomputes a **`schema_id`** from the card it fetched itself (`describe`, §4) and compares it
+against the published value; the bytes it digests are **on the card**, so nothing further is needed. The
+digest is a **fact** the consumer can check from bytes in hand; the `version` is a **claim** the provider
+makes. Digests catch a forgotten bump and are silent on meaning; versions carry meaning and cannot be
+verified. Neither replaces the other, and a missing `schema_id` means *no cross-check is available* —
+never *invalid manifest*. A **`payload_schema_id`** is a fact on the same terms **only on the retrievable
+branch of (d)**, because the bytes it digests are not on the card; on the attested branch it is a claim,
+and a reader must not carry this paragraph's argument across to it (**V-9**).
 
 ### 7.2 The subscriber-compatibility rule
 
@@ -2367,6 +2472,54 @@ most important thing an owner citing this run must understand:
   DR-13 adds no count, removes no count, and promotes nothing — all five stand.
 
 ## Changelog
+
+- **0.5.3** (2026-09-12) — **V-9 folded: the payload cross-check is given a canonicalization, and its
+  reach is stated instead of implied.** The structural finding Step 5 of
+  [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) returned
+  against count **(ii)** on 2026-09-03. V-2's fold (0.5.0) minted `payload_schema_id` so that a
+  knowledge port could carry a payload identity its free-form `shape` could not — and then left the
+  operand **unverifiable in both of the two ways §7.1 opens by naming**: the *rule* was unstated (§7.1
+  fixes five steps for `schema_id` and none for this), and the *bytes were unreachable* (`discover`
+  returns addresses, `describe` returns the card plus `tools/list` **tool** schemas, `invoke` and
+  `subscribe` carry payloads and not declarations of payloads). §7.1's *"falsifiability is the point"*
+  paragraph was therefore true of `schema_id` and false of `payload_schema_id`, while §2.1 and §7.1
+  called both *the cross-check*. New NORMATIVE paragraphs (a)–(e) in §7.1: **(a)** the digest is
+  `sha256` over the declaration's bytes **as published** — a **content address of a document**, the
+  same algorithm-prefixed form [KINP §3](identity.md) gives an `asset` id, with no key set and no
+  value normalization because there is no KCB-defined object to reduce, and a SHOULD to apply step 3's
+  byte discipline where the declaration is itself JSON; **(b)** what that determinism is **and is
+  not** — same bytes always the same value, but **no cross-provider convergence**, so a consumer MUST
+  NOT read two differing `payload_schema_id` values as evidence of two different payloads (minting
+  convergence would mean KCB fixing the declaration's *format*, which is the shape registry, already
+  rejected); **(c)** retrievability checked verb by verb against §4 rather than assumed — **`fetch`
+  can carry it and is the only one that can**, because by (a) the digest already *is* an `asset`
+  address, self-verifying on arrival (delta G) where the provider published the declaration into a
+  reachable CAS and the consumer holds the `fetch:asset` grant; **(d)** the two branches, and that
+  which one a consumer is on is a **fact it discovers, never one the card asserts** — retrievable is a
+  **fact** (fetch, verify, read, compare), unretrievable is **provider-attested** and carries a
+  `version`'s weight rather than a digest's, taking this section's *no cross-check available* default
+  with **failure mode 2 declared open**, never read as a defect and never as a mutation (§7.2);
+  **(e)** no provider obligation is added — a declared `payload_schema_id` with nothing retrievable
+  behind it is **conformant**, and what is forbidden is the consumer-side error V-2 named. The
+  *falsifiability* paragraph is **scoped** rather than left to be over-read, and §2.1's closing
+  pointer now covers a port that carries **one** as well as one that carries **none**. **Deliberately
+  not done**: a sixth verb, and a reserved capability name every declaring provider must publish —
+  both would make the cross-check unconditional, both are refused on the record (a verb is a
+  plane-wide addition with no mandate here; a reserved name is a commons two authority domains must
+  agree on, the shape registry's own ground, against [KINP §3.4](identity.md)'s one non-federated
+  commons), with the re-open condition stated. **Patch, not minor, and decided rather than assumed**:
+  the operand stays OPTIONAL on read and write, no verb/plane/port kind/field/grant/authority role is
+  added, §7.2's table is undisturbed, **step 1's kept set and both rule ids are byte-unchanged so no
+  published `schema_id` or digest moves and no next rule id is minted**, and a card carrying no
+  `payload_schema_id` behaves exactly as at 0.5.2. The one narrowing is stated plainly: a provider
+  that had digested some *reduced* form of its own declaration must now digest the published bytes —
+  which is the narrowest reading of the 0.5.0 sentence *"over the participant's own canonical
+  declaration"* rather than a replacement of it, and `payload_schema_id` is one version old. **0.6.0
+  stays spoken for** by §2.3's legacy-extension-URI-root removal, and the bump is deliberately **not**
+  declared under §7.2's table (BP-8/AP-9's defect, not repeated here). **No count closes and none is
+  added**: V-9 was found inside count **(ii)**'s own re-run, so that count changes shape rather than
+  gaining a sibling, the other five are restated unmoved, and **V-10** — the third finding of that
+  re-run — is **not** folded here, so **KCB is no more promotable than it was**.
 
 - **Editorial** (2026-09-12) — **count (vi) walked by hand, and it does not close.** Steps 8–10 of
   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) re-run against **KCB
