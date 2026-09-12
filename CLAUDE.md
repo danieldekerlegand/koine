@@ -395,7 +395,8 @@ vocabulary.
   re-runs would not have promoted it either.
   **What remains is written down flat, with an owner or an explicit *unowned*, in
   `docs/reference/promotability.md` § *The seven things that stand between KCB and `ratified`*** — seven
-  items, **all unowned in this repo and in every other**: (1) ADR-0014's four-part clause, a
+  items, **six of the seven still unowned in this repo and in every other** — item (6) found an
+  owner on 2026-09-11 and the rest did not: (1) ADR-0014's four-part clause, a
   precondition of counts **(ii) and (iii)**, not one; (2) the **MT-1** fold (§3/§4.4c); (3) **V-9 +
   V-11** (§7.1); (4) **V-10 + BP-8 + AP-9**, *one* §7.2/§7.3g edit for three findings; (5) **BP-7**
   (§4.2b/d); (6) **DR-7**, the encoding extension to the F1–F13 set — downstream under ADR-0001, and
@@ -722,7 +723,10 @@ vocabulary.
   at named shas — four of `generative-audio-modalities-downstream.md`'s six findings are discharged
   downstream (formant's verbatim mirror + `KFT_VERSION 0.7.0`; agora's vendored enum and
   `out-of-envelope` refusal), AUD-4 is open under lugh's dated ADR-0007 deferral, and **AUD-6 — no pass
-  walks an audio job — is koine's own and unowned**. Records:
+  walks an audio job — is koine's own, and since 2026-09-11 it has a row**. The sharper reading is
+  that this was never simply missing: `generative-audio-modalities.md` *declined* the modality row
+  and wrote down its own reversal trigger — **the first consumer that asks for it** — and that
+  trigger has since fired without anything here noticing. Records:
   `docs/reference/kcs-encoding-gate-verification.md` §6.4 and
   `docs/reference/generative-audio-modalities-downstream.md` §8.
   Record: `scenarios/kft-resume-checkpoint.md` § *Re-run — the FT-R…FT-V resumption
