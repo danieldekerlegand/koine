@@ -701,6 +701,43 @@ vocabulary.
   **not** declared under it (BP-8/AP-9's defect, not repeated). **§2.3's 0.6.0 removal is checked
   rather than tripped**, and **no count closes and none is added** — V-11 was found inside count (ii)'s
   own re-run alongside V-9 and **V-10**, which is still not folded.
+  **Count (ii) was then re-run by hand the same day (2026-09-12) against 0.5.3 — the first text
+  carrying this pass's own folds — and it does NOT close.** Steps **5, 6, 9 and 11** walked, Step **4**
+  re-checked because §7.1 moved under it, Steps 1/2/3/7/8/10 **restated unmoved** on the verified
+  ground that every clause they read is byte-unchanged (prose, never a replay —
+  `kcs:live-schema-mutation` now predates **three** publications of the spec it gates, **DR-7**).
+  **V-9 and V-11 do not reproduce**, each re-attacked on the ground it was filed on: (a)'s
+  content-address canonicalization, (b)'s refusal to claim convergence, (c)'s verb-by-verb
+  retrievability check and (d)'s two branches all hold, and step 5's third bullet holds on four probes
+  including the correction path. **Step 9's blocker is also gone** — 0.5.1's `deprecated` /
+  `removal_version` carrier discharges **ADR-0014** here with a **single registry and no peering**, and
+  MA-14/MA-15/MA-16 do not reach the step because all three live inside §3.1(d)'s **federated**
+  converse, so that clause **leaves count (ii)'s preconditions**; V-6 holds under re-attack and Step
+  11's V-11 qualification closes. **Nine of this pass's eleven deltas are now folded and hold under
+  re-attack**, and §7's model has not been in question across four walks — its perimeter is repaired in
+  eight places and open in four. Four new **perimeter** deltas, beside unfolded **V-10**: **V-12**
+  (High, scope) — §7.1(d)'s retrievable branch is a **content address**, which is an *integrity*
+  instrument, while failure mode 2 is a *staleness* failure, so `fetch` returns the **superseded**
+  declaration, the verification cannot fail for the reason that matters, and *compare it against what
+  the port delivers* rests on a document (a) states KCB does not define — **failure mode 2 is open on
+  both branches and declared open on one**, and what would close it is the very **verb** §7.1 refuses;
+  **V-14** (Med-High) — the new MUST binds the provider and **no clause gives the consumer the
+  reading** for a bare prefix it can locally detect, while the verdict the fold cites is not §7.2's
+  (non-recoverable is defined over a **moved published value**; a mislabel produces a **recomputation**
+  mismatch §7 states no verdict for, so conformant consumers diverge); **V-15** (Med, collision) —
+  §7.3a(a)'s *a deprecation that names no removal is not a deprecation* against §2's `removal_version`
+  **SHOULD** and its *read it as a deprecation with no planned end*, one card state with two conformant
+  readings, §7.3d/§3's ranking and §7.3c's floor both downstream of it, reproducing with **one
+  registry**; **V-13** (Med) — (d) omits **`refused`** from §4.5's four outcomes, the one answer §4.5
+  says is *not* evidence of an absence. Count (ii) now reads *fold V-10 (one edit with BP-8 and AP-9),
+  **V-12 + V-13** (one §7.1(d) edit), **V-14** (one §7.1 step 5 / §7.2 edit) and **V-15** (one §2/§7.3a
+  edit), then re-run Steps 5, 6, 9 and 10*; the other five counts are restated and none moves. **Two of
+  the four land on the fold published hours earlier — the third consecutive fold in this repo to break
+  on its own perimeter** (after §4.5's MA-17 and KMI §7.1(d)'s MA-19/MA-20), and the shape is
+  consistent: the mechanism is checked hard and the **claim the prose makes about it** is not. **No
+  version and no clause moved for the walk** — every normative clause of §1–§8 byte-unchanged, §7.1's
+  five steps and (a)–(e) included, no published digest moves; the edit is §7.5's gate paragraph, a
+  *Pressure test* paragraph, a changelog entry and a scenario section. **KCB is not promotable.**
 - `specs/media-interchange.md` — KMI 0.3.8, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the

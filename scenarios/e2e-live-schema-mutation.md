@@ -1052,6 +1052,319 @@ either.
 
 ---
 
+## Re-run — Steps 5, 6, 9 and 11 walked by hand against KCB 0.5.3 (2026-09-12)
+
+**What this is.** KCB's **count (ii)** again, walked against the first text that carries the fold of
+this document's own findings. Two publications have moved the clauses this pass reads since the
+2026-09-03 walk, and both were folds of that walk's findings:
+
+- **KCB 0.5.1** wrote [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s
+  four-part clause — §2's `deprecated` / `removal_version` fields, carried through §3's `find`
+  response **as entry data in every response and not only a federated one**. That was **Step 9's**
+  blocker here, and the 2026-09-03 walk is what established it reproduces with a **single registry
+  and no peering**, making it a precondition of this count as well as count (iii).
+- **KCB 0.5.3** folds **V-9** (§7.1's new NORMATIVE (a)–(e) and the scoped *falsifiability*
+  paragraph) and **V-11** (§7.1 step 5's third bullet, plus §7.2's *not a silent mutation* bullet).
+  Those are **Steps 5 and 6**.
+
+**What this walk therefore covers, and what it deliberately does not re-attack.** Steps **5**, **6**,
+**9** and **11** read clauses that moved; they are walked. Step **4** is a regression check that reads
+§7.1 directly, so it is re-checked rather than assumed. Steps **1**, **2**, **3**, **7**, **8** and
+**10** read §2.4, §4.4c/d, §5, §7.2's table and §7.3g, **every clause of which is byte-unchanged since
+the 2026-09-03 walk** — verified rather than asserted, on the fold's own *no clause moves* claim — so
+their verdicts are **restated unmoved**, not replayed. Re-attacking a hand-walk against text that has
+not moved produces a second opinion, not a second observation, and this record does not need one.
+
+**Method, and why it is not a replay.** **DR-7** is unchanged and independent: `kcs:live-schema-mutation`
+came back `green` on 2026-08-24 over all four blocking deltas, because an encoding does not assert an
+unfolded one, and it still asserts assertions 1–10 rather than **F1–F13**. It now predates **three**
+publications of the spec it gates. Its exit code is not evidence about this fold either, and nothing
+below is discharged by one. This walk is against the **prose**.
+
+### Per-step verdicts
+
+| Step | What it tests | Verdict |
+|---|---|---|
+| **1** — What a live subscriber is | §7.2's definition | ✅ **holds** — restated unmoved (§7.2's definition byte-unchanged) |
+| **2** — A compatible widening | §7.2's minor tier | ✅ **holds** — restated unmoved |
+| **3** — A re-price | V-1 + the digest exclusion | ✅ **flips** — restated unmoved (§4.4d, §5 byte-unchanged) |
+| **4** — The unbumped mutation, media port | §7.1/§7.2 | ✅ **holds** *(regression, re-checked against the folded §7.1)* |
+| **5** — The same mutation, knowledge port | **V-9** | 🟡 **half-flips** — V-9 does not reproduce → new deltas **V-12**, **V-13** |
+| **6** — Canonicalization drift | **V-11** | 🟡 **half-flips** — V-11 does not reproduce → new delta **V-14** |
+| **7** — The successor beside the predecessor | V-4 | ✅ **flips** — restated unmoved (§2.4 byte-unchanged) |
+| **8** — The v1 grant meets v2 | V-5 | ✅ **flips** — restated unmoved (§4.4a–c, §5 byte-unchanged) |
+| **9** — The deprecation window | V-6 + **ADR-0014** | 🟡 **half-flips** — the carrier exists and V-6 holds → new delta **V-15** |
+| **10** — Removal lands, the stream stops | **V-10** | 🟡 **half-flips** — restated unmoved; **V-10 stands, unfolded** |
+| **11** — The archival pin | §7.4 | ✅ **holds** *(regression)*, and its 🟡 thread **closes in full** |
+
+### Step 5 — The same mutation, on the *knowledge* port 🟡 *half-flips*
+
+**V-9 does not reproduce, and both of its grounds are answered.** The **rule** is stated: §7.1(a)
+fixes a `payload_schema_id` as `sha256` over the declaration's bytes **as published** — a content
+address of a document in the form [KINP §3](../specs/identity.md) gives an `asset` id — with no key
+set to name, a SHOULD applying step 3's byte discipline where the declaration is itself JSON, and
+step 5's rule id explicitly excluded from its prefix. The **bytes** are settled by checking §4's five
+verbs one at a time rather than by assuming an answer either way: `discover` returns addresses,
+`describe` returns the card and `tools/list` *tool* schemas, `invoke` and `subscribe` carry payloads
+and never declarations of payloads, and **`fetch` can carry it** — because by (a) the digest already
+*is* an `asset` address, so a `fetch` self-verifies on arrival (delta G). Re-attacked on the point
+that mattered most and it holds: (b) **declines** to claim the cross-provider convergence the five
+steps give `schema_id`, and says why claiming it would require KCB to fix the declaration's *format*,
+which is the shape registry rejected on federation grounds one paragraph up. The section no longer
+calls both digests *the cross-check* and the *falsifiability* paragraph is scoped to the one it is
+true of.
+
+**🔴 BROKE (V-12, high — scope). A content address is an integrity instrument, and failure mode 2 is
+a staleness failure, so the retrievable branch does not close it either.** Run Step 5's mutation
+against (d)'s **good** branch. `mediastore` declares `payload_schema_id = P0` over a declaration `D0`
+(`valence` a signed float, `arousal` present), publishes `D0` into a CAS `analyzer` can reach, and
+`analyzer` holds the `fetch:asset` grant. `mediastore` then redefines the payload exactly as this
+step does — enum `valence`, no `arousal` — and does **not** re-digest.
+
+(d) says that on this branch *"the cross-check is performable end to end and the digest is a **fact**:
+fetch the bytes, verify them against the address, read the declaration, compare it against what the
+port delivers."* Walk that sentence with the mutation in place:
+
+- **`fetch` returns `D0`.** It must: `P0` addresses `D0`'s bytes and nothing else, and the provider's
+  edit did not touch them. A content address **cannot** resolve to the document that superseded it.
+- **The verification succeeds.** It always does. Verifying bytes against their own content address is
+  a check on the *store*, not on the *provider*, and it cannot fail for the reason failure mode 2
+  names. Where a `schema_id` mismatch is the whole signal, a `payload_schema_id` match is no signal.
+- **The consumer now holds a stale declaration it cannot tell is stale.** Nothing on this branch
+  distinguishes *the provider is still implementing `D0`* from *the provider edited past `D0` and did
+  not re-digest* — which **is** failure mode 2, verbatim.
+- **The step that would catch it is the one KCB does not define.** *"Compare it against what the port
+  delivers"* is not a digest operation: (a) states in terms that the declaration is a document KCB
+  does not define, and (b) states that its format is free enough that two participants declaring one
+  payload produce two values. So the comparison rests on the consumer being able to parse a document
+  of an unfixed format and validate traffic against it, which no clause requires, enables or names a
+  format for — and on a `consumes` port there is no arriving traffic to validate at all, so the break
+  surfaces only when the consumer's own call fails, which is the *"never learns of a break by failing
+  an invoke"* outcome §7.2 exists to prevent.
+
+The asymmetry is the finding, and it is structural rather than editorial. `schema_id`'s falsifiability
+works because **the card is live and the digest is published over it**: a stale digest disagrees with
+bytes the consumer holds *now*. A `payload_schema_id`'s referent is reached **through** the digest, so
+it can never disagree with it. The instrument is sound for what content addresses are for — *these
+bytes are those bytes* — and it is the wrong instrument for *are these bytes still the ones you
+implement*.
+
+So (d)'s two branches are not *fact* and *claim*; they are *a claim with the document in hand* and *a
+claim without it*, and the difference between them is real but smaller than the paragraph states.
+**Failure mode 2 is open on both branches**, and §7.1 declares it open on one. That is exactly the
+error V-9 recorded — a consumer told a cross-check exists that it cannot in fact perform — moved one
+branch over, and it lands on the branch a provider takes when it is doing the most it can.
+
+*Bounded, and it reopens nothing.* (a), (b), (c) and (e) all hold; the *deliberately not done*
+paragraph's two refusals stand on their own grounds. **Note precisely what would close this**: a route
+to the declaration the provider is **currently** implementing, which is a **live** artifact and
+therefore a verb — the sixth verb §7.1 refuses, or the reserved capability name it refuses beside it.
+That is the fold refusing to buy currency at the price of a plane-wide addition, which is a defensible
+trade and is **not what the text says it did**. The additive fold is therefore to say so: scope (d)'s
+*fact* to what a content address establishes, state that failure mode 2 is open on **both** branches
+with the retrievable one differing in that the consumer holds a declaration it can argue from, and
+point the reader at the re-open condition already written one paragraph down. One §7.1(d) edit. →
+KCB §7.1(d).
+
+**🔴 BROKE (V-13, medium — enumeration). (d) reads three of §4.5's four outcomes and the fourth has no
+branch.** (d) sends a consumer to the attested branch on *"no holder, no grant, or a
+`not-held-not-expected` / `not-held-pending` answer (§4.5)"*. §4.5 (KCB 0.5.2) names **four**
+outcomes, and **`refused`** is not in that list. It is the one that matters most for this reading,
+because §4.5 says in terms that a rate-limited holder MUST answer `refused` and MUST NOT answer
+`not-held-pending` — *a busy holder is not evidence toward no holder remains* — so `refused` is
+precisely the answer that must **not** be read as an absence. A consumer meeting it has no stated
+branch and two defensible readings: treat the digest as attested, which is **permanent** on evidence
+§4.5 says is not evidence, or retry, which no clause bounds. The KMI §7.1(b)(e) egress gate lands on
+`refused` too, so the case is not exotic — it is what a consumer in another authority domain meets
+first. One clause, folded with V-12: name `refused` and say it is neither branch — the consumer has
+learned nothing about the declaration and holds whatever branch it was on. → KCB §7.1(d).
+
+### Step 6 — Canonicalization drift 🟡 *half-flips*
+
+**V-11 does not reproduce.** Step 5 now carries a third bullet written as the **mirror** of the
+existing `MUST NOT`, and the mirroring is what makes it hold under attack: both arms are stated by
+the **property** that makes them true — emit the rule id where the digest depends on it, never where
+it does not — and **neither names a rule**, so they carry to the next rule id §2.1's vocabulary mints
+without a re-edit. Probed four ways and each closes: a `kcb2` digest under a bare prefix is
+**non-conformant** in terms, and the section says why the omission is a **statement** rather than a
+silence (which is why it is a MUST and not a SHOULD); the **correction path** is stated and is shown
+not to be a mutation, so a provider cannot defend leaving a mislabel standing on the ground that
+fixing it would move a published value; the exception and the `MUST NOT` do not overlap, the exception
+being exactly the set the `MUST NOT` covers; and (a)'s exclusion of the rule id from a
+`payload_schema_id` prefix does not collide with it, the two digests living in different keys. **No
+published digest moves** — checked at Step 4, not inferred.
+
+**🔴 BROKE (V-14, medium-high — the MUST binds the provider and no clause tells the consumer what a
+breach looks like).** The fold made the provider's obligation exact and left the consumer reading
+0.5.2's text. Let `mediastore` breach it: a knowledge port declaring a `payload_schema_id`,
+canonicalized under `kcb2`, published under a bare `sha256-…`. Two things follow, and the second is
+worse than the first.
+
+- **The breach is locally detectable and no clause directs the consumer to detect it.** Both facts are
+  on the same card — *this port declares a `payload_schema_id`* and *its `schema_id` carries no rule
+  id* — so a consumer can conclude *mislabelled, non-conformant* from bytes in hand. Step 5's
+  consumer-side bullet does not reach it: it covers *"a rule id it does not know"*, and a bare prefix
+  is not an unknown rule id — bullet 1 tells the consumer it **is** `kcb1`, a rule it knows. The
+  section hands the consumer the evidence and the opposite instruction.
+- **The verdict the fold names for this case is not the one §7.2 states.** Step 5's new bullet
+  justifies its MUST by saying a recomputing consumer *"lands on §7.2's silent mutation, the one
+  verdict that table makes non-recoverable."* §7.2's non-recoverable verdict is defined over a
+  **moved published value**: *"a `schema_id` that differs from the one it bound to at an unchanged
+  `version`."* A mislabel produces nothing of the kind — the published value never moves; what
+  disagrees is the consumer's **recomputation** against an unmoved published value. And for that
+  disagreement **§7 states no verdict at all**: the *falsifiability* paragraph tells a consumer to
+  recompute and compare and stops there; §7.2's table governs changes to a published capability; the
+  *not a silent mutation* bullet lists two things it is not. So the state a breach produces is
+  **undefined** rather than non-recoverable, and two conformant consumers may take opposite actions on
+  one card — one treating the capability as unusable, one reading *no cross-check available*, one
+  ignoring the mismatch entirely.
+
+*Severity, stated honestly.* Medium-high, not blocking. The MUST is the load-bearing repair and it is
+correct; what is missing is its other half, and the failure is a divergence between conformant
+consumers rather than an inversion of fail-closed. But note what it costs *this fold specifically*: the
+argument for making the naming a MUST rather than a SHOULD rests on a consequence the cited clause does
+not deliver, so the strongest sentence in the repair is the one that does not check out.
+
+*The fold is additive and small*, and it is the mirror once more — the consumer's half of a rule whose
+provider half is already written: one step-5 bullet giving the reading for a **bare** prefix on a port
+whose declaration makes `kcb1` and the required rule differ (today: a knowledge port declaring a
+`payload_schema_id`) — *no cross-check available*, never a mutation, and reportable as a
+non-conformance — plus naming the verdict for a **recomputation mismatch** generally, which §7 has
+never stated and which §7.2's own bullet should own beside its two *not a silent mutation* cases. →
+KCB §7.1 step 5, §7.2.
+
+### Step 9 — The deprecation window 🟡 *half-flips*
+
+**The 2026-09-03 blocker does not reproduce.** ADR-0014's clause is written (0.5.1) and the three
+clauses that read a marking now name a field: §7.3a(ii)/(iii) names §2's `deprecated` and
+`removal_version` as *the* carriers for a retiring capability major and says a deprecation declared in
+prose or a `description` string has deprecated nothing; §2 defines both as optional entry fields with
+`deprecated` absent reading *not deprecated*; §3 carries them **as entry data in every response**, so
+a single-registry deployment gains the carrier without touching MA-8's three registry-generated
+fields. Attacked on the single-registry cast this step actually has: **MA-14, MA-15 and MA-16 do not
+reach it** — all three live inside §3.1(d)'s converse, which needs two attributions and therefore
+peering, and there is none anywhere in this pass. The pull side is mechanized and the asymmetry the
+last walk recorded — subscriber told, re-discoverer reading a field that does not exist — is gone.
+**V-6 holds under re-attack**: §7.3c's per-axis floor still makes *"`1.x` removed at `2.1.0`, shipped
+tomorrow"* non-conformant arithmetic, and §7.3e's ratchet still refuses a shortened window.
+
+**🔴 BROKE (V-15, medium — collision). §7.3a and §2 give one card state two conformant readings.**
+`mediastore` marks the predecessor `"deprecated": true` and carries **no** `removal_version`. That is
+permitted: §2 makes it a **SHOULD**. The two clauses then disagree about what has happened.
+
+- **§7.3a(a):** to deprecate is to publish (i), (ii) **and** (iii) in the same release, and *"a
+  deprecation that names no removal **is not a deprecation**; it is an unbounded promise a subscriber
+  cannot plan against."*
+- **§2:** *"A `deprecated` entry SHOULD carry it; one that does not is §7.3a's unbounded promise … and
+  a consumer MUST read it **as a deprecation** with no planned end, never as a removal that is
+  imminent."*
+
+§2 quotes §7.3a's sentence and inverts its verdict, and it is a **strength** collision, not only a
+reading one: §2 **permits** by SHOULD what §7.3a says fails to be a deprecation at all. The
+consequences are live on this step. §7.3d and §3 rank a deprecated entry below a non-deprecated one —
+Registry A reads §2 and demotes, Registry B reads §7.3a and does not, so one query returns two orders
+from two conformant registries. §7.3g's `deprecated` frame *"carries the removal version"* and has
+nothing to carry. And §7.3c's floor — the V-6 repair this very step validates — has no second operand
+to measure, so the one state §7.3a calls *an unbounded promise* is the one state the floor cannot
+bound.
+
+*Severity, stated honestly.* Medium. Both readings keep the capability served and both fail safe, so
+nothing here inverts fail-closed; what it costs is a ranking a consumer cannot predict and a window
+§7.3c cannot floor. It is **MA-15's shape** — a collision between two clauses of one fold, in the
+ADR's Decision as much as in the spec — and it reproduces with **one registry and one authority**, as
+ADR-0014's carrier gap did. *The fold is one edit and does not reopen the ADR*: make the two clauses
+agree by deciding which is true — either `removal_version` is REQUIRED on a `deprecated` entry, and
+§7.3a's sentence is the rule, or §7.3a's sentence is narrowed to what §2 permits and the marking alone
+constitutes the deprecation with `removal_version` a planning datum. The second is the reading §2 was
+written against and the one §3.1(d)(ii) already assumes; either way the other clause moves. → KCB
+§2/§7.3a.
+
+### Step 4 — The unbumped mutation, on a media port ✅ *holds (regression, re-checked)*
+
+Re-checked rather than assumed, because §7.1 moved under it. Step 1's kept set is byte-unchanged and a
+media port declares no `payload_schema_id`, so it canonicalizes byte-identically under `kcb1` and
+`kcb2`; bullet 2's `MUST NOT` and the new bullet 3's **exception** name that same port from opposite
+directions and agree, so its digest stays prefix-free. **F9 — *no published digest moved* — is
+therefore confirmed by construction for a second fold**, which is the property this step exists to
+carry. The mutation is still caught: the digest moves at an unmoved version and §7.2's verdict is
+undisturbed.
+
+### Step 11 — The archival pin ✅ *holds (regression), and its 🟡 thread closes in full*
+
+The pin still resolves past three majors and a removal and still refuses to authorize a re-run. The
+thread — a pinned digest is *interpretable* only while the rule that produced it can be named — was
+answered by V-3's fold and then **qualified by V-11** at the last walk: an archival digest published
+under `kcb2` with an absent rule id was interpretable only by guessing, decades out. That
+qualification is gone, because the naming is now a MUST exactly where the value depends on it. One
+property worth recording on the other digest: an archived **`payload_schema_id`** needs no rule id at
+all — (a) makes it a content address, which is interpretable for as long as the bytes exist and is
+not a function of any KCB version. On the archival axis the weaker instrument is the more durable one,
+which is V-12's finding read from the other end.
+
+### Steps 1, 2, 3, 7, 8 and 10 — restated unmoved
+
+Every clause these steps read is byte-unchanged since the 2026-09-03 walk: §7.2's live-subscriber
+definition and its minor tier (Steps 1, 2), §4.4d's `quoted_cost` and §5 (Step 3), §2.4's transport
+binding (Step 7), §4.4a–c and §5's token (Step 8), §7.3g's three frames and §4.2d's channel (Step 10).
+Their verdicts stand as recorded: Step 3 flips, Steps 7 and 8 flip, Steps 1 and 2 hold, and **Step 10
+half-flips with V-10 standing** — §7.2's `binding` row and §2.4 still route a normative MUST to a
+frame §7.3g does not name, and the binding form that actually dials still has no channel (DEFER-D).
+**V-10 is not folded on this branch**, by design: it is one edit with **BP-8** and **AP-9** and it
+gates counts (iv) and (v) as well as this one.
+
+### Findings — from the re-run
+
+| # | Severity | Gap | Fold | Spec |
+|---|---|---|---|---|
+| **V-12** | **High (scope)** | §7.1(d)'s retrievable branch calls the cross-check *performable end to end* and the digest *a fact*, but a `payload_schema_id` is a **content address**: `fetch` always returns the bytes the digest names, the verification is a check on the store and can never fail for the reason **failure mode 2** names, and the step that would catch it — *compare it against what the port delivers* — rests on a document KCB states in terms that it does not define. A provider that edits the payload and does not re-digest is invisible on this branch too. Failure mode 2 is open on **both** branches and declared open on one. | Scope (d)'s *fact* to what a content address establishes — *these bytes are those bytes* — state failure mode 2 open on both branches, with the retrievable one differing in that the consumer holds a declaration it can argue from, and point at the re-open condition already written for the verb that would buy **currency**. Reopens no part of the V-9 fold. | KCB §7.1(d) |
+| **V-14** | Med-High | §7.1 step 5's new MUST binds the provider and **no clause gives the consumer the reading**: a bare prefix on a port declaring a `payload_schema_id` is locally detectable, and the consumer-side bullet covers only *a rule id it does not know* while bullet 1 tells it a bare prefix **is** `kcb1`. And the verdict the fold cites for a breach is not §7.2's: §7.2's non-recoverable case is a **moved published value**, while a mislabel produces a **recomputation** mismatch against an unmoved one — for which §7 states no verdict at all, so conformant consumers diverge. | One step-5 bullet: the consumer's reading for a bare prefix where the required rule is not `kcb1` — *no cross-check available*, never a mutation, reportable as non-conformance — plus the verdict for a recomputation mismatch, beside §7.2's two *not a silent mutation* cases. | KCB §7.1 step 5, §7.2 |
+| **V-15** | Med (collision) | §7.3a(a) — *"a deprecation that names no removal is not a deprecation"* — and §2's `removal_version` bullet — SHOULD, and *"a consumer MUST read it **as a deprecation** with no planned end"* — give one card state (`deprecated: true`, no `removal_version`) two conformant readings, and §2 **permits** what §7.3a says is not a deprecation. Two conformant registries rank one query two ways (§7.3d, §3), §7.3g's `deprecated` frame has no removal version to carry, and §7.3c's floor has nothing to measure. Reproduces with **one registry, one authority**. | Decide which clause is true: `removal_version` REQUIRED on a `deprecated` entry, or §7.3a narrowed so the marking alone constitutes the deprecation and the removal version is a planning datum (the reading §2 and §3.1(d)(ii) already assume). One edit; the ADR is not reopened. | KCB §2/§7.3a |
+| **V-13** | Med (enumeration) | §7.1(d) routes a consumer to the attested branch on three of **§4.5's four** outcomes and omits **`refused`** — the one §4.5 says a rate-limited holder MUST answer and MUST NOT replace with `not-held-pending`, *a busy holder being no evidence toward no holder remains*, and the one KMI §7.1(b)(e)'s egress gate lands on. A consumer meeting it has no branch: reading it as attested is permanent on evidence §4.5 says is not evidence, retrying is unbounded. | Name `refused` in (d) and say it is **neither** branch — nothing has been learned about the declaration. Folded with V-12 in the same paragraph. | KCB §7.1(d) |
+
+### What this re-run does and does not close
+
+**Count (ii) does NOT close, and it would not have closed on a clean walk at Steps 5, 6 and 9 either
+— V-10 stands, unfolded.** That is the plain reading and it is stated first, because the rest of this
+section is a list of things that went right.
+
+**What did go right is the fold record, and it is the strongest it has been.** **V-9 and V-11 do not
+reproduce**, each re-attacked on the ground it was filed on rather than read for plausibility, and the
+0.5.1 carrier closes **Step 9's** blocker with a single registry and no peering — the precondition this
+count shared with count (iii). Counting from the original pass, **nine of the eleven deltas this
+document has filed are folded and hold under re-attack** (V-1…V-7, V-9, V-11), V-8 is closed where it
+lands, and the regression set holds in full with **F9 confirmed by construction for a second fold**.
+**§7's model has never been in question across four walks; its perimeter is now repaired in eight
+places and open in four.**
+
+**Every new finding is again a perimeter break, and two of the four land on the fold published hours
+before this walk.** That makes it the **third consecutive** fold in this repo whose own re-run breaks
+on its perimeter rather than its model — after KCB §4.5 (MA-17) and KMI §7.1(d) (MA-19/MA-20) — and
+the pattern is worth naming rather than re-discovering: a fold that mints a **mechanism** is checked
+hard, and the **claim the prose makes about the mechanism** is not. V-12 is exactly that shape (the
+mechanism is right and the sentence describing it is not), V-14 is the recognised *declared
+consequence, nothing carrying it* axis on its **consumer** half, and V-15 is **MA-15's** shape, a
+collision between two clauses of one fold.
+
+So the count **changes shape** rather than closing: from *fold V-9, V-10 and V-11 and write
+ADR-0014's clause, then re-run Steps 3, 5, 6, 7, 8, 9 and 10* to **fold V-10 (one edit with BP-8 and
+AP-9), V-12 + V-13 (one §7.1(d) edit), V-14 (one §7.1 step 5 / §7.2 edit) and V-15 (one §2/§7.3a
+edit), then re-run Steps 5, 6, 9 and 10**. ADR-0014's clause is **struck from this count's
+preconditions** — it is written and Step 9 confirms it carries here. Every remaining item is additive
+and KCB-only, and all four are **unowned**.
+
+**The artefact objection is unchanged and independent.** **DR-7** stands exactly as *Conformance case*
+states it: the encoding must come to assert **F1–F13** before a re-run can discharge anything, and
+folding V-12…V-15 adds to that set rather than reducing it. It is **owned since 2026-09-11 (agora)**
+and nothing in this walk touches it.
+
+**No version moves and no clause moves.** Every normative clause of §1–§8 is byte-unchanged — §7.1's
+five steps, (a)–(e) and the *falsifiability* paragraph included — no canonicalization changes, and no
+published digest moves; the edit is this section, a gate paragraph in
+[`../specs/capability-bus.md`](../specs/capability-bus.md) and a changelog entry. **KCB is not
+promoted and is not promotable**: count (iii) and ADR-0013's **W3** stand regardless of anything here.
+
+---
+
 ## Downstream results
 
 > **What this section is.** The recorded result of a **downstream run** of this pressure test's

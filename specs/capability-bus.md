@@ -61,6 +61,19 @@ carries.
 > no more promotable than it was** — **V-10** is the third finding of the same re-run and is not folded
 > here.
 >
+> **Count (ii) was itself re-run by hand on 2026-09-12 and does not close.** **V-9 and V-11 do not
+> reproduce**, and **Step 9's blocker is gone** — 0.5.1's `deprecated` / `removal_version` carrier
+> discharges it with a single registry and no peering, so ADR-0014's clause leaves this count's
+> preconditions and Step 11's V-11 qualification closes with it. Four new perimeter deltas stand —
+> **V-12** (High, scope: §7.1(d)'s retrievable branch is a *content address*, an integrity instrument,
+> and failure mode 2 is a staleness failure, so it is open on both branches and declared open on one),
+> **V-14** (Med-High: the new MUST binds the provider and no clause gives the consumer the reading, and
+> the verdict the fold cites is not the one §7.2 states), **V-15** (Med: §7.3a(a) and §2's
+> `removal_version` SHOULD give one card state two conformant readings) and **V-13** (Med: `refused` is
+> missing from (d)'s enumeration of §4.5's outcomes) — beside **V-10**, unfolded. Every folded delta
+> held under re-attack and every new finding is a perimeter break; **no version and no clause moved**
+> for the walk.
+>
 > **Status note (0.5.2):** stays **Candidate**, now on **six** counts. 0.5.2 folds **MA-12** of
 > [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the blocker that
 > scenario's Steps 8–10 left on **KMI count (i)**, and the half of it whose carrier belongs here.
@@ -2301,6 +2314,32 @@ encoding deliberately does not assert an unfolded delta, so it must be **extende
 declared-console-extension escape hatch KCS §7 open question 1 blesses and **V-8** measures the cost
 of — before a clean run can discharge this count.
 
+**That re-run has now been walked twice, by hand, and this count does NOT close.** The first walk
+(2026-09-03) corrected the step list above — it mis-files **Step 6** exactly as the scenario's *Fold
+status* found it mis-filing Step 3, so the flip list is Steps **3, 5, 6, 7, 8, 9, 10** and the
+regression set is Steps **1, 2, 4, 11** — and returned **V-9**, **V-11** and **V-10** with
+[ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s unwritten clause
+reproducing at Step 9 **with a single registry and no peering**. The second (2026-09-12, against
+**0.5.3**, the first text carrying this document's own folds) re-walked Steps **5**, **6**, **9** and
+**11**, re-checked Step **4**, and restated Steps 1, 2, 3, 7, 8 and 10 unmoved on the ground that
+every clause they read is byte-unchanged. **V-9 and V-11 do not reproduce**, and **Step 9's blocker is
+gone** — 0.5.1's `deprecated` / `removal_version` carrier discharges it here, so ADR-0014's clause is
+struck from this count's preconditions. Step 11's `kcb2`-with-an-absent-prefix qualification closes
+with it. Four new perimeter deltas stand: **V-12** (High — §7.1(d)'s retrievable branch is a
+**content address**, an integrity instrument, and failure mode 2 is a **staleness** failure, so it is
+open on both branches and declared open on one), **V-14** (Med-High — step 5's new MUST binds the
+provider and no clause gives the **consumer** the reading, and the verdict the fold cites is not the
+one §7.2 states), **V-15** (Med — §7.3a(a)'s *a deprecation that names no removal is not a
+deprecation* collides with §2's SHOULD and its *read it as a deprecation with no planned end*) and
+**V-13** (Med — §7.1(d) enumerates three of §4.5's four outcomes and omits `refused`). **V-10 stands,
+unfolded**, so the count would not have closed on a clean walk of the three steps either. It now
+reads: **fold V-10 (one edit with BP-8 and AP-9), V-12 + V-13 (one §7.1(d) edit), V-14 (one §7.1
+step 5 / §7.2 edit) and V-15 (one §2/§7.3a edit), then re-run Steps 5, 6, 9 and 10.** All four are
+additive and KCB-only, and all four are **unowned**. **DR-7** is untouched and independent. Records:
+that scenario's *Re-run — Steps 3, 5, 6, 7, 8, 9 and 10 walked by hand against KCB 0.5.0
+(2026-09-03)* and *Re-run — Steps 5, 6, 9 and 11 walked by hand against KCB 0.5.3 (2026-09-12)*
+sections.
+
 ---
 
 ## 8. Open questions
@@ -2481,6 +2520,32 @@ digest, with a declared consequence and nothing carrying it. ADR-0014 named that
 five counts remain open; **KCB is not promoted, and would not have been on four clean re-runs**, because
 count (iii) and ADR-0013's W3 stand regardless.
 
+**2026-09-12 — count (ii) was walked a second time, against 0.5.3, and it does not close.** The
+first text to carry this document's own folds was read at Steps **5**, **6**, **9** and **11**, with
+Step **4** re-checked because §7.1 moved under it and Steps 1, 2, 3, 7, 8 and 10 restated unmoved on
+the verified ground that every clause they read is byte-unchanged. **V-9 and V-11 do not reproduce**,
+and **Step 9's blocker is gone**: 0.5.1's `deprecated` / `removal_version` carrier discharges it with
+a **single registry and no peering**, so ADR-0014's clause leaves this count's preconditions, and
+MA-14/MA-15/MA-16 do not reach the step because all three live inside §3.1(d)'s federated converse.
+Step 11's V-11 qualification closes with it. Four new perimeter deltas: **V-12** (High, scope) —
+§7.1(d)'s retrievable branch is a **content address**, which is an *integrity* instrument, while
+failure mode 2 is a *staleness* failure, so `fetch` returns the superseded declaration, the
+verification cannot fail for the reason that matters, and the step that would catch the break rests
+on a document (a) states KCB does not define: failure mode 2 is open on **both** branches and
+declared open on one; **V-14** (Med-High) — step 5's new MUST binds the provider, no clause gives the
+**consumer** the reading for a bare prefix it can locally detect, and §7.2's non-recoverable verdict
+is defined over a **moved published value** while a mislabel produces a **recomputation** mismatch
+for which §7 states no verdict; **V-15** (Med, collision) — §7.3a(a)'s *a deprecation that names no
+removal is not a deprecation* against §2's SHOULD and its *read it as a deprecation with no planned
+end*, one card state with two conformant readings, reproducing with one registry; **V-13** (Med) —
+§7.1(d) omits `refused` from §4.5's four outcomes. **V-10 stands, unfolded.** Nine of this pass's
+eleven deltas are now folded and hold under re-attack; **§7's model has not been in question across
+four walks and its perimeter is repaired in eight places and open in four**. Two of the four new
+findings land on the fold published hours earlier — the **third consecutive** fold in this repo to
+break on its own perimeter, after §4.5 (MA-17) and KMI §7.1(d) (MA-19/MA-20) — and the shape is
+consistent: the mechanism is checked and the **claim the prose makes about it** is not. **No version
+and no clause moved for the walk.**
+
 **Downstream evidence (2026-08-24) — and this spec is where reading it wrong costs the most.** The
 KCS encodings of three of the five gating scenarios were run over real MCP/A2A links and all three
 came back `green` (`kcs:media-transform`, `kcs:live-schema-mutation`, `kcs:multi-authority`; recorded
@@ -2527,6 +2592,43 @@ most important thing an owner citing this run must understand:
 
 ## Changelog
 
+- **Editorial** (2026-09-12, second entry this day) — **count (ii) was re-run against the folded
+  text, and it does not close.** Steps **5**, **6**, **9** and **11** of
+  [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) were walked
+  **by hand** against 0.5.3 — the first text carrying that document's own folds — with Step **4**
+  re-checked because §7.1 moved under it and Steps 1, 2, 3, 7, 8 and 10 restated unmoved on the
+  **verified** ground that every clause they read is byte-unchanged since the 2026-09-03 walk.
+  Prose, never a replay: `kcs:live-schema-mutation` now predates **three** publications of the spec
+  it gates and still asserts assertions 1–10 rather than F1–F13 (**DR-7**). **V-9 and V-11 do not
+  reproduce** — (a)'s content-address canonicalization, (b)'s refusal to claim cross-provider
+  convergence, (c)'s verb-by-verb retrievability check and (d)'s two branches all held under direct
+  attack, and step 5's third bullet holds on all four probes, including the correction path and the
+  non-overlap of its exception with the existing `MUST NOT`. **Step 9's blocker is gone**: 0.5.1's
+  `deprecated` / `removal_version` carrier discharges it with a **single registry and no peering**,
+  MA-14/MA-15/MA-16 not reaching the step because all three live inside §3.1(d)'s federated
+  converse — so **ADR-0014's clause leaves this count's preconditions**, V-6 holds under re-attack,
+  and Step 11's V-11 qualification closes. Four new **perimeter** deltas, all additive and KCB-only
+  and all **unowned**: **V-12** (High, scope) — §7.1(d)'s retrievable branch is a **content
+  address**, an *integrity* instrument, and failure mode 2 is a *staleness* failure, so `fetch`
+  returns the superseded declaration, the verification cannot fail for the reason that matters, and
+  *compare it against what the port delivers* rests on a document (a) states KCB does not define;
+  failure mode 2 is open on **both** branches and declared open on one, and what would close it is
+  the **verb** the section refuses on the record; **V-14** (Med-High) — the new MUST binds the
+  provider, no clause gives the **consumer** the reading for a bare prefix it can locally detect,
+  and §7.2's non-recoverable verdict is defined over a **moved published value** while a mislabel
+  produces a **recomputation** mismatch for which §7 states no verdict at all; **V-15** (Med,
+  collision) — §7.3a(a)'s *a deprecation that names no removal is not a deprecation* against §2's
+  SHOULD and its *read it as a deprecation with no planned end*, one card state and two conformant
+  readings, §7.3d/§3's ranking and §7.3c's floor both downstream of it; **V-13** (Med) — §7.1(d)
+  enumerates three of §4.5's four outcomes and omits `refused`, the one §4.5 says is not evidence of
+  an absence. **V-10 stands, unfolded** (one edit with BP-8 and AP-9), so the count would not have
+  closed on a clean walk of the three steps either. It now reads *fold V-10, V-12 + V-13, V-14 and
+  V-15, then re-run Steps 5, 6, 9 and 10*. The other five counts are restated and **none moves**;
+  **DR-7** is untouched and independent. **No version and no clause moved** — every normative clause
+  of §1–§8 is byte-unchanged, §7.1's five steps and (a)–(e) included, no canonicalization changes
+  and no published digest moves; the edit is §7.5's gate paragraph, a *Pressure test* paragraph,
+  this entry and a scenario section. **KCB is not promoted and is not promotable.** Record: that
+  scenario's *Re-run — Steps 5, 6, 9 and 11 walked by hand against KCB 0.5.3 (2026-09-12)* section.
 - **0.5.3** (2026-09-12) — **V-9 and V-11 folded: the payload cross-check is given a
   canonicalization and its reach is stated instead of implied, and the canonicalization rule id
   becomes a MUST on the branch whose digest depends on it.** Two of the three findings count **(ii)**'s

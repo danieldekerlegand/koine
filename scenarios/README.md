@@ -119,7 +119,13 @@ walks establish that ADR-0014's own missing carrier for §7.3's *deprecated mark
 **single registry**, so it is a base gap rather than a federation one and blocked count (ii) as well as
 count (iii). **That carrier was published at KCB 0.5.1 on 2026-09-12**, which discharges it as a
 precondition of count (ii) — and count (iii)'s re-run against it returned **MA-14/MA-15/MA-16** in its
-place. **All five KCB counts stand.** None of these verdicts is a `green` line: three of the four
+place. **V-9 and V-11 were folded the same day at KCB 0.5.3, and count (ii) re-run against them
+(`chief/940`): neither reproduces, Step 9's ADR-0014 blocker is discharged here too, and the count
+still does not close** — **V-10** stands unfolded and four new perimeter deltas join it, **V-12**
+(§7.1(d)'s retrievable branch is a *content address*, an integrity instrument, while failure mode 2 is
+a staleness failure), **V-14** (the new MUST binds the provider and no clause gives the consumer the
+reading), **V-15** (§7.3a(a) collides with §2's `removal_version` SHOULD) and **V-13**. **All five KCB
+counts stand.** None of these verdicts is a `green` line: three of the four
 encodings return green over open blocking deltas, which is what **DR-7** and **DR-8** are the record of.
 
 The **three federation §-edits** — [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
