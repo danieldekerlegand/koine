@@ -134,7 +134,15 @@ frame names *which* operand moved and carries **no new value**, so §7.3g's *put
 hands* rests on a re-`describe` no clause requires, and a live subscriber told *`effect` moved* has no
 class to feed §4.3c's intersection while §4.3f evaluates a `subscribe` posture **once at registration**.
 (iv) → **nothing**: the same omission was put to `volume` and does not bite, so count (iv) is held open
-by **BP-7** alone. **All six KCB counts stand.** None of these verdicts is a `green` line: three of the four
+by **BP-7** alone. **MT-1 was then folded the same day at KCB 0.5.6 / 0.5.7 — §3's path result names
+the `(name, version)` each leg was matched over, and §4.4c refuses **plan mismatch** where the resolved
+major differs from a presented `planned_leg` — and count (i) was re-run against it (`chief/960`):
+MT-1 does not reproduce, F/G/J/K/L hold for a second consecutive walk, and the count still does not
+close.** It breaks on the fold's own perimeter → **MT-2** (High, carrier: no clause of §3, §4 or §7
+types a path **request** or a path **result**, and §4.4c types `planned_leg` *"as §3 returned it"*
+against that absence, so an unparseable plan is an absent plan — the seventh finding on ADR-0014's
+axis) and **MT-3** (Med-High, scope: the cross-check binds the party that cannot know a selection
+happened, and no response names the resolved major). **All six KCB counts stand.** None of these verdicts is a `green` line: three of the four
 encodings return green over open blocking deltas, which is what **DR-7** and **DR-8** are the record of.
 
 The **three federation §-edits** — [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
