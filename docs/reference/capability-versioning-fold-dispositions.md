@@ -1,6 +1,6 @@
-# The capability-versioning fold — a disposition for each of V-1…V-8
+# The capability-versioning fold — a disposition for each of V-1…V-8 (and V-9, V-11)
 
-> **Status:** Current · **Updated:** 2026-08-26 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-09-12 · **Owner:** koine · **Informative**
 
 [`../../scenarios/e2e-live-schema-mutation.md`](../../scenarios/e2e-live-schema-mutation.md) — the
 break-test [KCB §7.5](../../specs/capability-bus.md#75-pressure-test-for-this-section) asked for by
@@ -355,6 +355,53 @@ detected*, *this successor was offered beside its predecessor* and *this depreca
 its removal* are the ones the folded clauses most need, and they live in the escape hatch rather than
 in §5. That is a KCS question with a KCS record, and it is not a demand on KCB.
 
+### V-9 and V-11 — two later findings, and their dispositions (added 2026-09-12)
+
+The eight above are what the **pass** found. **V-9** and **V-11** are what the **re-run of the fold**
+found, on 2026-09-03, when Steps 3, 5, 6, 7, 8, 9 and 10 were walked by hand against KCB 0.5.0: the
+two clauses V-2's and V-3's rows planned were folded, and **neither was finished at its edge**. Their
+dispositions belong here beside the others, because the question this page exists to answer —
+*forced to what extent?* — is the same question, and because each is a second-order finding of a fold
+this page decided. They land together at **KCB 0.5.3** (2026-09-12), one publication, one §7.1 edit.
+
+| # | Severity | Disposition | Lands in | Extent — what changes, and what deliberately does not |
+|---|---|---|---|---|
+| **V-9** | High, structural | **FOLD (split)** | [KCB](../../specs/capability-bus.md) **§7.1** (new NORMATIVE (a)–(e) + the scoped *falsifiability* paragraph), **§2.1** (the closing pointer) | The **canonicalization** route and the **honest-limit** route, taken **together** rather than either alone: (a) fixes the digest as `sha256` over the declaration's bytes **as published** — a **content address of a document**, the form [KINP §3](../../specs/identity.md) gives an `asset` id, with **no key set, no value normalization and no serialization rule** because there is no KCB-defined object to reduce, a SHOULD applying step 3's byte discipline where the declaration is itself JSON, and step 5's rule id **excluded** from its prefix; (b) states what that determinism **is and is not**, claiming same-bytes-same-value and **explicitly declining** the cross-provider convergence step 1's key set gives `schema_id`; (c) settles retrievability by **checking §4's five verbs one at a time**, concluding `fetch` can carry it **and is the only one that can**, because by (a) the digest already *is* an `asset` address that self-verifies on arrival (delta G); (d) splits the cross-check into **two branches** — retrievable (performable) and unretrievable (**provider-attested**, carrying a `version`'s evidentiary weight, with §7's **failure mode 2 declared open**) — and makes which branch a consumer is on a **fact it discovers, never one the card asserts**; (e) adds **no provider obligation**, a declared `payload_schema_id` with nothing retrievable behind it staying conformant. **Not written:** a **sixth verb** returning the declaration, and a **reserved capability name** every declaring provider must publish — both would make the cross-check unconditional and both are refused **on the record**, a verb being a plane-wide addition with no mandate in this fold and a reserved name being a commons two authority domains must agree on, which is the ground the **shape registry** was rejected on and which [KINP §3.4](../../specs/identity.md) reserves to the prefix registry alone; any convergence rule, which would require KCB to fix the declaration's **format** (the shape registry again); any obligation to publish the declaration anywhere; and any change to step 1's kept set, either rule id, or §7.2's table — **no published `schema_id` or digest moves**. |
+| **V-11** | Med-High | **FOLD** | KCB **§7.1 step 5** (a third bullet), **§7.2** (the *not a silent mutation* bullet), **§2.1** (the closing pointer) | The **mirror** of the existing `MUST NOT`, written as one bullet and **stated by property rather than by naming a rule**: a provider MUST emit the rule id of the rule it actually canonicalized under, **except** where that canonicalization is byte-identical to `kcb1`'s **for the port in hand**. Today the exception is exactly a knowledge port declaring **no** `payload_schema_id` and the MUST is exactly one declaring one, and because neither arm names a rule both carry to the next rule id §2.1's vocabulary mints **without a re-edit**. Bullet 1's `MAY` is dropped and the absent prefix is declared a **statement, not a silence** — which is the reason it is a MUST and not a SHOULD. The **correction path** is stated and shown not to be a mutation (the prefix moves, the hex does not; the comparison bullet then reads *incomparable*, so re-discovery is the recovery), with a MUST NOT on leaving a mislabel standing because correcting it would move a published value. §7.2's *not a silent mutation* bullet records that its own reservation — *the same rule, the same port, a moved digest, an unmoved version* — **holds only because** of this MUST. **Not written:** any new rule id (`kcb1`/`kcb2` are byte-unchanged); any change to the consumer-side rules, which are re-checked and stand (an unknown rule id reads *no cross-check available*; comparison is meaningful only within one rule id; growing §2.1's vocabulary mints the next rule id); any change to a published value — **every digest published to date is `kcb1` and stays prefix-free**, and §2's worked AgentCard needed **no** correction; and any §7.2 table row. |
+
+**What the two breaks force, and the line these rows draw.** Both are **perimeter** breaks of folds
+whose **models** held: V-2's reader rule and V-3's rule id were right, and each stopped one clause
+short of the party that has to act on it. So what V-9 forces is a **rule and a stated reach** — not a
+retrieval guarantee, which is the thing the absence of a route makes tempting and which costs a verb;
+and what V-11 forces is **one strength moved to the branch that needs it** — not a second rule, and
+not a re-definition of either named canonicalization. The economy is the same one the first eight
+were held to: fold the smallest thing that makes the clause **operable by the party it binds**.
+
+**Why V-9 is a split rather than a whole fold.** The honest answer to *can a consumer obtain the
+declaration?* turned out to be **partial**, not *no*: `fetch` reaches it where a provider has
+published it, and nothing reaches it where the provider has not. A fold that took only the optimistic
+half would have promised a check that is conditional; one that took only the defeatist half would
+have thrown away a route that exists. Stating **both branches** is V-2's own move — a silent break
+converted into a **declared absence** — performed on the branch that *declares* a `payload_schema_id`,
+as V-2 performed it on the branch that declares none.
+
+**Versions, and what does not close.** Both land as **KCB 0.5.3** — a **patch** under KCB's own
+rules: `payload_schema_id` stays OPTIONAL, no verb, field, plane, port kind, grant or authority role
+is added, §7.2's table is undisturbed, step 1's kept set and both rule ids are byte-unchanged, and a
+card carrying no `payload_schema_id` behaves exactly as at 0.5.2. V-11's one narrowing is stated
+rather than hidden, and is a patch because the set it narrows is one 0.5.2's text **does not
+determine** — the break-test's finding being that the text enforces **neither** reading — so making
+the stricter one normative **disambiguates**. **0.6.0 stays spoken for** by §2.3's legacy-root
+removal. Neither closes a count: both were found *inside* count **(ii)**'s own re-run, so that count
+**changes shape** rather than gaining a sibling, and **V-10** — the third finding of the same re-run —
+is not folded with them. *(As re-run 2026-09-12 against 0.5.3: neither V-9 nor V-11 reproduces, and
+Step 9's ADR-0014 blocker is discharged by the 0.5.1 carrier — but the count does **not** close. Four
+new perimeter deltas stand beside V-10: **V-12** (High, scope — (d)'s retrievable branch is a content
+address, an integrity instrument, and failure mode 2 is a staleness failure), **V-14** (Med-High — the
+new MUST binds the provider and no clause gives the consumer the reading), **V-15** (Med, collision —
+§7.3a(a) against §2's `removal_version` SHOULD) and **V-13** (Med — `refused` missing from (d)'s
+enumeration of §4.5's outcomes). Their dispositions belong with them when they land.)*
+
 ---
 
 ## Where each fold lands
@@ -375,6 +422,8 @@ this page is the bug.
 | **V-6** | KCB §7.3b/c | none | none | Yes |
 | **V-1** | KCB §4 (the operand), §5 (the refusal) | none | none | Yes |
 | **V-8** | — | none | none | No |
+| **V-9** | KCB §7.1 ((a)–(e) + the scoped *falsifiability* paragraph), §2.1 (the pointer) | none | **none** — the retrieval verb and the reserved name are both rejected | Yes |
+| **V-11** | KCB §7.1 step 5 (the third bullet), §7.2 (the reservation's ground), §2.1 (the pointer) | none | none | Yes |
 
 **Version landing zone: KCB 0.5.0, a minor.** Every fold above is additive — fields optional on read
 and write, no field removed, no verb, plane, port kind or authority role added, and a participant that

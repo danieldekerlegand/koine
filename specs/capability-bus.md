@@ -1,6 +1,6 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.5.2
+**Spec version:** 0.5.3
 **Status:** Candidate
 **Last updated:** 2026-09-12
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
@@ -9,6 +9,71 @@ capability consumers (most participants are both provider and consumer).
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
+> **Status note (0.5.3):** stays **Candidate** on the same **six** counts, and **none of them
+> moves.** 0.5.3 folds **V-9 and V-11** of
+> [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) — the
+> two structural findings count **(ii)**'s 2026-09-03 re-run left on **Steps 5 and 6**. 0.5.0 minted
+> `payload_schema_id` as *the* cross-check a knowledge port's bare `shape` could not be, and the
+> operand was **not consumer-verifiable**: §7.1 stated a five-step canonicalization for `schema_id`
+> and **none** for it, and **no verb retrieved the declaration it digests**, so §7.1's own
+> *falsifiability* argument was true of one digest and false of the other while the section called
+> both a cross-check. §7.1 now states the canonicalization — `sha256` over the declaration's
+> **published bytes**, a **content address of a document** in the same form KINP §3 gives an `asset`
+> id, with the cross-provider convergence `schema_id` has **explicitly not claimed** — and settles
+> retrievability by **checking §4's five verbs rather than assuming**: `fetch` can carry it and is
+> the only one that can, since by construction the digest already *is* an `asset` address. So the
+> cross-check has **two branches**: retrievable (a **fact** — fetch, verify, compare) and
+> unretrievable (**provider-attested**, carrying a `version`'s evidentiary weight and not a
+> digest's, with failure mode 2 **declared open** rather than silently open). **No sixth verb and no
+> reserved capability name** — both are refused on the record with a re-open condition, on the
+> ground the shape registry was refused on. **Patch, not minor**: `payload_schema_id` stays optional
+> on read and on write, no verb/field/plane/port kind is added, §7.2's table is undisturbed, step
+> 1's kept set and the `kcb1`/`kcb2` rules are byte-unchanged so **no published `schema_id` or
+> digest moves and no next rule id is minted**, and a card carrying no `payload_schema_id` behaves
+> exactly as at 0.5.2. **0.6.0 stays spoken for** by §2.3's legacy-extension-URI-root removal, which
+> this fold has no mandate to discharge; the bump is deliberately **not** declared under §7.2's
+> table, which governs *a published capability* and whose absence of a row for a spec-axis bump is
+> the defect **BP-8/AP-9** found in §4.2a/§4.3a — not repeated here and not fixed here.
+>
+> The same publication folds **V-11**, Step 6's finding: V-3's fold answered canonicalization drift
+> with a **rule id** in the digest prefix and then made **naming it optional**, putting the `MUST NOT`
+> on the branch that does not need a name and **no MUST** on the branch that does — so a provider
+> could canonicalize under **`kcb2`** (step 1 keeps `payload_schema_id`) and publish under a **bare**
+> prefix the section defines to mean `kcb1`, **mislabelling** rather than unlabelling the digest and
+> landing a recomputing consumer on §7.2's **silent mutation** with no rule id present for §7.2's
+> *incomparable* branch to catch. Step 5 gains a third bullet, the **mirror** of the existing
+> `MUST NOT`: emit the rule id of the rule actually used, **except** where that canonicalization is
+> byte-identical to `kcb1`'s for the port in hand. Both arms are stated by the **property** that makes
+> them true and **neither names a rule**, so they carry to the next rule id unchanged; the
+> consumer-side rules are **unchanged and re-checked**; the **correction path** for an already
+> mislabelled digest is stated and is not itself a mutation; and §7.2's *not a silent mutation* bullet
+> now records that its own reservation holds **because** of this MUST. **No published digest moves** —
+> every digest published to date is `kcb1` and stays prefix-free, both key sets are byte-unchanged, no
+> next rule id is minted, and §2's worked card needed no correction. **Patch, and the narrowing is
+> stated rather than hidden**: 0.5.2's text does not determine whether the permissive reading was
+> conformant (the break-test's finding was that it enforces **neither** reading), so making the
+> stricter one normative **disambiguates**; no value moves, nothing is added, `payload_schema_id`
+> stays OPTIONAL, and a digest gaining a correct prefix reads *incomparable*, which is re-discovery
+> and not the non-recoverable verdict. **§2.3's 0.6.0 removal is checked rather than tripped.**
+>
+> **No seventh count**: V-9 and V-11 were both found *inside* count (ii)'s own re-run, so the fold
+> changes that count's shape rather than adding one, and the other five are restated unmoved. **KCB is
+> no more promotable than it was** — **V-10** is the third finding of the same re-run and is not folded
+> here.
+>
+> **Count (ii) was itself re-run by hand on 2026-09-12 and does not close.** **V-9 and V-11 do not
+> reproduce**, and **Step 9's blocker is gone** — 0.5.1's `deprecated` / `removal_version` carrier
+> discharges it with a single registry and no peering, so ADR-0014's clause leaves this count's
+> preconditions and Step 11's V-11 qualification closes with it. Four new perimeter deltas stand —
+> **V-12** (High, scope: §7.1(d)'s retrievable branch is a *content address*, an integrity instrument,
+> and failure mode 2 is a staleness failure, so it is open on both branches and declared open on one),
+> **V-14** (Med-High: the new MUST binds the provider and no clause gives the consumer the reading, and
+> the verdict the fold cites is not the one §7.2 states), **V-15** (Med: §7.3a(a) and §2's
+> `removal_version` SHOULD give one card state two conformant readings) and **V-13** (Med: `refused` is
+> missing from (d)'s enumeration of §4.5's outcomes) — beside **V-10**, unfolded. Every folded delta
+> held under re-attack and every new finding is a perimeter break; **no version and no clause moved**
+> for the walk.
+>
 > **Status note (0.5.2):** stays **Candidate**, now on **six** counts. 0.5.2 folds **MA-12** of
 > [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) — the blocker that
 > scenario's Steps 8–10 left on **KMI count (i)**, and the half of it whose carrier belongs here.
@@ -477,8 +542,12 @@ leg (delta F) the fabric is for (**V-2**). Media ports are protected without thi
 `media_type` names an externally standardized format, and entity ports because `types` are
 registry-controlled; knowledge ports have neither property. Unlike `cost`, `volume` and `effect`,
 `payload_schema_id` **is** shape: it sits **inside** the §7.1 canonicalization as a knowledge-plane
-shape key. It is optional on read and on write — and what a consumer must conclude from a knowledge
-port that carries **none** is fixed in §7.1, not here.
+shape key — so declaring one puts that port's own `schema_id` on the **`kcb2`** rule, which §7.1
+step 5 requires the digest's prefix to **name** (**V-11**). It is optional on read and on write — and
+what a consumer must conclude from a knowledge port that carries **none** is fixed in §7.1, not
+here. So is what one that carries **one** is *worth*: §7.1 fixes the canonicalization, and fixes that
+the cross-check is performable only where the declaration the digest covers can be obtained, and
+**provider-attested** where it cannot (**V-9**).
 
 A port MAY additionally carry an OPTIONAL **`volume`** — the delivery envelope a subscriber to that
 port would be accepting (rate, payload size, asset references per delivery, resume horizon). Volume
@@ -1826,7 +1895,8 @@ as evidence that the payload is unchanged. This converts a **silent** break into
 absence**, which is the whole of what the break-test demanded: the consumer that failed did not fail
 for want of a digest, it failed because it believed the digest it held covered the payload. A provider
 that wants the cross-check publishes a `payload_schema_id` over its own canonical declaration of that
-payload — optional, and no provider is obliged to. Media ports (`media_types` names an externally
+payload — optional, no provider is obliged to, and **how far that cross-check reaches is fixed below**
+rather than assumed (**V-9**). Media ports (`media_types` names an externally
 standardized format) and entity ports (`types` are registry-controlled) are unaffected: their shape
 keys carry structure that a third party fixes, which is exactly the property `shape` lacks.
 
@@ -1877,10 +1947,12 @@ provider re-serializing produces no drift:
    key. Step 4's own principle — *a future algorithm is a new prefix, never a reinterpretation* — is
    therefore extended from the **hash** to the **key-set rule**:
 
-   - A `schema_id` MAY carry a **canonicalization rule id** in its prefix, as
+   - A `schema_id` carries a **canonicalization rule id** in its prefix, as
      `sha256/<rule>-<lowercase hex>`. **An absent rule id means `kcb1`** — the key set and
      normalization of 0.4.x — so every digest already published keeps its meaning, nothing is
-     republished, and no already-conformant card moves.
+     republished, and no already-conformant card moves. That default is a **statement, not a
+     silence**: a bare prefix asserts `kcb1` exactly as `sha256/kcb1-…` would, which is why the
+     third bullet below is a MUST and not a SHOULD (**V-11**).
    - This version states **`kcb2`**: `kcb1`'s rules plus the knowledge plane's `payload_schema_id`.
      Because step 2 drops an absent key rather than serializing it, a port that declares **no**
      `payload_schema_id` canonicalizes **byte-identically** under both, and a provider MUST NOT emit a
@@ -1888,22 +1960,119 @@ provider re-serializing produces no drift:
      *does* declare one has changed its shape and its digest moves — which is a minor bump under §7.2
      like any other shape change, so a consumer on the old rule meets a moved digest at a **moved
      version** and takes the ordinary re-discovery path, never the silent-mutation one.
+   - **Naming the rule is a MUST wherever the digest depends on it (V-11).** NORMATIVE, and it is the
+     **mirror** of the MUST NOT above rather than a second rule: a provider MUST emit, in a
+     `schema_id`'s prefix, the rule id of the rule it actually canonicalized under — **except** where
+     that canonicalization is byte-identical to `kcb1`'s **for the port in hand**, which is the case
+     the previous bullet forbids naming, so that a digest which would have been published unchanged
+     at 0.4.x stays comparable to the one that was. Today the exception is exactly a knowledge port
+     declaring **no** `payload_schema_id`, and the MUST is exactly one **declaring** one: step 1 keeps
+     that key and `kcb1` drops it, so the two rules produce different bytes and the label is the only
+     thing that says which. Publishing such a digest under a **bare** prefix is **non-conformant** —
+     the prefix does not merely fail to say `kcb2`, it **says `kcb1`** by the first bullet's default,
+     so the digest is **mislabelled rather than unlabelled**, and a consumer recomputing under the
+     rule it was told gets a different value at an unmoved version and lands on §7.2's **silent
+     mutation**, the one verdict that table makes non-recoverable — reached with **no** rule id
+     present for §7.2's *incomparable* branch to catch it. The two branches therefore carry
+     **opposite** strengths, and each is stated by the property that makes it true rather than by
+     naming a rule: emit the rule id where the value depends on it, never where it does not. The
+     **correction path for a digest already mislabelled is safe, and is not itself a mutation**:
+     re-publishing it with its true rule id changes the prefix and not the hex, and the next bullet
+     holds comparison to digests computed under the **same** rule id — so a consumer that bound to the
+     bare form reads the corrected one as **incomparable** and re-discovers (§3), whether or not it
+     knows `kcb2`. A provider MUST NOT leave a mislabelled digest standing on the ground that
+     correcting it would move a published value.
    - **Comparison is meaningful only between digests computed under the same rule id.** A consumer
      that meets a rule id it does not know MUST read that digest as this section's *no cross-check
      available* default — never as a defect, and never as a mutation (§7.2).
-   - Growing §2.1's shape vocabulary again mints the **next** rule id. Re-interpreting `kcb1` or
-     `kcb2` is non-conformant, for the reason step 4 already gives about the hash.
+   - Growing §2.1's shape vocabulary again mints the **next** rule id, and the two obligations above
+     carry over to it unchanged **because neither names a rule**: a port whose canonicalization under
+     the new rule is byte-identical to `kcb1`'s MUST NOT be prefixed with it, and one whose
+     canonicalization differs MUST be. Re-interpreting `kcb1` or `kcb2` is non-conformant, for the
+     reason step 4 already gives about the hash.
 
    This is also what makes §7.4's archival pin *interpretable* rather than merely resolvable: a digest
    recorded decades out is comparable only if the rule that produced it can be named. §7.4 needs no
    clause of its own — it is where the cost of not stating the rule would have come due.
 
-**Falsifiability is the point.** A consumer recomputes the digest from the card it fetched itself
-(`describe`, §4) and compares it against the published value. The digest is a **fact** the consumer
-can check from bytes in hand; the `version` is a **claim** the provider makes. Digests catch a
-forgotten bump and are silent on meaning; versions carry meaning and cannot be verified. Neither
-replaces the other, and a missing `schema_id` means *no cross-check is available* — never *invalid
-manifest*.
+**The `payload_schema_id` canonicalization, and how far the cross-check it mints reaches (V-9).**
+NORMATIVE. The five steps above construct their own bytes: §7.1 defines the port object, so it can
+reduce that object to shape and normalize it. `payload_schema_id` digests a document KCB does **not**
+define — the participant's own declaration of the payload, authored by the participant that implements
+the capability ([ADR-0007](../decisions/ADR-0007-self-describing-participant.md)). KCB therefore cannot
+reduce it, and must not be read as having done so.
+
+a. **What is hashed.** A `payload_schema_id` is `sha256` over the bytes of that declaration **exactly
+   as the participant publishes them**, lowercase hex, algorithm-prefixed — the same form
+   [KINP §3](identity.md) gives an `asset` id (*the hash of the bytes*), and for the same reason: it is
+   a **content address of a document**, not a canonicalization of an object. There is no key set, no
+   value normalization and no serialization rule, because there is no KCB-defined object to apply one
+   to. Where the declaration is itself a JSON document a provider SHOULD apply **step 3's** byte
+   discipline to it before publishing, so that re-serializing its own declaration produces no drift.
+   **Step 5's rule id does not apply to this digest and MUST NOT appear in its prefix**: a rule id
+   names a **key set**, and this canonicalization has none to name.
+
+b. **What that determinism is, and what it is not.** The digest is a deterministic function of the
+   published bytes — the same bytes always produce the same value, so a provider re-publishing
+   byte-identical bytes never drifts, which is the second of the two properties the five steps open by
+   naming. The **first** is not claimed, and saying so is the point of this paragraph: two participants
+   declaring the same payload in two **different documents** produce **different** `payload_schema_id`
+   values, and so do two serializations of one document where (a)'s SHOULD was not applied — the SHOULD
+   removes the drift a single provider causes itself, and reaches no further. A consumer MUST NOT read
+   a difference between two ports' `payload_schema_id` values as evidence that those ports carry
+   **different payloads**; it is evidence
+   of different **bytes**, which is all a content address ever asserts. The convergence `schema_id`
+   gets from step 1's key set has no counterpart here, and minting one would require KCB to fix the
+   declaration's *format* — which is the shape registry, rejected above on its federation grounds.
+
+c. **Obtaining the declaration — checked against §4's five verbs, not assumed.** `discover` returns
+   registry entries and addresses (§3). `describe` returns the AgentCard and, over `tools/list`, *tool*
+   schemas (§4.1) — neither is the declaration, and a `produces` port on a subscription is not a tool at
+   all. `invoke` and `subscribe` carry **payloads**, never the declaration of one. **`fetch` can carry
+   it, and it is the only one that can**: by (a) the digest already *is* an address in the `asset` form,
+   so where the participant has published that declaration into a CAS the consumer can reach, and the
+   consumer holds the `fetch:asset` grant (§5), `fetch` returns the bytes and self-verifies them against
+   that address (delta G, §4).
+
+d. **The cross-check therefore has two branches, and which one a consumer is on is a fact it
+   discovers, never one the card asserts.** Where the declaration is retrievable the cross-check is
+   performable end to end and the digest is a **fact**: fetch the bytes, verify them against the
+   address, read the declaration, compare it against what the port delivers. Where it is not — no
+   holder, no grant, or a `not-held-not-expected` / `not-held-pending` answer (§4.5) — the consumer MUST
+   read that `payload_schema_id` as **provider-attested**, carrying the evidentiary weight of a
+   `version` (a **claim the provider makes**) and not that of a `schema_id` (a **fact the consumer
+   checks**). On that branch this section's ***no cross-check available*** default applies unchanged and
+   §7's **failure mode 2** — a payload edited without a re-digest — **stays open and is declared open**,
+   which is the whole of what this paragraph fixes: V-2 converted a silent break into a declared absence
+   on the branch that declares **no** `payload_schema_id`, and this does the same on the branch that
+   declares one. A consumer MUST NOT read an unretrievable declaration as a defect, and MUST NOT read it
+   as a mutation (§7.2) — the same reading step 5 gives an unknown rule id.
+
+e. **No obligation is added to a provider.** Publishing the declaration into a CAS is a provider's
+   choice, exactly as declaring a `payload_schema_id` at all is. A provider that declares one and
+   publishes nothing retrievable is **conformant**, and has made an attestation rather than a false
+   claim. What is forbidden is the consumer-side error V-2 named in the first place: believing a digest
+   covers something it has not checked.
+
+*Deliberately not done: a declaration-retrieval verb.* A **sixth verb**, or a reserved capability name
+every provider declaring a `payload_schema_id` must publish, would make the cross-check unconditional,
+and both are refused here. A verb is a plane-wide addition this fold has no mandate for; a reserved
+capability name is a commons two authority domains must agree on before they can exchange a knowledge
+port, which is the ground the shape registry was rejected on one paragraph up, and
+[KINP §3.4](identity.md) keeps the prefix registry as the fabric's *one* non-federated commons. The
+re-open condition is stated so it is not re-argued: a measured case in which the **attested** branch is
+where the break lands — a participant whose declaration is retrievable by no route, on a leg where the
+consumer's refusal to trust it cost more than the unverified bind would have.
+
+**Falsifiability is the point — and it is true of one of these two digests without qualification.**
+A consumer recomputes a **`schema_id`** from the card it fetched itself (`describe`, §4) and compares it
+against the published value; the bytes it digests are **on the card**, so nothing further is needed. The
+digest is a **fact** the consumer can check from bytes in hand; the `version` is a **claim** the provider
+makes. Digests catch a forgotten bump and are silent on meaning; versions carry meaning and cannot be
+verified. Neither replaces the other, and a missing `schema_id` means *no cross-check is available* —
+never *invalid manifest*. A **`payload_schema_id`** is a fact on the same terms **only on the retrievable
+branch of (d)**, because the bytes it digests are not on the card; on the attested branch it is a claim,
+and a reader must not carry this paragraph's argument across to it (**V-9**).
 
 ### 7.2 The subscriber-compatibility rule
 
@@ -1944,7 +2113,10 @@ Two obligations fall out of that table, and both are normative.
   consumer read it as *no cross-check available* (**V-2**). (ii) A digest carrying a canonicalization
   **rule id** the consumer does not know is *incomparable*, not mutated, and is read the same way
   (**V-3**). The verdict this table makes non-recoverable is reserved for the case it was written for:
-  the same rule, the same port, a moved digest, an unmoved version.
+  the same rule, the same port, a moved digest, an unmoved version. **That reservation holds only
+  because §7.1 step 5 requires the rule id wherever the digest depends on it (V-11)**: a digest
+  produced under one rule and published under the prefix that names another would reach this verdict
+  carrying no rule id for (ii) to catch, which is why the naming is a MUST there and not a SHOULD.
 - **Which major a call runs against is §4.4c's, and it is not a default.** This table governs what a
   provider MAY change under a bump; §4.4 governs which of the published majors an `invoke` reaches.
   The two are complementary and neither substitutes: a provider dual-serving under this table MUST
@@ -2142,6 +2314,32 @@ encoding deliberately does not assert an unfolded delta, so it must be **extende
 declared-console-extension escape hatch KCS §7 open question 1 blesses and **V-8** measures the cost
 of — before a clean run can discharge this count.
 
+**That re-run has now been walked twice, by hand, and this count does NOT close.** The first walk
+(2026-09-03) corrected the step list above — it mis-files **Step 6** exactly as the scenario's *Fold
+status* found it mis-filing Step 3, so the flip list is Steps **3, 5, 6, 7, 8, 9, 10** and the
+regression set is Steps **1, 2, 4, 11** — and returned **V-9**, **V-11** and **V-10** with
+[ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s unwritten clause
+reproducing at Step 9 **with a single registry and no peering**. The second (2026-09-12, against
+**0.5.3**, the first text carrying this document's own folds) re-walked Steps **5**, **6**, **9** and
+**11**, re-checked Step **4**, and restated Steps 1, 2, 3, 7, 8 and 10 unmoved on the ground that
+every clause they read is byte-unchanged. **V-9 and V-11 do not reproduce**, and **Step 9's blocker is
+gone** — 0.5.1's `deprecated` / `removal_version` carrier discharges it here, so ADR-0014's clause is
+struck from this count's preconditions. Step 11's `kcb2`-with-an-absent-prefix qualification closes
+with it. Four new perimeter deltas stand: **V-12** (High — §7.1(d)'s retrievable branch is a
+**content address**, an integrity instrument, and failure mode 2 is a **staleness** failure, so it is
+open on both branches and declared open on one), **V-14** (Med-High — step 5's new MUST binds the
+provider and no clause gives the **consumer** the reading, and the verdict the fold cites is not the
+one §7.2 states), **V-15** (Med — §7.3a(a)'s *a deprecation that names no removal is not a
+deprecation* collides with §2's SHOULD and its *read it as a deprecation with no planned end*) and
+**V-13** (Med — §7.1(d) enumerates three of §4.5's four outcomes and omits `refused`). **V-10 stands,
+unfolded**, so the count would not have closed on a clean walk of the three steps either. It now
+reads: **fold V-10 (one edit with BP-8 and AP-9), V-12 + V-13 (one §7.1(d) edit), V-14 (one §7.1
+step 5 / §7.2 edit) and V-15 (one §2/§7.3a edit), then re-run Steps 5, 6, 9 and 10.** All four are
+additive and KCB-only, and all four are **unowned**. **DR-7** is untouched and independent. Records:
+that scenario's *Re-run — Steps 3, 5, 6, 7, 8, 9 and 10 walked by hand against KCB 0.5.0
+(2026-09-03)* and *Re-run — Steps 5, 6, 9 and 11 walked by hand against KCB 0.5.3 (2026-09-12)*
+sections.
+
 ---
 
 ## 8. Open questions
@@ -2322,6 +2520,32 @@ digest, with a declared consequence and nothing carrying it. ADR-0014 named that
 five counts remain open; **KCB is not promoted, and would not have been on four clean re-runs**, because
 count (iii) and ADR-0013's W3 stand regardless.
 
+**2026-09-12 — count (ii) was walked a second time, against 0.5.3, and it does not close.** The
+first text to carry this document's own folds was read at Steps **5**, **6**, **9** and **11**, with
+Step **4** re-checked because §7.1 moved under it and Steps 1, 2, 3, 7, 8 and 10 restated unmoved on
+the verified ground that every clause they read is byte-unchanged. **V-9 and V-11 do not reproduce**,
+and **Step 9's blocker is gone**: 0.5.1's `deprecated` / `removal_version` carrier discharges it with
+a **single registry and no peering**, so ADR-0014's clause leaves this count's preconditions, and
+MA-14/MA-15/MA-16 do not reach the step because all three live inside §3.1(d)'s federated converse.
+Step 11's V-11 qualification closes with it. Four new perimeter deltas: **V-12** (High, scope) —
+§7.1(d)'s retrievable branch is a **content address**, which is an *integrity* instrument, while
+failure mode 2 is a *staleness* failure, so `fetch` returns the superseded declaration, the
+verification cannot fail for the reason that matters, and the step that would catch the break rests
+on a document (a) states KCB does not define: failure mode 2 is open on **both** branches and
+declared open on one; **V-14** (Med-High) — step 5's new MUST binds the provider, no clause gives the
+**consumer** the reading for a bare prefix it can locally detect, and §7.2's non-recoverable verdict
+is defined over a **moved published value** while a mislabel produces a **recomputation** mismatch
+for which §7 states no verdict; **V-15** (Med, collision) — §7.3a(a)'s *a deprecation that names no
+removal is not a deprecation* against §2's SHOULD and its *read it as a deprecation with no planned
+end*, one card state with two conformant readings, reproducing with one registry; **V-13** (Med) —
+§7.1(d) omits `refused` from §4.5's four outcomes. **V-10 stands, unfolded.** Nine of this pass's
+eleven deltas are now folded and hold under re-attack; **§7's model has not been in question across
+four walks and its perimeter is repaired in eight places and open in four**. Two of the four new
+findings land on the fold published hours earlier — the **third consecutive** fold in this repo to
+break on its own perimeter, after §4.5 (MA-17) and KMI §7.1(d) (MA-19/MA-20) — and the shape is
+consistent: the mechanism is checked and the **claim the prose makes about it** is not. **No version
+and no clause moved for the walk.**
+
 **Downstream evidence (2026-08-24) — and this spec is where reading it wrong costs the most.** The
 KCS encodings of three of the five gating scenarios were run over real MCP/A2A links and all three
 came back `green` (`kcs:media-transform`, `kcs:live-schema-mutation`, `kcs:multi-authority`; recorded
@@ -2367,6 +2591,149 @@ most important thing an owner citing this run must understand:
   DR-13 adds no count, removes no count, and promotes nothing — all five stand.
 
 ## Changelog
+
+- **Editorial** (2026-09-12, second entry this day) — **count (ii) was re-run against the folded
+  text, and it does not close.** Steps **5**, **6**, **9** and **11** of
+  [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) were walked
+  **by hand** against 0.5.3 — the first text carrying that document's own folds — with Step **4**
+  re-checked because §7.1 moved under it and Steps 1, 2, 3, 7, 8 and 10 restated unmoved on the
+  **verified** ground that every clause they read is byte-unchanged since the 2026-09-03 walk.
+  Prose, never a replay: `kcs:live-schema-mutation` now predates **three** publications of the spec
+  it gates and still asserts assertions 1–10 rather than F1–F13 (**DR-7**). **V-9 and V-11 do not
+  reproduce** — (a)'s content-address canonicalization, (b)'s refusal to claim cross-provider
+  convergence, (c)'s verb-by-verb retrievability check and (d)'s two branches all held under direct
+  attack, and step 5's third bullet holds on all four probes, including the correction path and the
+  non-overlap of its exception with the existing `MUST NOT`. **Step 9's blocker is gone**: 0.5.1's
+  `deprecated` / `removal_version` carrier discharges it with a **single registry and no peering**,
+  MA-14/MA-15/MA-16 not reaching the step because all three live inside §3.1(d)'s federated
+  converse — so **ADR-0014's clause leaves this count's preconditions**, V-6 holds under re-attack,
+  and Step 11's V-11 qualification closes. Four new **perimeter** deltas, all additive and KCB-only
+  and all **unowned**: **V-12** (High, scope) — §7.1(d)'s retrievable branch is a **content
+  address**, an *integrity* instrument, and failure mode 2 is a *staleness* failure, so `fetch`
+  returns the superseded declaration, the verification cannot fail for the reason that matters, and
+  *compare it against what the port delivers* rests on a document (a) states KCB does not define;
+  failure mode 2 is open on **both** branches and declared open on one, and what would close it is
+  the **verb** the section refuses on the record; **V-14** (Med-High) — the new MUST binds the
+  provider, no clause gives the **consumer** the reading for a bare prefix it can locally detect,
+  and §7.2's non-recoverable verdict is defined over a **moved published value** while a mislabel
+  produces a **recomputation** mismatch for which §7 states no verdict at all; **V-15** (Med,
+  collision) — §7.3a(a)'s *a deprecation that names no removal is not a deprecation* against §2's
+  SHOULD and its *read it as a deprecation with no planned end*, one card state and two conformant
+  readings, §7.3d/§3's ranking and §7.3c's floor both downstream of it; **V-13** (Med) — §7.1(d)
+  enumerates three of §4.5's four outcomes and omits `refused`, the one §4.5 says is not evidence of
+  an absence. **V-10 stands, unfolded** (one edit with BP-8 and AP-9), so the count would not have
+  closed on a clean walk of the three steps either. It now reads *fold V-10, V-12 + V-13, V-14 and
+  V-15, then re-run Steps 5, 6, 9 and 10*. The other five counts are restated and **none moves**;
+  **DR-7** is untouched and independent. **No version and no clause moved** — every normative clause
+  of §1–§8 is byte-unchanged, §7.1's five steps and (a)–(e) included, no canonicalization changes
+  and no published digest moves; the edit is §7.5's gate paragraph, a *Pressure test* paragraph,
+  this entry and a scenario section. **KCB is not promoted and is not promotable.** Record: that
+  scenario's *Re-run — Steps 5, 6, 9 and 11 walked by hand against KCB 0.5.3 (2026-09-12)* section.
+- **0.5.3** (2026-09-12) — **V-9 and V-11 folded: the payload cross-check is given a
+  canonicalization and its reach is stated instead of implied, and the canonicalization rule id
+  becomes a MUST on the branch whose digest depends on it.** Two of the three findings count **(ii)**'s
+  2026-09-03 re-run returned, both on §7.1, both additive, both KCB-only.
+
+  **V-9 — the cross-check a consumer could not perform.** The structural finding Step 5 of
+  [`../scenarios/e2e-live-schema-mutation.md`](../scenarios/e2e-live-schema-mutation.md) returned
+  against count **(ii)** on 2026-09-03. V-2's fold (0.5.0) minted `payload_schema_id` so that a
+  knowledge port could carry a payload identity its free-form `shape` could not — and then left the
+  operand **unverifiable in both of the two ways §7.1 opens by naming**: the *rule* was unstated (§7.1
+  fixes five steps for `schema_id` and none for this), and the *bytes were unreachable* (`discover`
+  returns addresses, `describe` returns the card plus `tools/list` **tool** schemas, `invoke` and
+  `subscribe` carry payloads and not declarations of payloads). §7.1's *"falsifiability is the point"*
+  paragraph was therefore true of `schema_id` and false of `payload_schema_id`, while §2.1 and §7.1
+  called both *the cross-check*. New NORMATIVE paragraphs (a)–(e) in §7.1: **(a)** the digest is
+  `sha256` over the declaration's bytes **as published** — a **content address of a document**, the
+  same algorithm-prefixed form [KINP §3](identity.md) gives an `asset` id, with no key set and no
+  value normalization because there is no KCB-defined object to reduce, and a SHOULD to apply step 3's
+  byte discipline where the declaration is itself JSON; **(b)** what that determinism is **and is
+  not** — same bytes always the same value, but **no cross-provider convergence**, so a consumer MUST
+  NOT read two differing `payload_schema_id` values as evidence of two different payloads (minting
+  convergence would mean KCB fixing the declaration's *format*, which is the shape registry, already
+  rejected); **(c)** retrievability checked verb by verb against §4 rather than assumed — **`fetch`
+  can carry it and is the only one that can**, because by (a) the digest already *is* an `asset`
+  address, self-verifying on arrival (delta G) where the provider published the declaration into a
+  reachable CAS and the consumer holds the `fetch:asset` grant; **(d)** the two branches, and that
+  which one a consumer is on is a **fact it discovers, never one the card asserts** — retrievable is a
+  **fact** (fetch, verify, read, compare), unretrievable is **provider-attested** and carries a
+  `version`'s weight rather than a digest's, taking this section's *no cross-check available* default
+  with **failure mode 2 declared open**, never read as a defect and never as a mutation (§7.2);
+  **(e)** no provider obligation is added — a declared `payload_schema_id` with nothing retrievable
+  behind it is **conformant**, and what is forbidden is the consumer-side error V-2 named. The
+  *falsifiability* paragraph is **scoped** rather than left to be over-read, and §2.1's closing
+  pointer now covers a port that carries **one** as well as one that carries **none**. **Deliberately
+  not done**: a sixth verb, and a reserved capability name every declaring provider must publish —
+  both would make the cross-check unconditional, both are refused on the record (a verb is a
+  plane-wide addition with no mandate here; a reserved name is a commons two authority domains must
+  agree on, the shape registry's own ground, against [KINP §3.4](identity.md)'s one non-federated
+  commons), with the re-open condition stated. **Patch, not minor, and decided rather than assumed**:
+  the operand stays OPTIONAL on read and write, no verb/plane/port kind/field/grant/authority role is
+  added, §7.2's table is undisturbed, **step 1's kept set and both rule ids are byte-unchanged so no
+  published `schema_id` or digest moves and no next rule id is minted**, and a card carrying no
+  `payload_schema_id` behaves exactly as at 0.5.2. The one narrowing is stated plainly: a provider
+  that had digested some *reduced* form of its own declaration must now digest the published bytes —
+  which is the narrowest reading of the 0.5.0 sentence *"over the participant's own canonical
+  declaration"* rather than a replacement of it, and `payload_schema_id` is one version old. **0.6.0
+  stays spoken for** by §2.3's legacy-extension-URI-root removal, and the bump is deliberately **not**
+  declared under §7.2's table (BP-8/AP-9's defect, not repeated here). **No count closes and none is
+  added**: V-9 was found inside count **(ii)**'s own re-run, so that count changes shape rather than
+  gaining a sibling, the other five are restated unmoved, and **V-10** — the third finding of that
+  re-run — is **not** folded here, so **KCB is no more promotable than it was**.
+
+  **V-11 — the rule id was `MAY` on the branch that needed a `MUST`.** Step 6 of the same re-run.
+  V-3's fold (0.5.0) answered the canonicalization-drift break by putting a **rule id** in the digest
+  prefix with **absent meaning `kcb1`**, and then made naming it optional: the `MUST NOT` landed on
+  the branch that does **not** need a name — a port declaring no `payload_schema_id`, which
+  canonicalizes byte-identically under `kcb1` and `kcb2` — and **no MUST** landed on the branch that
+  does. A conformant provider could therefore canonicalize a port **under `kcb2`**, because step 1
+  keeps `payload_schema_id`, and publish the result under a **bare** prefix that step 5 defines to
+  mean `kcb1`. The digest is then **mislabelled rather than unlabelled**: it names a rule that drops
+  the very key it includes, a consumer recomputes under the rule it was told, gets a different value
+  at an **unmoved version**, and lands on §7.2's **silent mutation** — the one verdict that table
+  makes non-recoverable — with **no rule id present** for §7.2's *incomparable* branch to catch it.
+  That is V-3's own verdict restored through the optionality of V-3's fix, and it is not repaired by
+  reading step 5 charitably: *"re-interpreting `kcb1` or `kcb2` is non-conformant"* governs
+  **re-defining a named rule**, not **omitting the name**, and the section's own default makes the
+  omission a positive assertion rather than a silence. Step 5 gains a third bullet, stated as the
+  **mirror** of the existing `MUST NOT` rather than as a second rule: a provider MUST emit the rule id
+  of the rule it actually canonicalized under, **except** where that canonicalization is byte-identical
+  to `kcb1`'s for the port in hand — today the exception is exactly a knowledge port declaring **no**
+  `payload_schema_id` and the MUST is exactly one declaring one. Both arms are stated by the
+  **property** that makes them true and **neither names a rule**, so they carry over unchanged to the
+  next rule id §2.1's vocabulary mints. Three things are stated rather than left to be derived: the
+  first bullet now says the absent prefix is a **statement, not a silence** (which is why this is a
+  MUST and not a SHOULD); the **correction path** for a digest already mislabelled is safe and is not
+  itself a mutation, since re-publishing it with its true rule id moves the prefix and not the hex and
+  the comparison bullet then makes it **incomparable** to what a consumer bound to, so re-discovery
+  (§3) is the recovery and a provider MUST NOT leave a mislabel standing on the ground that correcting
+  it would move a published value; and §7.2's *not a silent mutation* bullet records that its own
+  reservation — *the same rule, the same port, a moved digest, an unmoved version* — **holds only
+  because** of this MUST. **The consumer-side rules are unchanged and were re-checked**: an unknown
+  rule id is still read as *no cross-check available* and never as a defect or a mutation, comparison
+  is still meaningful only within one rule id, and growing §2.1's shape vocabulary still mints the
+  next rule id. **No published digest moves**: every digest published to date is `kcb1` and stays
+  prefix-free, the two rules' key sets are byte-unchanged, and the `sha256/<rule>-<hex>` form is
+  0.5.0's. §2's worked AgentCard needed **no correction** — checked, not assumed: its one input port
+  declaring a `payload_schema_id` already carries `sha256/kcb2-…` and every port declaring none
+  already carries a bare `sha256-…`. **Patch, not minor, and decided rather than assumed.** The
+  honest statement of what moves is that this is a **narrowing**: a provider reading 0.5.2
+  permissively could publish a `kcb2` digest under a bare prefix, and at 0.5.3 it cannot. It is a
+  patch because the set it narrows is one 0.5.2's own text does not determine — step 5's *comparison
+  is meaningful only between digests computed under the same rule id* and its ban on re-interpreting
+  a named rule already argue against the permissive reading, and the break-test's finding was that
+  the text **enforces neither reading**, not that the permissive one is right — so making the
+  stricter reading normative **disambiguates** rather than replaces; and because no `schema_id` value
+  moves, no key set moves, no rule id is minted, no field/verb/plane/port kind is added,
+  `payload_schema_id` stays OPTIONAL, and **no live subscriber breaks** (a digest gaining a correct
+  prefix is read as *incomparable*, which is re-discovery, not the non-recoverable verdict). The bump
+  is deliberately **not** declared under §7.2's table for the reason the V-9 paragraph gives; what
+  the table **is** consulted for is the two questions it does answer — does a published digest move
+  (**no**) and does a live subscriber break (**no**) — and its rows are **undisturbed**. **0.6.0
+  stays spoken for** by §2.3's legacy-extension-URI-root removal, checked rather than tripped: a
+  minor here would discharge a removal this fold has no mandate to discharge. **No count closes and
+  none is added** — V-11 was found inside count (ii)'s own re-run, alongside V-9 and **V-10**, which
+  is still not folded.
 
 - **Editorial** (2026-09-12) — **count (vi) walked by hand, and it does not close.** Steps 8–10 of
   [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) re-run against **KCB

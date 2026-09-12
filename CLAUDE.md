@@ -220,7 +220,7 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
-- `specs/capability-bus.md` — KCB 0.5.2, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.5.3, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -610,6 +610,134 @@ vocabulary.
   paragraph, a changelog entry and a scenario section. The axis tally is now
   **five** — MA-8, V-10, BP-7, ADR-0014's marking, MA-17 — every one *a rule with a declared normative
   consequence and nothing that carries it*.
+  **0.5.3 (2026-09-12, patch) folds V-9 and V-11 — the payload cross-check gets a canonicalization
+  with its reach stated instead of implied, and the canonicalization rule id becomes a MUST on the
+  branch whose digest depends on it.** Two of the three findings count **(ii)**'s 2026-09-03 re-run
+  returned, on Steps 5 and 6, both on §7.1, both additive, both KCB-only. **V-9** first: V-2's fold
+  (0.5.0) minted `payload_schema_id` as *the* cross-check a knowledge port's free-form `shape` could
+  not be, and then left it unverifiable in **both** of the two ways §7.1 opens
+  by naming: the **rule was unstated** (five steps for `schema_id`, none for this) and the **bytes were
+  unreachable** — `discover` returns addresses, `describe` returns the card plus `tools/list` **tool**
+  schemas, `invoke` and `subscribe` carry payloads and never declarations of payloads — so §7.1's own
+  *falsifiability* argument was true of one digest and false of the other while the section called both
+  *the cross-check*. New NORMATIVE §7.1 paragraphs **(a)–(e)**: the digest is `sha256` over the
+  declaration's bytes **as published** — a **content address of a document**, the form KINP §3 gives an
+  `asset` id, with no key set and no value normalization because there is **no KCB-defined object to
+  reduce** (a SHOULD applies step 3's byte discipline where the declaration is itself JSON, so
+  re-serializing does not drift); what that determinism **is and is not** — same bytes always the same
+  value, but **no cross-provider convergence**, so a consumer MUST NOT read two differing values as
+  evidence of two different **payloads** (minting convergence would mean KCB fixing the declaration's
+  *format*, which is the shape registry, already rejected); retrievability **checked verb by verb
+  rather than assumed**, `fetch` being the one that can carry it because by (a) the digest already *is*
+  an `asset` address, self-verifying on arrival (delta G); and the consequence — **two branches**,
+  with which one a consumer is on a **fact it discovers, never one the card asserts**: retrievable is a
+  **fact** (fetch, verify, read, compare), unretrievable is **provider-attested**, carrying a
+  `version`'s evidentiary weight and not a digest's, taking the *no cross-check available* default with
+  **failure mode 2 declared open** — V-2's move (silent break → declared absence) performed on the
+  branch that **declares** one, as V-2 performed it on the branch that declares none. **No provider
+  obligation is added**: a declared `payload_schema_id` with nothing retrievable behind it is
+  **conformant**; what is forbidden is the consumer-side error V-2 named. The *falsifiability*
+  paragraph is **scoped** rather than left to be over-read, and §2.1's closing pointer now covers a
+  port carrying **one** as well as one carrying **none**. **Deliberately not done**: a sixth verb, and
+  a reserved capability name every declaring provider must publish — both would make the cross-check
+  unconditional and both are refused on the record (a verb is a plane-wide addition with no mandate
+  here; a reserved name is a commons two authority domains must agree on, the shape registry's own
+  ground, against KINP §3.4's one non-federated commons), with the re-open condition stated. **Patch,
+  not minor**: the operand stays OPTIONAL on read and write, no verb/field/plane/port kind/grant/
+  authority role is added, §7.2's table is undisturbed, **step 1's kept set and both rule ids are
+  byte-unchanged so no published `schema_id` or digest moves and no next rule id is minted**, and a
+  card carrying no `payload_schema_id` behaves exactly as at 0.5.2. The one narrowing is stated
+  plainly — a provider that digested a *reduced* form of its own declaration must now digest the
+  published bytes, which is the narrowest reading of 0.5.0's *"over the participant's own canonical
+  declaration"* rather than a replacement of it. **0.6.0 stays spoken for** by §2.3's removal and the
+  bump is deliberately **not** declared under §7.2's table (BP-8/AP-9's defect, not repeated). **No
+  count closes and none is added** — V-9 was found *inside* count (ii)'s own re-run, so that count
+  changes shape rather than gaining a sibling — the other five are restated unmoved, and **V-10**, the
+  third finding of the same re-run, is **not** folded here, so **KCB is no more promotable than it
+  was**.
+  **The same publication folds V-11 — Step 6's finding, and it is the optionality of V-3's own fix.**
+  V-3's fold answered canonicalization drift with a **rule id** in the digest prefix and **absent
+  meaning `kcb1`**, then made naming it optional and put the strengths on the wrong branches: a
+  `MUST NOT` on the branch that needs **no** name (a port declaring no `payload_schema_id`, which
+  canonicalizes byte-identically under `kcb1` and `kcb2`) and **no MUST** on the branch that does. So a
+  conformant provider could canonicalize under **`kcb2`** — step 1 keeps `payload_schema_id` — and
+  publish the result under a **bare** prefix step 5 defines to mean `kcb1`: the digest is
+  **mislabelled rather than unlabelled**, naming a rule that drops the very key it includes, and a
+  consumer recomputing under the rule it was told gets a different value at an **unmoved version** and
+  lands on §7.2's **silent mutation**, the one verdict that table makes non-recoverable, with **no
+  rule id present** for §7.2's *incomparable* branch to catch it. Charitable reading does not repair it
+  and the record says why: *"re-interpreting `kcb1` or `kcb2` is non-conformant"* governs **re-defining
+  a named rule**, not **omitting the name**, and the section's own default makes the omission a
+  positive assertion. Step 5 gains a third bullet written as the **mirror** of the existing `MUST NOT`
+  rather than as a second rule — emit the rule id of the rule actually canonicalized under, **except**
+  where that canonicalization is byte-identical to `kcb1`'s **for the port in hand** — so today the
+  exception is exactly a knowledge port declaring **no** `payload_schema_id` and the MUST is exactly
+  one declaring one. Both arms are stated by the **property** that makes them true and **neither names
+  a rule**, so they carry to the next rule id §2.1's vocabulary mints without re-editing. Three things
+  are stated rather than left to be derived: the absent prefix is a **statement, not a silence** (which
+  is why this is a MUST and not a SHOULD); the **correction path** for a digest already mislabelled is
+  safe and is **not itself a mutation** — re-publishing it with its true rule id moves the prefix and
+  not the hex, the comparison bullet then makes it *incomparable* to what a consumer bound to, so
+  re-discovery is the recovery and a provider MUST NOT leave a mislabel standing on the ground that
+  correcting it would move a published value; and §7.2's *not a silent mutation* bullet now records
+  that its own reservation — *the same rule, the same port, a moved digest, an unmoved version* —
+  **holds only because** of this MUST. The **consumer-side rules are unchanged and were re-checked**
+  (unknown rule id = *no cross-check available*, never a defect or a mutation; comparison meaningful
+  only within one rule id; growing §2.1's shape vocabulary mints the next rule id), and **§2's worked
+  AgentCard needed no correction** — checked, not assumed: its one input port declaring a
+  `payload_schema_id` already carries `sha256/kcb2-…` and every port declaring none already carries a
+  bare `sha256-…`. **No published digest moves**: every digest published to date is `kcb1` and stays
+  prefix-free, both key sets are byte-unchanged, no next rule id is minted, and the
+  `sha256/<rule>-<hex>` form is 0.5.0's. **Patch, and the narrowing is stated rather than hidden**:
+  strictly this *is* a narrowing — a provider reading 0.5.2 permissively could publish a `kcb2` digest
+  under a bare prefix and at 0.5.3 cannot — but it is a patch because the set it narrows is one 0.5.2's
+  own text **does not determine**, the break-test's finding being that the text enforces **neither**
+  reading, so making the stricter one normative **disambiguates** rather than replaces; and because no
+  `schema_id` value moves, no key set moves, no field/verb/plane/port kind is added,
+  `payload_schema_id` stays OPTIONAL, and **no live subscriber breaks** (a digest gaining a correct
+  prefix reads *incomparable*, which is re-discovery, not the non-recoverable verdict). §7.2's table is
+  consulted for the two questions it **does** answer — does a published digest move (**no**), does a
+  live subscriber break (**no**) — and its **rows are undisturbed**; the bump itself is deliberately
+  **not** declared under it (BP-8/AP-9's defect, not repeated). **§2.3's 0.6.0 removal is checked
+  rather than tripped**, and **no count closes and none is added** — V-11 was found inside count (ii)'s
+  own re-run alongside V-9 and **V-10**, which is still not folded.
+  **Count (ii) was then re-run by hand the same day (2026-09-12) against 0.5.3 — the first text
+  carrying this pass's own folds — and it does NOT close.** Steps **5, 6, 9 and 11** walked, Step **4**
+  re-checked because §7.1 moved under it, Steps 1/2/3/7/8/10 **restated unmoved** on the verified
+  ground that every clause they read is byte-unchanged (prose, never a replay —
+  `kcs:live-schema-mutation` now predates **three** publications of the spec it gates, **DR-7**).
+  **V-9 and V-11 do not reproduce**, each re-attacked on the ground it was filed on: (a)'s
+  content-address canonicalization, (b)'s refusal to claim convergence, (c)'s verb-by-verb
+  retrievability check and (d)'s two branches all hold, and step 5's third bullet holds on four probes
+  including the correction path. **Step 9's blocker is also gone** — 0.5.1's `deprecated` /
+  `removal_version` carrier discharges **ADR-0014** here with a **single registry and no peering**, and
+  MA-14/MA-15/MA-16 do not reach the step because all three live inside §3.1(d)'s **federated**
+  converse, so that clause **leaves count (ii)'s preconditions**; V-6 holds under re-attack and Step
+  11's V-11 qualification closes. **Nine of this pass's eleven deltas are now folded and hold under
+  re-attack**, and §7's model has not been in question across four walks — its perimeter is repaired in
+  eight places and open in four. Four new **perimeter** deltas, beside unfolded **V-10**: **V-12**
+  (High, scope) — §7.1(d)'s retrievable branch is a **content address**, which is an *integrity*
+  instrument, while failure mode 2 is a *staleness* failure, so `fetch` returns the **superseded**
+  declaration, the verification cannot fail for the reason that matters, and *compare it against what
+  the port delivers* rests on a document (a) states KCB does not define — **failure mode 2 is open on
+  both branches and declared open on one**, and what would close it is the very **verb** §7.1 refuses;
+  **V-14** (Med-High) — the new MUST binds the provider and **no clause gives the consumer the
+  reading** for a bare prefix it can locally detect, while the verdict the fold cites is not §7.2's
+  (non-recoverable is defined over a **moved published value**; a mislabel produces a **recomputation**
+  mismatch §7 states no verdict for, so conformant consumers diverge); **V-15** (Med, collision) —
+  §7.3a(a)'s *a deprecation that names no removal is not a deprecation* against §2's `removal_version`
+  **SHOULD** and its *read it as a deprecation with no planned end*, one card state with two conformant
+  readings, §7.3d/§3's ranking and §7.3c's floor both downstream of it, reproducing with **one
+  registry**; **V-13** (Med) — (d) omits **`refused`** from §4.5's four outcomes, the one answer §4.5
+  says is *not* evidence of an absence. Count (ii) now reads *fold V-10 (one edit with BP-8 and AP-9),
+  **V-12 + V-13** (one §7.1(d) edit), **V-14** (one §7.1 step 5 / §7.2 edit) and **V-15** (one §2/§7.3a
+  edit), then re-run Steps 5, 6, 9 and 10*; the other five counts are restated and none moves. **Two of
+  the four land on the fold published hours earlier — the third consecutive fold in this repo to break
+  on its own perimeter** (after §4.5's MA-17 and KMI §7.1(d)'s MA-19/MA-20), and the shape is
+  consistent: the mechanism is checked hard and the **claim the prose makes about it** is not. **No
+  version and no clause moved for the walk** — every normative clause of §1–§8 byte-unchanged, §7.1's
+  five steps and (a)–(e) included, no published digest moves; the edit is §7.5's gate paragraph, a
+  *Pressure test* paragraph, a changelog entry and a scenario section. **KCB is not promotable.**
 - `specs/media-interchange.md` — KMI 0.3.8, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
