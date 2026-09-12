@@ -1,6 +1,6 @@
 # Koine Fine-Tuning Protocol (KFT)
 
-**Spec version:** 0.7.1
+**Spec version:** 0.8.0
 **Status:** Candidate
 **Last updated:** 2026-09-12
 **Applies to:** `finetune` capability providers (general and specialized), the control-plane host
@@ -275,13 +275,14 @@ capability's port types (§2). Initial set:
 | `text-to-video` | media (KMI video) | Wan, LTX, CogVideoX | lora |
 | `text-to-audio` | media (KMI audio) | Stable Audio Open, MusicGen, AudioLDM 2 | lora / full |
 | `audio-to-audio` | media (KMI audio) | RVC, so-vits-svc, Demucs | full / lora |
+| `audio-text-to-text` | knowledge + media (KMI audio) | Qwen2-Audio, Voxtral, Whisper+LLM | lora / qlora |
 
 The vocabulary is additive; a new modality adds a row plus a capability variant (§2), never a new
 plane. A **media authority** holds the image/video/audio training assets these modalities
 consume, so multimodal fine-tuning inherits an existing, ratified data plane rather than a new one.
 
-**The two audio rows, and what distinguishes them.** `text-to-audio` is the third row of the
-`text-to-image` / `text-to-video` family and differs from them in nothing this table measures —
+**The two generative audio rows, and what distinguishes them.** `text-to-audio` is the third row
+of the `text-to-image` / `text-to-video` family and differs from them in nothing this table measures —
 music, sound effects and speech synthesis (TTS) all ride it, over a caption→audio corpus.
 `audio-to-audio` is **not** that shape: it is voice conversion, source separation and enhancement,
 its corpus is paired asset↔asset with **no caption side**, and both of its right-hand columns
@@ -291,13 +292,32 @@ That a transformation modality belongs in this vocabulary at all is a decided qu
 assumed one: `modality` names what a **training run adapts a model to be**, which is a different
 question from what a finished transform **consumes and produces on the bus** (KMI §6), and without
 a token a voice-conversion job must declare `text-to-audio` — making FT-F's mandatory admission
-check below validate a declaration that is false. The full adjudication, the rejected alternatives
-(`text-to-speech` as a sixth row, an `audio-text-to-text` row, an `audio` plane), and the named
+check below validate a declaration that is false. The full adjudication, the alternatives rejected
+with it (`text-to-speech` as a sixth row, an `audio` plane — and an `audio-text-to-text` row, which
+was **declined with a trigger rather than rejected**, and ratified at 0.8.0 when that trigger fired:
+see the paragraph after this one), and the named
 providers these rows are published ahead of are in
 [`../docs/reference/generative-audio-modalities.md`](../docs/reference/generative-audio-modalities.md)
 (informative). Neither row moves a clause of §4: both sides of an audio pair are `dataset.media[]`
 entries, so §4.2's effective-egress union over *every media asset* and §4.3's license/trust union
 already reach them.
+
+**The audio-understanding row (0.8.0), and why it is not either of those.** `audio-text-to-text` is
+the **fourth member of the `…-text-to-text` family**, not a third audio-generation row: it names a
+run that adapts a model to **emit text** about audio — transcription, captioning, audio QA — and its
+data-plane port is therefore `knowledge + media (KMI audio)`, the pairing `image-text-to-text` and
+`video-text-to-text` already carry and the column that distinguishes it from both rows above, which
+consume no knowledge. Its corpus is a paired **asset + text** corpus, which is the shape §4.1's
+**FT-I** bullet already names, so — unlike `audio-to-audio` — it lands on the side of §4.1 that
+carries; what it does do is **widen that bullet's enumeration from two members to three**, and the
+enumeration is the defect [AU-1](../scenarios/kft-audio-modalities.md) is already filed against.
+One token covers all three tasks, at the grain `image-text-to-text` and `text-to-audio` already use;
+a provider whose admission check must accept a `method` or a base for one of them and refuse it for
+another is the stated condition for a further, additive token. This row was **declined in advance
+with a published trigger** and ratified when that trigger fired; the reading, the asker (by role),
+and the rejected grains are in
+[`../docs/reference/generative-audio-modalities.md`](../docs/reference/generative-audio-modalities.md)
+§7 (informative).
 
 `modality` and `method` are **not** independent: a provider **MUST validate** the
 `modality × method` combination (and the base model's architecture) **at admission** and reject an
@@ -1266,7 +1286,7 @@ configuration, not a dedicated wiring program.
 
 ## Pressure test
 
-**Exercised by three end-to-end passes and one focused leg** —
+**Exercised by three end-to-end passes and two focused legs** —
 [`../scenarios/e2e-finetune.md`](../scenarios/e2e-finetune.md) (text,
 found FT-A…FT-H → folded into 0.2.0),
 [`../scenarios/e2e-finetune-multimodal.md`](../scenarios/e2e-finetune-multimodal.md) (fully-multimodal
@@ -1274,10 +1294,13 @@ found FT-A…FT-H → folded into 0.2.0),
 [`../scenarios/e2e-producer-exhaust-finetune.md`](../scenarios/e2e-producer-exhaust-finetune.md)
 (a producing application's **training exhaust** entering the fabric under
 [`../decisions/ADR-0008-fabric-producer-adapter.md`](../decisions/ADR-0008-fabric-producer-adapter.md),
-found FT-M…FT-Q → folded into 0.4.0). The focused leg is
+found FT-M…FT-Q → folded into 0.4.0). The focused legs are
 [`../scenarios/kft-resume-checkpoint.md`](../scenarios/kft-resume-checkpoint.md) — a single-accelerator
 run interrupted mid-training, attacking **§11.3 alone** and saying explicitly which sibling questions
-it leaves untouched, found FT-R…FT-V → folded into 0.6.0.
+it leaves untouched, found FT-R…FT-V → folded into 0.6.0 — and
+[`../scenarios/kft-audio-modalities.md`](../scenarios/kft-audio-modalities.md) (2026-09-12), which
+walks **§3.1's two audio rows** for the first time, one job per row, and found **AU-1…AU-6**,
+**unfolded**.
 
 The first two passes cleared with no redesign and KFT was **Ratified** on 2026-07-23 — the four-plane
 composition holds under both a text and a fully-multimodal, multi-provider pass. The third pass then
@@ -1304,6 +1327,11 @@ withdrawn or changed in meaning. The stressors exercised across the three passes
   generations, preference pairs, QA labels — offered as a training set through a thin adapter
   (ADR-0008), verifying that a corpus which is neither KGP claims nor image/video/audio bytes has a
   reference slot, an admission-time egress class, and a resolvable cardinality *before* any transfer.
+- **The two audio rows (§3.1, second focused leg):** a caption→audio `text-to-audio` LoRA and a
+  **paired** `audio-to-audio` voice-conversion `full` finetune whose source side is `personal` /
+  `local-only` — verifying that the media port already carries audio, that §4.2's aggregate and
+  §4.3's union reach both sides of a pair, and that a corpus with **no caption side** can say which
+  source goes with which target. The first three hold; the last does not (**AU-1**).
 
 **What re-ratification is still waiting on — restated at 0.5.0, not replaced.** The gate is the
 same one 0.4.0 opened and it has not moved: a re-run of the third pass's
@@ -1414,9 +1442,13 @@ is absent from the schema's top-level `required`, and §4.2's, §4.3's and §7's
 0.5.0. The one precision 0.6.0's own summary overstates: §3.4's *"every clause below is inert"* is true
 of the four rules below it, and §5.4's bind-at-publication deliberately binds a cold run too. That is
 an **output-side publication obligation**, downstream of admission, so gate (i) is unaffected. **KFT is
-not promotable**, and the reason is two open counts.
+not promotable**, and the reason was two open counts on that date; it is **three** since 2026-09-12,
+when the audio leg below was walked.
 
-**0.7.0 adds no third gate — it adds two rows of unexercised vocabulary.** The `text-to-audio` and
+**0.7.0 added no third gate on the day it published — it added two rows of unexercised vocabulary,
+and the pass that exercised them nine days later did add one.** The paragraph below is the reading of
+2026-08-27, left standing because its reasoning is intact and what changed is the world; the
+correction is the paragraph after it. The `text-to-audio` and
 `audio-to-audio` tokens (§3.1) are additive over the existing `media(audio)` plane: no clause of §4
 moves, FT-F's admission mechanism is byte-unchanged, and a cold pre-0.7.0 manifest is admitted and
 refused on exactly the inputs it was before — so **both gates above are restated and neither moves**.
@@ -1436,6 +1468,47 @@ a vocabulary lag produced a wrong answer. The fifth is **open and owned** under 
 deferral, and the sixth — *no pass walks an audio job* — is **koine's own and unowned**. So the rows
 are exercised by *implementations* and still not by a *pass*, and it is the pass a re-ratification
 would need.
+
+**That pass now exists, it is dated 2026-09-12, and it was not clean — so 0.7.0's two rows cost a
+third condition after all.** [`../scenarios/kft-audio-modalities.md`](../scenarios/kft-audio-modalities.md)
+walks one job per row and returns **AU-1…AU-6**, of which **AU-1 is blocking**: §3.1 mints
+`audio-to-audio` on the property that its corpus is *paired asset↔asset with no caption side*, and
+§4.1's FT-I bullet — the **only** pairing carrier this spec names — types a training-record row as
+*"a KMI `asset` id **and its text**"*, while `dataset.media[]` is the corpora *"not the training
+samples"*, the schema twin's `dataset` object is `additionalProperties: false`, the header schema
+fixes no row layout and §4.1.1 forbids the gate to read a Croissant descriptor. A published row has
+no expressible supervision, and two conformant providers train two different models from one
+manifest. The other five are **AU-2** (this section's own additivity claim over-reaches by one
+clause — §4.1 — and gives `audio-to-audio`'s reason for both rows), **AU-3** (the audio pair is the
+**only** duplicate in §3.1's *Data-plane port* column, so §2's *told apart by their ports* and
+§8.1's `route_to[]` cannot discriminate them), **AU-4** (§7 prices a paired corpus's 2N members as
+2N samples), **AU-5** (§3.3's four pinned targets train no audio model while §3.3.2's `modality` row
+asserts a mapping in all four columns), and **AU-6** (§5.3's export matrix has no row for a `full`
+finetune's weights — pre-existing, first made the *typical* path here). **Nothing this section
+claimed about §4.2, §4.3, §5.4 or §8.1 broke**: all four were attacked on an audio corpus and held,
+which is why every delta is additive and **KFT-only** and none is a model break. They are a **third**
+condition on promotion — a fold, then that leg again — additional to the two gates above, **neither
+of which moves** (no job in that leg carries `resume`, and no corpus in it is a producer's exhaust).
+The leg's own artefact objection is stated on the day it landed rather than a week later: it has
+**no KCS encoding and no run** (**DR-14**), so **AUD-6 is half-discharged** — exercised by a pass,
+not by an encoding — and the encoding is downstream and **unowned**.
+
+**A third audio row lands at 0.8.0, and it adds no fourth condition — it widens the third.**
+§3.1's `audio-text-to-text` (2026-09-12) is the same kind of thing 0.7.0's two rows were on the day
+they published: **normative vocabulary no pass has walked**. Read it exactly as the paragraph above
+reads them — new surface, not re-validated text, and **not citable in a re-ratification** until a
+pass walks an audio-understanding job. What it is **not** is a fourth count. Two facts decide that,
+and both were checked against text rather than assumed. First, it has a leg to re-enter validation
+on that 0.7.0's rows did not — [`../scenarios/kft-audio-modalities.md`](../scenarios/kft-audio-modalities.md),
+whose *What this leg does not force* section reserved exactly this
+(*"if a third row is ever ratified it re-enters validation here and this leg is where it lands"*) —
+so the third condition **widens in scope** rather than acquiring a sibling. Second, the one open
+delta the row touches is **AU-1**, whose defect is that §4.1's FT-I bullet *enumerates* its members;
+a third `…-text-to-text` member widens that fold from two rows to three, and it is the **same
+sentence and the same defect**, so it opens no new delta and AU-1 stays blocking and stays unowned.
+Counts (i) and (ii) are restated and **neither moves**: a token in a closed vocabulary cannot break
+a manifest that does not name it, no `resume` clause and no producer-exhaust clause is read
+differently, and FT-F's admission mechanism is byte-unchanged.
 
 **Downstream evidence (2026-08-24) — the gate fired, and the suite is a version behind.** The KCS
 encodings of the three end-to-end passes were run over real MCP/A2A links and all three came back
@@ -1486,6 +1559,136 @@ re-ratification:
 ---
 
 ## Changelog
+
+- **0.8.0 — the audio-understanding modality** (2026-09-12) — **§3.1** gains one `modality` token,
+  **`audio-text-to-text`**, over the **existing** `media(audio)` plane, as the fourth member of the
+  `…-text-to-text` family: `knowledge + media (KMI audio)` / `lora | qlora`, covering transcription,
+  captioning and audio QA. Strictly additive — no plane, artifact kind, media type, KCB verb or
+  authority role is added, no existing token moves (they are immutable once published), and every
+  0.7.x-era manifest is admitted and refused on exactly the inputs it was before. Status stays
+  **Candidate**; the three counts below are restated and **none moves**.
+  - **This row was declined in advance, with a published trigger, and the trigger fired.** 0.7.0's
+    adjudication
+    ([`../docs/reference/generative-audio-modalities.md`](../docs/reference/generative-audio-modalities.md))
+    declined an `audio-text-to-text` row in terms — *"it is **not** minted here because nothing has
+    asked for it … The trigger: the first consumer that does"* — and a **specialized `finetune`
+    provider role** (the narrow local-only trainer for containment-gated data,
+    [`../ECOSYSTEM.md`](../ECOSYSTEM.md) §2) asked for it in a written proposal dated **2026-08-25**:
+    this token, on this table, at **`lora` / `qlora`**, with `sft` deliberately **not** requested
+    because both of its backends implement LoRA SFT. The reading is recorded in **§7 of that page**,
+    in the document that declined the row, so a later reader meets the decline and its answer in one
+    place. The asker is named **by role**, never by repository: the trigger is about a *named
+    provider needing the vocabulary*, and that is a role fact.
+  - **A fired trigger says *when* to decide, not *what*.** The row was put through the same
+    questions the first two were. It needs **no new plane** (§1's rule, and the audio side of
+    `media` was verified for 0.7.0 in four independent places in
+    [`media-interchange.md`](media-interchange.md)). It differs from every published row on a column
+    this table **carries**: from `image-text-to-text` / `video-text-to-text` on *Data-plane port*
+    and *Typical base*, and from `text-to-audio` / `audio-to-audio` on *Data-plane port* — those two
+    are `media (KMI audio)` alone, this one also consumes knowledge — and on the thing `modality`
+    names, since this run adapts a model to **emit text**. And without it, an audio-understanding
+    job must declare `text-to-audio` — false, and **reversed in direction** — which makes **FT-F**'s
+    mandatory admission check validate a declaration that is false, the one outcome a closed
+    vocabulary exists to prevent; or it is refused **`unknown-modality`** at the *vocabulary* gate,
+    which runs before §4.2's placement gate, before the base anchor and before any capability probe,
+    so the refusal blocks the whole audio-understanding arm rather than one `modality × method` pair.
+  - **No clause of §4 moves, and this was checked against §4's text rather than inferred** — the
+    discipline **AU-2** exists to enforce, after 0.7.0's *"neither row moves a clause of §4"* turned
+    out to be true of §4.2/§4.3/§4.1.1 and **false of §4.1**. For this row the answer is **no**, for
+    the reason that is the reverse of `audio-to-audio`'s: its corpus is a paired **asset + text**
+    corpus, which is precisely the shape §4.1's **FT-I** bullet names, so it lands on the side of
+    §4.1 that **carries**. One consequence is recorded rather than left to be found: FT-I's bullet
+    **enumerates** its members, so a third `…-text-to-text` member **widens AU-1's fold from two
+    rows to three**. Same sentence, same defect — **no new delta**, and AU-1 stays blocking and
+    unowned.
+  - **The grain was the real question, and it is decided with its split condition stated.** The
+    vocabulary is closed, additive, and its tokens are **immutable once published**, so minting is
+    cheap and unminting is impossible. Transcription, captioning and audio QA ride **one** token —
+    the grain `image-text-to-text` (captioning, VQA, OCR) and `text-to-audio` (music, SFX, TTS)
+    already use, on the reasoning that the upstream splits are *pipeline routing*, a provider
+    concern and not a column §3.1 carries. Splitting later is additive and cheap; unsplitting three
+    tokens that collapse is not possible. The condition for a further token is stated so the next
+    reader meets a condition rather than a silence: a provider whose admission check must accept a
+    **`method`** or a **base** for one of the three and refuse it for another — at which point the
+    rows differ on a column this table carries.
+  - **`typical_method` is *typical*; FT-F is the gate.** `lora / qlora` is recorded as asked *and*
+    as decided — what the asker can honour and what both sibling `…-text-to-text` rows already carry
+    — so no column in this table stands behind an implementation that does not exist. A provider
+    **MUST** still validate the `modality × method` combination and the base architecture at
+    admission and reject an incompatible request with a report, before compute is committed; a
+    mirror that reads the fourth column as an allow-list is reading an informative column as a gate.
+  - **Minor, not patch.** §3.1's table is normative surface a reader implements against and FT-F
+    validates from, so a new admissible token widens what a conformant provider must recognise — a
+    token it does not know is a refusal. Landed in all four statements of the vocabulary in one
+    change: [`../registry/enums/modality.tsv`](../registry/enums/modality.tsv), this table,
+    [`../schemas/finetune-job.schema.json`](../schemas/finetune-job.schema.json)'s
+    `properties.modality.enum`, and [`../registry/README.md`](../registry/README.md)'s prose bullet —
+    the fourth being the one **no guard checks** — and **appended, never inserted**, because the four
+    statements are equal *including order* and a mirror may index positionally.
+    [`../registry/entity-types.tsv`](../registry/entity-types.tsv) needed no edit and was checked
+    rather than assumed: the `model` row's `refinement_enum` is a **path** to the file above, so it
+    picks the token up by resolving. [`../registry/media-types.tsv`](../registry/media-types.tsv)
+    does not change either — it registers only the types koine *mints*, and this row's corpus is
+    IANA audio plus knowledge.
+  - **No fourth gate; one row of unexercised vocabulary, on a leg that reserved the slot.** The row
+    closes no count and adds none. It is **new normative surface no pass has walked** — read it the
+    way §3.3 and §8.1 are read in *Pressure test*, and note it may not be cited in a re-ratification
+    until one does. Where it re-enters validation is not left open: the audio leg
+    ([`../scenarios/kft-audio-modalities.md`](../scenarios/kft-audio-modalities.md)) says in its own
+    *What this leg does not force* section that *"if a third row is ever ratified it re-enters
+    validation here and this leg is where it lands"*, so the **third condition widens in scope**
+    rather than gaining a sibling. Counts (i) and (ii) are untouched: no job carrying `resume` and
+    no producer-exhaust corpus is read differently by this token.
+  - **What the downstream mirrors must now do** is stated where it was stated for the first two
+    rows, rather than left to a failed admission check:
+    [`../docs/reference/generative-audio-modalities-downstream.md`](../docs/reference/generative-audio-modalities-downstream.md)
+    §10. The failure mode is the one that page exists for — a validator on a stale enum refuses a
+    **conformant** job `invalid` (terminal) instead of `out-of-envelope` (re-routable).
+
+- **Editorial** (2026-09-12) — **The two audio rows are exercised for the first time, and the pass is
+  not clean.** §3.1's `text-to-audio` and `audio-to-audio` have been published since 0.7.0 and
+  recorded in *Pressure test* as **unexercised vocabulary** ever since — *"neither may be cited in a
+  re-ratification until [a pass] does"* — which was also **AUD-6**, the one koine-owned finding of
+  [`../docs/reference/generative-audio-modalities-downstream.md`](../docs/reference/generative-audio-modalities-downstream.md).
+  The leg now exists: [`../scenarios/kft-audio-modalities.md`](../scenarios/kft-audio-modalities.md),
+  one job per row — a caption→audio `lora` over an all-`exportable` corpus, and a **paired**
+  voice-conversion `full` finetune whose source side is `personal` / `local-only`.
+
+  **Six findings, AU-1…AU-6, and zero model breaks.** What was attacked hardest **held**: §4.2's
+  effective-egress aggregate reaches every carrier an audio job has (both sides of a pair as
+  `dataset.media[]` entries, the caption file's header, the base's own class under FT-B), §4.3's
+  union license carries a non-commercial audio base into the model, §5.4 binds a `local-only`-
+  inheriting voice model and its checkpoints at publication, FT-J refuses an unsatisfiable in-tier
+  pin, and §8.1 needed **no new code** (an in-enum modality outside a provider's envelope is
+  `out-of-envelope`, re-routable; an unknown token is `invalid`). What broke were **four sentences
+  this spec writes about itself** plus two table gaps: **AU-1** (blocking) — §4.1's FT-I bullet, the
+  only pairing carrier KFT names, types a row as *"a KMI `asset` id **and its text**"*, so
+  `audio-to-audio`'s *paired asset↔asset with no caption side* corpus has **no expressible
+  supervision** and two conformant providers train two different models from one manifest; **AU-2** —
+  §3.1's *"neither row moves a clause of §4"* is true of §4.2/§4.3/§4.1.1, false of §4.1, and gives
+  `audio-to-audio`'s reason for both rows; **AU-3** — the audio pair is the **only** duplicate in
+  §3.1's *Data-plane port* column (`registry/enums/modality.tsv`'s `data_planes` agrees), so §2's
+  *told apart by their ports* and §8.1's `route_to[]` cannot discriminate them, while KCB §7.1's port
+  `shape` is the routing carrier nothing points at for this; **AU-4** — §7 reads cardinality from
+  arrays that *"enumerate their members"*, and a paired corpus's N samples are 2N members;
+  **AU-5** — §3.3's four pinned targets train no audio model while §3.3.2's `modality` row asserts a
+  mapping in all four columns against §3.3.1's mandatory refusal; **AU-6** — §5.3's export matrix and
+  [`../registry/media-types.tsv`](../registry/media-types.tsv) have no row for a **`full`**
+  finetune's weights, pre-existing across `text-generation`/`text-to-image` and first made the
+  *typical* path by the row whose method ordering leads with `full`.
+
+  **A third condition on promotion, and no version or clause moves.** All six are additive and
+  **KFT-only** — checked per step: no KMI, KCB, KGP or KINP clause is read differently by the walk —
+  and all six are **unowned**; AU-1 and AU-4 are one §4.1/§7 edit, AU-2 a sentence, AU-6 a row. They
+  are a **third** condition beside gates (i) and (ii), **neither of which moves**: no job in the leg
+  carries `resume` and no corpus in it is a producer's exhaust, so both counts are restated on
+  exactly the inputs they had. It is **not a re-run gate** — it is a fold, then that leg again.
+  **§1–§11, the schema twin and every `registry/` file are byte-unchanged**; the edit is two
+  *Pressure test* paragraphs, a stressor bullet, this entry and the scenario. KFT stays **0.7.1
+  Candidate** and is **not promotable**. The leg's own artefact objection is stated on the day it
+  landed rather than a week later — it has **no KCS encoding and no run** (**DR-14**), so **AUD-6 is
+  half-discharged**: exercised by a *pass*, still not by an *encoding*, and that encoding is
+  downstream under [ADR-0001](../decisions/ADR-0001-control-plane-topology.md) and **unowned**.
 
 - **0.7.1** (2026-09-12) — **The run-activity spelling, corrected everywhere KFT mints or shows one
   (patch).** KINP 0.5.0 resolved **IMP-7** by admitting `activity` to §3.1's `<kind>` enum and

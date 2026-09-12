@@ -91,25 +91,28 @@ surface, not paying down dead code.
 
 ## U-2 — the scenario set, and the set-equality test that lives in another repo
 
-Thirteen files: `scenarios/README.md` plus twelve pressure tests. Whether any one of them is
-live is decided **downstream**, and `CLAUDE.md` says so in as many words:
+Fourteen files: `scenarios/README.md` plus thirteen pressure tests (*twelve until 2026-09-12, when
+`kft-audio-modalities.md` landed*). Whether any one of them is live is decided **downstream**, and
+`CLAUDE.md` says so in as many words:
 
 > *the downstream KCS encoding set is held to **set-equality** with `scenarios/*.md` by a test
 > in the implementing repo; no guard in koine checks it, so a new scenario silently breaks
 > that test.*
 
 ```
-$ git ls-files scenarios/ | wc -l            # 13
+$ git ls-files scenarios/ | wc -l            # 14  (13 on 2026-09-03)
 $ git grep -ln 'set-equality\|set equality' -- ':!tasks/chief/completed/'
 CLAUDE.md  scenarios/README.md  docs/reference/promotability.md
 docs/reference/kcs-encoding-gate-verification.md  (+ 4 scenarios)
 $ .chief/verify.sh --list-gates | grep -c scenario     # 0 — no gate covers scenarios/ as scenarios
 ```
 
-`scenarios/README.md`'s **KCS encoding** column records that **all twelve** have an encoding built
-and run downstream (*corrected 2026-09-03: it read "nine of twelve … and three do not", findings
-DR-11/DR-12/DR-13; all three were closed downstream on 2026-08-26 and this page, like every other,
-did not learn for a week*). The entry stands unchanged and its point sharpens: a static sweep over
+`scenarios/README.md`'s **KCS encoding** column records that **twelve of thirteen** have an encoding
+built and run downstream (*corrected 2026-09-03: it read "nine of twelve … and three do not",
+findings DR-11/DR-12/DR-13; all three were closed downstream on 2026-08-26 and this page, like every
+other, did not learn for a week. Corrected again 2026-09-12: the thirteenth scenario arrived with no
+encoding, **DR-14** — the same finding from the other direction, and named on arrival this time,
+which is the only remedy prose has*). The entry stands unchanged and its point sharpens: a static sweep over
 this tree could not tell an unencoded scenario from dead scaffolding — both look identical from here,
 a Markdown file that no encoding cites — and it equally could not tell an encoded one from either.
 The register of record is prose, not a check, **in both directions**.
