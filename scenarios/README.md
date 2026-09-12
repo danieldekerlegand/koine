@@ -124,8 +124,17 @@ place. **V-9 and V-11 were folded the same day at KCB 0.5.3, and count (ii) re-r
 still does not close** — **V-10** stands unfolded and four new perimeter deltas join it, **V-12**
 (§7.1(d)'s retrievable branch is a *content address*, an integrity instrument, while failure mode 2 is
 a staleness failure), **V-14** (the new MUST binds the provider and no clause gives the consumer the
-reading), **V-15** (§7.3a(a) collides with §2's `removal_version` SHOULD) and **V-13**. **All five KCB
-counts stand.** None of these verdicts is a `green` line: three of the four
+reading), **V-15** (§7.3a(a) collides with §2's `removal_version` SHOULD) and **V-13**. **V-10, BP-8
+and AP-9 were then folded the same day at KCB 0.5.4 / 0.5.5 — §7.2's table gains the `volume` and
+`effect` rows those sections were declaring a minor bump against, and §7.3g gains a fourth frame,
+`entry_changed`, as the carrier three routed MUSTs were missing — and counts (ii), (iv) and (v) were
+each re-run separately (`chief/950`), one verdict per count: none of the three deltas reproduces, and
+none of the three counts closes.** (ii) → **V-16** and (v) → **AP-10**, one defect on two axes — the
+frame names *which* operand moved and carries **no new value**, so §7.3g's *puts the new address in its
+hands* rests on a re-`describe` no clause requires, and a live subscriber told *`effect` moved* has no
+class to feed §4.3c's intersection while §4.3f evaluates a `subscribe` posture **once at registration**.
+(iv) → **nothing**: the same omission was put to `volume` and does not bite, so count (iv) is held open
+by **BP-7** alone. **All six KCB counts stand.** None of these verdicts is a `green` line: three of the four
 encodings return green over open blocking deltas, which is what **DR-7** and **DR-8** are the record of.
 
 The **three federation §-edits** — [ADR-0012](../decisions/ADR-0012-federated-authority-roles.md)
@@ -204,7 +213,11 @@ never a promotion, and every spec that was blocked on one is still blocked on th
 was a precondition *of* — KFT on two re-runs that were both walked on 2026-09-03 and neither of which
 closed, KCB §4.2 and §4.3 on their own re-runs, **also walked that day (`chief/92`) and neither of
 which closed either** (§4.2 → **BP-7**/**BP-8**, though blocking BP-5 does not reproduce; §4.3 →
-**AP-9**, with eight of eight AP deltas flipping and ADR-0013's **W3** unmoved). Two qualifications
+**AP-9**, with eight of eight AP deltas flipping and ADR-0013's **W3** unmoved) — and both were
+**re-run again on 2026-09-12 (`chief/950`)** against the fold that answered BP-8 and AP-9, with the
+same result: §4.2's count is now held open by **BP-7** alone and returned no new delta, §4.3's by
+**AP-10** and by W3, and neither encoding was consulted for either verdict, both being green and both
+predating the fold. Two qualifications
 survive intact and are the ones a promotion argument now has to answer: **DR-7** (count (ii)'s
 encoding **predates** its fold, so it must be *extended*, not re-run) and **DR-8** (the same for
 `kcs:multi-authority`). **This is the cleanest demonstration the register has of what the gate is

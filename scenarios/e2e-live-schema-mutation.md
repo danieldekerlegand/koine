@@ -1365,6 +1365,178 @@ promoted and is not promotable**: count (iii) and ADR-0013's **W3** stand regard
 
 ---
 
+## Re-run — Steps 2, 3, 7 and 10 walked by hand against KCB 0.5.5 (2026-09-12)
+
+> **What this section is.** The **third** hand-walk of count (ii), against the first text carrying the
+> **V-10 / BP-8 / AP-9** fold — KCB **0.5.4** (§7.2's two missing rows) and **0.5.5** (§7.3g's fourth
+> frame), published hours before this walk. It is scoped to the steps that read what moved: **Step 10**,
+> which is where V-10 was filed; **Step 7**, because §2.4's `binding` bullet moved under it; and
+> **Steps 2 and 3**, because §7.2's table gained two rows beside the rows they read. Steps **5, 6, 9
+> and 11** are restated unmoved, on the verified ground that every clause they read — §7.1's five steps
+> and (a)–(e), §2's `removal_version` bullet, §7.3a — is byte-unchanged since the 2026-09-12 walk
+> against 0.5.3, so **V-12, V-13, V-14 and V-15 stand exactly as filed**.
+>
+> **Prose, never a replay.** `kcs:live-schema-mutation` returned `green` over four blocking deltas and
+> now predates **four** publications of the spec it gates (0.5.0, 0.5.1, 0.5.3, 0.5.5). Under **DR-7**
+> an exit code is not a verdict here, and the encoding asserts nothing about a frame minted after it
+> was written.
+
+### Per-step verdicts
+
+| Step | Reads | Verdict |
+|---|---|---|
+| **2** — a compatible widening | §7.2's table (minor tier) | ✅ *holds (regression, re-checked because the table moved)* |
+| **3** — a re-price | §7.2's `cost` row, §4.4d, §5 | ✅ *holds (regression, re-checked because the table moved)* |
+| **7** — the successor published beside the predecessor | §2.4, §7.2, §3 | ✅ *holds — V-4 intact, and §2.4's moved bullet reads correctly* |
+| **10** — removal lands, and the stream stops | §7.3g, §4.2d, §2.4, §7.2 | 🟡 *half-flips — **V-10 does not reproduce**, and the frame breaks on its **payload*** |
+| 5, 6, 9, 11 | §7.1, §2/§7.3a | *restated unmoved — V-12, V-13, V-14, V-15 stand* |
+
+### Steps 2 and 3 — the table moved under them, and neither moves ✅
+
+Re-checked rather than assumed, because 0.5.4 added two rows to the normative table both steps read.
+The rows they read are **byte-unchanged**: *Add an output field, or an additional produced
+`media_type` → minor → No* (Step 2) and *Change `cost` → minor, and never silent (§5) → No* (Step 3).
+The two new rows sit **below** them, govern operands neither step exercises, and both read **No** in
+the third column, so nothing in the table's verdict structure moves for a widening or a re-price. Step
+3's two halves are unchanged: the digest exclusion holds, and V-1's quote-mismatch refusal (§4.4d) is
+untouched.
+
+One property is worth recording because it is the interlock between the two publications rather than a
+claim either makes alone: §4.2a and §4.3a have declared a **minor** bump since 0.4.7 and 0.4.8, and
+§7.3g's new frame MUST carry *the capability's new `version`*. The frame is therefore only emissible
+because the table now authorizes the bump that produces the version it carries. Had 0.5.5 landed
+without 0.5.4, the frame would have been a MUST to announce a version movement the table read as
+**patch**. The two halves of this fold are not two independent edits, and the walk confirms the
+dependency in the direction the tasklist claimed it.
+
+### Step 7 — the successor published beside the predecessor ✅ *holds*
+
+**V-4 is intact.** §2.4's optional per-entry transport `binding` is byte-unchanged as a field: the
+capability *name* stays version-free, the transport id stays local, nobody discovers by it, and §7.1's
+ban on version-in-the-name is untouched. §2.4's *bounded on purpose* paragraph is byte-unchanged —
+checked against the section, not inferred from the changelog.
+
+The bullet that moved is §2.4's signalling bullet, and it now reads as **two** statements where it read
+as one. The frame is named (`entry_changed`, emitted before the move takes effect), and the reach of
+*"never left to a failed dial"* is stated: a consumer holding only a **cached discovery binding** has
+no channel, meets the move at a failed dial, and recovers by re-`describe`. That is the honest form of
+a promise that was previously unqualified, and it agrees with §7.3g's closing bullet and with
+**DEFER-D**, which is byte-unchanged with its trigger intact. Step 7 asks whether the second major is
+**addressable**, and it is; the qualification costs the step nothing.
+
+### Step 10 — removal lands, and the stream stops 🟡 *half-flips*
+
+**V-10 does not reproduce, on both of the legs it was filed on.**
+
+*The carrier exists.* §7.3g's table now has **four** rows, and the fourth, `entry_changed`, is named by
+every section that was routing a MUST to this channel without one: §2.4 and §7.2's `binding` row,
+§4.2a's `volume` bullet and §7.2's `volume` row, §4.3a's class bullet and §7.2's `effect` row. The
+property the finding turned on is restored — §4.2d's *tolerate a producer that never sends one* makes
+an **unnamed** frame indistinguishable from an absent one, and a **named** one assertable (KCS §5) —
+and §7.3g's *Additive under §4.2d's own rule* bullet now states that reasoning in the spec rather than
+leaving it in this document. Re-probed for the two things the fold could have got wrong and did not:
+**no second signalling mechanism is minted** (§4.2d's own MUST, honoured — the frame rides the existing
+channel, no verb, no transport, no second connection), and the frame **precedes** the fact, with a
+producer that moves a bound entry's `binding` without a preceding `entry_changed` made non-conformant
+in the same sentence that already said so for `removal`.
+
+*The promise is qualified rather than deleted.* The second leg of V-10 — *"never left to a failed dial"
+is met for **no** binding form* — is answered by stating the reach on §2.4's own sentence and in
+§7.3g's own bullet: met for the stream holder, which dials the entry again whenever it re-establishes a
+dropped stream or `invoke`s the same capability; **not** met for the cached discovery binding, which is
+DEFER-D. Deleting the MUST was the alternative and it is the worse one — a signal nobody is owed is not
+an improvement on a signal nobody can read.
+
+**🔴 BROKE (V-16, Med-High — payload). The frame names which operand moved and never its new value, and
+two sentences of the fold say otherwise.** `entry_changed` is normative in exactly two things: it MUST
+carry the capability's **new `version`**, and it MUST **name which operand moved**. It carries no new
+value, and for `binding` the value *is* the point.
+
+- §7.3g: *"`entry_changed` is what **puts the new address in its hands** before either."* It does not.
+  It puts a version and the token `binding` in its hands.
+- §2.4: a subscriber told on the channel *"dials the new address rather than the old one."* That
+  follows only if the subscriber re-`describe`s first, and **no clause says it must** — §7.2's
+  pull-side invariant says the opposite, that an open `subscribe` is under no obligation to
+  re-`describe`, and §7.3g exists precisely so the pull is not the only route.
+
+The asymmetry is visible **inside the table itself**, which is what makes this a drafting break rather
+than a judgement call: `successor_published`, whose reason for existing is not addressing, explicitly
+carries *"that successor's version and — where the provider serves it elsewhere — its `binding`
+(§2.4)"*. `entry_changed`, whose reason for existing **is** addressing, carries no binding at all. A
+second, smaller instance of the same omission: the frame names the *operand* and not the **port** that
+carries it, and `volume` is a port-level operand (§4.2a), so a capability with more than one produced
+port tells a subscriber that *a* `volume` moved without telling it whether the port it is bound to is
+the one.
+
+*Severity, stated honestly.* Med-High, not blocking, and the reason is worth writing down rather than
+asserting: the frame is a working **re-read trigger**, re-`describe` recovers the address, and nothing
+here inverts fail-closed or makes a dial silently wrong — a subscriber that acts on the frame is
+correct, and one that ignores it is exactly where it was at 0.5.4. What the break costs is **the
+sentence**: 0.5.5 claims the frame delivers an address and it delivers a notification. It is **V-14's
+shape one clause over** — a MUST that binds the **producer** with no clause giving the **consumer** the
+reading — and it is the **fourth consecutive** fold in this repo to break on its own perimeter rather
+than its model, after §4.5's MA-17, KMI §7.1(d)'s MA-19/MA-20 and §7.1's V-12/V-14.
+
+*The fold is one §7.3g edit, and the smaller of the two routes is the right one.* Either (1) the frame
+MUST carry the **new value** of each operand it names — mirroring `successor_published`'s own `binding`
+clause, and scoping a port-level operand to its port — or (2) §7.3g's *puts the new address in its
+hands* and §2.4's *dials the new address* are narrowed to what the frame does, with a consumer-side
+MUST to re-read the entry before the next dial. (1) is smaller, keeps §7.2's pull-side invariant
+intact, and is the only one of the two that leaves the promise §2.4 has made since 0.5.0 standing. It
+is **the same edit as AP-10** ([`kcb-cross-owner-posture.md`](kcb-cross-owner-posture.md)), which is
+this defect on the `effect` axis, where there is no re-read to recover with. → KCB §7.3g (+ §2.4's
+sentence).
+
+### Steps 5, 6, 9 and 11 — restated unmoved
+
+Every clause these steps read is byte-unchanged since the 2026-09-12 walk against 0.5.3: §7.1's five
+steps and (a)–(e) with the scoped *falsifiability* paragraph (Steps 5, 6, 11), §2's `removal_version`
+bullet and §7.3a(a) (Step 9). Their verdicts stand exactly as recorded — **V-12** (High, scope),
+**V-13** (Med), **V-14** (Med-High) and **V-15** (Med, collision) are unfolded and reproduce by
+construction, since nothing they were filed against has changed. Step 9's ADR-0014 blocker stays
+discharged and Step 11's V-11 qualification stays closed. Re-attacking them here would be a replay of
+a walk two publications old, not a verdict.
+
+### Findings — from the re-run
+
+| # | Severity | Gap | Fold | Spec |
+|---|---|---|---|---|
+| **V-16** | Med-High (payload) | §7.3g's `entry_changed` is normative in two things — carry the **new `version`**, **name** which operand moved — and carries **no new value**. For `binding` the value is the whole point: §7.3g claims the frame *"puts the new address in its hands"* and §2.4 claims the subscriber *"dials the new address"*, and both follow only from a re-`describe` **no clause requires**, against a §7.2 invariant that says an open `subscribe` need not. `successor_published` carries a `binding` and this frame does not. It also names the operand without naming the **port**, and `volume` is port-level. | One §7.3g edit: the frame MUST carry the **new value** of each operand it names, scoped to the port where the operand is port-level — mirroring `successor_published`'s own `binding` clause. (The alternative, narrowing §7.3g's and §2.4's sentences plus a consumer-side re-read MUST, is larger and gives up §2.4's promise.) **Same edit as AP-10.** | KCB §7.3g, §2.4 |
+
+### What this re-run does and does not close
+
+**Count (ii) does NOT close, and it would not have closed on a clean Step 10 either.** **V-12, V-13,
+V-14 and V-15 stand unfolded**, filed against clauses this fold did not touch, so the plain answer is
+independent of anything Step 10 returned. That is stated first.
+
+**What went right is the V-10 fold, and it went right on both legs.** The carrier exists and obeys
+every rule §7.3g already imposed on its own three frames; the *never left to a failed dial* promise is
+qualified on the record instead of quietly narrowed or quietly kept; §7.2's two new rows authorize the
+bump the frame's payload depends on, which is the dependency between 0.5.4 and 0.5.5 confirmed by
+walking rather than by reading either changelog. Counting from the original pass, **ten of the eleven
+deltas this document has filed are folded and hold under re-attack** (V-1…V-7, V-9, V-10, V-11), V-8 is
+closed where it lands, and the regression set holds in full. **§7's model has never been in question
+across five walks; its perimeter is now repaired in nine places and open in five.**
+
+So the count **changes shape** rather than closing: from *fold V-10 (one edit with BP-8 and AP-9),
+V-12 + V-13, V-14 and V-15, then re-run Steps 5, 6, 9 and 10* to **fold V-12 + V-13 (one §7.1(d)
+edit), V-14 (one §7.1 step 5 / §7.2 edit), V-15 (one §2/§7.3a edit) and V-16 (one §7.3g edit, with
+AP-10), then re-run Steps 5, 6, 9 and 10.** Every remaining item is additive and KCB-only, and all
+four are **unowned**.
+
+**The artefact objection is unchanged and independent.** **DR-7** stands exactly as *Conformance case*
+states it — the encoding must come to assert **F1–F13** before a re-run discharges anything, and
+`entry_changed` is new normative surface it does not reach. It is **owned since 2026-09-11 (agora)**
+and nothing in this walk touches it.
+
+**No version moves and no clause moves.** Every normative clause of §1–§8 is byte-unchanged — §7.3g's
+four rows and six bullets, §7.2's table, §2.4 and §7.1 included — no canonicalization changes, and no
+published digest moves; the edit is this section, a gate paragraph in
+[`../specs/capability-bus.md`](../specs/capability-bus.md) and a changelog entry. **KCB is not
+promoted and is not promotable**: count (iii) and ADR-0013's **W3** stand regardless of anything here.
+
+---
+
 ## Downstream results
 
 > **What this section is.** The recorded result of a **downstream run** of this pressure test's

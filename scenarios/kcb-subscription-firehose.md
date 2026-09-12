@@ -714,6 +714,135 @@ promoted**, and this count alone was never going to promote it.
 
 ---
 
+## Re-run — Step 8 walked by hand against KCB 0.5.5 (2026-09-12)
+
+> **What this section is.** A hand-walk of count (iv) against the first text carrying the **V-10 /
+> BP-8 / AP-9** fold — KCB **0.5.4** (§7.2's two missing rows) and **0.5.5** (§7.3g's fourth frame).
+> It is scoped to **Step 8**, where BP-8 was filed, with **Step 1** re-checked because §4.2a's
+> `volume` bullet moved under it. Steps **2, 4, 5, 6 and 7** are restated unmoved — every clause they
+> read (§4.2b–g, §5, §4.1) is byte-unchanged — and **Step 3** is restated with **BP-7 standing,
+> unfolded**, which is this count's plain answer and is stated before anything else.
+>
+> **Prose, never a replay.** `kcs:subscription-firehose` is encoded downstream and green
+> (**DR-12**, closed), and that green predates this fold: the encoding asserts nothing about a §7.2
+> row or a frame minted after it was written. **DR-7's shape**, on a second count — an exit code is
+> not a verdict here either.
+
+### Per-step verdicts
+
+| Step | Reads | Verdict |
+|---|---|---|
+| **1** — discovery cannot tell a firehose from a trickle | §4.2a, §2.1, §3 | ✅ *holds (regression, re-checked because §4.2a moved)* |
+| **3** — saturated; every lever the contract offers | §4.2b, §4.2d | 🟡 *unmoved — **BP-7** stands, unfolded* |
+| **8** — what held | §7.2, §4's verb table, §2.1 | ✅ *flips — **BP-8** does not reproduce* |
+| 2, 4, 5, 6, 7 | §4.2c/e/f/g, §5, §4.1 | *restated unmoved* |
+
+### Step 1 — discovery cannot tell a firehose from a trickle ✅ *holds*
+
+Re-checked rather than assumed. §4.2a's `volume` envelope is byte-unchanged in the part this step
+turns on: the operand sits on the port, outside the `schema_id` digest, absent reads **unknown** and
+never *low*, and a consumer MAY decline to bind a port declaring none. What moved is one sentence
+naming §7.3g's `entry_changed` as how a subscriber whose binding never pulls learns of a re-declared
+envelope — which is downstream of binding and cannot reach a step that is entirely about the moment
+**before** it. BP-1 holds.
+
+### Step 8 — what held ✅ *flips*
+
+Three of this step's four holds were never in question and were re-probed anyway: the payload layer
+is still rate-safe by construction and no KGP clause moved; the grant's name, scope and
+`budget_units` field are still byte-unchanged; and §4's verb table still has **five** entries with
+§2.1's port table still at **three** planes — `entry_changed` is a **frame**, not a verb, and
+§7.3g's *One channel, not two* bullet states in terms that it mints no transport, no verb and no
+second connection.
+
+**BP-8 does not reproduce.** §7.2's normative table now carries *Change a port's **`volume`**
+(§4.2a) → **minor** → No — the delivery envelope moves, not the shape; the version moves with it, so
+a pinned subscriber can see it, and a live `subscribe` is told on §4.2d's channel in §7.3g's
+`entry_changed` frame*. The row agrees with §4.2a's own sentence word for word in the part that
+matters — a **minor**, so the version moves — so the visibility mechanism BP-1's fix depends on is
+now authorized by the table that governs bumps rather than asserted against it. §4.2a's bullet was
+amended to cite the row (*"§7.2, which since 0.5.4 carries the row that authorizes it"*), so the two
+clauses point at each other instead of one pointing at an absence. The nearest-row trap the finding
+turned on is gone: a provider reading the table for `volume` now lands on a row for `volume`, not on
+*Editorial only … → patch*.
+
+**One correction to this step's own wording, and it is not a delta.** The hold as phrased was
+*"§7.2's compatibility table is not disturbed"*, and after this fold that sentence is **literally
+false** — the table gained two rows. The property it was asserting is what holds: **no live
+subscriber breaks**, and both new rows read **No** in the third column, which is the column that
+carries that property. The step's claim is restated in the form it was actually making, because a
+hold that is true only until the table is corrected is a hold about the wrong thing. §7.2's rows are
+otherwise byte-unchanged and §7.1 step 1's drop list — which names `volume` (§4.2a) explicitly — is
+byte-unchanged, so **no published `schema_id` or digest moves** and the digest/version pairing
+`volume` was given at 0.4.7 is exactly the one `cost` has had since 0.2.0.
+
+**And one thing deliberately not filed, with the reason.** The V-10 fold's own re-run
+([`e2e-live-schema-mutation.md`](e2e-live-schema-mutation.md), **V-16**) establishes that
+`entry_changed` names *which* operand moved and never its **new value**, which is a real break for
+`binding` and, on count (v), for an `effect` class (**AP-10**). It was put to `volume` here directly
+and **does not bite**, for three reasons rather than one:
+
+1. §4.2a's stated purpose for `volume` is discrimination **before binding** — *"so a firehose is
+   distinguishable from a trickle before binding"* — which is Step 1's moment, and Step 1 reads the
+   card, not a frame.
+2. On a **live** subscription the governing levers are §4.2b's subscriber-declared `max_rate`,
+   `max_in_flight`, `window` and `on_overflow`. A producer's `volume` moving invalidates none of
+   them: the subscriber's own ceiling still binds, and §4.2b's rule about whether an adaptation is
+   **lossless** is a property of the payload, not of the declared envelope.
+3. Where `volume.cost` moves, the operand a subscriber must not be surprised by is metered at
+   **delivery** (§4.2e) against a §5 ceiling that **fails closed**, and §5's grant binds a re-price
+   without needing anyone to be told first.
+
+So the notification alone is sufficient for `volume` and the value is not load-bearing. That is a
+**decision recorded**, not an omission — the next reader should not have to re-derive it, and a
+sibling finding filed here would have been a third id for a hole that has two.
+
+### Step 3 — saturated; every lever the contract offers 🟡 *unmoved*
+
+**BP-7 stands, unfolded, exactly as filed.** §4.2b's *a producer MUST refuse a `subscribe` it cannot
+honour* is still stated at **registration** only; no clause still says what a producer owes a **live**
+adjustment arriving on §4.2d's channel; and §4.2c's *silence is not one of them* discipline still
+stops one paragraph short of the lever this step goes looking for. Nothing in 0.5.4 or 0.5.5 touches
+§4.2b or §4.2d's subscriber→producer direction — checked against both sections, which are
+byte-unchanged — so the finding reproduces by construction and re-attacking it would be a replay.
+
+### Steps 2, 4, 5, 6 and 7 — restated unmoved
+
+§4.2c's `resume` operand and its three mandated answers (Step 4), §4.2e's meter and brake (Step 2),
+§4.2f's fetch fan-out (Step 5), §4.2d's placement of the mechanism between the two peers (Step 6) and
+§4.1's transport audit (Step 7) are byte-unchanged. Their verdicts stand as recorded: **BP-5**, the
+blocking delta this leg was built to find, does not reproduce, and neither do BP-1, BP-2 or BP-4.
+
+### Findings — from the re-run
+
+**None.** BP-8 flips and no new delta is filed on this count; the one candidate — `entry_changed`
+carrying no new value — was put to `volume` and does not bite, for the reasons recorded at Step 8.
+
+### What this re-run does and does not close
+
+**Count (iv) does NOT close, and BP-8 is not why.** **BP-7** stands unfolded at Step 3, so the count
+was never going to close on this fold alone, and that is the whole of the answer. Stating it that way
+round matters: the fold this walk verifies did what it was written to do, and the count is held open
+by a different finding that no part of this tasklist touched.
+
+**What went right.** BP-8 is folded and does not reproduce; the *no live subscriber breaks* property
+its step was actually asserting holds, with both new rows reading **No**; the three other holds of
+Step 8 survive direct re-probing; and **BP-1…BP-5 all continue to hold** — including blocking BP-5,
+which stays the headline of this leg. §4.2's **model and placement** have not been in question across
+two walks; its perimeter is repaired in one more place and open in one.
+
+So the count **changes shape** rather than closing: from *fold BP-7 and BP-8, then re-run Steps 1–8
+again* to **fold BP-7 (§4.2b/d — extend §4.2c's answer-or-be-non-conformant discipline past
+registration to a live adjustment), then re-run Steps 1–8 again.** It is additive, KCB-only, and
+**unowned**.
+
+**No version moves and no clause moves** — every normative clause of §4.2 is byte-unchanged, no
+published digest moves, and the edit is this section, a gate paragraph in
+[`../specs/capability-bus.md`](../specs/capability-bus.md) and a changelog entry. **KCB is not
+promoted**, and this count alone was never going to promote it.
+
+---
+
 ## Downstream results
 
 > **What this section is.** The recorded result of a **downstream run** of this pressure test's
