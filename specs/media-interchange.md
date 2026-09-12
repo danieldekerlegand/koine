@@ -60,7 +60,11 @@ composition model (§4, [ADR-0005](../decisions/ADR-0005-otio-canonical-timeline
 > **Neither count closes.** Count (i) changes shape a fourth time — *fold **MA-13**, then re-run
 > Steps 8–10 of [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md)* —
 > because MA-13 stands and a fold does not close its own gate; count (ii) is **KCB's** work and is
-> unmoved. **DEFER-C is unmoved.**
+> unmoved. **DEFER-C is unmoved.** *(Walked by hand 2026-09-12, same day: **MA-12 does not
+> reproduce**, Step 8 holds a third time, Step 9 does not flip on MA-13, and Step 10 does not flip on
+> two **KCB-side** findings — **MA-17** (High, carrier: §4.5(a) names the outcomes and no field to read
+> them from) and **MA-18** (Med). Count (i) takes a **fifth** shape — fold MA-13 here, MA-17 + MA-18 in
+> KCB §4.5(a), then re-run — and no version or clause moves for the walk.)*
 
 > **Status note (0.3.3):** folds the §9.5 additive-metadata-survival pressure break. A third-party
 > OTIO round-trip may remain structurally valid while dropping `metadata.koine.asset`; KMI now
@@ -953,6 +957,33 @@ closes nothing on its own, and a fold does not close its own gate in any case. C
 restated and does not move — it is **KCB's** work — so **KMI stays Candidate**, and the walk that
 does clear Step 10 will still leave it there while MA-13 and count (ii) stand.
 
+**That walk has now been run — by hand, 2026-09-12 — and count (i) does NOT close, for a fifth
+shape.** Steps 8–10 were read against **KMI 0.3.7 / KCB 0.5.2**, never replayed (`kcs:multi-authority`
+now predates **three** folds — **DR-8**). **MA-12 does not reproduce**: KCB §4.5's outcomes are named
+in the table that types the verb, owed per request, never synthesized, absence reads *pending*, §4.2f
+is reconciled, and **(f)'s conclusion rule is preserved word for word** — and the premise that rule
+rests on is better carried than the first pass could assume, since (b) already routes store discovery
+through the registry (KCB §2/§4, §3.1) and §3.1's `incomplete[]` tells a consumer when its own
+discovery was incomplete. **Step 8 holds a third time** — the axis question was put to (a) once more
+and separates the same way: an operand outside a digest is a hazard for decisions taken over it, never
+for the identity the digest establishes. **Step 9 does not flip**: **MA-13 stands**, (d) and (e) are
+byte-unchanged here, and the walk confirmed that §4.5 neither widens nor narrows it — a `fetch`
+response that disclosed a restrictive pair would be one holder learning another's envelope, which (d)
+forbids it to synthesize and no verb returns, so keeping the pair off the wire is the right division
+and MA-13's answer remains the most-restrictive-governs rule **inside this spec**. **Step 10 does not
+flip either**, on two new deltas that are **KCB's** and not this spec's: **MA-17** (High, carrier) —
+§4.5(a) forbids a consumer to *infer* an outcome and then fixes no field for it, on the one verb KCB
+types by no protocol, so the implementation-private status string this clause forbids returns as the
+**slot** rather than the value, and because absence reads *pending* the failure is silent — and
+**MA-18** (Med, mis-route). Both are one additive §4.5(a) edit, both **unowned**, and neither moves a
+clause here: this clause states the **meanings**, and what MA-17 asks for is a **slot**. Count (i)
+therefore reads *fold **MA-13** (this spec), and **MA-17 + MA-18** (KCB §4.5(a)), then re-run Steps
+8–10 again* — the half-KMI reading of this count holding for a second time. Count (ii) is restated and
+does not move, the conformance gate is unmoved (**DR-4**, **DR-8**/**DR-7**), **DEFER-C is unmoved**,
+and **KMI stays Candidate** — as it would have on a clean walk, since one of its two counts is not
+KMI's to discharge. Record: that scenario's *Re-run — Steps 8–10 walked by hand against KCB 0.5.2 /
+KMI 0.3.7 (2026-09-12)* section.
+
 ---
 
 ## 8. Mapping (by role)
@@ -1057,6 +1088,24 @@ Neither closes a count, and one carries a caveat an owner must read before citin
   §7.1.
 
 ## Changelog
+
+- **Editorial** (2026-09-12) — **count (i) walked by hand against the folded text, and it does not
+  close.** Steps 8–10 of
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) re-run against **KMI
+  0.3.7 / KCB 0.5.2**, prose and not a replay (**DR-8**). **MA-12 does not reproduce** — KCB §4.5
+  carries the three answers, §7.1(f)'s conclusion rule is preserved word for word, and the *set it can
+  see* premise is carried by §7.1(b)'s registry lookup plus KCB §3.1's `incomplete[]`. **Step 8 holds
+  a third time** ((a)/(c)/(d) re-attacked on the digest axis and unmoved), **Step 9 does not flip** —
+  **MA-13 stands, unfolded**, and §4.5 correctly gives it no route to the missing operand — and **Step
+  10 does not flip** on two findings that are **KCB's**: **MA-17** (High, carrier — §4.5(a) names the
+  outcomes and no field to read them from) and **MA-18** (Med, mis-route). Count (i) now reads *fold
+  MA-13 here, and MA-17 + MA-18 in KCB §4.5(a), then re-run Steps 8–10 again* — the fifth shape this
+  count has taken, and the second time its **work** has landed on the other plane. Count (ii) is
+  **KCB's** and unmoved (**MT-1**); the conformance gate still fails on **DR-4** and **DR-8**/**DR-7**;
+  **DEFER-C is unmoved**. **No version moves and no clause moves** — §1–§6, §8 and §9 byte-unchanged,
+  §7's normative text byte-unchanged, no `asset` id moves and no schema twin is touched; the edit is
+  §7.1's gate paragraph, this entry and a scenario section. **KMI stays Candidate and is not
+  promotable**, as it would have been on a clean walk.
 
 - **0.3.7** (2026-09-12) — **MA-12 folded: §7.1(f)'s three answers get a carrier, and it is on the
   other plane's verb (patch).** 0.3.5's MA-10 fold gave (f) a three-valued answer — a store MUST be

@@ -29,8 +29,10 @@ carries.
 > alone — the **same walk** as KMI count (i), not a second one. The five existing counts are restated
 > and **none moves**, so **KCB is no more promotable than it was** — count (iii) still reads *fold
 > MA-14/MA-15/MA-16, then re-run Steps 5–7 again*, and items (2)–(5) of
-> [`../docs/reference/promotability.md`](../docs/reference/promotability.md) § *The seven things*
-> remain unowned.
+> [`../docs/reference/promotability.md`](../docs/reference/promotability.md) § *The eight things*
+> remain unowned. **Count (vi) was itself walked by hand on 2026-09-12 and does not close**: MA-12
+> does not reproduce, and §4.5's perimeter breaks on **MA-17** (High) and **MA-18** (Med) — one
+> additive §4.5(a) edit, unowned, and item **(8)** of that register.
 >
 > **Status note (0.5.1):** stays **Candidate** on all **five** counts. 0.5.1 writes
 > [ADR-0014](../decisions/ADR-0014-federated-merge-merges-attributions.md)'s four-part clause — the
@@ -1640,6 +1642,27 @@ was found and re-confirmed. Count **(vi)**: a re-run of those steps against the 
 also carries **MA-13** (KMI-only), the walk can close this count while leaving KMI's open. The five
 existing counts are restated and **none moves**.
 
+**That walk has been run — by hand, 2026-09-12 — and this count does NOT close.** **MA-12 does not
+reproduce**: every clause above was attacked directly and none yielded — (a)'s closed set, (b)'s
+per-request rule, (c)'s absence-reads-*pending* and never-synthesize rules, (d)'s reconciliation of
+§4.2f, (e)'s boundary — and KMI §7.1(f)'s conclusion rule is preserved word for word. The section
+breaks on its **perimeter**, twice, in the class its own opening paragraph names: **MA-17** (High,
+carrier) — (a) forbids a consumer to *infer* an outcome and then fixes **no field, key, header or
+response envelope** for it, while `fetch` is the one verb this spec types by no protocol (§4), audits
+as *not an MCP call at all* (§4.1) and states is not typed by a port (above), so two conformant stores
+put the same normative token in different places and the implementation-private status string §7.1(f)
+forbids returns **as the slot** rather than the value — and, because (c) reads absence as
+`not-held-pending`, a store saying *not expected* into an unread slot is **heard to say *pending***;
+and **MA-18** (Med) — (a)'s closing SHOULD routes a `fetch` refusal's *why* to §4.3h's shape, whose
+two MUSTs name §4.3 as the refusing gate and a posture **class**, neither of which exists for a verb
+§4.3 excludes in terms (§4.3a, §4.3f). Both are **one additive §4.5(a) edit** — name the field the
+outcome is carried in, as MA-8 named §3's, carry `held` in it too, and state KCB's own minimum for a
+`fetch` refusal — and both are **unowned**. MA-17 reproduces with **one store and one authority**.
+Count (vi) now reads *fold MA-17 and MA-18, then re-run Steps 8–10 again*; the five other counts are
+restated and none moves. Record:
+[`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) § *Re-run — Steps 8–10
+walked by hand against KCB 0.5.2 / KMI 0.3.7 (2026-09-12)*.
+
 ---
 
 ## 5. Trust & authorization
@@ -2344,6 +2367,30 @@ most important thing an owner citing this run must understand:
   DR-13 adds no count, removes no count, and promotes nothing — all five stand.
 
 ## Changelog
+
+- **Editorial** (2026-09-12) — **count (vi) walked by hand, and it does not close.** Steps 8–10 of
+  [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) re-run against **KCB
+  0.5.2 / KMI 0.3.7**, deliberately **not** a replay (`kcs:multi-authority` returned `green` over that
+  pass's six blocking deltas and now predates **three** folds — **DR-8**). **MA-12 does not
+  reproduce**: §4.5(a)–(e) were attacked clause by clause and none yielded, and §7.1(f)'s conclusion
+  rule is preserved word for word. Step 10 nonetheless does not flip, on two **perimeter** findings in
+  §4.5's own paragraph (a): **MA-17** (High, carrier) — the outcomes are named and the field they are
+  read from is not, on the one verb §4 types by no protocol, §4.1 audits as *not an MCP call at all*
+  and §4.5 states is not typed by a port, so the implementation-private status string KMI §7.1(f)
+  forbids returns as the **slot**, and (c)'s fail-safe makes the failure silent (a store saying *not
+  expected* into an unread slot is heard to say *pending*) — and **MA-18** (Med, mis-route) — (a)'s
+  closing SHOULD routes a `fetch` refusal's *why* to §4.3h, whose two MUSTs name §4.3 as the refusing
+  gate and a posture **class**, and §4.3a/§4.3f exclude `fetch` from posture in terms. MA-17
+  reproduces with **one store and one authority**. Both are **one additive, KCB-only §4.5(a) edit**
+  and both are **unowned**; count (vi) now reads *fold MA-17 and MA-18, then re-run Steps 8–10 again*.
+  Steps 8 and 9 are KMI's clauses and are recorded there: Step 8 holds a third time, Step 9 does not
+  flip on **MA-13**, which no part of this fold touches. **No version moves and no clause moves** —
+  every normative clause of §1–§8 byte-unchanged (§4.5(a)–(e) included), no canonicalization changes
+  and no published digest moves; the edit is §4.5's *Re-ratification* gate paragraph, this entry and a
+  scenario section. **KCB is not promoted and is not promotable**:
+  clearing one of six would not have promoted it, and count (iii), items (2)–(5) of
+  [`../docs/reference/promotability.md`](../docs/reference/promotability.md) § *The eight things*,
+  **DR-7** and ADR-0013's **W3** all stand regardless.
 
 - **0.5.2** (2026-09-12) — **MA-12 folded: `fetch` gains a named response vocabulary.** The blocker
   Steps 8–10 of [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) left on
