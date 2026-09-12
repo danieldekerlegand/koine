@@ -583,7 +583,7 @@ vocabulary.
   8–10** of `scenarios/e2e-multi-authority.md` against the folded text, gating §4.5 alone — the
   **same walk** as KMI count (i), not a second one. The five existing counts are restated, none
   moves, and **KCB is no more promotable than it was**.
-- `specs/media-interchange.md` — KMI 0.3.6, **candidate**. Media data plane; asset envelope +
+- `specs/media-interchange.md` — KMI 0.3.7, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
   canonical timeline model (ADR-0005) — koine adds only identity (asset id on the clip's media
@@ -707,6 +707,27 @@ vocabulary.
   than left to be found: `scenarios/e2e-worlds-to-fabric.md` carries the same example id, so a
   downstream encoding pinning the literal `analyzer:run/1a2b` needs the one-token update (ADR-0001,
   **unowned**).
+  **0.3.7 (2026-09-12, patch) folds MA-12's KMI half, and it is one paragraph on purpose.** §7.1(f)
+  has required the three-valued answer since 0.3.5 and **nothing carried it**; the carrier is KCB
+  **§4.5** (KCB 0.5.2), and §7.1(f) now names it. KMI mints **no field, enum or envelope** for the
+  answers — §7 defines *the payloads, not the pipe* — so this clause keeps the **meanings** (which is
+  why §4.5 cites it rather than restating them, and why on disagreement about a meaning §7.1(f)
+  governs) and states the three consequences of the split rather than leaving them to be derived one
+  plane over: the answer is owed **per request**, *not held, and not expected* is **never
+  synthesized** by a party that did not determine it, and silence is *not reachable* — the absence of
+  an answer, never an assertion that no holder remains. §7.1(f)'s conclusion rule is unchanged in
+  either direction. **Additive**: no clause of §2–§6 moves, **no `asset` id moves**, no envelope
+  field, no lineage relation, media type, timeline shape or `fetch` grant changes, **no schema twin
+  is touched**, and a single-store deployment behaves exactly as at 0.3.6 (a store that never
+  distinguishes *not expected* from *pending* stays conformant — the fold requires only that one
+  which **does** has a name its caller reads the same way). **0.4.0 stays spent** on the EDL removal;
+  **DEFER-C is unmoved** and keeps its trigger — MA-12 asked that an answer be *sayable*, not that
+  any store be obliged to *hold*. Extent reasoned as MA-12's own row in
+  `docs/reference/federation-fold-dispositions.md`, beside the MA-1…MA-11 dispositions. **No count
+  closes and none is added**: count (i) changes shape a **fourth** time — *fold **MA-13**, then
+  re-run Steps 8–10* — since MA-13 stands and a fold does not close its own gate, count (ii) is
+  **KCB's** work and unmoved, and the conformance gate still fails on DR-4 and DR-8/DR-7. KMI stays
+  **candidate** and is not promotable.
 - `specs/conformance-scenario.md` — KCS 0.3.0, **candidate**. Declarative, replayable scenarios
   driving participants over their real MCP/A2A connections; cross-plane assertion vocabulary.
   The 0.3.0 determinism fold adds `structure_matches(a, b)` and requires generated-output
