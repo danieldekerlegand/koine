@@ -7,7 +7,7 @@
     "minting_authority": true,
     "kinds": ["entity", "activity", "run"],
     "external_anchors": ["wikidata"],
-    "minting_rules": { "path": "specs/identity.md", "note": "Run-scoped locals: analyzer:run/<runid> (KINP §6)." }
+    "minting_rules": { "path": "specs/identity.md", "note": "Run-scoped locals: analyzer:activity:<runid> (KINP §6)." }
   },
   "capability": {
     "agent_card": { "url": "https://analyzer.example/.well-known/agent-card.json" },

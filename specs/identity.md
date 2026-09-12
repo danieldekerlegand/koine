@@ -232,7 +232,7 @@ a reserved set. Substitute your own.
 |---|---|---|
 | `refkb` | identity / knowledge **authority** | Canonical authority for real-world entities, anchored to external authorities (§6, §4.4). |
 | `worldsim` | **world producer** (simulation / generative) | World/context IDs are namespaced further: `worldsim:world:<w>`; entities within a world use that world as their namespace — see §5. |
-| `analyzer` | **knowledge producer** (extraction pipeline) | Run-scoped locals: `analyzer:run/<runid>`. |
+| `analyzer` | **knowledge producer** (extraction pipeline) | Run-scoped locals: `analyzer:activity:<runid>` (§3.1). |
 | `mediastore` | **media producer** | Assets, devices, instruments, plugins, hardware models. |
 | `orchestrator` | control-plane **host** | Agents, roles, orgs (control plane). |
 | `provider` | capability **provider** | Orgs/agents that execute capabilities on the bus (transforms, trainers, model providers). |
@@ -300,7 +300,7 @@ Links are themselves assertions (§7), so they carry confidence, provenance, and
 
 ```prolog
 same_as(id(ent, analyzer, 'e-8842'), id(ent, refkb, 'napoleon-i'),
-        confidence(0.97), src('analyzer:run/1a2b')).
+        confidence(0.97), src('analyzer:activity:1a2b')).
 ```
 
 Relations in the equivalence layer:
@@ -572,7 +572,7 @@ splits the two times.
   "valid_time": { "start": "…", "end": null },   // when true IN ITS WORLD
   "prov": {                                        // W3C PROV shape
     "agent":    "orchestrator:agent:continuity-critic",
-    "activity": "analyzer:run/1a2b",
+    "activity": "analyzer:activity:1a2b",
     "asserted": "2026-07-17T12:00:00Z",            // transaction time
     "method":   "vision-analysis@2.3"
   }
@@ -600,7 +600,7 @@ splits the two times.
                                                 //   depict; claims extracted from this asset
                                                 //   default to this world (delta A)
   "attaches_to": ["refkb:ent:tr-808"],         // entities this asset depicts/realizes
-  "produced_by": "mediastore:run/…",
+  "produced_by": "mediastore:activity:…",
   "prov": { /* as above */ }
 }
 ```
@@ -903,9 +903,16 @@ rather than a re-run of it.
   count is unchanged — the KCS-encoding condition of
   [the ratification gate](README.md#the-ratification-gate), which `kcs:multi-authority` predates
   (**DR-8**) and must be **extended** rather than re-run. Nothing here touches the federation
-  surface: §4, §5, §6, §8, §9, §10 and §11 are byte-unchanged, no relation, envelope field or
-  resolution rule moves, and `registry/` is untouched. The reconciliation of the examples in §3.4,
-  §7.1, §7.2, KFT and KMI to the one decided spelling lands in this same version.
+  surface: **§5, §6, §8, §9, §10 and §11 are byte-unchanged**, no relation, envelope field or
+  resolution rule moves, and `registry/` is untouched. The reconciliation of this protocol's own
+  worked examples to the one decided spelling lands in **this same version**, which is why §4 is
+  not on that list: §4.2's worked `same_as` link, §7.1's assertion envelope and §7.2's asset
+  envelope each carried a legacy spelling in an *example*, and each now carries
+  `<namespace>:activity:<local-id>`. **No clause of §4.2, §7.1 or §7.2 moves** — the equivalence
+  relations, the envelope fields and their requiredness are untouched — and §3.4's `analyzer` row
+  moves only its *Notes* cell, never the prefix it registers. KFT's and KMI's copies of the same
+  two spellings are corrected in their own patch releases (KFT 0.7.1, KMI 0.3.6), each recorded
+  there under its own rules.
 
 - **Editorial** (2026-09-03) — **The federation re-run walked, and what it does not license.**
   0.4.0's fold was gated on a **re-run of

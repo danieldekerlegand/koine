@@ -59,10 +59,10 @@ ratified only after passing a concrete pressure test.
 |---|---|---|---|
 | [Identity & Namespace](specs/identity.md) (KINP) | How every entity gets a stable, shared name — the keystone the rest build on | 0.5.0 | 🟡 candidate |
 | [Grounding-Pack](specs/grounding-pack.md) (KGP) | How knowledge (facts, relationships, graphs) is exchanged | 0.6.0 | 🚧 candidate |
-| [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | 0.3.5 | 🚧 candidate |
+| [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | 0.3.6 | 🚧 candidate |
 | [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.5.0 | 🚧 candidate |
 | [Conformance-Scenario](specs/conformance-scenario.md) (KCS) | A declarative scenario — data, not code — that drives several **real** participants over their actual connections at once, and checks properties spanning all four planes, each tied to the clause it tests | 0.3.0 | 🚧 candidate |
-| [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 0.7.0 | 🚧 candidate |
+| [Fine-Tuning](specs/fine-tuning.md) (KFT) | How model fine-tuning is described across the above | 0.7.1 | 🚧 candidate |
 
 Each spec's header is the authority for its current version and status. The path from
 🚧 candidate back to ✅ ratified — which re-validations are outstanding and why — is tracked in

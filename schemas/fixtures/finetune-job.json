@@ -1,6 +1,6 @@
 {
   "kft_version": "0.7.0",
-  "job": "orchestrator:activity:ft-run/9f2a-r1",
+  "job": "orchestrator:activity:ft-run.9f2a-r1",
   "base_model": "refkb:model:qwen2.5-vl-3b-instruct",
   "base_model_descriptor": ["refkb:asset:blake3-mk1f2e3d4c5b"],
   "modality": "image-text-to-text",
@@ -21,13 +21,13 @@
         "egress": "exportable",
         "recordCount": 4820,
         "generatedAt": "2026-07-23T00:00:00Z",
-        "provenance": { "world": "worldsim:world:alderforest", "run": "analyzer:activity:gen-run/7c1a" }
+        "provenance": { "world": "worldsim:world:alderforest", "run": "analyzer:activity:gen-run.7c1a" }
       }
     ]
   },
   "resume": {
     "checkpoint": "orchestrator:asset:blake3-ck40a1b2c3d4",
-    "of_job": "orchestrator:activity:ft-run/9f2a",
+    "of_job": "orchestrator:activity:ft-run.9f2a",
     "at_step": 4000
   },
   "hyperparams": {
