@@ -74,7 +74,7 @@ vocabulary.
   as clearly-marked illustrative examples or in informative "known implementations" pointers.
 
 ## Current state
-- `specs/identity.md` — KINP 0.4.0, **candidate**. ADR-0012 makes the canonical
+- `specs/identity.md` — KINP 0.5.0, **candidate**. ADR-0012 makes the canonical
   identity-authority role federable: a single designated holder remains conformant, while
   multiple independently operated holders reconcile through KINP's existing namespace,
   provenance, and §4 safeguards; local offline-first minting remains unchanged. Candidate pending
@@ -117,6 +117,34 @@ vocabulary.
   Deltas A–E folded; three forks decided
   (single identity **authority role** for real-world entities, hybrid merge policy, `@world(W)`
   argument); `embedding_model` added.
+  **0.5.0 (2026-09-12) is the run-activity fold (IMP-7), and the status does not move.** §3.1 fixed
+  `<kind>` at a closed six and `<local-id>` at `[a-z0-9][a-z0-9._-]*`, and koine's own examples broke
+  both **and did not agree with each other**: §7.1's envelope and §3.4's `analyzer` row spelled a run
+  `analyzer:run/1a2b` (no kind segment, solidus outside the charset) while KFT §3/§5.2/§6 spelled it
+  `orchestrator:activity:ft-run/9f2a` (kind `activity`, absent from the enum, solidus again), with
+  KMI §2's `produced_by` carrying the first form — so a consumer could not pattern-match a run
+  activity across participants. Decided: **widen the kind enum, not the charset.** `activity` joins
+  the enum and §3.1 states the spelling normatively as `<namespace>:activity:<local-id>`, recognisable
+  **by its kind segment alone**; the charset is deliberately left alone because `<local-id>` is the
+  canonical IRI's final *path segment*, so admitting `/` would make the expansion non-invertible and
+  §3.2's CURIE↔IRI mapping stop being a function — a namespace wanting structure uses a separator
+  already admitted (`orchestrator:activity:ft-run.9f2a`), and that structure stays **opaque within the
+  namespace**. The rejected route — state the bare `<ns>:run/<runid>` normatively and correct §3.4 —
+  is on the record: it makes the kind segment optional for exactly one kind, which is what made the
+  two spellings unmatchable. **Minor** because §3.1's enum is surface a reader implements against and
+  a new admissible kind widens what a conformant participant must recognise (the reading KFT 0.7.0
+  gave two new `modality` tokens), and **additive**: nothing §3.1 admitted at 0.4.0 stops being
+  admitted, **no prefix moves** (§3.4's immutability rule binds the prefix), and **no claim id moves**
+  — all of `prov` is outside KGP §3.1's hashed set and `src(…)` is an annotation beside
+  `confidence(…)`, never a relation argument. The two legacy spellings were never conformant, so
+  nothing conformant is invalidated; the transition is stated rather than guessed (a resolver MAY
+  accept either on **read** and MUST return the `activity` form as canonical; a minter MUST NOT emit
+  either). `src` is **answered, not left standing** — it stays, because removing it would narrow a
+  published closed enum while this fold widens one, and because the useful fact is that it is a **name
+  collision** with the `src(…)` annotation of §4.2/§7.1 and not evidence of a use; a re-open condition
+  is stated. **No new gate**: KINP's single count is unchanged — the KCS-encoding condition, which
+  `kcs:multi-authority` predates (**DR-8**) and must be **extended**, downstream and unowned — and
+  §4–§6 and §8–§11 are byte-unchanged.
 - `specs/grounding-pack.md` — KGP 0.6.0, **candidate** (ratified 2026-08-28 at 0.5.2; demoted again 2026-09-12 by the `arg_types` fold at the end of this bullet). Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
   **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states

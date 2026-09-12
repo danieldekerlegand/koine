@@ -57,7 +57,7 @@ ratified only after passing a concrete pressure test.
 
 | Specification | In plain terms | Version | Status |
 |---|---|---|---|
-| [Identity & Namespace](specs/identity.md) (KINP) | How every entity gets a stable, shared name — the keystone the rest build on | 0.4.0 | 🟡 candidate |
+| [Identity & Namespace](specs/identity.md) (KINP) | How every entity gets a stable, shared name — the keystone the rest build on | 0.5.0 | 🟡 candidate |
 | [Grounding-Pack](specs/grounding-pack.md) (KGP) | How knowledge (facts, relationships, graphs) is exchanged | 0.6.0 | 🚧 candidate |
 | [Media-Interchange](specs/media-interchange.md) (KMI) | How media (assets, edit lists, metadata) is exchanged | 0.3.5 | 🚧 candidate |
 | [Capability-Bus](specs/capability-bus.md) (KCB) | How a system advertises a capability and another discovers and calls it | 0.5.0 | 🚧 candidate |

@@ -42,7 +42,7 @@ Six specs, versioned independently; each spec's own header is authoritative for 
 
 | Spec | Protocol | Plane | Version · status |
 |---|---|---|---|
-| [`specs/identity.md`](specs/identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.4.0 · 🟡 candidate |
+| [`specs/identity.md`](specs/identity.md) | **KINP** — Identity & Namespace | keystone — the shared namespace every join is expressed in | 0.5.0 · 🟡 candidate |
 | [`specs/grounding-pack.md`](specs/grounding-pack.md) | **KGP** — Grounding-Pack | data — knowledge (claims / provenance / graph) | 0.6.0 · 🚧 candidate |
 | [`specs/media-interchange.md`](specs/media-interchange.md) | **KMI** — Media-Interchange | data — media (assets, lineage, OTIO timelines, transforms) | 0.3.5 · 🚧 candidate |
 | [`specs/capability-bus.md`](specs/capability-bus.md) | **KCB** — Capability-Bus | control — discover / invoke / subscribe / fetch over MCP + A2A | 0.5.0 · 🚧 candidate |
