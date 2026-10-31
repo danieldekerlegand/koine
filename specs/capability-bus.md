@@ -1,14 +1,39 @@
 # Koine Capability-Bus Protocol (KCB)
 
-**Spec version:** 0.5.8
+**Spec version:** 0.5.9
 **Status:** Candidate
-**Last updated:** 2026-09-12
+**Last updated:** 2026-10-31
 **Applies to:** every participant on the bus — the control-plane host, capability providers, and
 capability consumers (most participants are both provider and consumer).
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.x) for identifiers;
 [`grounding-pack.md`](grounding-pack.md) (KGP) and `media-interchange.md` for the payloads it
 carries.
 
+> **Status note (0.5.9):** stays **Candidate**, now on **seven** counts, and **none of the six it
+> had moves.** 0.5.9 adds **§4.6, invocation context** — not a fold: no walk found it. Participants
+> that needed to tell a provider something about one call beyond its input, version, price and posture
+> (typically which record the result attaches to) had no carrier on this bus and minted
+> participant-named headers outside any contract. `invoke` gains one OPTIONAL operand, **`context`**:
+> a flat map of KINP §3.4-namespaced keys (`<namespace>:<name>`) to printable-ASCII strings, where the
+> namespace names whose **definition** governs the key, not who sent it. It is **outside any
+> signature** and **never authority** — never read for a grant, an issuer, a ceiling's unit, a posture
+> or §4.4c's resolution order — and a provider that acts on a value authorizes that act as if the value
+> were input. A recognised key that cannot be honoured is refused **context refused**, never dropped
+> (§4.4c's instrument once more); an unrecognised key is ignored (§7.2's rule, applied to keys). Its
+> carriers are **named**: the `_meta` member `org.w3id.koine/kcb-context` on MCP `tools/call`, the same
+> member of the starting message's `metadata` on A2A, and — for a participant that already carries a
+> call over plain HTTP, which KCB does not bind and this does not start to — one **`KCB-Context`**
+> header, an RFC 9651 Dictionary whose member keys write `:` as `.`, and whose parse failure is a
+> malformed request, never an absent context. A context is scoped to one call and not forwarded
+> downstream. **Patch**, on §7.3b's axis: §7.2's table is consulted for the two questions it answers
+> and both are **No** (no published digest moves — §7.1 step 1 untouched — and no live subscriber
+> breaks, `subscribe` carrying no `context`); no verb, plane, port kind, grant or authority role is
+> added; and **0.6.0 stays spoken for** by §2.3's removal. One pin row is added — **RFC 9651** — in
+> [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md). **Count
+> (vii)** is a hostile walk of §4.6, unowned, with one residual declared in advance (a caller cannot
+> tell a key read from a key ignored); no scenario file is added, because a new one breaks the
+> downstream KCS encoding set's set-equality, so where the walk lives is the owner's call.
+>
 > **Status note (0.5.8):** stays **Candidate** on the same **six** counts, and **none of them
 > moves.** 0.5.8 folds **BP-7** — the finding count **(iv)**'s 2026-09-03 walk of
 > [`../scenarios/kcb-subscription-firehose.md`](../scenarios/kcb-subscription-firehose.md) returned at
@@ -1327,7 +1352,7 @@ KCB 0.5.1 (2026-09-12)* section.
 |---|---|---|
 | **discover** | registry query (§3) | find providers by capability / interchange type / world |
 | **describe** | one A2A agent-card fetch (`/.well-known/agent-card.json`) + MCP `tools/list` for tool schemas | fetch the provider's AgentCard **including its KCB extension** (`capabilities.extensions[]`, §2) in a single fetch — there is no second `/.well-known/kcb-manifest.json` to retrieve |
-| **invoke** | MCP `tools/call` / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference. The target **version** and the **quoted cost** the caller gated against are optional operands, and which major runs is resolved by a stated rule with no default — §4.4. A declared autonomy posture is an optional operand, and the capability's declared effect class is what it reads — §4.3. |
+| **invoke** | MCP `tools/call` / A2A task | run a capability; inputs/outputs are KINP ids + KGP/media payloads by reference. The target **version** and the **quoted cost** the caller gated against are optional operands, and which major runs is resolved by a stated rule with no default — §4.4. A declared autonomy posture is an optional operand, and the capability's declared effect class is what it reads — §4.3. Caller-supplied **context** is an optional operand that is unsigned and authorizes nothing, on named carriers — §4.6. |
 | **subscribe** | A2A streaming (MCP notifications only on the pre-2026-07-28 wire — §4.1) | register for a world or capability; receive KGP **deltas** (KGP §6) or media events as they occur. Rate, resumption, and the in-band control channel are §4.2; posture is §4.3; the §7 successor / deprecation / removal signals ride that same channel — §7.3g. |
 | **fetch** | CAS GET by `asset` id | retrieve asset bytes by their KINP id; integrity self-verifies against the hash (delta G). Requires a `fetch:asset` grant (§5). The response carries exactly one **named outcome** — `held` / `not-held-pending` / `not-held-not-expected` / `refused` — owed **per request**, never synthesized, and absent reading *pending*; the names are §4.5, their meanings are KMI §7.1(f). |
 
@@ -1353,7 +1378,7 @@ or a session id.**
 | §2 `params.mcp` | An **address**, not a connection | Wire-independent. The field names where a peer's MCP surface is; it has never carried, or implied, a session. |
 | §3 registry crawl | Pull over a peer's MCP/A2A surfaces | Wire-independent. The crawl reads the KCB extension off the **A2A card** (§2); its MCP leg is request/response. |
 | §4 **describe** — `tools/list` | Request/response | Wire-independent. KCB reads the manifest off the A2A card, so `tools/list` supplies *tool schemas* only. The pinned revision's mandatory **`server/discover`** is the MCP-native way to learn what a server is; KCB neither requires nor forbids calling it, because the KCB payload is not served from there. |
-| §4 **invoke** — `tools/call` | Request/response | Wire-independent, and *better* served by the pinned revision: a capability grant (§5) and the invoked capability's version travel **per call**, which is exactly what per-request `_meta` is for (§4.4a/b). Nothing in §5 or §7 reads state left by a previous call. The tool the call addresses is the one the manifest's `binding` names (§2.4), never one derived from the capability name. |
+| §4 **invoke** — `tools/call` | Request/response | Wire-independent, and *better* served by the pinned revision: a capability grant (§5) and the invoked capability's version travel **per call**, which is exactly what per-request `_meta` is for (§4.4a/b). Nothing in §5 or §7 reads state left by a previous call. The tool the call addresses is the one the manifest's `binding` names (§2.4), never one derived from the capability name. §4.6's `context` rides the same per-request `_meta`, under the named member `org.w3id.koine/kcb-context`. |
 | §4 **fetch** | CAS `GET` by asset id | Wire-independent — not an MCP call at all. |
 | §4 **subscribe** | Server→client **stream** | **The one session-shaped clause.** A stateless core has no client-scoped channel a server may push to, so under the pinned revision a `subscribe` stream is delivered over **A2A streaming**. "MCP notifications" names the pre-2026-07-28 wire; a participant on that wire MAY still deliver there, and a consumer MUST NOT assume it. |
 
@@ -2234,6 +2259,136 @@ Count (vi) now reads *fold MA-17 and MA-18, then re-run Steps 8–10 again*; the
 restated and none moves. Record:
 [`../scenarios/e2e-multi-authority.md`](../scenarios/e2e-multi-authority.md) § *Re-run — Steps 8–10
 walked by hand against KCB 0.5.2 / KMI 0.3.7 (2026-09-12)*.
+
+---
+
+### 4.6 Invocation context — a carrier that authorizes nothing (0.5.9)
+
+A caller sometimes has to tell a provider something about **this call** that is none of the things
+§4.3 and §4.4 already carry — not the capability's input, not the version (§4.4a), not the price it
+gated against (§4.4d), not a posture (§4.3b): typically *which of the provider's own records the
+result attaches to*, or *which record on the caller's side the call answers*. Nothing in this spec
+carried such a value, so participants that needed one minted participant-named transport headers
+outside any contract — an **unversioned side channel** that a third participant cannot read, no clause
+bounds, and nothing stops from being read as authority. This section names one carrier and bounds it.
+(§4.3g's sentence that §4.3 defines no correlation id is about §4.3's own machinery and is unchanged.)
+
+This section is **additive at every surface**: the operand is OPTIONAL on read and on write, and an
+`invoke` carrying none is served exactly as at 0.5.8.
+
+**a. The operand.** `invoke` (§4) MAY carry an OPTIONAL **`context`** — a flat JSON object of
+namespaced keys to string values — in the operand shape §4.4a established:
+
+```jsonc
+"context": {
+  "worldsim:production-id": "prod-7f3a",   // a key the PROVIDER's namespace defines: attach the result here
+  "orchestrator:project-id": "proj-42"     // a key the CALLER's namespace defines: the record this call answers
+}
+```
+
+Normative:
+
+- **A key is `<namespace>:<name>`**, matching `^[a-z][a-z0-9-]*:[a-z][a-z0-9-]*$`. `<namespace>` MUST be
+  a prefix registered under KINP §3.4 — the registry and its collision rule are reused, not restated —
+  and `<name>` follows the same lowercase grammar. Neither part admits `.`, which is what keeps (c)'s
+  HTTP rendering lossless.
+- **The namespace names whose definition governs the key, not who sent it.** A caller MAY set a key
+  under another participant's namespace — the common case is a key a provider defines, set by its
+  caller — and a participant MUST NOT define a key under a namespace not registered to it. koine
+  defines no context keys and keeps no key registry: a key means what its namespace's holder publishes
+  it to mean.
+- **A value is a string of printable US-ASCII (`%x20`–`%x7E`)** — the character set of an RFC 9651
+  String (§3.3.3) — so every value renders on every carrier in (c) without transcoding. A participant
+  defining a key whose values need other characters encodes them into that set; a KINP identifier
+  (§3) already lies in it.
+- **An empty object is the operand absent.** Keys are unique by construction (a JSON object).
+
+**b. It is unsigned, and it is never authority.** The following are NORMATIVE:
+
+- **Outside the signature.** Where an invocation is signed (§5, *Signing*), `context` is not part of
+  the signed payload, and a verifier MUST NOT require it to be. A context value is therefore the
+  presenting party's **claim**, attributable to no one.
+- **Never read for authorization.** A provider MUST NOT read `context` to satisfy, widen or stand in
+  for a grant (§5), to choose an accepted issuer or a ceiling's unit (§5, MA-6), to relax a posture
+  (§4.3), or as a case or cross-check of §4.4c's resolution order. A context key is never a fifth case
+  of that order and never a substitute for `version` or `planned_leg`.
+- **Acting on a value is authorized as if the value were input.** A provider that acts on a value —
+  attaching a result to the record it names, say — MUST authorize that act under the grant the call
+  already carries, exactly as it would had the caller named the record in the capability's input,
+  and MUST NOT treat the value's presence as evidence that the caller may reach the record it names.
+- **A recognised key that cannot be honoured is refused, never dropped.** A provider that recognises a
+  key and cannot act on its value — the record does not exist, or the caller may not reach it — MUST
+  refuse the `invoke` **context refused**, naming the key, and MUST NOT proceed as though the key were
+  absent: a link target silently dropped is a result attached to the wrong place. This is §4.4c's
+  instrument once more — where no party is entitled to guess, this bus refuses rather than assumes.
+- **An unrecognised key is ignored.** A provider MUST ignore a key it does not define or recognise,
+  and MUST NOT refuse a call for carrying one — §7.2's ignore-unknown-fields rule, applied to keys.
+  That is safe by the second bullet: no key can authorize, so no ignored key can serve a caller more
+  than its grant.
+
+**c. The carriers — each named, so two conformant participants put it in the same place.**
+
+| Binding | Where `context` travels | Exact name |
+|---|---|---|
+| MCP `tools/call` (§4.1) | a member of the request's per-request `_meta` (§1.1) | **`org.w3id.koine/kcb-context`**; its value is (a)'s object |
+| A2A task | a member of the `metadata` of the message that starts the task | **`org.w3id.koine/kcb-context`**; its value is (a)'s object |
+| A plain HTTP request, outside MCP and A2A | one request header | **`KCB-Context`**, an RFC 9651 Dictionary |
+
+Normative:
+
+- **The key's prefix is KCB's existing root, reversed.** `org.w3id.koine/` is the reverse-DNS form of
+  the `https://w3id.org/koine/` root §2.3 already identifies KCB by, written in MCP's `_meta`
+  key-name format (a dotted prefix, a slash, a name); A2A uses the same string so a gateway between the
+  two copies one member.
+- **KCB defines no HTTP binding of `invoke`, and this clause creates none** — §4's verbs stay on MCP
+  and A2A. It fixes how a participant that **already** carries a call over plain HTTP renders this
+  operand, so that it needs no participant-named header. `KCB-Context` is an RFC 9651 **Dictionary**
+  (§3.2): each member's key is the context key with its `:` written as `.` — lossless, because (a)'s
+  grammar admits no `.` in either part, and an RFC 9651 key, because it starts with a lowercase letter
+  and holds only lowercase letters, digits, `-` and `.` — and each member's value is an RFC 9651
+  **String** carrying the context value unchanged. A sender MUST NOT attach parameters to a member,
+  and a receiver MUST ignore any it finds.
+
+  ```http
+  KCB-Context: worldsim.production-id="prod-7f3a", orchestrator.project-id="proj-42"
+  ```
+
+- **An unparseable field is a malformed request, never an absent one.** A `KCB-Context` field that
+  fails RFC 9651 Dictionary parsing, or a member whose value is not a String, makes the request
+  malformed — RFC 9651 §4.2's second branch, chosen here over its first — and the provider MUST
+  refuse it. Ignoring the field (the first branch) would drop a link target silently, which (b)
+  forbids for a single key and could not sensibly permit for all of them.
+- **One operand, one place.** Where the call is an MCP or A2A message that happens to travel over
+  HTTP, the message member above is the operand, and a `KCB-Context` header on that request MUST NOT
+  be read as one.
+
+**d. A context is scoped to one call.** It is addressed to the provider of the `invoke` it rides. A
+provider MUST NOT copy it onto its own downstream invocations: where a downstream leg needs context,
+the provider — that leg's caller — sets what that leg needs. The values name records on one side of an
+ownership boundary (§4.3), and forwarding them carries one participant's identifiers to a party
+neither side chose.
+
+**e. Bounded on purpose.** This section defines **no** correlation or trace identifier — where a record
+wants one it is a W3C Trace Context `trace-id` as KCS §9 profiles it, and koine mints no parallel one;
+**no** key registry; **no** session or accumulated state — each call carries its own, as §4.1's
+stateless audit requires; **no** echo or acknowledgement of `context` in any response; **no** size
+limit beyond the carrier's own; and **no** `context` on `subscribe`, `discover`, `describe` or `fetch`.
+External standards cited here are pinned in
+[`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) (RFC 9651; MCP and
+A2A as §1.1 restates them).
+
+**Re-ratification — this adds a seventh count.** §4.6 is new normative surface on a verb, and no
+existing pass exercises it, so it re-enters validation on a count of its own, exactly as §4.5 did.
+Count **(vii)**: a hostile hand-walk of §4.6 driving one caller and one provider across an ownership
+boundary — linking a result to an existing provider record, a key the provider does not recognise, a
+recognised key whose record the caller may not reach, the `KCB-Context` rendering and its parse
+failure, and a provider with a downstream leg. **One residual is declared before the walk, not left
+for it to find:** (b)'s *ignore an unrecognised key* together with (e)'s *no echo* means a caller
+cannot tell a key that was read from a key that was ignored, short of the provider's own published
+definition of its keys. **No scenario file is added with this section** — a new file in `scenarios/`
+breaks the downstream KCS encoding set's set-equality with no local red light — so whether count
+(vii) walks a new scenario or new steps in an existing one is the spec owner's call. **Unowned.** The
+six existing counts are restated and none moves.
 
 ---
 
@@ -3233,6 +3388,37 @@ most important thing an owner citing this run must understand:
   DR-13 adds no count, removes no count, and promotes nothing — all five stand.
 
 ## Changelog
+
+- **0.5.9** (2026-10-31, patch) — **§4.6 added: invocation context, a carrier that authorizes
+  nothing.** Not a fold — no walk found it; it closes a gap participants hit in practice, where a
+  caller had to tell a provider something about one call that is none of its input, version (§4.4a),
+  quoted cost (§4.4d) or posture (§4.3b) — typically which of the provider's records the result
+  attaches to — and, finding no carrier, minted participant-named transport headers outside any
+  contract. `invoke` gains one OPTIONAL operand, **`context`**: a flat JSON object of keys matching
+  `^[a-z][a-z0-9-]*:[a-z][a-z0-9-]*$`, the namespace a KINP §3.4 prefix naming whose **definition**
+  governs the key (not who sent it), to strings of printable US-ASCII. **(b)** It is outside any signed
+  payload, **never read for authorization** (grant, accepted issuer, ceiling unit, posture, §4.4c's
+  order or cross-checks), and a provider acting on a value authorizes the act as though the value were
+  input; a recognised key that cannot be honoured is refused **context refused**, naming the key,
+  never silently dropped; an unrecognised key is ignored under §7.2's rule. **(c)** Three named
+  carriers: `_meta` member `org.w3id.koine/kcb-context` (MCP `tools/call`), the same member of the
+  starting message's `metadata` (A2A), and one **`KCB-Context`** header — an RFC 9651 Dictionary,
+  member key = context key with `:` written as `.`, member value an RFC 9651 String — for a
+  participant that already carries a call over plain HTTP; KCB still defines no HTTP binding of
+  `invoke`. An unparseable `KCB-Context` is a malformed request (RFC 9651 §4.2's second branch), and a
+  header on an HTTP request that carries an MCP or A2A message is not the operand. **(d)** Scoped to one
+  call, never copied downstream. **(e)** No correlation id (that is KCS §9's Trace Context profile), no
+  key registry, no state, no echo, no `context` on the other four verbs. §4's verb table and §4.1's
+  `invoke` row each gain a pointer. **Patch** on §7.3b's axis: §7.2's two questions are both **No** —
+  §7.1 step 1 is byte-unchanged so no published `schema_id` or digest moves, and `subscribe` carries no
+  `context` so no live subscriber breaks; no verb, plane, port kind, grant or authority role is added;
+  **0.6.0 stays spoken for** by §2.3's removal. One upstream pin row is added (**RFC 9651**, September
+  2024) in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md).
+  **A seventh count opens** — count **(vii)**, a hostile walk of §4.6, **unowned**, with one residual
+  declared in advance (no echo, so a caller cannot tell a key read from a key ignored); no scenario
+  file is added with it, deliberately, since a new file in `scenarios/` breaks the downstream KCS
+  encoding set's set-equality, and where the walk lives is the owner's call. The six existing counts
+  are restated and none moves. **KCB is not promoted and is not promotable.**
 
 - **Editorial** (2026-09-12) — **count (iv) re-run by hand against 0.5.8 and it does NOT close; no
   version and no clause moves.** The first text carrying both of that count's folds — BP-8's

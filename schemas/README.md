@@ -11,7 +11,7 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
 ## Layout
 
 - [`provenance.schema.json`](provenance.schema.json) — shared `$defs` every other schema `$ref`s:
-  `contractVersion`, `provenance`, `license`, `tier`, `dialect`, `egress`, `csid`, `assetId`, `nodeRef`.
+  `contractVersion`, `provenance` (with its optional `reproduction`, KGP §7.1.1), `license`, `tier`, `dialect`, `egress`, `csid`, `assetId`, `nodeRef`.
   The machine-readable form of the KINP [`identity.md`](../specs/identity.md) §7.1 assertion envelope
   and the KGP [`grounding-pack.md`](../specs/grounding-pack.md) §5/§7 axes.
 - [`grounding-pack.schema.json`](grounding-pack.schema.json) — KGP §2 grounding-pack envelope
@@ -129,7 +129,8 @@ The license-class and trust-tier vocabularies the schemas reference live in koin
 [`../policy/`](../policy/):
 
 - [`../policy/license-classes.json`](../policy/license-classes.json) — the SPDX license-class
-  allowlist (`public-domain` / `attribution` / `share-alike` / `proprietary` / `personal`) backing
+  allowlist (`public-domain` / `attribution` / `share-alike` / `non-commercial` / `proprietary` /
+  `personal`) backing
   every record `license` field (KGP §7.1). `Apache-2.0` — koine's own [`../LICENSE`](../LICENSE) —
   classes under **attribution**.
 - [`../policy/trust-tiers.json`](../policy/trust-tiers.json) — the provenance trust tiers
