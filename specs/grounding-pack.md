@@ -1,8 +1,8 @@
 # Koine Grounding-Pack Protocol (KGP)
 
-**Spec version:** 0.6.0
+**Spec version:** 0.7.0
 **Status:** candidate
-**Last updated:** 2026-09-12
+**Last updated:** 2026-10-31
 **Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
 and control-plane hosts that broker packs on behalf of agents.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
@@ -383,6 +383,7 @@ normative, so the documents that define them are too. Their versions live there 
 | `valid_time` | `time:hasTime` → a `time:ProperInterval` bearing `time:hasBeginning` / `time:hasEnd`, each an instant with `time:inXSDDateTimeStamp` | `xsd:dateTimeStamp`, §3.2's fixed-precision UTC form | **Reused** — W3C OWL-Time. An open-ended interval omits the missing bound rather than encoding a sentinel. |
 | `embedding_model` | `kgp:embeddingModel` | the KINP canonical IRI of the model entity (KINP §3) | **Minted.** The value is an identity-plane reference, so no external metadata term fits; naming the model as an entity keeps it resolvable rather than a bare string. |
 | `license` (§7.1) | `dcterms:license` for the SPDX identifier, **and** `kgp:licenseClass` for its §7.1 class | `xsd:string` (SPDX id) / `xsd:string` (one of §7.1's six classes) | **Reused + minted.** The SPDX identifier goes under the established term; the *class* is koine's own admission enum and has no external equivalent. Both travel, because the class is what §7.1 filters on and the identifier is what a consumer re-classifies from. |
+| `license` (§7.1), the classes held — **since 0.7.0** | `kgp:holdsLicenseClass`, emitted **once per class** the identifier holds (§7.1's multi-class rule) | `xsd:string` — a class name defined in [`../policy/license-classes.json`](../policy/license-classes.json); repeatable, unordered | **Minted, superseding `kgp:licenseClass` above.** That term was ratified at 0.5.2 as *one* value from a six-class set that named `permissive` and not `personal`; 0.7.0's class set and its two-class identifiers are a different value space, so by the rule below they are a new term, not an edit. A 0.7.0 producer MUST emit `kgp:holdsLicenseClass` and MUST NOT emit `kgp:licenseClass`, which would force it to pick one class. A consumer reading a graph written under ≤ 0.6.x MAY read `kgp:licenseClass` under its 0.5.2 value space, and SHOULD re-classify from `dcterms:license` either way. |
 | egress class (§7.2) | `kgp:egressClass` | `xsd:string` — `exportable` \| `local-only` | **Minted.** No external vocabulary models a boundary-crossing prohibition of this kind; carried for re-checking only (§7.2 — the filter itself ran at pack construction). |
 | dialect tier (§5) | `kgp:dialect` | `xsd:string` — `grounding-only` \| `horn-safe` \| `full-prolog` | **Minted.** A koine portability tier with no external counterpart. |
 | `prov` (§2, §7) | PROV-O as it stands — `prov:wasGeneratedBy` (the activity), `prov:wasAttributedTo` (the agent), `prov:generatedAtTime` | per PROV-O | **Reused** — W3C PROV. §2's `prov` shape was shaped after this vocabulary, so the projection names it rather than restating it. |
@@ -408,7 +409,7 @@ GRAPH <https://id.koine.example/world/worldsim/alderforest> {
       kgp:confidence    "0.55"^^xsd:decimal ;
       prov:wasGeneratedBy <https://id.koine.example/agent/analyzer/run-1a2b> ;
       dcterms:license   "CC-BY-4.0" ;
-      kgp:licenseClass  "attribution" ;
+      kgp:holdsLicenseClass "attribution" ;
       kgp:egressClass   "exportable" ;
       kgp:dialect       "grounding-only" .
 }
@@ -474,7 +475,9 @@ The check is reproducible from §5 of that record: `make check-knowledge` downst
 `sha256-27fd7839…b4edb`). Two limits on what the close licenses. It closes **this** gate and nothing
 else; and a `ratified` status does not freeze the evidence behind it — the artifact is current only
 while that check stays green downstream, and a failure there is a finding against this section,
-re-opening it the ordinary way.
+re-opening it the ordinary way. **Since 0.7.0** that evidence covers `kgp:licenseClass`, the term
+0.7.0 supersedes, and not `kgp:holdsLicenseClass`, the term it mints: extending the fixture to a
+two-class record is a re-ratification leg (see the 0.7.0 changelog entry).
 
 The tracking marker `64-kgp-projection-roundtrip-fixture` was retired on 2026-08-22 on the
 understanding that the gate had closed, and that retirement was **premature**: the work it rested on
@@ -576,8 +579,12 @@ claim identity* (§3.1), a consumer can slice a pack without changing what any c
 
 ```
 accept records where prov.agent ∈ trusted ∧ confidence ≥ 0.9 ∧ world = consensus-reality
-            ∧ license.class ∈ {public-domain, permissive, attribution}
+            ∧ classes(license) ⊆ {public-domain, attribution}
 ```
+
+`classes(license)` is the set of license classes the record's `license` identifier is listed under
+in the policy file (§7.1) — a property **derived** from the identifier, never a field the record
+carries.
 
 Merges preserve **all** provenance for a shared `claim` id (multiple `prov` records per
 claim), so "who told us this, and how sure were they" is always answerable — the basis for the
@@ -589,18 +596,90 @@ itself, in any encoding.
 
 ### 7.1 License-class policy (adopted from the existing bridges)
 
-Every entity/assertion record carries an SPDX `license` — an identifier from the SPDX license
-list release pinned in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md), which is
-also where the class → identifier mapping in [`../policy/license-classes.json`](../policy/license-classes.json)
+Every entity/assertion record carries a `license` — an identifier from the SPDX license
+list release pinned in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md), or one of
+the pseudo-ids the policy file defines — and that pin table is also where the class → identifier
+mapping in [`../policy/license-classes.json`](../policy/license-classes.json)
 is re-resolved on the drift-check cadence. The pack manifest carries a
-`license_policy` — a class-based admission allowlist. Licenses classify into `public-domain` /
-`permissive` / `attribution` / `share-alike` / `non-commercial` / `proprietary`; a consumer
-admits **per record** and **rejects with a report** anything outside its allowlist (default:
-`public-domain` + `permissive` + `attribution`). This is a first-class filter alongside
+`license_policy` — a class-based admission allowlist.
+
+**The class set, the identifier → class mapping and the default allowlist are defined once, in the
+policy file**, and restated here only for readability; on disagreement the policy file wins and this
+paragraph is the defect. As of `policyVersion` 0.2.0 licenses classify into `public-domain` /
+`attribution` / `share-alike` / `non-commercial` / `proprietary` / `personal`. There is **no
+separate `permissive` class**: permissive licences that require attribution (`MIT`, `Apache-2.0`)
+class under `attribution`. The **default allowlist is `public-domain` + `attribution`**; a
+`share-alike`, `non-commercial`, `proprietary` or `personal` record is admitted only by a consumer
+whose allowlist names that class, and a consumer that admits one takes on its obligations.
+
+Admission (NORMATIVE):
+
+- A record whose `license` is blank, unknown, or listed under **no** class is **invalid** at every
+  boundary; a producer MUST resolve it and MUST NOT default it silently.
+- An identifier listed under **more than one** class **holds every class it is listed under** —
+  a share-alike non-commercial licence (e.g. `CC-BY-NC-SA-4.0`) holds both `share-alike` and
+  `non-commercial`. A consumer MUST admit such a record only if **every** class it holds is on its
+  allowlist, and an admitted record carries the obligations of **every** class it holds. A
+  consumer MUST NOT pick one of the classes, and MUST NOT rank them to choose the less restrictive.
+  The §4.1 projection carries each class held as its own `kgp:holdsLicenseClass` value.
+- A consumer admits **per record** and **rejects with a report** anything outside its allowlist.
+- A pack's license manifest partitions its record counts by class; a record holding more than
+  one class is counted under each, so the per-class counts may sum to more than the record
+  count.
+
+This is a first-class filter alongside
 confidence and provenance, not an afterthought — it was already built and proven in existing
 producer-side license classifiers, and is lifted into the contract per ADR-0002 (reverse flow —
 a deployment-history ADR, held in that deployment's own integration repo). License is
 carried on records (not in the claim hash), so it never affects claim identity.
+
+#### 7.1.1 Terms for a reproduction (NORMATIVE)
+
+A record whose subject is a **reproduction** of a pre-existing work — a scan, photograph or other
+copy made by a holding institution or another third party — rests on three statuses that are
+independent of one another, and a single `license` cannot say which of them decided it:
+
+1. **the underlying work's status** — the work reproduced, not the copy;
+2. **any right in the reproduction itself** — a right that may exist in the copy separately from
+   the work, which differs by jurisdiction;
+3. **the holder's terms** — the terms of use the holding institution states for the copy.
+
+A producer MAY carry them as `provenance.reproduction` (`$defs/reproduction` in
+[`../schemas/provenance.schema.json`](../schemas/provenance.schema.json)), an optional object with
+exactly these three members, each required when the object is present:
+
+| Member | Shape | Values |
+|---|---|---|
+| `underlyingWork` | token | `public-domain-by-age` · `in-copyright` · `unknown` |
+| `reproductionRight` | `{ jurisdiction, status }` | `jurisdiction`: the jurisdiction whose law the status is stated under, as the producer names it; `status`: `none` · `exists` · `unknown` |
+| `holderTerms` | `{ class, url, retrieved_at, text? }` | `class`: `open` · `attribution` · `non-commercial` · `none-stated`; `url`: where the terms were read; `retrieved_at`: when (ISO-8601); `text`: the holder's stated terms, verbatim |
+
+Rules:
+
+- **`license` stays the single admission field.** The object *explains* a record's `license`; it
+  is never an admission input. A consumer MUST admit or reject the record on its `license` class
+  per §7.1, and MUST NOT admit a record on the strength of `reproduction` alone, nor read its
+  presence as changing the record's class.
+- **A consumer MAY re-check.** A consumer MAY derive its own reading from the three statuses and,
+  where that reading disagrees with the record's `license`, reject the record **with a report** on
+  §7.1's per-record rule. KGP does **not** define the mapping from the three statuses to a class:
+  it depends on jurisdiction and on legal judgement, and is each participant's policy.
+- **`unknown` is a value, not an omission.** A producer that carries the object states all three
+  members; a status it has not established is `unknown` (or, for the holder's terms, `none-stated`
+  where the holder states none), never a missing member.
+- Like every other `provenance` field, the object is **excluded from the claim hash** (§3.1), so it
+  never affects claim identity. §4.1's annotation vocabulary is unchanged: no `kgp:` term is minted
+  for it, so a projection carries it under §4.1's rule for an annotation outside the vocabulary —
+  carried through the round-trip or reported, never silently dropped.
+
+*Illustrative (informative):* a library's scan of a 1770 printed map, held in the US, might carry
+`underlyingWork: public-domain-by-age`, `reproductionRight: {jurisdiction: "US", status: "none"}`
+(in US case law a slavish photograph of a public-domain work is not original — *Bridgeman Art
+Library v. Corel Corp.*, S.D.N.Y. 1999) and `holderTerms: {class: "open", …}`. The same map held
+in the EU might state `status: "none"` under Directive (EU) 2019/790 Art. 14, which removes rights
+in reproductions of public-domain works of visual art unless the reproduction is itself original;
+whether a given work falls under that article is the producer's legal reading, which is exactly
+what this object records instead of discarding.
 
 ---
 
@@ -671,6 +750,76 @@ Ratified 2026-07-17.
    attributable. Token issuance/rotation lives in the control-plane host's infra, not here.
 
 ## Changelog
+
+- **0.7.0 — the licence-class fold: §7.1 and the policy file state one class set, and a share-alike
+  non-commercial licence holds both classes** (2026-10-31). Folds
+  [INT-8](../docs/reference/interop-trial.md#int-8-new-blocking-the-licence-classes-in-the-spec-and-in-the-policy-file-are-different-sets)
+  (blocking): §7.1 named `permissive` and `non-commercial`, which
+  [`../policy/license-classes.json`](../policy/license-classes.json) did not define; the file defined
+  `personal`, which §7.1 did not name; and the two stated different default allowlists, so
+  `Apache-2.0` — koine's own licence — was admitted by one artefact and not by the other. A
+  non-commercial source therefore had **no class** and was invalid at every boundary, even inside a
+  producer that only meant to hold it locally. Five edits. **(1)** The policy file (`policyVersion`
+  0.1.1 → **0.2.0**) gains a **`non-commercial`** class — `CC-BY-NC-3.0`, `CC-BY-NC-4.0`,
+  `CC-BY-NC-SA-3.0`, `CC-BY-NC-SA-4.0`, `CC-BY-NC-ND-4.0`, all on the pinned SPDX release — whose
+  obligation is *no commercial use*, and which sits **outside** the default allowlist; the two NC-SA
+  ids are also listed under `share-alike`. **(2)** §7.1 states that the class set, the mapping and
+  the default allowlist are defined **once**, in the policy file, which wins on disagreement; it
+  restates the six classes (`permissive` removed — `MIT` and `Apache-2.0` were always filed under
+  `attribution` — and `personal` named) and the default as `public-domain` + `attribution`, the
+  policy file's. **(3)** A NORMATIVE **multi-class rule**: an identifier listed under more than one
+  class holds every one of them; a consumer admits the record only if **every** class it holds is
+  allowlisted, it carries **every** class's obligations, and no consumer picks or ranks among them.
+  A manifest counts such a record under each class it holds. **(4)** §7's filter sketch reads
+  `classes(license) ⊆ allowlist`, a property derived from the identifier, replacing
+  `license.class ∈ {…}`, which read as a field the record carries (INT-8's last remark). **(5)** §4.1
+  mints **`kgp:holdsLicenseClass`** — one value per class held — and supersedes `kgp:licenseClass`.
+  That term was ratified at 0.5.2 as a single value from the old six-class set, and §4.1's own
+  immutability rule makes a changed value space a new term rather than an edit; a 0.7.0 producer
+  emits the new term only, and the old one stays defined for graphs written under ≤ 0.6.x.
+
+  **Why minor, and why no status moves.** Minor: §7.1's class list and default allowlist are surface
+  a consumer implements against, and the multi-class rule is a new MUST. Status stays **candidate**
+  — it already is. What does **not** move, checked: §3 and §3.1's hashed set, §3.3's convergence,
+  §4's mapping, §5, §6, §7.2 and §8 are byte-unchanged, and §4.1 changes only by the one added term
+  and the illustration that shows it — no ratified term is edited; licence was never in the claim
+  hash, so **no `claim` id moves**; no pack field is added and no schema changes.
+  The default admission of every record any scenario here carries is unchanged — `CC-BY-4.0` is
+  admitted and `CC-BY-SA-4.0` rejected under either default, which is why
+  [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md)'s licence leg still
+  holds as written. **Re-ratification:** the existing count is unchanged, and this fold adds one leg
+  of the same DR-7 shape — that encoding carries no record whose identifier holds two classes, so it
+  would return `green` asserting nothing about the multi-class rule. The extension is one such
+  record, refused under an allowlist missing either class. Unowned, beside the 0.6.0 leg. And the
+  §4.1 round-trip fixture's evidence (§4.1's gate status above) was taken against
+  `kgp:licenseClass`, so it does not cover the term (5) mints: it needs the same two-class record
+  emitted and read back with both `kgp:holdsLicenseClass` values — a downstream leg under
+  ADR-0001, also unowned. The fixture's other evidence (rule 2, convergence, the mutation tests)
+  is untouched.
+- **0.6.1 — terms for a reproduction** (2026-10-31) — **Candidate** (normative change to a
+  candidate spec; status unchanged). New **§7.1.1** and an optional `reproduction` object on
+  `$defs/provenance` in [`../schemas/provenance.schema.json`](../schemas/provenance.schema.json)
+  (`$defs/reproduction`). A scan or photograph of a pre-existing work rests on three independent
+  statuses — the underlying work's, any right in the reproduction (which differs by jurisdiction),
+  and the holder's terms — and the record had nowhere to state them apart from its single
+  `license`, so the reason a reproduction was classified, or refused, was lost. The object carries
+  the three; **`license` stays the single admission field** and the object is never an admission
+  input; a consumer MAY re-check and reject with a report, and KGP deliberately does **not** define
+  the statuses → class mapping (jurisdiction- and judgement-dependent, each participant's policy).
+  **Patch, not minor**, on the 0.5.1 precedent: additive — the object is optional, nothing that
+  conformed at 0.6.0 stops conforming, no consumer obligation fires on a record that does not carry
+  it, and no `Depends on:` pin elsewhere moves (KFT's pins are `MAJOR.MINOR.x`, the patch position a
+  wildcard). **What
+  does not move:** §3.1's hashed set and every §3 rule are byte-unchanged, so **no `claim` id
+  moves**; §4.1's annotation vocabulary mints no term; the six §7.1 classes, the default allowlist,
+  §7.2 and `policy/license-classes.json` are unchanged. **The re-ratification count does not grow:**
+  §7.1.1's MUST NOT is exercised by a third leg of the **same** `kcs:worlds-to-fabric` extension
+  0.6.0 already requires (a record carrying an all-open `reproduction` under a `license` outside the
+  consumer's allowlist, `expect: reject`) —
+  [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) § *Re-ratification*.
+  No new scenario file (which would be a downstream set-equality obligation) and no ADR: an
+  optional, additive record field decides no fabric-level fork, the kind KMI 0.3.5 added (MA-5's
+  optional `license`/`egress` pair) in a patch with no ADR of its own.
 
 - **Editorial** (2026-09-12) — **the registry widened; §3.2's count follows it, and nothing else
   moves.** The registry gained a fourth domain file, `eval:`, carrying two `grounding-only`

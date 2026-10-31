@@ -463,6 +463,13 @@ have to assert) arriving on a third spec, and it is why the count below says *ex
 2. **A refusal over an untyped position.** A relation whose registry entry types some position with
    no token — a stale copy, or a private extension — and a producer that **refuses to mint** rather
    than guessing. `expect: reject`, on the same footing as R2's two egress legs.
+3. **Added by KGP 0.6.1 (2026-10-31): a reproduction's terms do not admit.** §7.1.1 adds an
+   optional `provenance.reproduction` object whose one consumer-side MUST NOT is that it is never an
+   admission input. A record carrying an all-open `reproduction` (`underlyingWork:
+   public-domain-by-age`, `reproductionRight.status: none`, `holderTerms.class: open`) under a
+   `license` outside the consumer's allowlist MUST still be rejected with a report. `expect: reject`,
+   on the same footing as leg 2. A third leg of the **same** extension, not a second count: it rides
+   the scenario section and encoding legs 1 and 2 already require.
 
 **What this section does not change.** §4.1's round-trip **fixture** gate stays closed: §4 and §4.1
 are byte-unchanged at 0.6.0, so the artifact read at `agora af5b7dd` on 2026-08-28 still discharges
@@ -472,5 +479,5 @@ is not reopened; nothing here contradicts it.
 
 **Owner: unowned.** The scenario half is koine's and the encoding is downstream under
 [ADR-0001](../decisions/ADR-0001-control-plane-topology.md), and neither is claimed as of
-2026-09-12. Until both land, KGP is **not promotable**, on one count, which is the fewest of any spec
+2026-09-12 (and the third leg added on 2026-10-31 is unowned with them). Until both land, KGP is **not promotable**, on one count, which is the fewest of any spec
 in the repo — see [`../docs/reference/promotability.md`](../docs/reference/promotability.md).

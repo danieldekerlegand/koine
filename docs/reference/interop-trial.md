@@ -1,6 +1,6 @@
 # Interop trial — a spec-only producer, and what the receiving side does with it
 
-> **Status:** Current · **Updated:** 2026-09-12 · **Owner:** koine · **Informative**
+> **Status:** Current · **Updated:** 2026-10-31 · **Owner:** koine · **Informative**
 
 > **2026-09-12 — one of the eleven is closed: INT-3.** The measurement below is unchanged and
 > stands as the record of the 2026-08-18 trial. What changed is the tree it measured: the relation
@@ -8,7 +8,12 @@
 > [KGP 0.6.0](../../specs/grounding-pack.md) §3.2 rule 1 reads it, so C3's fork is decided and two
 > of its three renderings are **non-conformant** rather than defensible. See
 > [§ C3](#c3-is-an-argument-a-curie-or-a-literal-int-3-new-blocking) for what landed, and §8 for
-> what that does and does not do to the other ten. **The remaining ten are open.**
+> what that does and does not do to the other ten.
+>
+> **2026-10-31 — a second is closed: INT-8.** [KGP 0.7.0](../../specs/grounding-pack.md) §7.1 and
+> [`policyVersion` 0.2.0](../../policy/license-classes.json) now state one class set and one default
+> allowlist; see [§ INT-8](#int-8-new-blocking-the-licence-classes-in-the-spec-and-in-the-policy-file-are-different-sets).
+> **The remaining nine are open.**
 
 **This document binds no clause.** It is the record of one trial, not a contract: where a finding
 and a spec disagree the spec wins and the finding is the thing to re-check. Nothing here adds a
@@ -439,7 +444,7 @@ tests. **Executed, not narrated** — the regex and set operations below were ru
 | A5 | entity records admitted | schema `$defs/csid` | 🔴 **fail** | **0 of 3** entity ids match `^cs:[a-z0-9-]+:[^\s]+$` (IMP-8) |
 | A6 | relations resolve in the registry | KGP §3.2 r1 | 🟡 **partial** | 4 of 5 resolve; `commands` does not exist (INT-1) |
 | A7 | dialect tier correctly declared | KGP §5, `registry/README.md` | 🟡 **partial** | the pack carries **no rules**, and one of its five relations (`located_in`) is registered `horn-safe`. Two answers, no combining rule (INT-10) |
-| A8 | licence admission decidable | KGP §7.1 / `policy/license-classes.json` | ⬜ **indeterminate** | the classes contradict (INT-8) |
+| A8 | licence admission decidable | KGP §7.1 / `policy/license-classes.json` | ⬜ **indeterminate** | the classes contradict (INT-8 — **closed 2026-10-31**; the reading stands as taken) |
 | A9 | egress gate enforceable at construction | KGP §7.2 | ⬜ **indeterminate** | no relation-level egress class is obtainable (IMP-15); B defaulted all five to `exportable` and is conformant-by-vacuum |
 | A10 | `pack_id` byte-reproducible | KGP §2.1 | 🔴 **fail** | INT-6, INT-7 |
 | A11 | firewall: cross-world lineage uses `based_on`, not `same_as` | KINP §4.3, §4.5 | ✅ **pass** | §4.5's rule is a decision procedure; it decided |
@@ -473,6 +478,23 @@ the clause reads as though it rides on the record.
 either §7.1 restates the five classes the policy file defines, or the policy file grows `permissive`
 and `non-commercial` and drops or explains `personal`. Whichever way, the default allowlist must be
 written once.
+
+#### CLOSED — 2026-10-31
+
+**What landed, one mechanism in two files.** The policy file, at `policyVersion` **0.2.0**, gains a
+`non-commercial` class (five CC NC ids on the pinned SPDX release), outside the default allowlist.
+**KGP 0.7.0** §7.1 states that the class set, the identifier → class mapping and the default
+allowlist are defined once, in the policy file, which wins on disagreement; it restates the six
+classes — `permissive` dropped, since `MIT` and `Apache-2.0` were always filed under `attribution`,
+and `personal` named — and the one default, `public-domain` + `attribution`. The remedy's
+either/or was not taken whole: the class set takes the **spec's** side on `non-commercial` (the file
+gains it) and the **file's** side on `permissive` (§7.1 drops it) and on `personal` (§7.1 names it),
+and the default is written once, as the file's — so `Apache-2.0` is admitted by default under either
+artefact. The share-alike non-commercial ids sit in **both** `share-alike` and
+`non-commercial`, and §7.1 gains the rule that makes that decidable: an identifier holds every class
+it is listed under, and is admitted only if every one of them is allowlisted. §7's filter now reads
+`classes(license)`, a derived property, answering the nested-object remark above. The A8 reading is
+left as taken.
 
 ### INT-9 (new, gap) · the ratified envelope has no `license`, and the pack requires one
 
@@ -597,7 +619,7 @@ visibly.
 | **INT-5** | blocking | KGP §2, KINP §7, `grounding-pack.schema.json` | The entity record shape is defined nowhere: KGP §2 defers to a KINP entity envelope that does not exist, and prose and twin give four different key names each. The pack's first required array is unimplementable without invention |
 | **INT-6** | blocking | KGP §2.1, §2 | `manifest.created` is inside the pack hash, so §2.1's stated reproducibility guarantee is refuted by §2.1's own formula. No ambiguity required |
 | **INT-7** | blocking | KGP §2.1 | `⊕` undefined; §3 supplies no canonical for a manifest, entity or provenance record; and the whole envelope (`kind`, `basis`, `worlds`, `dialect`, `producer`) is outside the hash, so a snapshot and a delta collide |
-| **INT-8** | blocking | KGP §7.1 vs `policy/license-classes.json` | Three contradictions: `permissive`/`non-commercial` absent from the policy file, `personal` absent from the spec, and two different default allowlists. Apache-2.0 admission differs by artefact |
+| **INT-8** ✅ | blocking — **CLOSED 2026-10-31** | KGP §7.1 vs `policy/license-classes.json` | Three contradictions: `permissive`/`non-commercial` absent from the policy file, `personal` absent from the spec, and two different default allowlists. Apache-2.0 admission differs by artefact. **Closed** by KGP 0.7.0 §7.1 and `policyVersion` 0.2.0: one class set and one default, defined in the policy file; `non-commercial` added, `permissive` dropped, `personal` named |
 | **INT-9** | gap | KINP §7.1 vs KGP §7.1 + `grounding-pack.schema.json` | The ratified assertion envelope has no `license`; the pack requires one on every record |
 | **INT-10** | gap | KGP §5 vs `registry/README.md` | The pack `dialect` is defined by the logic a pack contains and a relation's tier by what the relation needs; no rule says how to combine them. A rule-free pack using one `horn-safe` core relation has two defensible tiers |
 | **INT-11** | gap | KCS §3, §5 | No step and no assertion expresses a static artefact conformance check — the first verdict a third-party implementer needs |
@@ -626,7 +648,8 @@ own edit.
 **One has since been fixed elsewhere, which is the discipline working rather than an exception to
 it.** INT-3 was closed on 2026-09-12 by the spec and registry owner, in the registry and in KGP
 §3.2, and this document records the closure *after* the fact instead of performing it — the row
-above is annotated, the C3 measurement is untouched, and §6's number is left as taken. **Ten remain
+above is annotated, the C3 measurement is untouched, and §6's number is left as taken. INT-8
+followed on 2026-10-31, in KGP §7.1 and the policy file, recorded the same way. **Nine remain
 open**, and none of them is scheduled here either.
 
 ---
@@ -657,6 +680,14 @@ about other people, and this trial contains none.
 ---
 
 ## Changelog
+
+- **2026-10-31** — **INT-8 closed**, and nothing else about this trial changed. **KGP 0.7.0** §7.1
+  and `policy/license-classes.json` `policyVersion` 0.2.0 state one class set (`public-domain` /
+  `attribution` / `share-alike` / `non-commercial` / `proprietary` / `personal`) and one default
+  allowlist (`public-domain` + `attribution`), defined in the policy file; a share-alike
+  non-commercial id holds both classes and is admitted only if both are allowlisted. § INT-8 gains a
+  `CLOSED` subsection and A8's row and §8's findings row are annotated; the A8 reading is not
+  re-taken. Nine findings remain open.
 
 - **2026-09-12** — **INT-3 closed**, and nothing else about this trial changed. The relation
   registry gained an `arg_types` column — positional, parallel to `arg_roles`, all 29 published

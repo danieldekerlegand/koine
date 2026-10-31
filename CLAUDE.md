@@ -153,7 +153,7 @@ vocabulary.
   schema twin and golden fixture moved with KFT and `finetune-job.schema.json`'s `kinpId` **pattern
   deliberately not tightened** to §3.1's charset (a KINP id may be world-scoped, so the third group
   must stay permissive; enforcing the full grammar is a KINP-side artifact, not opened here).
-- `specs/grounding-pack.md` — KGP 0.6.0, **candidate** (ratified 2026-08-28 at 0.5.2; demoted again 2026-09-12 by the `arg_types` fold at the end of this bullet). Knowledge data plane; normative §3
+- `specs/grounding-pack.md` — KGP 0.7.0, **candidate** (ratified 2026-08-28 at 0.5.2; demoted again 2026-09-12 by the `arg_types` fold near the end of this bullet; 0.6.1, then 0.7.0 — the licence-class fold — close this bullet). Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
   **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
   the requirements RDF-star / PROV / JSON-LD do not meet natively plus the re-open test, and §4.1
@@ -220,7 +220,28 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
-- `specs/capability-bus.md` — KCB 0.5.8, **candidate**. Control plane over MCP/A2A; cross-plane
+  **0.6.1 (2026-10-31) is terms for a reproduction** — a patch: new §7.1.1 and an optional
+  `reproduction` object on `$defs/provenance` (`$defs/reproduction`) carrying the three independent
+  statuses behind a scan or photograph of a pre-existing work — `underlyingWork`,
+  `reproductionRight` `{jurisdiction, status}`, `holderTerms` `{class, url, retrieved_at, text?}`.
+  `license` stays the single admission field; the object is never an admission input, a consumer MAY
+  re-check and reject with a report, and KGP does not define the statuses → class mapping. Additive:
+  no claim id moves, no `kgp:` term is minted, §7.1's classes and §7.2 are unchanged. The count does
+  not grow — §7.1.1's MUST NOT is a **third leg of the same** `kcs:worlds-to-fabric` extension.
+  **0.7.0 (2026-10-31) is the licence-class fold** and folds **INT-8**: §7.1 and
+  `policy/license-classes.json` (`policyVersion` 0.1.1 → **0.2.0**) disagreed on the class set and
+  the default allowlist. The policy file gains **`non-commercial`** (five CC NC ids, outside the
+  default) and is now the single definition of classes, mapping and default, winning on
+  disagreement; §7.1 restates six classes (`permissive` dropped — `MIT`/`Apache-2.0` were always
+  `attribution` — and `personal` named) and the default `public-domain` + `attribution`. A NORMATIVE
+  **multi-class rule**: an identifier listed under several classes (the NC-SA ids sit in
+  `share-alike` and `non-commercial`) holds all of them, is admitted only if every one is
+  allowlisted, and carries every obligation. §4.1 mints `kgp:holdsLicenseClass` (one value per
+  class held), superseding the 0.5.2-ratified single-valued `kgp:licenseClass` rather than editing
+  it. Minor; status stays candidate; §3, §4, §7.2 untouched and **no claim id moves**. It adds two
+  unowned re-ratification legs — a record holding two classes refused under an allowlist missing
+  either (DR-7's shape), and the §4.1 round-trip fixture extended to the new term.
+- `specs/capability-bus.md` — KCB 0.5.9, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -458,9 +479,10 @@ vocabulary.
   promoted and is not promotable**: count (iii) and ADR-0013's **W3** stand regardless, and four clean
   re-runs would not have promoted it either.
   **What remains is written down flat, with an owner or an explicit *unowned*, in
-  `docs/reference/promotability.md` § *The eight things that stand between KCB and `ratified`*** —
-  **eight** items since 2026-09-12, when count (vi)'s walk added (8) the **MA-17 + MA-18** fold
-  (§4.5(a), one edit for two findings). Read the ownership column as of its date: item (6) found an
+  `docs/reference/promotability.md` § *The nine things that stand between KCB and `ratified`*** —
+  **eight** items from 2026-09-12, when count (vi)'s walk added (8) the **MA-17 + MA-18** fold
+  (§4.5(a), one edit for two findings), and **nine** since 0.5.9 (2026-10-31) added (9), count
+  (vii)'s walk of §4.6. Read the ownership column as of its date: item (6) found an
   owner on 2026-09-11; items (2), (3), (4) **and (5)** have each had a tasklist **run** (0.5.6/0.5.7,
   0.5.3, 0.5.4/0.5.5, 0.5.8) and each is **unowned again**, its fold having landed and its count having
   changed shape rather than closed: (1) was ADR-0014's four-part clause, a
@@ -989,6 +1011,19 @@ vocabulary.
   digest moves; the edit is §4.2's gate paragraph, a changelog entry, a scenario section and the
   BP-7 disposition in `docs/reference/capability-versioning-fold-dispositions.md`. **KCB is not
   promoted and is not promotable**, and closing count (iv) would promote nothing on its own.
+  **0.5.9 (2026-10-31, patch) adds §4.6, invocation context — new surface, not a fold.** `invoke`
+  gains an OPTIONAL **`context`**: a flat map of KINP §3.4-namespaced keys (`<namespace>:<name>`,
+  the namespace naming whose definition governs the key) to printable-ASCII strings. It is outside any
+  signature and **never authority** (no grant, issuer, ceiling unit, posture or §4.4c reading); acting
+  on a value is authorized as though it were input; a recognised key that cannot be honoured is refused
+  **context refused**, an unrecognised one ignored. Named carriers: `_meta` member
+  `org.w3id.koine/kcb-context` (MCP), the same `metadata` member (A2A), and one **`KCB-Context`**
+  header — an RFC 9651 Dictionary, `:` written as `.` — for a participant already carrying a call over
+  plain HTTP (KCB still binds no HTTP `invoke`); an unparseable header is a malformed request. Scoped to
+  one call, never forwarded. Patch on §7.3b's axis, no digest moves, 0.6.0 still spoken for; one pin row
+  added (RFC 9651). **A seventh count opens** — (vii), a hostile walk of §4.6, **unowned**, residual
+  declared in advance (no echo, so a caller cannot tell a key read from a key ignored); no scenario file
+  added (set-equality downstream), so where the walk lives is the owner's call.
 - `specs/media-interchange.md` — KMI 0.3.8, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
