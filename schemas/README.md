@@ -129,7 +129,8 @@ The license-class and trust-tier vocabularies the schemas reference live in koin
 [`../policy/`](../policy/):
 
 - [`../policy/license-classes.json`](../policy/license-classes.json) — the SPDX license-class
-  allowlist (`public-domain` / `attribution` / `share-alike` / `proprietary` / `personal`) backing
+  allowlist (`public-domain` / `attribution` / `share-alike` / `non-commercial` / `proprietary` /
+  `personal`) backing
   every record `license` field (KGP §7.1). `Apache-2.0` — koine's own [`../LICENSE`](../LICENSE) —
   classes under **attribution**.
 - [`../policy/trust-tiers.json`](../policy/trust-tiers.json) — the provenance trust tiers

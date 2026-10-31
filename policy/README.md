@@ -9,10 +9,17 @@ name, and consumers load them to decide what a record is allowed to do. Each fil
 ## Layout
 
 - [`license-classes.json`](license-classes.json) — the per-record **license class** allowlist
-  backing the `license` field (KGP §7.1). Maps five classes — `public-domain` / `attribution` /
-  `share-alike` / `proprietary` / `personal` — to their SPDX ids (or pseudo-ids `PROPRIETARY` /
+  backing the `license` field (KGP §7.1), and the **single definition** of the class set, the
+  identifier → class mapping and the default allowlist — KGP §7.1 restates them and the file wins on
+  disagreement. Maps six classes — `public-domain` / `attribution` / `share-alike` /
+  `non-commercial` / `proprietary` / `personal` — to their SPDX ids (or pseudo-ids `PROPRIETARY` /
   `PERSONAL`) and each class's **obligations** (attribution manifests, share-alike partitioning,
-  owner-scoping). `Apache-2.0` — koine's own [`../LICENSE`](../LICENSE) — classes under
+  no commercial use, owner-scoping). An identifier may be listed under **more than one** class — the
+  share-alike non-commercial ids sit under both `share-alike` and `non-commercial` — and then holds
+  every class it is listed under (`rules[3]`, KGP §7.1). `non-commercial` was added at
+  `policyVersion` **0.2.0**, closing finding **INT-8**
+  ([`../docs/reference/interop-trial.md`](../docs/reference/interop-trial.md)); there is no separate
+  `permissive` class. `Apache-2.0` — koine's own [`../LICENSE`](../LICENSE) — classes under
   **attribution**. The identifiers are **SPDX** ids, and the SPDX license list release they are
   resolved against is pinned in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md) —
   re-resolving them against that release is part of the drift check, and is what surfaced finding
@@ -27,10 +34,11 @@ name, and consumers load them to decide what a record is allowed to do. Each fil
 
 Both files are **admission policy applied at every boundary**:
 
-- **License** answers *"may this record be admitted?"* — a record with an unknown or blank license
-  is **invalid** (producers must resolve it, never default silently); packs partition their record
-  counts by class, and a consumer rejects any class outside its configured allowlist (default:
-  `public-domain` + `attribution`) with a per-record report.
+- **License** answers *"may this record be admitted?"* — a record with an unknown or blank license,
+  or one listed under no class, is **invalid** (producers must resolve it, never default silently);
+  packs partition their record counts by class, and a consumer rejects any record holding a class
+  outside its configured allowlist (default: `public-domain` + `attribution`) with a per-record
+  report. A record holding two classes is admitted only if both are allowlisted.
 - **Trust tier** answers *"how much should this source be believed, and where may it travel?"* — it
   is descriptive of provenance, and its containment gates are monotone CI ratchets in every
   consumer. A low-trust pack feeds KINP's hybrid merge **review queue** (KINP §11 decision 2)

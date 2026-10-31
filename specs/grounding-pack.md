@@ -1,8 +1,8 @@
 # Koine Grounding-Pack Protocol (KGP)
 
-**Spec version:** 0.6.0
+**Spec version:** 0.7.0
 **Status:** candidate
-**Last updated:** 2026-09-12
+**Last updated:** 2026-10-31
 **Applies to:** knowledge authorities (producer/authority), knowledge producers and consumers,
 and control-plane hosts that broker packs on behalf of agents.
 **Depends on:** [`identity.md`](identity.md) (KINP 0.2.0) — uses its identifiers, envelopes,
@@ -576,8 +576,12 @@ claim identity* (§3.1), a consumer can slice a pack without changing what any c
 
 ```
 accept records where prov.agent ∈ trusted ∧ confidence ≥ 0.9 ∧ world = consensus-reality
-            ∧ license.class ∈ {public-domain, permissive, attribution}
+            ∧ classes(license) ⊆ {public-domain, attribution}
 ```
+
+`classes(license)` is the set of license classes the record's `license` identifier is listed under
+in the policy file (§7.1) — a property **derived** from the identifier, never a field the record
+carries.
 
 Merges preserve **all** provenance for a shared `claim` id (multiple `prov` records per
 claim), so "who told us this, and how sure were they" is always answerable — the basis for the
@@ -589,14 +593,37 @@ itself, in any encoding.
 
 ### 7.1 License-class policy (adopted from the existing bridges)
 
-Every entity/assertion record carries an SPDX `license` — an identifier from the SPDX license
-list release pinned in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md), which is
-also where the class → identifier mapping in [`../policy/license-classes.json`](../policy/license-classes.json)
+Every entity/assertion record carries a `license` — an identifier from the SPDX license
+list release pinned in [`../docs/reference/upstream-standards.md`](../docs/reference/upstream-standards.md), or one of
+the pseudo-ids the policy file defines — and that pin table is also where the class → identifier
+mapping in [`../policy/license-classes.json`](../policy/license-classes.json)
 is re-resolved on the drift-check cadence. The pack manifest carries a
-`license_policy` — a class-based admission allowlist. Licenses classify into `public-domain` /
-`permissive` / `attribution` / `share-alike` / `non-commercial` / `proprietary`; a consumer
-admits **per record** and **rejects with a report** anything outside its allowlist (default:
-`public-domain` + `permissive` + `attribution`). This is a first-class filter alongside
+`license_policy` — a class-based admission allowlist.
+
+**The class set, the identifier → class mapping and the default allowlist are defined once, in the
+policy file**, and restated here only for readability; on disagreement the policy file wins and this
+paragraph is the defect. As of `policyVersion` 0.2.0 licenses classify into `public-domain` /
+`attribution` / `share-alike` / `non-commercial` / `proprietary` / `personal`. There is **no
+separate `permissive` class**: permissive licences that require attribution (`MIT`, `Apache-2.0`)
+class under `attribution`. The **default allowlist is `public-domain` + `attribution`**; a
+`share-alike`, `non-commercial`, `proprietary` or `personal` record is admitted only by a consumer
+whose allowlist names that class, and a consumer that admits one takes on its obligations.
+
+Admission (NORMATIVE):
+
+- A record whose `license` is blank, unknown, or listed under **no** class is **invalid** at every
+  boundary; a producer MUST resolve it and MUST NOT default it silently.
+- An identifier listed under **more than one** class **holds every class it is listed under** —
+  a share-alike non-commercial licence (e.g. `CC-BY-NC-SA-4.0`) holds both `share-alike` and
+  `non-commercial`. A consumer MUST admit such a record only if **every** class it holds is on its
+  allowlist, and an admitted record carries the obligations of **every** class it holds. A
+  consumer MUST NOT pick one of the classes, and MUST NOT rank them to choose the less restrictive.
+- A consumer admits **per record** and **rejects with a report** anything outside its allowlist.
+- A pack's license manifest partitions its record counts by class; a record holding more than
+  one class is counted under each, so the per-class counts may sum to more than the record
+  count.
+
+This is a first-class filter alongside
 confidence and provenance, not an afterthought — it was already built and proven in existing
 producer-side license classifiers, and is lifted into the contract per ADR-0002 (reverse flow —
 a deployment-history ADR, held in that deployment's own integration repo). License is
@@ -671,6 +698,42 @@ Ratified 2026-07-17.
    attributable. Token issuance/rotation lives in the control-plane host's infra, not here.
 
 ## Changelog
+
+- **0.7.0 — the licence-class fold: §7.1 and the policy file state one class set, and a share-alike
+  non-commercial licence holds both classes** (2026-10-31). Folds
+  [INT-8](../docs/reference/interop-trial.md#int-8-new-blocking-the-licence-classes-in-the-spec-and-in-the-policy-file-are-different-sets)
+  (blocking): §7.1 named `permissive` and `non-commercial`, which
+  [`../policy/license-classes.json`](../policy/license-classes.json) did not define; the file defined
+  `personal`, which §7.1 did not name; and the two stated different default allowlists, so
+  `Apache-2.0` — koine's own licence — was admitted by one artefact and not by the other. A
+  non-commercial source therefore had **no class** and was invalid at every boundary, even inside a
+  producer that only meant to hold it locally. Four edits. **(1)** The policy file (`policyVersion`
+  0.1.1 → **0.2.0**) gains a **`non-commercial`** class — `CC-BY-NC-3.0`, `CC-BY-NC-4.0`,
+  `CC-BY-NC-SA-3.0`, `CC-BY-NC-SA-4.0`, `CC-BY-NC-ND-4.0`, all on the pinned SPDX release — whose
+  obligation is *no commercial use*, and which sits **outside** the default allowlist; the two NC-SA
+  ids are also listed under `share-alike`. **(2)** §7.1 states that the class set, the mapping and
+  the default allowlist are defined **once**, in the policy file, which wins on disagreement; it
+  restates the six classes (`permissive` removed — `MIT` and `Apache-2.0` were always filed under
+  `attribution` — and `personal` named) and the default as `public-domain` + `attribution`, the
+  policy file's. **(3)** A NORMATIVE **multi-class rule**: an identifier listed under more than one
+  class holds every one of them; a consumer admits the record only if **every** class it holds is
+  allowlisted, it carries **every** class's obligations, and no consumer picks or ranks among them.
+  A manifest counts such a record under each class it holds. **(4)** §7's filter sketch reads
+  `classes(license) ⊆ allowlist`, a property derived from the identifier, replacing
+  `license.class ∈ {…}`, which read as a field the record carries (INT-8's last remark).
+
+  **Why minor, and why no status moves.** Minor: §7.1's class list and default allowlist are surface
+  a consumer implements against, and the multi-class rule is a new MUST. Status stays **candidate**
+  — it already is. What does **not** move, checked: §3 and §3.1's hashed set, §3.3's convergence,
+  §4/§4.1's mapping and annotation vocabulary, §5, §6, §7.2 and §8 are byte-unchanged; licence was
+  never in the claim hash, so **no `claim` id moves**; no pack field is added and no schema changes.
+  The default admission of every record any scenario here carries is unchanged — `CC-BY-4.0` is
+  admitted and `CC-BY-SA-4.0` rejected under either default, which is why
+  [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md)'s licence leg still
+  holds as written. **Re-ratification:** the existing count is unchanged, and this fold adds one leg
+  of the same DR-7 shape — that encoding carries no record whose identifier holds two classes, so it
+  would return `green` asserting nothing about the multi-class rule. The extension is one such
+  record, refused under an allowlist missing either class. Unowned, beside the 0.6.0 leg.
 
 - **Editorial** (2026-09-12) — **the registry widened; §3.2's count follows it, and nothing else
   moves.** The registry gained a fourth domain file, `eval:`, carrying two `grounding-only`

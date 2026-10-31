@@ -1,16 +1,18 @@
 {
-  "policyVersion": "0.1.1",
-  "description": "License classes for per-record SPDX labeling and partitioned packaging. 'license' fields hold an SPDX id or one of the pseudo-ids below.",
+  "policyVersion": "0.2.0",
+  "description": "License classes for per-record SPDX labeling and partitioned packaging. 'license' fields hold an SPDX id or one of the pseudo-ids below. An identifier may be listed under more than one class (e.g. a share-alike non-commercial id); it then holds every class it is listed under (rules[3]).",
   "classes": {
     "public-domain": { "spdx": ["CC0-1.0", "CC-PDM-1.0"], "obligations": "none" },
     "attribution": { "spdx": ["CC-BY-3.0", "CC-BY-4.0", "Apache-2.0", "MIT"], "obligations": "attribution manifests in releases" },
-    "share-alike": { "spdx": ["CC-BY-SA-3.0", "CC-BY-SA-4.0", "ODbL-1.0", "GFDL-1.3-only"], "obligations": "viral per record: ships only in share-alike-labeled partitions; derived open datasets inherit" },
+    "share-alike": { "spdx": ["CC-BY-SA-3.0", "CC-BY-SA-4.0", "ODbL-1.0", "GFDL-1.3-only", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0"], "obligations": "viral per record: ships only in share-alike-labeled partitions; derived open datasets inherit" },
+    "non-commercial": { "spdx": ["CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-NC-ND-4.0"], "obligations": "no commercial use: never admitted into a pack, export, release, corpus or training set whose use is commercial, nor into one that feeds such use; outside the default consumer allowlist" },
     "proprietary": { "pseudoIds": ["PROPRIETARY"], "obligations": "owner-scoped use only (e.g. a world producer's generated-world exports); never in open releases" },
     "personal": { "pseudoIds": ["PERSONAL"], "obligations": "the user's own data; follows the personal tier containment rules" }
   },
   "rules": [
-    "A record with an unknown/blank license is INVALID at every boundary — producers must resolve, never default silently.",
-    "Pack/export license manifests must partition counts by class; consumers reject classes outside their configured allowlist with a per-record report.",
-    "Default consumer allowlist: public-domain + attribution."
+    "A record with an unknown/blank license, or one whose identifier is listed under no class, is INVALID at every boundary — producers must resolve, never default silently.",
+    "Pack/export license manifests must partition counts by class; consumers reject classes outside their configured allowlist with a per-record report. A record holding more than one class is counted under each, so per-class counts may sum to more than the record count.",
+    "Default consumer allowlist: public-domain + attribution.",
+    "An identifier listed under more than one class holds every class it is listed under. A record is admitted only if every class it holds is on the consumer's allowlist, and an admitted record carries the obligations of every class it holds."
   ]
 }

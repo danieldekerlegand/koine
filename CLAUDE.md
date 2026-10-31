@@ -153,7 +153,7 @@ vocabulary.
   schema twin and golden fixture moved with KFT and `finetune-job.schema.json`'s `kinpId` **pattern
   deliberately not tightened** to §3.1's charset (a KINP id may be world-scoped, so the third group
   must stay permissive; enforcing the full grammar is a KINP-side artifact, not opened here).
-- `specs/grounding-pack.md` — KGP 0.6.0, **candidate** (ratified 2026-08-28 at 0.5.2; demoted again 2026-09-12 by the `arg_types` fold at the end of this bullet). Knowledge data plane; normative §3
+- `specs/grounding-pack.md` — KGP 0.7.0, **candidate** (ratified 2026-08-28 at 0.5.2; demoted again 2026-09-12 by the `arg_types` fold at the end of this bullet; 0.7.0, the licence-class fold, closes this bullet). Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
   **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
   the requirements RDF-star / PROV / JSON-LD do not meet natively plus the re-open test, and §4.1
@@ -220,6 +220,17 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
+  **0.7.0 (2026-10-31) is the licence-class fold** and folds **INT-8**: §7.1 and
+  `policy/license-classes.json` (`policyVersion` 0.1.1 → **0.2.0**) disagreed on the class set and
+  the default allowlist. The policy file gains **`non-commercial`** (five CC NC ids, outside the
+  default) and is now the single definition of classes, mapping and default, winning on
+  disagreement; §7.1 restates six classes (`permissive` dropped — `MIT`/`Apache-2.0` were always
+  `attribution` — and `personal` named) and the default `public-domain` + `attribution`. A NORMATIVE
+  **multi-class rule**: an identifier listed under several classes (the NC-SA ids sit in
+  `share-alike` and `non-commercial`) holds all of them, is admitted only if every one is
+  allowlisted, and carries every obligation. Minor; status stays candidate; §3, §4, §7.2 untouched
+  and **no claim id moves**. It adds one DR-7-shaped leg to the re-ratification count — a record
+  holding two classes, refused under an allowlist missing either — unowned.
 - `specs/capability-bus.md` — KCB 0.5.8, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
