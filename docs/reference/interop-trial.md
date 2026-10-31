@@ -486,9 +486,11 @@ written once.
 **KGP 0.7.0** §7.1 states that the class set, the identifier → class mapping and the default
 allowlist are defined once, in the policy file, which wins on disagreement; it restates the six
 classes — `permissive` dropped, since `MIT` and `Apache-2.0` were always filed under `attribution`,
-and `personal` named — and the one default, `public-domain` + `attribution`. Both forks this
-section left to the owner were taken on the file's side, so `Apache-2.0` is admitted by default under
-either artefact. The share-alike non-commercial ids sit in **both** `share-alike` and
+and `personal` named — and the one default, `public-domain` + `attribution`. The remedy's
+either/or was not taken whole: the class set takes the **spec's** side on `non-commercial` (the file
+gains it) and the **file's** side on `permissive` (§7.1 drops it) and on `personal` (§7.1 names it),
+and the default is written once, as the file's — so `Apache-2.0` is admitted by default under either
+artefact. The share-alike non-commercial ids sit in **both** `share-alike` and
 `non-commercial`, and §7.1 gains the rule that makes that decidable: an identifier holds every class
 it is listed under, and is admitted only if every one of them is allowlisted. §7's filter now reads
 `classes(license)`, a derived property, answering the nested-object remark above. The A8 reading is

@@ -228,9 +228,11 @@ vocabulary.
   `attribution` — and `personal` named) and the default `public-domain` + `attribution`. A NORMATIVE
   **multi-class rule**: an identifier listed under several classes (the NC-SA ids sit in
   `share-alike` and `non-commercial`) holds all of them, is admitted only if every one is
-  allowlisted, and carries every obligation. Minor; status stays candidate; §3, §4, §7.2 untouched
-  and **no claim id moves**. It adds one DR-7-shaped leg to the re-ratification count — a record
-  holding two classes, refused under an allowlist missing either — unowned.
+  allowlisted, and carries every obligation. §4.1 mints `kgp:holdsLicenseClass` (one value per
+  class held), superseding the 0.5.2-ratified single-valued `kgp:licenseClass` rather than editing
+  it. Minor; status stays candidate; §3, §4, §7.2 untouched and **no claim id moves**. It adds two
+  unowned re-ratification legs — a record holding two classes refused under an allowlist missing
+  either (DR-7's shape), and the §4.1 round-trip fixture extended to the new term.
 - `specs/capability-bus.md` — KCB 0.5.8, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
