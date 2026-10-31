@@ -11,7 +11,7 @@ registered in KINP [`identity.md`](../specs/identity.md) §3.4 (`refkb` / `world
 ## Layout
 
 - [`provenance.schema.json`](provenance.schema.json) — shared `$defs` every other schema `$ref`s:
-  `contractVersion`, `provenance`, `license`, `tier`, `dialect`, `egress`, `csid`, `assetId`, `nodeRef`.
+  `contractVersion`, `provenance` (with its optional `reproduction`, KGP §7.1.1), `license`, `tier`, `dialect`, `egress`, `csid`, `assetId`, `nodeRef`.
   The machine-readable form of the KINP [`identity.md`](../specs/identity.md) §7.1 assertion envelope
   and the KGP [`grounding-pack.md`](../specs/grounding-pack.md) §5/§7 axes.
 - [`grounding-pack.schema.json`](grounding-pack.schema.json) — KGP §2 grounding-pack envelope

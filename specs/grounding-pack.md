@@ -633,6 +633,54 @@ producer-side license classifiers, and is lifted into the contract per ADR-0002 
 a deployment-history ADR, held in that deployment's own integration repo). License is
 carried on records (not in the claim hash), so it never affects claim identity.
 
+#### 7.1.1 Terms for a reproduction (NORMATIVE)
+
+A record whose subject is a **reproduction** of a pre-existing work — a scan, photograph or other
+copy made by a holding institution or another third party — rests on three statuses that are
+independent of one another, and a single `license` cannot say which of them decided it:
+
+1. **the underlying work's status** — the work reproduced, not the copy;
+2. **any right in the reproduction itself** — a right that may exist in the copy separately from
+   the work, which differs by jurisdiction;
+3. **the holder's terms** — the terms of use the holding institution states for the copy.
+
+A producer MAY carry them as `provenance.reproduction` (`$defs/reproduction` in
+[`../schemas/provenance.schema.json`](../schemas/provenance.schema.json)), an optional object with
+exactly these three members, each required when the object is present:
+
+| Member | Shape | Values |
+|---|---|---|
+| `underlyingWork` | token | `public-domain-by-age` · `in-copyright` · `unknown` |
+| `reproductionRight` | `{ jurisdiction, status }` | `jurisdiction`: the jurisdiction whose law the status is stated under, as the producer names it; `status`: `none` · `exists` · `unknown` |
+| `holderTerms` | `{ class, url, retrieved_at, text? }` | `class`: `open` · `attribution` · `non-commercial` · `none-stated`; `url`: where the terms were read; `retrieved_at`: when (ISO-8601); `text`: the holder's stated terms, verbatim |
+
+Rules:
+
+- **`license` stays the single admission field.** The object *explains* a record's `license`; it
+  is never an admission input. A consumer MUST admit or reject the record on its `license` class
+  per §7.1, and MUST NOT admit a record on the strength of `reproduction` alone, nor read its
+  presence as changing the record's class.
+- **A consumer MAY re-check.** A consumer MAY derive its own reading from the three statuses and,
+  where that reading disagrees with the record's `license`, reject the record **with a report** on
+  §7.1's per-record rule. KGP does **not** define the mapping from the three statuses to a class:
+  it depends on jurisdiction and on legal judgement, and is each participant's policy.
+- **`unknown` is a value, not an omission.** A producer that carries the object states all three
+  members; a status it has not established is `unknown` (or, for the holder's terms, `none-stated`
+  where the holder states none), never a missing member.
+- Like every other `provenance` field, the object is **excluded from the claim hash** (§3.1), so it
+  never affects claim identity. §4.1's annotation vocabulary is unchanged: no `kgp:` term is minted
+  for it, so a projection carries it under §4.1's rule for an annotation outside the vocabulary —
+  carried through the round-trip or reported, never silently dropped.
+
+*Illustrative (informative):* a library's scan of a 1770 printed map, held in the US, might carry
+`underlyingWork: public-domain-by-age`, `reproductionRight: {jurisdiction: "US", status: "none"}`
+(in US case law a slavish photograph of a public-domain work is not original — *Bridgeman Art
+Library v. Corel Corp.*, S.D.N.Y. 1999) and `holderTerms: {class: "open", …}`. The same map held
+in the EU might state `status: "none"` under Directive (EU) 2019/790 Art. 14, which removes rights
+in reproductions of public-domain works of visual art unless the reproduction is itself original;
+whether a given work falls under that article is the producer's legal reading, which is exactly
+what this object records instead of discarding.
+
 ---
 
 ### 7.2 Egress control — `local-only` (NORMATIVE)
@@ -748,6 +796,30 @@ Ratified 2026-07-17.
   emitted and read back with both `kgp:holdsLicenseClass` values — a downstream leg under
   ADR-0001, also unowned. The fixture's other evidence (rule 2, convergence, the mutation tests)
   is untouched.
+- **0.6.1 — terms for a reproduction** (2026-10-31) — **Candidate** (normative change to a
+  candidate spec; status unchanged). New **§7.1.1** and an optional `reproduction` object on
+  `$defs/provenance` in [`../schemas/provenance.schema.json`](../schemas/provenance.schema.json)
+  (`$defs/reproduction`). A scan or photograph of a pre-existing work rests on three independent
+  statuses — the underlying work's, any right in the reproduction (which differs by jurisdiction),
+  and the holder's terms — and the record had nowhere to state them apart from its single
+  `license`, so the reason a reproduction was classified, or refused, was lost. The object carries
+  the three; **`license` stays the single admission field** and the object is never an admission
+  input; a consumer MAY re-check and reject with a report, and KGP deliberately does **not** define
+  the statuses → class mapping (jurisdiction- and judgement-dependent, each participant's policy).
+  **Patch, not minor**, on the 0.5.1 precedent: additive — the object is optional, nothing that
+  conformed at 0.6.0 stops conforming, no consumer obligation fires on a record that does not carry
+  it, and no `Depends on:` pin elsewhere moves (KFT's pins are `MAJOR.MINOR.x`, the patch position a
+  wildcard). **What
+  does not move:** §3.1's hashed set and every §3 rule are byte-unchanged, so **no `claim` id
+  moves**; §4.1's annotation vocabulary mints no term; the six §7.1 classes, the default allowlist,
+  §7.2 and `policy/license-classes.json` are unchanged. **The re-ratification count does not grow:**
+  §7.1.1's MUST NOT is exercised by a third leg of the **same** `kcs:worlds-to-fabric` extension
+  0.6.0 already requires (a record carrying an all-open `reproduction` under a `license` outside the
+  consumer's allowlist, `expect: reject`) —
+  [`../scenarios/e2e-worlds-to-fabric.md`](../scenarios/e2e-worlds-to-fabric.md) § *Re-ratification*.
+  No new scenario file (which would be a downstream set-equality obligation) and no ADR: an
+  optional, additive record field decides no fabric-level fork, the kind KMI 0.3.5 added (MA-5's
+  optional `license`/`egress` pair) in a patch with no ADR of its own.
 
 - **Editorial** (2026-09-12) — **the registry widened; §3.2's count follows it, and nothing else
   moves.** The registry gained a fourth domain file, `eval:`, carrying two `grounding-only`
