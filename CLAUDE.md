@@ -153,7 +153,7 @@ vocabulary.
   schema twin and golden fixture moved with KFT and `finetune-job.schema.json`'s `kinpId` **pattern
   deliberately not tightened** to §3.1's charset (a KINP id may be world-scoped, so the third group
   must stay permissive; enforcing the full grammar is a KINP-side artifact, not opened here).
-- `specs/grounding-pack.md` — KGP 0.6.0, **candidate** (ratified 2026-08-28 at 0.5.2; demoted again 2026-09-12 by the `arg_types` fold at the end of this bullet). Knowledge data plane; normative §3
+- `specs/grounding-pack.md` — KGP 0.6.1, **candidate** (ratified 2026-08-28 at 0.5.2; demoted again 2026-09-12 by the `arg_types` fold near the end of this bullet; 0.6.1 at its end). Knowledge data plane; normative §3
   normalization (KINP delta B); §9 decisions closed. Per ADR-0006 the bespoke canonical is
   **retained** (TSV canonical, §3 the identity mechanism, §3.3 convergence untouched); §3.4 states
   the requirements RDF-star / PROV / JSON-LD do not meet natively plus the re-open test, and §4.1
@@ -220,6 +220,14 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
+  **0.6.1 (2026-10-31) is terms for a reproduction** — a patch: new §7.1.1 and an optional
+  `reproduction` object on `$defs/provenance` (`$defs/reproduction`) carrying the three independent
+  statuses behind a scan or photograph of a pre-existing work — `underlyingWork`,
+  `reproductionRight` `{jurisdiction, status}`, `holderTerms` `{class, url, retrieved_at, text?}`.
+  `license` stays the single admission field; the object is never an admission input, a consumer MAY
+  re-check and reject with a report, and KGP does not define the statuses → class mapping. Additive:
+  no claim id moves, no `kgp:` term is minted, §7.1's classes and §7.2 are unchanged. The count does
+  not grow — §7.1.1's MUST NOT is a **third leg of the same** `kcs:worlds-to-fabric` extension.
 - `specs/capability-bus.md` — KCB 0.5.8, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
