@@ -220,7 +220,7 @@ vocabulary.
   position (two producers, one observation, one id) and one **refusal** over an untyped position. The
   scenario section is koine's, the encoding downstream under ADR-0001; both **unowned**. Record:
   `scenarios/e2e-worlds-to-fabric.md` § *Re-ratification — what KGP 0.6.0 gates here (2026-09-12)*.
-- `specs/capability-bus.md` — KCB 0.5.8, **candidate**. Control plane over MCP/A2A; cross-plane
+- `specs/capability-bus.md` — KCB 0.5.9, **candidate**. Control plane over MCP/A2A; cross-plane
   ports (§2.1), `fetch` verb + grant, `world_pattern` on media ports, capability `cost` + grant
   spend ceilings, dangling-ref tolerance. §2 manifest redefined as a named A2A **AgentCard
   extension** (`capabilities.extensions[]`) — collapses the two well-known files into one served
@@ -458,9 +458,10 @@ vocabulary.
   promoted and is not promotable**: count (iii) and ADR-0013's **W3** stand regardless, and four clean
   re-runs would not have promoted it either.
   **What remains is written down flat, with an owner or an explicit *unowned*, in
-  `docs/reference/promotability.md` § *The eight things that stand between KCB and `ratified`*** —
-  **eight** items since 2026-09-12, when count (vi)'s walk added (8) the **MA-17 + MA-18** fold
-  (§4.5(a), one edit for two findings). Read the ownership column as of its date: item (6) found an
+  `docs/reference/promotability.md` § *The nine things that stand between KCB and `ratified`*** —
+  **eight** items from 2026-09-12, when count (vi)'s walk added (8) the **MA-17 + MA-18** fold
+  (§4.5(a), one edit for two findings), and **nine** since 0.5.9 (2026-10-31) added (9), count
+  (vii)'s walk of §4.6. Read the ownership column as of its date: item (6) found an
   owner on 2026-09-11; items (2), (3), (4) **and (5)** have each had a tasklist **run** (0.5.6/0.5.7,
   0.5.3, 0.5.4/0.5.5, 0.5.8) and each is **unowned again**, its fold having landed and its count having
   changed shape rather than closed: (1) was ADR-0014's four-part clause, a
@@ -989,6 +990,19 @@ vocabulary.
   digest moves; the edit is §4.2's gate paragraph, a changelog entry, a scenario section and the
   BP-7 disposition in `docs/reference/capability-versioning-fold-dispositions.md`. **KCB is not
   promoted and is not promotable**, and closing count (iv) would promote nothing on its own.
+  **0.5.9 (2026-10-31, patch) adds §4.6, invocation context — new surface, not a fold.** `invoke`
+  gains an OPTIONAL **`context`**: a flat map of KINP §3.4-namespaced keys (`<namespace>:<name>`,
+  the namespace naming whose definition governs the key) to printable-ASCII strings. It is outside any
+  signature and **never authority** (no grant, issuer, ceiling unit, posture or §4.4c reading); acting
+  on a value is authorized as though it were input; a recognised key that cannot be honoured is refused
+  **context refused**, an unrecognised one ignored. Named carriers: `_meta` member
+  `org.w3id.koine/kcb-context` (MCP), the same `metadata` member (A2A), and one **`KCB-Context`**
+  header — an RFC 9651 Dictionary, `:` written as `.` — for a participant already carrying a call over
+  plain HTTP (KCB still binds no HTTP `invoke`); an unparseable header is a malformed request. Scoped to
+  one call, never forwarded. Patch on §7.3b's axis, no digest moves, 0.6.0 still spoken for; one pin row
+  added (RFC 9651). **A seventh count opens** — (vii), a hostile walk of §4.6, **unowned**, residual
+  declared in advance (no echo, so a caller cannot tell a key read from a key ignored); no scenario file
+  added (set-equality downstream), so where the walk lives is the owner's call.
 - `specs/media-interchange.md` — KMI 0.3.8, **candidate**. Media data plane; asset envelope +
   probe, asset-lineage graph (KINP delta E), analysis→KGP bridge, transforms typed by KCB ports;
   `source_world` conditional-on-ingest and per-asset. §4 **adopts OpenTimelineIO** as the
